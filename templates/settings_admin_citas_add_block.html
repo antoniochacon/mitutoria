@@ -1,0 +1,29 @@
+<div class="contenido-2">
+	<form action="/settings_admin_citas" method="POST">
+		{% with %}
+		{% if params['collapse_cita_add']and request.method == 'POST' %}
+			{% set error_css = True %}
+		{% else %}
+			{% set error_css = False %}
+		{% endif %}
+		{{field_form(cita_add.frase, error=True, error_css=True, addon='frase')}}
+		{{field_form(cita_add.autor, error=True, error_css=True, addon='autor')}}
+		<div class="funkyradio funkyradio-success">
+			<input type="checkbox" name="cita_add_visible" id="cita_add_visible" value="True" checked/>
+			<label for="cita_add_visible">visible</label>
+		</div>
+		{% endwith %}
+		<br>
+		<div class="btn-group" role="group" aria-label="...">
+			<button role="button" type="submit" name="selector_button" value="selector_cita_add" class="btn btn-primary" title="agregar cita">
+				<i class="material-icons vertical-center">person</i>&nbsp; agregar
+			</button>
+			{% if params['collapse_cita_add'] %}
+				<button role="button" type="submit" name="selector_button" value="selector_cita_add_close" class="btn btn-secondary" title="cerrar">
+					<i class="material-icons vertical-center">close</i>
+				</button>
+			{% endif %}
+		</div>
+	</form>
+	<br>
+</div>

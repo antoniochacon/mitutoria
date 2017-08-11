@@ -1,0 +1,138 @@
+{% extends "_layout.html" %}
+{% block body %}
+	{%from '_macro.html' import field_form, titulo_1%}
+	<div class="paper bg-white contenido">
+		{% if alumno and asignatura and tutoria %}
+			{{titulo_1(url='informe', bg_color='bg-primary', titulo='Informe de '+ alumno.nombre+' '+alumno.apellidos, subtitulo=grupo.nombre)}}
+			<span class="text-info">Fecha de la tutoria:
+			</span>
+			{{tutoria.fecha.strftime('%A') | capitalize}}
+			{{tutoria.fecha.strftime('%d')}}
+			de
+			{{tutoria.fecha.strftime('%B') | capitalize}}&nbsp; | &nbsp;{{tutoria.hora.strftime('%H:%M')}}
+			horas
+			<br>
+			<span class="text-info">Asignatura:
+			</span>
+			{{asignatura.asignatura}}
+			<br>
+			<span class="text-info">Docente:
+			</span>
+			{{asignatura.nombre}}
+			{{asignatura.apellidos}}
+		{% else %}
+			<div class="contenido-2 text-danger text-center">
+				No disponible el informe de su materia.
+				<br>
+				Consulte con el tutor/a correspodiente.
+			</div>
+		{% endif %}
+		<br>
+		<div class="row contenido">
+			<div class="col-sm-12 contenido-2 strong">
+				Cuestionario
+				<div class="dropdown-divider bg-gray-5"></div>
+			</div>
+			<form action="/informe/{{token_hash}}" method="POST">
+				{% if not invitado_preguntas(invitado_settings(tutoria.id).id) %}
+					<div class="contenido-2">
+						Las preguntas de este cuestionario han sido descartadas.
+						<br><br>
+					</div>
+				{% endif %}
+				{% for pregunta in invitado_preguntas(invitado_settings(tutoria.id).id) %}
+					<div class="col-sm-4 col-md-4 col-lg-3">
+						<div class="contenido-2">
+							{{pregunta.enunciado}}:
+						</div>
+						<div class="range-slider">
+							<div class="range-slider-value">0</div>
+							<input
+								name="pregunta{{pregunta.id}}"
+								class="range-slider-range"
+								type="range"
+								step="1"
+								{% if informe %}
+								{% if invitado_respuesta(informe.id,pregunta.id).resultado %}
+								value="{{invitado_respuesta(informe.id,pregunta.id).resultado}}"
+								{% endif %}
+								{% endif %}
+								value="0"
+								min="0"
+								max="10">
+						</div>
+						<input type="hidden" name="pregunta_id" value={{pregunta.id}}>
+						<br>
+					</div>
+				{% endfor %}
+				{% if informe %}
+					{% if invitado_pruebas_evaluables(informe.id) %}
+						<div class="col-sm-12 contenido-2 strong">
+							{{singular_plural('Prueba evaluable', 'Pruebas evaluables', invitado_pruebas_evaluables(informe.id))}}
+							<div class="dropdown-divider bg-gray-5"></div>
+						</div>
+					{% endif %}
+				{% endif %}
+				{% if informe %}
+					{% for prueba_evaluable in invitado_pruebas_evaluables(informe.id) %}
+						<div class="col-sm-4 col-md-4 col-lg-3">
+							<div class="contenido-2 text-info">
+								{% if prueba_evaluable.nombre %}
+									{{prueba_evaluable.nombre}}
+								{% else %}
+									Prueba evaluable
+									{{loop.index}}
+								{% endif %}
+							</div>
+							<div class="range-slider">
+								<div class="range-slider-value">0</div>
+								<input name="prueba_evaluable_nota_{{prueba_evaluable.id}}" class="range-slider-range" type="range" step="0.1" {% if prueba_evaluable.nota %} value="{{prueba_evaluable.nota}}" {% endif %} value="0" min="0" max="10">
+							</div>
+							<br>
+						</div>
+					{% endfor %}
+				{% endif %}
+				<a id="anchor_pru_eva"></a>
+				<div class="col-sm-12 contenido-2">
+					<div class="contenido-2">
+						<div class="btn-group" role="group" aria-label="...">
+							<div class="input-group">
+								<input type="text" name="prueba_evaluable_nombre" class="form-control" placeholder="agregar prueba evaluable">
+								<span class="input-group-btn">
+									<button role="button" name="selector_button" value="selector_prueba_evaluable_add" class="btn btn-secondary" title="agregar prueba evaluable">
+										<i class="material-icons vertical-center" style="font-size: 20px">add</i>
+										Agregar
+									</button>
+									{% if informe %}
+										{% if invitado_pruebas_evaluables(informe.id) %}
+											<button role="button" type="submit" name="selector_button" value="selector_prueba_evaluable_delete" class="btn btn-secondary" title="eliminar prueba evaluable">
+												<i class="material-icons vertical-center" style="font-size: 20px">delete</i>
+											</button>
+										{% endif %}
+									{% endif %}
+								</span>
+							</div>
+						</div>
+					</div>
+					<br><br>
+					<span class="strong">Comentario</span>
+					<div class="dropdown-divider bg-gray-5"></div>
+					<br>
+					<div class="contenido-4">
+						<div class="form-group">
+							<textarea class="form-control vresize" rows="3" name="comentario" id="comentario">{{informe.comentario}}</textarea>
+						</div>
+					</div>
+					{# hidden fields #}
+					<input type="hidden" name="tutoria_id" value={{tutoria.id}}>
+					<input type="hidden" name="asignatura_id" value={{asignatura.id}}>
+					<input type="hidden" name="token_hash" value={{token_hash}}>
+					<button role="button" type="submit" name="selector_button" value="selector_informe_add" class="btn btn-primary" title="enviar informe">
+						<i class="material-icons vertical-center">local_post_office</i>&nbsp; enviar informe
+					</button>
+				</div>
+			</form>
+		</div>
+	</div>
+	<br><br>
+{% endblock %}

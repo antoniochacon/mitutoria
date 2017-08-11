@@ -1,0 +1,27 @@
+<span class="color-gray-3">Nombre:</span>
+{{alumno.nombre}}
+<br>
+<span class="color-gray-3">Apellidos:</span>
+{{alumno.apellidos}}
+<br>
+<div class="list-group-item-9 color-gray-3">Asignaturas asignadas:
+	<span class="badge tag-pill badge tag-pill-info">{{alumno_asignaturas(alumno.id) | count}}
+		|
+		{{asignaturas_not_sorted() | count}}
+	</span>
+</div>
+{% if alumno_asignaturas(alumno.id) %}
+	<ul class="list-group">
+		{% for asignatura in alumno_asignaturas(alumno.id) %}
+			<li class="list-group-item-10">
+				<i class="material-icons vertical-center" style="font-size: 18px">check</i>
+				{{asignatura.asignatura}}</li>
+		{% endfor %}
+	</ul>
+{% else %}
+	<ul class="list-group">
+		<li class="list-group-item-10">
+			<span class="text-danger">Sin asignaturas asignadas.</span>
+		</li>
+	</ul>
+{% endif %}

@@ -1,0 +1,14 @@
+{% extends '_layout.html' %}
+{% block body %}
+	<div class="paper bg-white contenido">
+		<h3>pagina_1.html</h3>
+		<br>
+		par_1: {{params['alumno_id']}}
+		<br><br>
+		anchor: {{params['anchor']}}
+		<br><br>
+		collapse: {{params['collapse']}}
+		<br><br>
+		<a href="/pagina_1">regresar a pagina_1</a> | <a href="/pagina_2">regresar a pagina_2</a>
+	</div>
+{% endblock %}

@@ -1,0 +1,50 @@
+{% extends '_layout.html' %}
+{% block body %}
+	{%from '_macro.html' import titulo_1, nav_tabs %}
+	<div class="paper bg-white contenido">
+		{{titulo_1(bg_color='bg-primary',titulo='Configuracion')}}
+		{{nav_tabs(tab_active='Opciones', dic={'Cuestionario':'settings_cuestionario', 'Grupos':'settings_grupos', 'Opciones':'#'})}}
+		<form action="/settings_options" method="POST">
+			{% if request.method == 'POST' %}
+				<div class="funkyradio funkyradio-success">
+					<input type="checkbox" name="settings_edit_tutoria_timeout" id="settings_edit_tutoria_timeout" value="True" {% if settings_edit_tutoria_timeout %} checked {% endif %}/>
+					<label for="settings_edit_tutoria_timeout">Autoarchivar tutorias.</label>
+				</div>
+				<div class="funkyradio funkyradio-success">
+					<input type="checkbox" name="settings_edit_show_tutorias_collapse" id="settings_edit_show_tutorias_collapse" value="True" {% if settings_edit_show_tutorias_collapse %} checked {% endif %}/>
+					<label for="settings_edit_show_tutorias_collapse">Desplegar tutorias solicitadas.</label>
+				</div>
+				{% if settings().role=='admin'%}
+					<div class="funkyradio funkyradio-success">
+						<input type="checkbox" name="settings_edit_calendar" id="settings_edit_calendar" value="True" {% if settings_edit_calendar %} checked {% endif %}/>
+						<label for="settings_edit_calendar">Agregar eventos a la agenda.</label>
+					</div>
+				{% endif %}
+				<br>
+				{%else%}
+				<div class="funkyradio funkyradio-success">
+					<input type="checkbox" name="settings_edit_tutoria_timeout" id="settings_edit_tutoria_timeout" value="True" {% if settings_user.tutoria_timeout %} checked {% endif %}/>
+					<label for="settings_edit_tutoria_timeout">Autoarchivar tutorias.</label>
+				</div>
+				<div class="funkyradio funkyradio-success">
+					<input type="checkbox" name="settings_edit_show_tutorias_collapse" id="settings_edit_show_tutorias_collapse" value="True" {% if settings_user.show_tutorias_collapse %} checked {% endif %}/>
+					<label for="settings_edit_show_tutorias_collapse">Desplegar tutorias solicitadas.</label>
+				</div>
+				{% if settings().role=='admin'%}
+					<div class="funkyradio funkyradio-success">
+						<input type="checkbox" name="settings_edit_calendar" id="settings_edit_calendar" value="True" {% if settings.calendar %} checked {% endif %}/>
+						<label for="settings_edit_calendar">Agregar eventos a la agenda.</label>
+					</div>
+				{% endif %}
+				<br>
+			{% endif %}
+			<br>
+			<div class="btn-group" role="group" aria-label="...">
+				<button role="button" type="submit" name="selector_button" value="selector_user_edit" class="btn btn-primary" title="guardar cambios">
+					<i class="material-icons vertical-center">save</i>
+					guardar</button>
+			</div>
+		</form>
+		<br>
+	</div>
+{% endblock %}

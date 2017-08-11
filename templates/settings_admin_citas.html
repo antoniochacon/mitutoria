@@ -1,0 +1,27 @@
+{% extends '_layout.html' %}
+{% block body %}
+	{%from '_macro.html' import titulo_1, nav_tabs, field_form%}
+	<div class="paper bg-white contenido">
+		{{titulo_1(bg_color='bg-primary',titulo='Admin Settings')}}
+		{{nav_tabs(tab_active='Citas', dic={'Cuestionario':'settings_admin_cuestionario', 'Citas':'#', 'Usuarios':'settings_admin_users'})}}
+		<div class="card_XXX-group" id="cita" role="tablist" aria-multiselectable="true">
+			<div class="card_XXX">
+				{# TODO: cita_add #}
+				<a href="#cita_add" class="list-group-item-1" data-toggle="collapse" data-parent="#cita" aria-expanded="true" aria-controls="collapsecita_add" title="Agregar cita">
+					&nbsp;
+					<i class="material-icons vertical-center">message</i>&nbsp; &nbsp; agregar nueva cita
+					<span class="badge tag-pill badge tag-pill-info padding_left_1 vertical-center" title="{{citas | count}} {{singular_plural('cita','citas', citas | count)}}">
+						{{citas|count}}
+						{{singular_plural('cita','citas', citas | count)}}
+					</span>
+				</a>
+				<div class="collapse {% if params['collapse_cita_add'] %} in {% endif %}" id="cita_add">
+					<div class="dropdown-divider grueso bg-primary"></div>
+					{% include 'settings_admin_citas_add_block.html' %}
+					<div class="dropdown-divider grueso bg-primary"></div>
+				</div>
+				{# TODO: citas_listado #}
+				{% include 'settings_admin_citas_edit_block.html' %}
+				<br>
+			</div>
+		{% endblock %}

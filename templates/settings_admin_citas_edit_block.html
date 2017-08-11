@@ -1,0 +1,82 @@
+{% for cita in citas %}
+	<a id="anchor_cit_{{hashids_encode(cita.id)}}"></a>
+	<a href="#cita_listado{{hashids_encode(cita.id)}}" class="list-group-item-1" data-toggle="collapse" data-parent="#cita" aria-expanded="true" aria-controls="collapse{{hashids_encode(cita.id)}}" title="{{cita.autor}}">
+		<span class="btn btn-sm {% if cita.visible %}btn-primary{% else %}btn-info{% endif %}" role="button" title="{{cita.autor}}" }>
+			<strong>
+				{{cita.autor | first | upper}}
+			</strong>
+		</span>
+		<span class="hidden-sm hidden-md hidden-lg">
+			&nbsp;
+			{{cita.frase | truncate(20,true,'..',0)}}
+		</span>
+		<span class="hidden-xs">
+			&nbsp;
+			{{cita.frase}}
+		</span>
+	</a>
+	<div id="cita_listado{{hashids_encode(cita.id)}}" class="collapse {% if equal_str(cita.id, params['current_cita_id']) %} in {% endif %}" role="tabcard_XXX" aria-labelledby="heading{{hashids_encode(cita.id)}}">
+		<div class="dropdown-divider grueso bg-primary"></div>
+		<div class="card_XXX-group" id="cita{{hashids_encode(cita.id)}}" role="tablist" aria-multiselectable="true">
+			<div class="card_XXX">
+				{# TODO: cita_edit #}
+				<div class="contenido-2">
+					<form action="/settings_admin_citas" method="POST">
+						{% if equal_str(cita.id, params['current_cita_id']) and request.method=='POST' %}
+							{{field_form(cita_edit.frase, error=True, error_css=True, addon='frase')}}
+							{{field_form(cita_edit.autor, error=True, error_css=True, addon='autor')}}
+							{{field_form(cita_edit.current_cita_id)}}
+							<div class="funkyradio funkyradio-success">
+								<input type="checkbox" name="cita_edit_visible" id="cita_edit_visible_{{cita.id}}" value="True" {% if cita_edit_visible %} checked {% endif %}/>
+								<label for="cita_edit_visible_{{hashids_encode(cita.id)}}">visible</label>
+							</div>
+							{%else%}
+							{{field_form(cita_edit.frase, value=cita.frase, addon='frase')}}
+							{{field_form(cita_edit.autor, value=cita.autor, addon='autor')}}
+							{{field_form(cita_edit.current_cita_id, value=hashids_encode(cita.id))}}
+							<div class="funkyradio funkyradio-success">
+								<input type="checkbox" name="cita_edit_visible" id="cita_edit_visible_{{hashids_encode(cita.id)}}" value="True" {% if cita.visible %} checked {% endif %}/>
+								<label for="cita_edit_visible_{{hashids_encode(cita.id)}}">visible</label>
+							</div>
+						{% endif %}
+						<br>
+						{% if equal_str(cita.id, params['current_cita_id']) and params['cita_delete_link'] %}
+							<div class="btn-group" role="group" aria-label="...">
+								<button role="button" type="submit" name="selector_button" value="selector_cita_delete" class="btn btn-warning" title="confirmar eliminar asginatura">
+									<i class="material-icons vertical-center">delete</i>
+									confirmar eliminar</button>
+								<button role="button" type="submit" name="selector_button" value="selector_cita_delete_close" class="btn btn-secondary" title="cancelar eliminar">
+									<i class="material-icons vertical-center">close</i>
+								</button>
+							</div>
+							<div class="clearfix"></div>
+							<br>
+							<span class="text-danger">
+								Una vez elminada no podra ser recuperada.
+							</span>
+						{% else %}
+							<div class="btn-group" role="group" aria-label="...">
+								<button role="button" type="submit" name="selector_button" value="selector_cita_edit" class="btn btn-primary" title="guardar cambios">
+									<i class="material-icons vertical-center">save</i>
+									guardar</button>
+								<button role="button" type="submit" name="selector_button" value="selector_cita_edit_rollback" class="btn btn-secondary" title="deshacer cambios">
+									<i class="material-icons vertical-center">settings_backup_restore</i>
+								</button>
+								<button role="button" type="submit" name="selector_button" value="selector_cita_delete_link" class="btn btn-secondary" title="eliminar cita">
+									<i class="material-icons vertical-center">delete</i>
+								</button>
+								{% if equal_str(cita.id, params['current_cita_id']) and params['collapse_cita_edit'] %}
+									<button role="button" type="submit" name="selector_button" value="selector_cita_edit_close" class="btn btn-secondary" title="cerrar">
+										<i class="material-icons vertical-center">close</i>
+									</button>
+								{% endif %}
+							</div>
+						{% endif %}
+					</form>
+					<br>
+				</div>
+			</div>
+		</div>
+		<div class="dropdown-divider grueso bg-primary"></div>
+	</div>
+{% endfor %}

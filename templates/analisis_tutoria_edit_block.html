@@ -1,0 +1,53 @@
+<div class="row">
+	<div class="clearfix visible-xs"></div>
+	<div class="contenido">
+		{#TODO: datepicker and clockpicker  #}
+		<form class="form-inline" action="/tutoria_edit" method="POST" name="tutoria_edit{{hashids_encode(tutoria.id)}}">
+			{% if request.method == 'POST' %}
+				<div class="input-group form-group {% if tutoria_edit.fecha.errors %} has-error {% else %} has-success {% endif %}">
+					<input class="form-control datepicker cursor" type="text" name="fecha" value={{tutoria_edit.fecha.data}}>
+					<!-- <span class="input-group-addon">
+						<i class="material-icons vertical-center" style="font-size: 18px">date_range</i>
+					</span> -->
+				</div>
+				<div class="input-group form-group {% if tutoria_edit.hora.errors %} has-error {% else %} has-success {% endif %}">
+					<input class="form-control clockpicker" style="background-color: white" type="text" name="hora" value={{tutoria_edit.hora.data}} readonly="true">
+					<!-- <span class="input-group-addon">
+						<i class="material-icons vertical-center style="font-size: 18px"">access_time</i>
+					</span> -->
+				</div>
+			{% else %}
+				<div class="input-group form-group">
+					<input class="form-control datepicker cursor" type="text" name="fecha" value={{tutoria.fecha.strftime('%A-%d-%B-%Y')}}>
+					<!-- <span class="input-group-addon">
+						<i class="material-icons vertical-center" style="font-size: 18px">date_range</i>
+					</span> -->
+				</div>
+				<div class="input-group form-group">
+					<input class="form-control clockpicker" style="background-color: white" type="text" name="hora" value={{tutoria.hora.strftime('%H:%M')}} readonly="true">
+					<!-- <span class="input-group-addon">
+						<i class="material-icons vertical-center style="font-size: 18px"">access_time</i>
+					</span> -->
+				</div>
+			{% endif %}
+			<input type="hidden" name="current_tutoria_id" value="{{hashids_encode(tutoria.id)}}">
+			<div class="visible-sm">
+				<br>
+			</div>
+			<div class="btn-group" role="group" aria-label="...">
+				<button role="button" type="submit" class="btn {% if tutoria.activa %} btn-primary {% else %} btn-info {% endif %}" name="selector_button" value="selector_tutoria_edit" title="guardar cambios">
+					<i class="material-icons vertical-center">save</i>
+					Guardar
+				</button>
+			</button>
+			<button role="button" type="submit" name="selector_button" value="selector_tutoria_edit_rollback" class="btn {% if tutoria.activa %} btn-secondary {% else %} btn-info {% endif %}" title="deshacer cambios">
+				<i class="material-icons vertical-center {% if tutoria.activa %} color-gray-darken-1 {% endif %}">settings_backup_restore</i>
+			</button>
+			<button role="button" type="submit" name="selector_button" value="selector_tutoria_edit_close" class="btn {% if tutoria.activa %} btn-secondary {% else %} btn-info {% endif %}" title="cerrar">
+				<i class="material-icons vertical-center {% if tutoria.activa %} color-gray-darken-1 {% endif %}">close</i>
+			</button>
+		</div>
+	</div>
+</div>
+</form>
+</div>

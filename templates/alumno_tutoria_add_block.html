@@ -1,0 +1,45 @@
+<div class="card_XXX">
+	<div class="contenido-2">
+		<form action="/alumnos" class="form-inline" action="alumnos" method="POST">
+			{% if equal_str(alumno.id, params['current_alumno_id']) and  request.method == 'POST' and params['collapse_tutoria_add'] and not params['from_url']%}
+				<div class="input-group form-group {% if tutoria_add.fecha.errors%} has-error {% else %} has-success {% endif %}">
+					<input class="form-control datepicker cursor" type="text" name="fecha" value={{tutoria_add.fecha.data}}>
+					<!-- <span class="input-group-addon">
+						<i class="material-icons vertical-center" style="font-size: 18px">date_range</i>
+					</span> -->
+				</div>
+				<div class="input-group form-group {% if tutoria_add.hora.errors%} has-error {% else %} has-success {% endif %}">
+					<input class="form-control clockpicker" style="background-color: white" type="text" name="hora" value={{tutoria_add.hora.data}} readonly="true">
+					<!-- <span class="input-group-addon">
+					<i class="material-icons vertical-center style="font-size: 18px"">access_time</i>
+					</span> -->
+				</div>
+			{% else %}
+				<div class="input-group form-group">
+					<input class="form-control datepicker cursor" type="text" name="fecha" value={{g.current_date.strftime('%A-%d-%B-%Y')}}>
+					<!-- <span class="input-group-addon">
+						<i class="material-icons vertical-center" style="font-size: 18px">date_range</i>
+					</span> -->
+				</div>
+				<div class="input-group form-group">
+					<input class="form-control clockpicker" style="background-color: white" type="text" name="hora" readonly="true" value={{g.current_time.strftime('%H:%M')}}>
+					<!-- <span class="input-group-addon">
+						<i class="material-icons vertical-center style="font-size: 18px"">access_time</i>
+					</span> -->
+				</div>
+			{% endif %}
+			<input class="form-group form-control" type="hidden" name="current_alumno_id" value={{hashids_encode(alumno.id)}}>
+			<div class="btn-group" role="group" aria-label="...">
+				<button role="button" type="submit" class="btn btn-primary" name="selector_button" value="selector_tutoria_add" title="solicitar tutoria">
+					<i class="material-icons vertical-center">local_post_office</i>
+					Solicitar</button>
+				{% if equal_str(alumno.id, params['current_alumno_id']) and params['collapse_tutoria_add']%}
+					<button role="button" type="submit" name="selector_button" value="selector_tutoria_add_close" class="btn btn-secondary" title="Cerrar">
+						<i class="material-icons vertical-center">close</i>
+					</button>
+				{% endif %}
+			</div>
+		</form>
+		<br>
+	</div>
+</div>

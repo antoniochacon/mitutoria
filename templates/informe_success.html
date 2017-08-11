@@ -1,0 +1,36 @@
+{% extends '_layout.html' %}
+{% block body %}
+	{%from '_macro.html' import field_form, titulo_1%}
+	<div class="col-xs-12 col-sm-8 col-sm-offset-2 col-md-6 col-md-offset-3 col-lg-4 col-lg-offset-4 contenido-7">
+		<div class="paper bg-white contenido">
+
+
+
+			{{titulo_1(url='informe', bg_color='bg-primary', titulo='Informe de '+ params['alumno'], subtitulo=params['grupo'])}}
+			<span class="text-info">Fecha de la tutoria:
+			</span>
+			{{params['fecha'].strftime('%A') | capitalize}}
+			{{params['fecha'].strftime('%d')}}
+			de
+			{{params['fecha'].strftime('%B') | capitalize}}&nbsp; | &nbsp;{{params['hora'].strftime('%H:%M')}}
+			horas
+			<br>
+			<span class="text-info">Asignatura:
+			</span>
+			{{params['asignatura']}}
+			<br>
+			<span class="text-info">Docente:
+			</span>
+			{{params['docente']}}
+
+			<h6></h6>
+			<div class="dropdown-divider bg-info"></div>
+			<div class="contenido-6 text-success text-center">
+				Gracias por enviar su informe
+				<br><br>
+				<a class="btn btn-secondary" href="/informe/{{params['token_hash']}}" role="button">Consultar o editar informe</a>
+			</div>
+			<br>
+		</div>
+	</div>
+{% endblock %}

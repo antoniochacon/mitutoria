@@ -1,0 +1,16 @@
+{% extends '_layout.html' %}
+{% block body %}
+	{%from '_macro.html' import field_form, titulo_1%}
+	<div class="paper bg-white contenido">
+		{{titulo_1(bg_color='bg-primary', titulo='Tutoría no existe ')}}
+		<div class="contenido-2 text-danger text-center">
+			Esta tutoría no existe.
+			<br><br>
+			<div class="btn-group" role="group" aria-label="...">
+				<a class="btn btn-secondary" href="/alumnos" role="button">regresar al listado de alumnos</a>
+			</div>
+		</div>
+		<br>
+	</div>
+	<br><br>
+{% endblock %}

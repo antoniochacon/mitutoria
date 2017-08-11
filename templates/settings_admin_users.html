@@ -1,0 +1,48 @@
+{% extends '_layout.html' %}
+{% block body %}
+	{%from '_macro.html' import titulo_1, nav_tabs, field_form%}
+	<div class="paper bg-white contenido">
+		{{titulo_1(bg_color='bg-primary', titulo='Admin Settings')}}
+		{{nav_tabs(tab_active='Usuarios', dic={'Cuestionario':'settings_admin_cuestionario', 'Citas':'settings_admin_citas', 'Usuarios':'#'})}}
+		<div class="card_XXX-group" id="user" role="tablist" aria-multiselectable="true">
+			<div class="card_XXX">
+				{# TODO: users_listado #}
+				{% for settings in settings_all %}
+					<a id="anchor_set_{{hashids_encode(settings.id)}}"></a>
+					<a href="#user_listado{{hashids_encode(settings.id)}}" class="list-group-item-1" data-toggle="collapse" data-parent="#user" aria-expanded="true" aria-controls="collapse{{hashids_encode(settings.id)}}" title="{{user_by_id(settings.id).username}}">
+						<span class="btn btn-sm {% if not settings.ban %}btn-primary{% else %}btn-info{% endif %}" role="button" title="{{user_by_id(settings.id).username}}">
+							<strong>
+								{{loop.index}}
+							</strong>
+						</span>
+						<span class="hidden-sm hidden-md hidden-lg">
+							&nbsp;
+							{{user_by_id(settings.id).username | truncate(20,true,'..',0)}}
+						</span>
+						<span class="hidden-xs">
+							&nbsp;
+							{{user_by_id(settings.id).username}}
+						</span>
+						<span class="badge tag-pill badge tag-pill-info padding_left_1">{{settings.visit_number}}
+							visitas</span>
+						{% if settings.ban %}
+							<span class="badge tag-pill badge tag-pill-info">banned</span>
+						{% endif %}
+					</a>
+					<div
+						id="user_listado{{hashids_encode(settings.id)}}"
+						class="collapse {% if equal_str(settings.id, params['current_settings_id']) and params['collapse_user_edit'] %} in {% endif %}"
+						role="tabcard_XXX"
+						aria-labelledby="heading{{hashids_encode(settings.id)}}">
+						<div class="dropdown-divider grueso bg-primary"></div>
+						<div class="card_XXX-group" id="user{{hashids_encode(settings.id)}}" role="tablist" aria-multiselectable="true">
+							{% include 'settings_admin_users_ficha_block.html' %}
+						</div>
+						<div class="dropdown-divider grueso bg-primary"></div>
+					</div>
+				{% endfor %}
+				<br>
+			</div>
+		</div>
+	</div>
+{% endblock %}

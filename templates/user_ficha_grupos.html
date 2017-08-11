@@ -1,0 +1,46 @@
+{% extends '_layout.html' %}
+{% block body %}
+	{%from '_macro.html' import field_form, titulo_user_ficha, nav_tabs %}
+	<div class="paper bg-white contenido">
+		{{titulo_user_ficha(bg_color='bg-primary', titulo='Admin Settings', user=user)}}
+		{{nav_tabs(tab_active='Grupos', params_args=dic_encode_args({'current_user_id': user.id}), dic={'Grupos':'user_ficha_grupos', 'Alumnos':'user_ficha_alumnos', 'Tutorias':'user_ficha_tutorias', 'Cuestionario':'user_ficha_cuestionario'})}}
+		<!-- ********************************************* -->
+		{% for grupo in user_grupos(user.id) %}
+			<a id="anchor_gru_{{hashids_encode(grupo.id)}}"></a>
+			<a href="#grupo_listado{{hashids_encode(grupo.id)}}" class="list-group-item-1" data-toggle="collapse" data-parent="#grupo" aria-expanded="true" aria-controls="collapse{{hashids_encode(grupo.id)}}" title="{{grupo.tutor}}">
+				<span class="btn btn-sm {% if grupo_activo_check(grupo.id) %} btn-primary {% else %} btn-info {% endif %}" role="button" title="{{grupo.tutor}}" }>
+					<strong>
+						{{grupo.curso_academico}}
+						|
+						{{grupo.curso_academico+1}}
+					</strong>
+				</span>
+				<span class="hidden-sm hidden-md hidden-lg">
+					&nbsp;
+					{{grupo.centro | truncate(20,true,'..',0)}}
+					|
+					{{grupo.nombre | truncate(20,true,'..',0)}}
+				</span>
+				<span class="hidden-xs">
+					&nbsp;
+					{{grupo.centro}}
+					|
+					{{grupo.nombre}}
+				</span>
+			</a>
+			<div id="grupo_listado{{hashids_encode(grupo.id)}}" class="collapse {% if equal_str(grupo.id, params['current_grupo_id']) and params['collapse_grupo_edit'] %} in {% endif %}" role="tabcard_XXX" aria-labelledby="heading{{hashids_encode(grupo.id)}}">
+				<div class="dropdown-divider grueso bg-primary"></div>
+				<div class="card_XXX-group" id="grupo{{hashids_encode(grupo.id)}}" role="tablist" aria-multiselectable="true">
+					<div class="card_XXX">
+						{# XXX: listado alumnos #}
+						<div class="contenido-2">
+							asdfasdf asdfasdfasdf
+						</div>
+					</div>
+				</div>
+				<div class="dropdown-divider grueso bg-primary"></div>
+			</div>
+		{% endfor %}
+	</div>
+	<!-- ********************************************* -->
+{% endblock %}

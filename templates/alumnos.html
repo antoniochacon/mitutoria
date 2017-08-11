@@ -1,0 +1,69 @@
+{% extends "_layout.html" %}
+{% block body %}
+	{%from "_macro.html" import field_form,titulo_1, checkbox_funky,highcharts_tutoria_stats, nav_bar%}
+	{{nav_bar(link_active='Alumnos', dic={'Alumnos':'#', 'Asignaturas':'asignaturas', 'Opciones':'settings_cuestionario', 'Admin':'settings_admin_cuestionario', 'Logout':'logout'})}}
+	{% if alumnos_not_sorted() %}
+		{% if settings().show_tutorias %}
+			<h6></h6>
+			<div class="paper bg-white contenido-7">
+				<div role="linklist" id="parent_tutorias" aria-multiseleclinkle="true">
+					<a data-toggle="collapse" role="link" data-parent="#parent_tutorias" href="#collapse_proxima_tutoria" class="{% if grupo_tutorias(grupo_activo().id, True) %} list-group-item-purple {% else %} list-group-item-success {% endif %}" aria-expanded="false">
+						{% if grupo_tutorias(grupo_activo().id, True) %}
+							{% for tutoria in grupo_tutorias(grupo_activo().id, True) %}
+								<i class="material-icons vertical-center">cloud</i>
+							{% endfor %}
+							<strong>
+								&nbsp;
+								{{singular_plural("tutoria", "tutorias", grupo_tutorias(grupo_activo().id, True) | count)}}
+								{{singular_plural("solicitada", "solicitadas", grupo_tutorias(grupo_activo().id, True) | count)}}
+							</strong>
+						{% else %}
+							<i class="material-icons vertical-center">wb_sunny</i>
+							&nbsp;Relax, no tienes tutorias
+						{% endif %}
+					</a>
+					<div id="collapse_proxima_tutoria" role="link" class="collapse {% if settings().show_tutorias_collapse and grupo_tutorias(grupo_activo().id, True) %} in {% endif %}">
+						{% if grupo_tutorias(grupo_activo().id, True) %}
+							{% include "alumno_tutorias_incoming_block.html" %}
+						{% else %}
+							<div class="contenido text-info">
+								ira una frase positiva/divertida o directamente una Cita
+								<br>
+								igual tengo que poner tambien categorias a las citas
+							</div>
+						{% endif %}
+					</div>
+				</div>
+			</div>
+			<br>
+		{% endif %}
+	{% endif %}
+	{# XXX alumnos #}
+	<div class="paper bg-white contenido">
+		<a id="anchor_alumno_add"></a>
+		{{titulo_1(url="alumnos",bg_color="bg-primary",titulo=grupo_activo().nombre, subtitulo=[ grupo_activo().centro, [ grupo_activo().curso_academico, grupo_activo().curso_academico +1 ]|join("-") ]|join(": "))}}
+		<div class="card_XXX-group" id="parent_alumno" aria-multiseleclinkle="true">
+			<!-- <div class="card_XXX"> -->
+			<a data-toggle="collapse" data-parent="#parent_alumno" href="#alumno_add" class="list-group-item-1" aria-expanded="false" title="Agregar alumno">
+				&nbsp;
+				<i class="material-icons vertical-center">person</i>&nbsp; &nbsp; agregar nuevo alumno
+			</a>
+			<div id="alumno_add" class="collapse {% if params[" collapse_alumno_add"] %} in {% endif %}">
+				{# TODO: alumnos_add #}
+				<!-- <div class="card_XXX"> -->
+				{%include "alumno_add_block.html"%}
+				<!-- </div> -->
+			</div>
+			<!-- </div> -->
+			{% for alumno in alumnos("apellidos", "nombre")%}
+				{# TODO: alumnos_listado #}
+				<!-- <div class="card_XXX"> -->
+				{%include "alumno_block.html"%}
+				<!-- </div> -->
+			{% endfor %}
+			<!-- </div> -->
+		</div>
+		<br>
+		<br>
+		<br>
+	{% endblock %}

@@ -1,0 +1,14 @@
+{% extends '_layout.html' %}
+{% block body %}
+	{%from '_macro.html' import titulo_1%}
+	<div class="paper bg-white contenido">
+		{{titulo_1(url='logout', bg_color='bg-primary', titulo='Session cerrada')}}
+		<span>
+			{% if cita_random() %}
+				"{{cita_random().frase}}" .</span>
+			<span class="text-info">
+				-
+				{{cita_random().autor}}</span>
+		{% endif %}
+	</div>
+{% endblock %}

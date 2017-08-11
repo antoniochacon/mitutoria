@@ -1,0 +1,42 @@
+<div class="dropdown-divider grueso bg-primary"></div>
+<div class="contenido-2">
+	<form action="/settings_admin_cuestionario" method="POST">
+		{% with %}
+		{% if params['collapse_pregunta_add'] and request.method == 'POST' %}
+			{% set error_css = True %}
+		{% else %}
+			{% set error_css = False %}
+		{% endif %}
+		{{field_form(pregunta_add.enunciado, error=True, error_css=True, addon='enunciado')}}
+		{{field_form(pregunta_add.enunciado_ticker, error=True, error_css=True, addon='ticker')}}
+		{{field_form(pregunta_add.orden, error=True, error_css=True, addon='orden')}}
+		<div class="row">
+			<div class="col-xs-6">
+				<div class="funkyradio funkyradio-success">
+					<input type="checkbox" name="pregunta_add_visible" id="pregunta_add_visible" value="True"/>
+					<label for="pregunta_add_visible">visible</label>
+				</div>
+			</div>
+			<div class="col-xs-6">
+				<div class="funkyradio funkyradio-success">
+					<input type="checkbox" name="pregunta_add_active_default" id="pregunta_add_active_default" value="True"/>
+					<label for="pregunta_add_active_default">default</label>
+				</div>
+			</div>
+		</div>
+		{% endwith %}
+		<br>
+		<div class="btn-group" role="group" aria-label="...">
+			<button role="button" type="submit" name="selector_button" value="selector_pregunta_add" class="btn btn-primary" title="agregar pregunta">
+				<i class="material-icons vertical-center">person</i>&nbsp; agregar
+			</button>
+			{% if params['collapse_pregunta_add'] and request.method == 'POST' %}
+				<button role="button" type="submit" name="selector_button" value="selector_pregunta_add_close" class="btn btn-secondary" title="cerrar">
+					<i class="material-icons vertical-center">close</i>
+				</button>
+			{% endif %}
+		</div>
+	</form>
+	<br>
+</div>
+<div class="dropdown-divider grueso bg-primary"></div>

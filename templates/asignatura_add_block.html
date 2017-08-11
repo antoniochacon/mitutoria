@@ -1,0 +1,30 @@
+<div class="dropdown-divider grueso bg-primary"></div>
+<div class="contenido-2">
+	<form action="/asignaturas" method="POST">
+		{% with %}
+		{% if params['collapse_asignatura_add']and request.method == "POST" %}
+			{% set css = True %}
+		{% else %}
+			{% set css = False %}
+		{% endif %}
+		{{field_form(asignatura_add.asignatura, error=True, error_css=css, addon='asignatura')}}
+		{{field_form(asignatura_add.nombre, error=True, error_css=css, addon='nombre')}}
+		{{field_form(asignatura_add.apellidos, error=True, error_css=css, addon='apellidos')}}
+		{{field_form(asignatura_add.email, error=True, error_css=css, addon='@')}}
+		{% endwith %}
+		<div class="btn-group" role="group" aria-label="...">
+			<div class="btn-group" role="group" aria-label="...">
+				<button role="button" type="submit" name="selector_button" value="selector_asignatura_add" class="btn btn-secondary" title="agregar asignatura">
+					<span class="material-icons vertical-center">import_contacts</span>&nbsp; agregar
+				</button>
+				{% if params['collapse_asignatura_add'] %}
+					<button role="button" type="submit" name="selector_button" value="selector_asignatura_add_cerrar" class="btn btn-secondary" title="cerrar">
+						<i class="material-icons vertical-center">close</i>
+					</button>
+				{% endif %}
+			</div>
+		</div>
+	</form>
+	<br>
+</div>
+<div class="dropdown-divider grueso bg-primary"></div>

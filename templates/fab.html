@@ -1,0 +1,102 @@
+<div class="fixed-action-btn click-to-toggle hidden-md hidden-lg" style="bottom: 45px; right: 24px;">
+	<a class="btn-floating btn-large bg-primary" title="Menu">
+		<i class="material-icons">menu</i>
+	</a>
+	<ul>
+		{% if fab.settings_admin %}
+			{% if settings().role == "admin" %}
+				<li>
+					<a href="/settings_admin_cuestionario" class="btn-floating btn-large bg-warning" title="Admin Settings">
+						<i class="material-icons">lock</i>
+					</a>
+				</li>
+			{% endif %}
+		{% endif %}
+		{% if fab.configuracion %}
+			<li>
+				<a href="/settings_cuestionario" class="btn-floating btn-large bg-primary" title="Configuracion">
+					<i class="material-icons">settings</i>
+				</a>
+			</li>
+		{% endif %}
+		{% if fab.asignaturas %}
+			<li>
+				<a href="/asignaturas" class="btn-floating btn-large bg-purple" title="Asignaturas">
+					<i class="material-icons">import_contacts</i>
+				</a>
+			</li>
+		{% endif %}
+		{% if fab.alumnos %}
+			<li>
+				<a href="/alumnos" class="btn-floating btn-large bg-primary">
+					<i class="material-icons" title="Alumnos">people</i>
+				</a>
+			</li>
+		{% endif %}
+		{% if fab.usuario_add %}
+			<li>
+				<a href="/user_add" class="btn-floating btn-large bg-primary">
+					<i class="material-icons" title="crear cuenta">person_add</i>
+				</a>
+			</li>
+		{% endif %}
+		{% if fab.usuario_login %}
+			<li>
+				<a href="/login" class="btn-floating btn-large bg-primary">
+					<i class="material-icons" title="iniciar sesion">person</i>
+				</a>
+			</li>
+		{% endif %}
+	</ul>
+</div>
+<div class="fixed-action-btn visible-md-inline-block visible-lg-inline-block" style="bottom: 45px; right: 50px;">
+	<a class="btn-floating btn-large bg-primary" title="Menu">
+		<i class="material-icons">menu</i>
+	</a>
+	<ul>
+		{% if fab.settings_admin %}
+			{% if settings().role == "admin" %}
+				<li>
+					<a href="/settings_admin_cuestionario" class="btn-floating btn-large bg-warning" title="Configuracion">
+						<i class="material-icons">lock</i>
+					</a>
+				</li>
+			{% endif %}
+		{% endif %}
+		{% if fab.configuracion %}
+			<li>
+				<a href="/settings_cuestionario" class="btn-floating btn-large bg-primary" title="Configuracion">
+					<i class="material-icons">settings</i>
+				</a>
+			</li>
+		{% endif %}
+		{% if fab.asignaturas %}
+			<li>
+				<a href="/asignaturas" class="btn-floating btn-large bg-purple" title="Asignaturas">
+					<i class="material-icons">import_contacts</i>
+				</a>
+			</li>
+		{% endif %}
+		{% if fab.alumnos %}
+			<li>
+				<a href="/alumnos" class="btn-floating btn-large bg-primary" title="Alumnos">
+					<i class="material-icons">people</i>
+				</a>
+			</li>
+		{% endif %}
+		{% if fab.usuario_add %}
+			<li>
+				<a href="/user_add" class="btn-floating btn-large bg-primary">
+					<i class="material-icons" title="crear cuenta">person_add</i>
+				</a>
+			</li>
+		{% endif %}
+		{% if fab.usuario_login %}
+			<li>
+				<a href="/login" class="btn-floating btn-large bg-primary">
+					<i class="material-icons" title="iniciar sesion">person</i>
+				</a>
+			</li>
+		{% endif %}
+	</ul>
+</div>

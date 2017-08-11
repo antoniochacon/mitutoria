@@ -1,0 +1,42 @@
+{% from '_macro.html' import checkbox_funky %}
+<a data-toggle="collapse" href="#asignatura_pick_temporal_{{hashids_encode(alumno.id)}}" class="list-group-item-2" aria-expanded="false">
+	<i class="material-icons vertical-center">expand_more</i>Reenviar a:
+	<span class="badge tag-pill badge tag-pill-info">{{ alumno_asignaturas_id(alumno.id) | count }}/{{asignaturas('apellidos', 'nombre', 'asignatura') | count}}</span>
+</a>
+<div id="asignatura_pick_temporal_{{hashids_encode(alumno.id)}}" class="collapse in">
+	<div class="card_XXX">
+		<form action="/tutoria_edit" method="POST" name="analisis{{hashids_encode(tutoria.id)}}">
+			<div class="contenido-2">
+				<input type="hidden" name="current_tutoria_id" value="{{hashids_encode(tutoria.id)}}">
+				{% if not asignaturas('asignatura', 'nombre', 'apellidos') %}
+					<a href="/asignaturas" class="list-group-item-4-danger" title="Agregar asignatura">
+						<span class="material-icons vertical-center">import_contacts</span>
+						&nbsp; debe agregar asignaturas
+					</a>
+				{% else %}
+					{% if collapse_tutoria_edit_enviar_a %}
+						<span class="text-danger">
+							Debe indicar al menos una asignatura para solicitar informes de
+							<span class="strong">{{alumno.nombre}}</span>
+						</span>
+						<br>
+						<br>
+					{% endif %}
+					{% for asignatura in asignaturas('asignatura', 'nombre', 'apellidos') %}
+						{{checkbox_funky(alumno, asignatura, 'asignatura', 'tutoria_edit')}}
+					{% endfor %}
+				{% endif %}
+			</div>
+			<br>
+			<div class="btn-group" role="group" aria-label="...">
+				<button role="button" type="submit" name="selector_button" value="selector_tutoria_re_enviar" class="btn btn-primary" title="Reenvair emails">
+					<i class="material-icons vertical-center">mail</i>
+					Reenviar
+				</button>
+				<button role="button" type="submit" name="selector_button" value="selector_tutoria_re_enviar_close" class="btn btn-secondary" title="Cerrar">
+					<i class="material-icons vertical-center">close</i>
+				</button>
+			</div>
+		</form>
+	</div>
+</div>

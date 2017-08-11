@@ -1,0 +1,68 @@
+<div class="card_XXX">
+	<div class="contenido-2">
+		<form action="/settings_admin_users" method="POST">
+			<div class="row">
+				{% if equal_str(settings.id, params['current_settings_id']) and request.method=='POST'%}
+					<div class="col-xs-12 col-sm-12 col-md-6 col-lg-4">
+						{{field_form(settings_edit.role, error=True, error_css=True, addon='role')}}
+						{{field_form(settings_edit.current_settings_id, value=hashids_encode(settings.id))}}
+						<div class="funkyradio funkyradio-success">
+							<input type="checkbox" name="settings_edit_ban" id="settings_edit_ban_{{hashids_encode(settings.id)}}" value="True" {% if settings_edit_ban %} checked {% endif %}/>
+							<label for="settings_edit_ban_{{hashids_encode(settings.id)}}">ban</label>
+						</div>
+						<div class="funkyradio funkyradio-success">
+							<input type="checkbox" name="settings_edit_tutoria_timeout" id="settings_edit_tutoria_timeout{{hashids_encode(settings.id)}}" value="True" {% if settings_edit_tutoria_timeout %} checked {% endif %}/>
+							<label for="settings_edit_tutoria_timeout{{hashids_encode(settings.id)}}">tutoria timeout</label>
+						</div>
+						<div class="funkyradio funkyradio-success">
+							<input type="checkbox" name="settings_edit_calendar" id="settings_edit_calendar{{hashids_encode(settings.id)}}" value="True" {% if settings_edit_calendar %} checked {% endif %}/>
+							<label for="settings_edit_calendar{{hashids_encode(settings.id)}}">agenda</label>
+						</div>
+						<br>
+						{% include 'settings_admin_users_ficha_buttons_block.html' %}
+					</div>
+					{%else%}
+					<div class="col-xs-12 col-sm-12 col-md-4 col-lg-4">
+						{{field_form(settings_edit.role, value=settings.role, addon='role')}}
+						{{field_form(settings_edit.current_settings_id, value=hashids_encode(settings.id))}}
+						<div class="funkyradio funkyradio-success">
+							<input type="checkbox" name="settings_edit_ban" id="settings_edit_ban_{{hashids_encode(settings.id)}}" value="True" {% if settings.ban %} checked {% endif %}/>
+							<label for="settings_edit_ban_{{hashids_encode(settings.id)}}">ban</label>
+						</div>
+						<div class="funkyradio funkyradio-success">
+							<input type="checkbox" name="settings_edit_tutoria_timeout" id="settings_edit_tutoria_timeout{{hashids_encode(settings.id)}}" value="True" {% if settings.tutoria_timeout %} checked {% endif %}/>
+							<label for="settings_edit_tutoria_timeout{{hashids_encode(settings.id)}}">tutoria timeout</label>
+						</div>
+						<div class="funkyradio funkyradio-success">
+							<input type="checkbox" name="settings_edit_calendar" id="settings_edit_calendar{{hashids_encode(settings.id)}}" value="True" {% if settings.calendar %} checked {% endif %}/>
+							<label for="settings_edit_calendar{{hashids_encode(settings.id)}}">agenda</label>
+						</div>
+						<br>
+						{% include 'settings_admin_users_ficha_buttons_block.html' %}
+					</div>
+				{% endif %}
+				{# TODO: datos de usuario #}
+				<div class="col-xs-12 col-sm-12 col-md-8 col-lg-8">
+					<div class="list-group-item-8 strong">
+						Datos de usuario
+					</div>
+					<span class="text-info">username:</span>
+					{{user_by_id(settings.id).username}}<br>
+					<span class="text-info">email:</span>
+					<a href="mailto:{{user_by_id(settings.id).email}}">{{user_by_id(settings.id).email}}</a><br>
+					<span class="text-info">visitas:</span>
+					{{settings.visit_number}}
+					 |
+					<span class="text-info">utlima:</span>
+					{{settings.visit_last.strftime('%Y-%m-%d')}}
+					<br>
+					<h6></h6>
+					<a class="btn btn-secondary" href="/user_ficha_grupos/{{dic_encode_args({'current_user_id': settings.id})}}" role="button">Ficha completa</a>
+				</div>
+				{# TODO: fin datos de usuario #}
+			</div>
+			<br>
+		</form>
+		<br>
+	</div>
+</div>

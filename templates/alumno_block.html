@@ -1,0 +1,70 @@
+<a id="anchor_alu_{{hashids_encode(alumno.id)}}"></a>
+<a data-toggle="collapse" data-parent="#parent_alumno" href="#alumno_{{hashids_encode(alumno.id)}}" class="list-group-item-1" aria-expanded="false" title="{{alumno.apellidos}}, {{alumno.nombre}}">
+	<span
+		class="btn {% if not alumno_asignaturas(alumno.id) %} btn-warning {% else %} {% if alumno_tutorias(alumno.id, True) %} btn-primary {% else %} btn-info color-gray-darken-2 {% endif %} {% endif %}"
+		role="button"
+		title="{% if not alumno_asignaturas(alumno.id) %} sin asignaturas asignadas {% else %}{{alumno.apellidos}}, {{alumno.nombre}} {% endif %}">
+		<strong>
+			{{alumno.apellidos | first | upper}}
+		</strong>
+	</span>
+	<span class="hidden-sm hidden-md hidden-lg">
+		&nbsp;
+		{{alumno.apellidos | truncate(10,true,'..',0)}},
+		{{alumno.nombre | truncate(15,true,'..',0)}}
+	</span>
+	<span class="hidden-xs">
+		&nbsp;
+		{{alumno.apellidos}},
+		{{alumno.nombre}}
+	</span>
+	{% if alumno_tutorias(alumno.id, '') %}
+		{% if alumno_tutorias(alumno.id, True) %}
+			<span
+				class="badge tag-pill badge tag-pill-success padding_left_1 vertical-center"
+				title="{{alumno_tutorias(alumno.id, True) | count}} {{singular_plural('tutoria','tutorias', alumno_tutorias(alumno.id, True) | count)}}  {{singular_plural('solicitada','solicitadas', alumno_tutorias(alumno.id, True) | count)}}">
+				{{alumno_tutorias(alumno.id, True) | count}}
+				{{singular_plural('tutoria','tutorias', alumno_tutorias(alumno.id, True) | count)}}
+			</span>
+		{% else %}
+			<span class="badge tag-pill badge tag-pill-info vertical-center" title="{{alumno_tutorias(alumno.id, '')|count}} {{singular_plural('tutoria','tutorias', alumno_tutorias(alumno.id, '') | count)}} en total">
+				{{alumno_tutorias(alumno.id, '')|count}}
+			</span>
+		{% endif %}
+	{% endif %}
+</a>
+<div id="alumno_{{hashids_encode(alumno.id)}}" class="collapse {% if equal_str(alumno.id, params['current_alumno_id']) and params['collapse_alumno'] %} in {% endif %}">
+	<div class="card_XXX">
+		<div class="dropdown-divider grueso bg-primary"></div>
+		<div class="card_XXX-group" id="alumno_set_{{hashids_encode(alumno.id)}}" aria-multiselectable="true">
+			<div class="card_XXX">
+				<a id="anchor_tut_add_{{hashids_encode(alumno.id)}}"></a>
+				<a data-toggle="collapse" data-parent="#alumno_set_{{hashids_encode(alumno.id)}}" href="#tutoria_add_{{hashids_encode(alumno.id)}}" class="list-group-item-6" aria-expanded="false">
+					<i class="material-icons vertical-center">expand_more</i>Solicitar tutoria
+				</a>
+				<div id="tutoria_add_{{hashids_encode(alumno.id)}}" class="collapse {% if equal_str(alumno.id, params['current_alumno_id']) and params['collapse_tutoria_add'] %} in {% endif %}">
+					{% include "alumno_tutoria_add_block.html" %}
+				</div>
+			</div>
+			<div class="card_XXX">
+				<a id="anchor_tutorias_{{hashids_encode(alumno.id)}}"></a>
+				<a data-toggle="collapse" data-parent="#alumno_set_{{hashids_encode(alumno.id)}}" href="#tutorias_listado_{{hashids_encode(alumno.id)}}" class="list-group-item-6" aria-expanded="false">
+					<i class="material-icons vertical-center">expand_more</i>Tutorias
+				</a>
+				<div id="tutorias_listado_{{hashids_encode(alumno.id)}}" class="collapse {% if (equal_str(alumno.id, params['current_alumno_id']) and (params['collapse_tutorias']) or alumno_tutorias(alumno.id, True)) %} in {% endif %}">
+					{% include "alumno_tutorias_block.html" %}
+				</div>
+			</div>
+			<div class="card_XXX">
+				<a id="anchor_ficha_{{hashids_encode(alumno.id)}}"></a>
+				<a data-toggle="collapse" data-parent="#alumno_set_{{hashids_encode(alumno.id)}}" href="#alumno_ficha_{{hashids_encode(alumno.id)}}" class="list-group-item-6" aria-expanded="false">
+					<i class="material-icons vertical-center">expand_more</i>Ficha
+				</a>
+				<div id="alumno_ficha_{{hashids_encode(alumno.id)}}" class="collapse {% if equal_str(alumno.id, params['current_alumno_id']) and params['collapse_alumno_edit'] %} in {% endif %}">
+					{% include "alumno_ficha_block.html" %}
+				</div>
+			</div>
+		</div>
+		<div class="dropdown-divider grueso bg-primary"></div>
+	</div>
+</div>

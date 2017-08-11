@@ -1,0 +1,15 @@
+<div class="contenido">
+	{% for tutoria in grupo_tutorias(grupo_activo().id, True) %}
+		<a href="/analisis/{{dic_encode_args({'current_tutoria_id': tutoria.id})}}" class="list-group-item-7" title="ver informe">
+			{{tutoria.fecha.strftime('%A') | capitalize}}
+			{{tutoria.fecha.strftime('%d')}}
+			a las
+			{{tutoria.hora.strftime('%H:%M')}}
+			de
+			{{alumno_by_id(tutoria.alumno_id).nombre}}
+		</a>
+		<div class="progress">
+			<div class="progress-bar bg-purple" role="progressbar" aria-valuemin="0" aria-valuemax="100" style="width: {{cociente_porcentual(tutoria_informes(tutoria.id) | count, tutoria_asignaturas_count(tutoria.id))}}%;"></div>
+		</div>
+	{% endfor %}
+</div>
