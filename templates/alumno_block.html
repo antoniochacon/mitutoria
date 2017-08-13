@@ -1,7 +1,7 @@
 <a id="anchor_alu_{{hashids_encode(alumno.id)}}"></a>
 <a data-toggle="collapse" data-parent="#parent_alumno" href="#alumno_{{hashids_encode(alumno.id)}}" class="list-group-item-1" aria-expanded="false" title="{{alumno.apellidos}}, {{alumno.nombre}}">
 	<span
-		class="btn {% if not alumno_asignaturas(alumno.id) %} btn-warning {% else %} {% if alumno_tutorias(alumno.id, True) %} btn-primary {% else %} btn-info color-gray-darken-2 {% endif %} {% endif %}"
+		class="btn {% if not alumno_asignaturas(alumno.id) %} btn-warning {% else %} {% if alumno_tutorias(alumno.id, True) %} btn-primary {% else %} btn-light color-gray-darken-2 {% endif %} {% endif %}"
 		role="button"
 		title="{% if not alumno_asignaturas(alumno.id) %} sin asignaturas asignadas {% else %}{{alumno.apellidos}}, {{alumno.nombre}} {% endif %}">
 		<strong>

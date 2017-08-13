@@ -1,7 +1,7 @@
 {% for cita in citas %}
 	<a id="anchor_cit_{{hashids_encode(cita.id)}}"></a>
 	<a href="#cita_listado{{hashids_encode(cita.id)}}" class="list-group-item-1" data-toggle="collapse" data-parent="#cita" aria-expanded="true" aria-controls="collapse{{hashids_encode(cita.id)}}" title="{{cita.autor}}">
-		<span class="btn btn-sm {% if cita.visible %}btn-primary{% else %}btn-info{% endif %}" role="button" title="{{cita.autor}}" }>
+		<span class="btn btn-sm {% if cita.visible %}btn-primary{% else %}btn-light{% endif %}" role="button" title="{{cita.autor}}" }>
 			<strong>
 				{{cita.autor | first | upper}}
 			</strong>
@@ -45,13 +45,13 @@
 								<button role="button" type="submit" name="selector_button" value="selector_cita_delete" class="btn btn-warning" title="confirmar eliminar asginatura">
 									<i class="material-icons vertical-center">delete</i>
 									confirmar eliminar</button>
-								<button role="button" type="submit" name="selector_button" value="selector_cita_delete_close" class="btn btn-secondary" title="cancelar eliminar">
+								<button role="button" type="submit" name="selector_button" value="selector_cita_delete_close" class="btn btn-light" title="cancelar eliminar">
 									<i class="material-icons vertical-center">close</i>
 								</button>
 							</div>
 							<div class="clearfix"></div>
 							<br>
-							<span class="text-danger">
+							<span class="text-warning">
 								Una vez elminada no podra ser recuperada.
 							</span>
 						{% else %}
@@ -59,14 +59,14 @@
 								<button role="button" type="submit" name="selector_button" value="selector_cita_edit" class="btn btn-primary" title="guardar cambios">
 									<i class="material-icons vertical-center">save</i>
 									guardar</button>
-								<button role="button" type="submit" name="selector_button" value="selector_cita_edit_rollback" class="btn btn-secondary" title="deshacer cambios">
+								<button role="button" type="submit" name="selector_button" value="selector_cita_edit_rollback" class="btn btn-light" title="deshacer cambios">
 									<i class="material-icons vertical-center">settings_backup_restore</i>
 								</button>
-								<button role="button" type="submit" name="selector_button" value="selector_cita_delete_link" class="btn btn-secondary" title="eliminar cita">
+								<button role="button" type="submit" name="selector_button" value="selector_cita_delete_link" class="btn btn-light" title="eliminar cita">
 									<i class="material-icons vertical-center">delete</i>
 								</button>
 								{% if equal_str(cita.id, params['current_cita_id']) and params['collapse_cita_edit'] %}
-									<button role="button" type="submit" name="selector_button" value="selector_cita_edit_close" class="btn btn-secondary" title="cerrar">
+									<button role="button" type="submit" name="selector_button" value="selector_cita_edit_close" class="btn btn-light" title="cerrar">
 										<i class="material-icons vertical-center">close</i>
 									</button>
 								{% endif %}

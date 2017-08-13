@@ -1,24 +1,44 @@
-{% macro nav_bar(link_active, params_args, dic) %}
-	<nav class="navbar fixed-top navbar-toggleable-sm navbar-inverse bg-primary z-depth-1-less">
-		<button class="navbar-toggler navbar-toggler-right" role="button" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+{% macro nav_bar_top_no_session() %}
+	<nav class="navbar fixed-top navbar-expand-sm navbar-dark bg-primary z-depth-1-less">
+		<button class="navbar-toggler" role="button" type="button" data-toggle="collapse" data-target="#navbar" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
 			<span class="navbar-toggler-icon"></span>
 		</button>
 		<a class="navbar-brand strong" href="#">mi tutoria</a>
-		<div class="collapse navbar-collapse" id="navbarSupportedContent">
+		<div class="collapse navbar-collapse" id="navbar">
+			<ul class="navbar-nav mr-auto">
+				<li class="nav-item">
+					<a class="nav-link" href="/login">iniciar sesión</a>
+				</li>
+			</ul>
+		</div>
+	</nav>
+{% endmacro %}
+{% macro nav_bar_top(link_active, params) %}
+	{{nav_bar(link_active, params=params, dic={'Alumnos':'alumnos', 'Asignaturas':'asignaturas', 'Opciones':'settings_cuestionario', 'Admin':'settings_admin_cuestionario', 'Logout':'logout'})}}
+{% endmacro %}
+{% macro nav_bar(link_active, params, params_args, dic) %}
+	<nav class="navbar fixed-top navbar-expand-md navbar-dark bg-primary z-depth-1-less">
+		<button class="navbar-toggler" role="button" type="button" data-toggle="collapse" data-target="#navbar" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+			<span class="navbar-toggler-icon"></span>
+		</button>
+		<a class="navbar-brand strong" href="#">mi tutoria</a>
+		<div class="collapse navbar-collapse" id="navbar">
 			<ul class="navbar-nav mr-auto">
 				{% for link_key in dic.keys() %}
-					{% if link_key != 'admin' %}
+					{% if link_key != 'Admin' %}
 						<li class="nav-item {% if link_key==link_active %} active {% endif %}">
-							<a class="nav-link" href="/{{dic[link_key]}}{% if params_args %}/{{params_args}}{% endif %}">{{link_key}}</a>
+							<a class="nav-link" href="/{% if link_key==link_active %}#{% else %}{{dic[link_key]}}{% endif %}{% if params_args %}/{{params_args}}{% endif %}">{{link_key}}
+								{% if link_key == 'Logout' %}
+									[{{user_by_id(settings().id).username}}]
+								{% endif %}
+							</a>
 						</li>
-					{% endif %}
-					{% if link_key == 'admin' and settings().role == 'admin' %}
+					{% elif link_key == 'Admin' and settings().role == 'admin' %}
 						<li class="nav-item {% if link_key==link_active %} active {% endif %}">
-							<a class="nav-link" href="/{{dic[link_key]}}{% if params_args %}/{{params_args}}{% endif %}">{{link_key}}</a>
+							<a class="nav-link" href="/{% if link_key==link_active %}#{% else %}{{dic[link_key]}}{% endif %}{% if params_args %}/{{params_args}}{% endif %}">{{link_key}}</a>
 						</li>
 					{% endif %}
 				{% endfor %}
-
 			</ul>
 		</div>
 	</nav>
@@ -58,7 +78,7 @@
 	</h3>
 {% endmacro %}
 {% macro titulo_1(url, text_color, bg_color, titulo, subtitulo) %}
-	<h3 class='{{text_color}} strong'>
+	<h5 class='{{text_color}} strong'>
 		{{titulo}}
 		{% if url == 'alumnos' %}
 			<span class='badge tag-pill badge tag-pill-info pull-right'>{{alumnos_not_sorted()|count}}
@@ -68,14 +88,14 @@
 				{{singular_plural('asignatura', 'asignaturas', asignaturas('apellidos', 'nombre', 'asignatura') | count)}}</span>
 		{% endif %}
 		{% if subtitulo %}
-			<h5 class='{{text_color}} strong'>
+			<h6 class='{{text_color}}'>
 				{{subtitulo}}
 				<div class='dropdown-divider {{bg_color}} grueso'></div>
-			</h5>
+			</h6>
 			{%else%}
 			<div class='dropdown-divider {{bg_color}} grueso line-height-1'></div>
 		{% endif %}
-	</h3>
+	</h5>
 {% endmacro %}
 {% macro highcharts_tutoria_stats(char_id, titulo, height, weight, tooltip_x, tooltip_y, font_size, color_1, color_2, tutoria_stats) %}
 	<div id='{{char_id | safe}}' class='chart' style='height: {{height}}px; weight:{{weight}}px'></div>
@@ -353,7 +373,7 @@
 		{% if error %}
 			{% if field.errors %}
 				{% for error in field.errors %}
-					<div class='text-danger'>{{error}}</div>
+					<div class='text-warning'>{{error}}</div>
 				{% endfor %}
 			{% endif %}
 		{% endif %}

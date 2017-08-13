@@ -13,7 +13,7 @@
 			{# TODO: Listado de asignaturas #}
 			{% if not asignaturas('asignatura', 'nombre', 'apellidos') %}
 				<br>
-				<span class="text-danger">Grupo aun sin asignaturas</span>
+				<span class="text-warning">Grupo aun sin asignaturas</span>
 			{% else %}
 				{% for asignatura in asignaturas('asignatura', 'nombre', 'apellidos') %}
 					{{checkbox_funky(alumno, asignatura, 'asignatura', 'alumno_edit')}}

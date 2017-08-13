@@ -1,7 +1,8 @@
 {% extends '_layout.html' %}
 {% block body %}
-	{%from '_macro.html' import field_form, titulo_1%}
-	<div class="col-xs-12 col-sm-8 col-sm-offset-2 col-md-6 col-md-offset-3 col-lg-4 col-lg-offset-4 contenido-7">
+	{%from '_macro.html' import nav_bar_top_no_session,field_form, titulo_1%}
+	{{ nav_bar_top_no_session() }}
+	<div class="container">
 		<div class="paper bg-white contenido">
 			{{titulo_1(url='login', bg_color='bg-primary', titulo='Iniciar sesion')}}
 			<form action="/login" method="POST">
@@ -19,7 +20,7 @@
 				<br>
 				<div class="text-center">
 					<span class="text-info">Si no tiene cuenta:</span>
-					<a href="/user_add" class="btn btn-secondary" title="crear nueva cuenta">
+					<a href="/user_add" class="btn btn-light" title="crear nueva cuenta">
 						<i class="material-icons vertical-center text-info">person_add</i>
 						<span class="text-info">crear cuenta</span>
 					</a>

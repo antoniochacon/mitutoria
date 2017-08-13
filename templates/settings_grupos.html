@@ -44,7 +44,7 @@
 				{% for grupo in grupos %}
 					<a id="anchor_gru_{{hashids_encode(grupo.id)}}"></a>
 					<a href="#grupo_listado{{hashids_encode(grupo.id)}}" class="list-group-item-1" data-toggle="collapse" data-parent="#grupo" aria-expanded="true" aria-controls="collapse{{hashids_encode(grupo.id)}}" title="{{grupo.tutor}}">
-						<span class="btn btn-sm {% if grupo_activo_check(grupo.id) %} btn-primary {% else %} btn-info {% endif %}" role="button" title="{{grupo.tutor}}" }>
+						<span class="btn btn-sm {% if grupo_activo_check(grupo.id) %} btn-primary {% else %} btn-light {% endif %}" role="button" title="{{grupo.tutor}}" }>
 							<strong>
 								{{grupo.curso_academico}}
 								|
@@ -96,27 +96,27 @@
 												<button role="button" type="submit" name="selector_button" value="selector_grupo_delete" class="btn btn-warning" title="confirmar eliminar asginatura">
 													<i class="material-icons vertical-center">delete</i>
 													confirmar eliminar</button>
-												<button role="button" type="submit" name="selector_button" value="selector_grupo_delete_close" class="btn btn-secondary" title="cancelar eliminar">
+												<button role="button" type="submit" name="selector_button" value="selector_grupo_delete_close" class="btn btn-light" title="cancelar eliminar">
 													<i class="material-icons vertical-center">close</i>
 												</button>
 											</div>
 											<div class="clearfix"></div>
 											<br>
-											<span class="text-danger">
+											<span class="text-warning">
 												Si elimina un grupo se borrarán todos sus alumnos, equipo educativo y estadísticas correspondientes.</span>
 										{% else %}
 											<div class="btn-group" role="group" aria-label.="...">
 												<button role="button" type="submit" name="selector_button" value="selector_grupo_edit" class="btn btn-primary" title="guardar cambios">
 													<i class="material-icons vertical-center">save</i>
 													guardar</button>
-												<button role="button" type="submit" name="selector_button" value="selector_grupo_edit_rollback" class="btn btn-secondary" title="deshacer cambios">
+												<button role="button" type="submit" name="selector_button" value="selector_grupo_edit_rollback" class="btn btn-light" title="deshacer cambios">
 													<i class="material-icons vertical-center">settings_backup_restore</i>
 												</button>
-												<button role="button" type="submit" name="selector_button" value="selector_grupo_delete_link" class="btn btn-secondary" title="eliminar grupo">
+												<button role="button" type="submit" name="selector_button" value="selector_grupo_delete_link" class="btn btn-light" title="eliminar grupo">
 													<i class="material-icons vertical-center">delete</i>
 												</button>
 												{% if params['collapse_grupo_edit'] %}
-													<button role="button" type="submit" name="selector_button" value="selector_grupo_edit_close" class="btn btn-secondary" title="cerrar">
+													<button role="button" type="submit" name="selector_button" value="selector_grupo_edit_close" class="btn btn-light" title="cerrar">
 														<i class="material-icons vertical-center">close</i>
 													</button>
 												{% endif %}

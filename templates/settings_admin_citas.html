@@ -1,6 +1,7 @@
 {% extends '_layout.html' %}
 {% block body %}
-	{%from '_macro.html' import titulo_1, nav_tabs, field_form%}
+	{%from '_macro.html' import nav_bar_top, titulo_1, nav_tabs, field_form%}
+		{{ nav_bar_top(link_active='Admin',params=params) }}
 	<div class="paper bg-white contenido">
 		{{titulo_1(bg_color='bg-primary',titulo='Admin Settings')}}
 		{{nav_tabs(tab_active='Citas', dic={'Cuestionario':'settings_admin_cuestionario', 'Citas':'#', 'Usuarios':'settings_admin_users'})}}

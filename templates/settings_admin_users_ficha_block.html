@@ -53,11 +53,11 @@
 					<span class="text-info">visitas:</span>
 					{{settings.visit_number}}
 					 |
-					<span class="text-info">utlima:</span>
+					<span class="text-info">utlima visita:</span>
 					{{settings.visit_last.strftime('%Y-%m-%d')}}
 					<br>
 					<h6></h6>
-					<a class="btn btn-secondary" href="/user_ficha_grupos/{{dic_encode_args({'current_user_id': settings.id})}}" role="button">Ficha completa</a>
+					<a class="btn btn-light" href="/user_ficha_grupos/{{dic_encode_args({'current_user_id': settings.id})}}" role="button">Ficha completa</a>
 				</div>
 				{# TODO: fin datos de usuario #}
 			</div>

@@ -185,7 +185,7 @@ def alumnos_html(params={}):
     params['collapse_tutorias'] = params_old.get('collapse_tutorias', False)
     params['collapse_tutoria_no_activas'] = params_old.get('collapse_tutoria_no_activas', False)
     params['current_tutoria_id'] = params_old.get('current_tutoria_id', hashids_encode(0))
-    
+    params['invitado'] = params_old.get('invitado', False)
 
     if not settings().grupo_activo_id:
         if not grupos():
@@ -1396,6 +1396,8 @@ def informe_html(token_hash):
             params['hora'] = tutoria.hora
             params['asignatura'] = asignatura.asignatura
             params['docente'] = asignatura.nombre + ' ' + asignatura.apellidos
+            params['params_anchor_off'] = True
+            params['invitado'] = True
             return redirect(url_for('informe_success_html', params=dic_encode(params)))
 
         return render_template(
@@ -1703,7 +1705,6 @@ def login_html():
 def logout_html():
     params = {}
     fab = Fab(True, False, True, False, False, False, False)
-
     logout_user()
     flash_toast('Session cerrada correctamente', 'success')
     return render_template('logout.html', fab=fab, params=params)

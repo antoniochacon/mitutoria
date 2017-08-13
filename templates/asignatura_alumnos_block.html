@@ -14,7 +14,7 @@
 				&nbsp; agregar nuevo alumno
 			</a>
 			{% if not alumnos('apellidos', 'nombre') %}
-				<div class="contenido-2 text-danger">Grupo sin alumnos.</div>
+				<div class="contenido-2 text-warning">Grupo sin alumnos.</div>
 			{% endif %}
 			{% if alumnos('apellidos', 'nombre')%}
 				{% for alumno in alumnos('apellidos', 'nombre') %}

@@ -8,7 +8,7 @@
 		{% for grupo in user_grupos(user.id) %}
 			<a id="anchor_gru_{{hashids_encode(grupo.id)}}"></a>
 			<a href="#grupo_listado{{hashids_encode(grupo.id)}}" class="list-group-item-1" data-toggle="collapse" data-parent="#grupo" aria-expanded="true" aria-controls="collapse{{hashids_encode(grupo.id)}}" title="{{grupo.tutor}}">
-				<span class="btn btn-sm {% if grupo_activo_check(grupo.id) %} btn-primary {% else %} btn-info {% endif %}" role="button" title="{{grupo.tutor}}" }>
+				<span class="btn btn-sm {% if grupo_activo_check(grupo.id) %} btn-primary {% else %} btn-light {% endif %}" role="button" title="{{grupo.tutor}}" }>
 					<strong>
 						{{grupo.curso_academico}}
 						|

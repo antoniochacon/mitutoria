@@ -21,7 +21,7 @@
 			{{asignatura.nombre}}
 			{{asignatura.apellidos}}
 		{% else %}
-			<div class="contenido-2 text-danger text-center">
+			<div class="contenido-2 text-warning text-center">
 				No disponible el informe de su materia.
 				<br>
 				Consulte con el tutor/a correspodiente.
@@ -99,13 +99,13 @@
 							<div class="input-group">
 								<input type="text" name="prueba_evaluable_nombre" class="form-control" placeholder="agregar prueba evaluable">
 								<span class="input-group-btn">
-									<button role="button" name="selector_button" value="selector_prueba_evaluable_add" class="btn btn-secondary" title="agregar prueba evaluable">
+									<button role="button" name="selector_button" value="selector_prueba_evaluable_add" class="btn btn-light" title="agregar prueba evaluable">
 										<i class="material-icons vertical-center" style="font-size: 20px">add</i>
 										Agregar
 									</button>
 									{% if informe %}
 										{% if invitado_pruebas_evaluables(informe.id) %}
-											<button role="button" type="submit" name="selector_button" value="selector_prueba_evaluable_delete" class="btn btn-secondary" title="eliminar prueba evaluable">
+											<button role="button" type="submit" name="selector_button" value="selector_prueba_evaluable_delete" class="btn btn-light" title="eliminar prueba evaluable">
 												<i class="material-icons vertical-center" style="font-size: 20px">delete</i>
 											</button>
 										{% endif %}

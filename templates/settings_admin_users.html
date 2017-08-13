@@ -1,6 +1,7 @@
 {% extends '_layout.html' %}
 {% block body %}
-	{%from '_macro.html' import titulo_1, nav_tabs, field_form%}
+	{%from '_macro.html' import nav_bar_top, titulo_1, nav_tabs, field_form%}
+	{{ nav_bar_top(link_active='Admin',params=params) }}
 	<div class="paper bg-white contenido">
 		{{titulo_1(bg_color='bg-primary', titulo='Admin Settings')}}
 		{{nav_tabs(tab_active='Usuarios', dic={'Cuestionario':'settings_admin_cuestionario', 'Citas':'settings_admin_citas', 'Usuarios':'#'})}}
@@ -10,7 +11,7 @@
 				{% for settings in settings_all %}
 					<a id="anchor_set_{{hashids_encode(settings.id)}}"></a>
 					<a href="#user_listado{{hashids_encode(settings.id)}}" class="list-group-item-1" data-toggle="collapse" data-parent="#user" aria-expanded="true" aria-controls="collapse{{hashids_encode(settings.id)}}" title="{{user_by_id(settings.id).username}}">
-						<span class="btn btn-sm {% if not settings.ban %}btn-primary{% else %}btn-info{% endif %}" role="button" title="{{user_by_id(settings.id).username}}">
+						<span class="btn btn-sm {% if not settings.ban %}btn-primary{% else %}btn-light{% endif %}" role="button" title="{{user_by_id(settings.id).username}}">
 							<strong>
 								{{loop.index}}
 							</strong>

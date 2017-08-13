@@ -5,7 +5,7 @@
 			<div class="form-group in-line">
 				Localiza y selecciona el archivo *.CSV descargado desde Seneca.
 				<br><br>
-				<label class="btn btn-secondary" for="selector_fichero">
+				<label class="btn btn-outline-dark btn-sm" title="seleccionar archivo" for="selector_fichero">
 					<input id="selector_fichero" type="file" name="fichero" style="display:none" onchange="$(" #upload_file_info").html(this.files[0].name)">
 					Seleccionar archivo CSV
 				</label>
@@ -14,7 +14,7 @@
 			</div>
 		{% else %}
 			{% with %}
-			{% if params['collapse_alumno_add'] and request.method == "POST" %}
+			{% if params['collapse_alumno_add']and request.method == "POST" %}
 				{% set error_css = True %}
 			{% else %}
 				{% set error_css = False %}
@@ -25,20 +25,20 @@
 		{% endif %}
 		<div class="btn-group" role="group" aria-label="...">
 			{% if params['alumno_importar_link'] %}
-				<button role="button" type="submit" name="selector_button" value="selector_alumno_importar" class="btn btn-primary" title="guardar alumnos">
+				<button class="btn btn-outline-primary btn-sm" type="submit" name="selector_button" value="selector_alumno_importar" title="guardar alumnos">
 					<i class="material-icons vertical-center">people</i>
 					guardar alumnos
 				</button>
-				<button role="button" type="submit" name="selector_button" value="selector_alumno_importar_cerrar" class="btn btn-secondary" title="cerrar" >
+				<button class="btn btn-outline-dark btn-sm" type="submit" name="selector_button" value="selector_alumno_importar_cerrar" title="cerrar">
 					<i class="material-icons vertical-center">close</i>
 				</button>
 				<br>
 			{% else %}
-				<button role="button" type="submit" name="selector_button" value="selector_alumno_add" class="btn btn-primary" title="agregar alumno" >
+				<button class="btn btn-outline-primary btn-sm" type="submit" name="selector_button" value="selector_alumno_add" title="agregar alumno">
 					<i class="material-icons vertical-center">person</i>
 					agregar
 				</button>
-				<button role="button" type="submit" name="selector_button" value="selector_alumno_importar_link" class="btn btn-secondary" title="importar seneca">
+				<button class="btn btn-outline-dark btn-sm" type="submit" name="selector_button" value="selector_alumno_importar_link" title="importar seneca">
 					<i class="material-icons vertical-center">people</i>
 					importar de Seneca
 				</button>

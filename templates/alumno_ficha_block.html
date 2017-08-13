@@ -5,12 +5,12 @@
 				{% include "alumno_ficha_not_edit_block.html" %}
 				{{field_form(alumno_edit.current_alumno_id, value=hashids_encode(alumno.id))}}
 				<div class="btn-group" role="group" aria-label="...">
-					<button role="button" type="submit" name="selector_button" value="selector_alumno_edit_link" class="btn btn-secondary" title="editar ficha">
+					<button role="button" type="submit" name="selector_button" value="selector_alumno_edit_link" class="btn btn-light" title="editar ficha">
 						<i class="material-icons vertical-center">edit</i>
 						editar ficha
 					</button>
 					{% if equal_str(alumno.id,params['current_alumno_id']) and params['collapse_alumno_edit']%}
-						<button role="button" type="submit" name="selector_button" value="selector_alumno_edit_close" class="btn btn-secondary" title="cerrar ficha">
+						<button role="button" type="submit" name="selector_button" value="selector_alumno_edit_close" class="btn btn-light" title="cerrar ficha">
 							<i class="material-icons vertical-center">close</i>
 						</button>
 					{% endif %}

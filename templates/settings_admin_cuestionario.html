@@ -1,6 +1,7 @@
 {% extends '_layout.html' %}
 {% block body %}
-	{%from '_macro.html' import titulo_1, nav_tabs, field_form,%}
+	{%from '_macro.html' import nav_bar_top, titulo_1, nav_tabs, field_form,%}
+	{{ nav_bar_top(link_active='Admin',params=params) }}
 	<div class="paper bg-white contenido">
 		{{titulo_1(bg_color='bg-primary',titulo='Admin Settings')}}
 		{{nav_tabs(tab_active='Cuestionario', dic={'Cuestionario':'#', 'Citas':'settings_admin_citas', 'Usuarios':'settings_admin_users'})}}
@@ -18,7 +19,7 @@
 				{% for pregunta in preguntas %}
 					<a id="anchor_pre_{{hashids_encode(pregunta.id)}}"></a>
 					<a href="#pregunta_listado{{hashids_encode(pregunta.id)}}" class="list-group-item-1" data-toggle="collapse" data-parent="#pregunta" aria-expanded="true" aria-controls="collapse{{hashids_encode(pregunta.id)}}" title="{{pregunta.enunciado_ticker}}">
-						<span class="btn btn-sm {% if pregunta_visible_check(pregunta.id) %} btn-primary {% else %} btn-info {% endif %}" role="button" title="{{pregunta.enunciado_ticker}}" }>
+						<span class="btn btn-sm {% if pregunta_visible_check(pregunta.id) %} btn-primary {% else %} btn-light {% endif %}" role="button" title="{{pregunta.enunciado_ticker}}" }>
 							<strong>
 								{{pregunta.orden}}
 							</strong>
@@ -62,10 +63,10 @@
 											<div class="row">
 												<div class="col-xs-6">
 													<div class="btn-group-vertical" role="group" aria-label="...">
-														<button role="button" type="submit" name="selector_button" value="selector_move_up" class="btn btn-secondary" {% if loop.first %} disabled="disabled" {% endif %} title="subir">
+														<button role="button" type="submit" name="selector_button" value="selector_move_up" class="btn btn-light" {% if loop.first %} disabled="disabled" {% endif %} title="subir">
 															<i class="material-icons vertical-center">arrow_upward</i>
 														</button>
-														<button role="button" type="submit" name="selector_button" value="selector_move_down" class="btn btn-secondary" {% if loop.last %} disabled="disabled" {% endif %} title="bajar">
+														<button role="button" type="submit" name="selector_button" value="selector_move_down" class="btn btn-light" {% if loop.last %} disabled="disabled" {% endif %} title="bajar">
 															<i class="material-icons vertical-center">arrow_downward</i>
 														</button>
 													</div>
@@ -96,10 +97,10 @@
 											<div class="row">
 												<div class="col-xs-6">
 													<div class="btn-group-vertical" role="group" aria-label="...">
-														<button role="button" type="submit" name="selector_button" value="selector_move_up" class="btn btn-secondary" title="subir">
+														<button role="button" type="submit" name="selector_button" value="selector_move_up" class="btn btn-light" title="subir">
 															<i class="material-icons vertical-center">arrow_upward</i>
 														</button>
-														<button role="button" type="submit" name="selector_button" value="selector_move_down" class="btn btn-secondary" title="bajar">
+														<button role="button" type="submit" name="selector_button" value="selector_move_down" class="btn btn-light" title="bajar">
 															<i class="material-icons vertical-center">arrow_downward</i>
 														</button>
 													</div>
@@ -128,13 +129,13 @@
 													<i class="material-icons vertical-center">delete</i>
 													confirmar eliminar
 												</button>
-												<button role="button" type="submit" name="selector_button" value="selector_pregunta_delete_close" class="btn btn-secondary" title="cancelar eliminar">
+												<button role="button" type="submit" name="selector_button" value="selector_pregunta_delete_close" class="btn btn-light" title="cancelar eliminar">
 													<i class="material-icons vertical-center">close</i>
 												</button>
 											</div>
 											<div class="clearfix"></div>
 											<br>
-											<span class="text-danger">
+											<span class="text-warning">
 												Una vez elminada no podra ser recuperada.
 											</span>
 										{% else %}
@@ -143,14 +144,14 @@
 													<i class="material-icons vertical-center">save</i>
 													guardar
 												</button>
-												<button role="button" type="submit" name="selector_button" value="selector_pregunta_edit_rollback" class="btn btn-secondary" title="deshacer cambios">
+												<button role="button" type="submit" name="selector_button" value="selector_pregunta_edit_rollback" class="btn btn-light" title="deshacer cambios">
 													<i class="material-icons vertical-center">settings_backup_restore</i>
 												</button>
-												<button role="button" type="submit" name="selector_button" value="selector_pregunta_delete_link" class="btn btn-secondary" title="eliminar pregunta">
+												<button role="button" type="submit" name="selector_button" value="selector_pregunta_delete_link" class="btn btn-light" title="eliminar pregunta">
 													<i class="material-icons vertical-center">delete</i>
 												</button>
 												{% if params['collapse_pregunta_edit'] %}
-													<button role="button" type="submit" name="selector_button" value="selector_pregunta_edit_close" class="btn btn-secondary" title="cerrar">
+													<button role="button" type="submit" name="selector_button" value="selector_pregunta_edit_close" class="btn btn-light" title="cerrar">
 														<i class="material-icons vertical-center">close</i>
 													</button>
 												{% endif %}
