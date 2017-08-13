@@ -1,6 +1,6 @@
 <div class="card_XXX">
 	<form action="/asignaturas" method="POST">
-		<div class="contenido-2">
+		<div class="contenido_2">
 			{% if equal_str(asignatura.id, params['current_asignatura_id']) and request.method == 'POST'%}
 				{{field_form(asignatura_edit.asignatura, error=True, error_css=True, addon='asignatura')}}
 				{{field_form(asignatura_edit.nombre, error=True, error_css=True, addon='nombre')}}
@@ -22,7 +22,7 @@
 				<button role="button" type="submit" name="selector_button" value="selector_asignatura_delete" class="btn btn-warning" title="confirmar eliminar asginatura">
 					<i class="material-icons vertical-center">delete</i>
 					confirmar eliminar</button>
-				<button role="button" type="submit" name="selector_button" value="selector_asignatura_delete_close" class="btn btn-light" title="cancelar eliminar">
+				<button role="button" type="submit" name="selector_button" value="selector_asignatura_delete_close" class="btn btn-outline-dark" title="cancelar eliminar">
 					<i class="material-icons vertical-center">close</i>
 				</button>
 			</div>
@@ -32,13 +32,13 @@
 				Una vez elminada no podra ser recuperada.</span>
 		{% else %}
 			<div class="btn-group" role="group" aria-label="...">
-				<button role="button" type="submit" name="selector_button" value="selector_asignatura_edit" class="btn btn-primary" title="guardar cambios">
+				<button role="button" type="submit" name="selector_button" value="selector_asignatura_edit" class="btn btn-outline-primary" title="guardar cambios">
 					<i class="material-icons vertical-center">save</i>
 					guardar</button>
-				<button role="button" type="submit" name="selector_button" value="selector_asignatura_edit_rollback" class="btn btn-light" title="deshacer cambios">
+				<button role="button" type="submit" name="selector_button" value="selector_asignatura_edit_rollback" class="btn btn-outline-dark" title="deshacer cambios">
 					<i class="material-icons vertical-center">settings_backup_restore</i>
 				</button>
-				<button role="button" type="submit" name="selector_button" value="selector_asignatura_delete_link" class="btn btn-light" title="eliminar asignatura">
+				<button role="button" type="submit" name="selector_button" value="selector_asignatura_delete_link" class="btn btn-outline-dark" title="eliminar asignatura">
 					<i class="material-icons vertical-center">delete</i>
 				</button>
 			</div>

@@ -6,7 +6,7 @@
 <div id="asignatura_pick_temporal_{{hashids_encode(alumno.id)}}" class="collapse in">
 	<div class="card_XXX">
 		<form action="/tutoria_edit" method="POST" name="analisis{{hashids_encode(tutoria.id)}}">
-			<div class="contenido-2">
+			<div class="contenido_2">
 				<input type="hidden" name="current_tutoria_id" value="{{hashids_encode(tutoria.id)}}">
 				{% if not asignaturas('asignatura', 'nombre', 'apellidos') %}
 					<a href="/asignaturas" class="list-group-item-4-danger" title="Agregar asignatura">
@@ -29,11 +29,11 @@
 			</div>
 			<br>
 			<div class="btn-group" role="group" aria-label="...">
-				<button role="button" type="submit" name="selector_button" value="selector_tutoria_re_enviar" class="btn btn-primary" title="Reenvair emails">
+				<button role="button" type="submit" name="selector_button" value="selector_tutoria_re_enviar" class="btn btn-outline-primary" title="Reenvair emails">
 					<i class="material-icons vertical-center">mail</i>
 					Reenviar
 				</button>
-				<button role="button" type="submit" name="selector_button" value="selector_tutoria_re_enviar_close" class="btn btn-light" title="Cerrar">
+				<button role="button" type="submit" name="selector_button" value="selector_tutoria_re_enviar_close" class="btn btn-outline-dark" title="Cerrar">
 					<i class="material-icons vertical-center">close</i>
 				</button>
 			</div>

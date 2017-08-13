@@ -1,16 +1,16 @@
 <div class="card_XXX">
 	<form action="/alumnos" method="POST">
-		<div class="contenido-2">
+		<div class="contenido_2">
 			{% if not params['alumno_edit_link']or(params['alumno_edit_link']and not equal_str(alumno.id, params['current_alumno_id'])) %}
 				{% include "alumno_ficha_not_edit_block.html" %}
 				{{field_form(alumno_edit.current_alumno_id, value=hashids_encode(alumno.id))}}
 				<div class="btn-group" role="group" aria-label="...">
-					<button role="button" type="submit" name="selector_button" value="selector_alumno_edit_link" class="btn btn-light" title="editar ficha">
+					<button role="button" type="submit" name="selector_button" value="selector_alumno_edit_link" class="btn btn-outline-dark" title="editar ficha">
 						<i class="material-icons vertical-center">edit</i>
 						editar ficha
 					</button>
 					{% if equal_str(alumno.id,params['current_alumno_id']) and params['collapse_alumno_edit']%}
-						<button role="button" type="submit" name="selector_button" value="selector_alumno_edit_close" class="btn btn-light" title="cerrar ficha">
+						<button role="button" type="submit" name="selector_button" value="selector_alumno_edit_close" class="btn btn-outline-dark" title="cerrar ficha">
 							<i class="material-icons vertical-center">close</i>
 						</button>
 					{% endif %}

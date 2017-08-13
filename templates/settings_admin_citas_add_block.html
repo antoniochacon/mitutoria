@@ -1,4 +1,4 @@
-<div class="contenido-2">
+<div class="contenido_2">
 	<form action="/settings_admin_citas" method="POST">
 		{% with %}
 		{% if params['collapse_cita_add']and request.method == 'POST' %}
@@ -15,11 +15,11 @@
 		{% endwith %}
 		<br>
 		<div class="btn-group" role="group" aria-label="...">
-			<button role="button" type="submit" name="selector_button" value="selector_cita_add" class="btn btn-primary" title="agregar cita">
+			<button role="button" type="submit" name="selector_button" value="selector_cita_add" class="btn btn-outline-primary" title="agregar cita">
 				<i class="material-icons vertical-center">person</i>&nbsp; agregar
 			</button>
 			{% if params['collapse_cita_add'] %}
-				<button role="button" type="submit" name="selector_button" value="selector_cita_add_close" class="btn btn-light" title="cerrar">
+				<button role="button" type="submit" name="selector_button" value="selector_cita_add_close" class="btn btn-outline-dark" title="cerrar">
 					<i class="material-icons vertical-center">close</i>
 				</button>
 			{% endif %}

@@ -4,12 +4,12 @@
 	{{ nav_bar_top_no_session() }}
 	<div class="container">
 		<div class="paper bg-white contenido">
-			{{titulo_1(url='login', bg_color='bg-primary', titulo='Iniciar sesion')}}
+			{{titulo_1(bg_color='bg_black', titulo='Iniciar sesion')}}
 			<form action="/login" method="POST">
 				{{field_form(user.username, error=True, error_css=True, addon='usuario')}}
 				{{field_form(user.password, error=True, error_css=True, addon='password')}}
 				<div class="text-center">
-					<button role="button" type="submit" class="btn btn-primary" title="iniciar sesion">
+					<button role="button" type="submit" class="btn btn-outline-primary" title="iniciar sesion">
 						<i class="material-icons vertical-center">account_circle</i>
 						iniciar sesion</button>
 				</div>
@@ -19,17 +19,17 @@
 				<div class="dropdown-divider bg-primary grueso"></div>
 				<br>
 				<div class="text-center">
-					<span class="text-info">Si no tiene cuenta:</span>
-					<a href="/user_add" class="btn btn-light" title="crear nueva cuenta">
-						<i class="material-icons vertical-center text-info">person_add</i>
-						<span class="text-info">crear cuenta</span>
+
+					<a href="/user_add" class="btn btn-outline-dark" title="crear nueva cuenta">
+						<i class="material-icons vertical-center">person_add</i>
+					aun no tengo cuenta
 					</a>
 				</div>
 				<br>
 			{% endif %}
 			{% if ban %}
 				<br>
-				<div class="dropdown-divider bg-primary grueso"></div>
+				<div class="dropdown-divider bg-primary"></div>
 				<br>
 				<div class="text-center text-primary">
 					Su cuenta ha sido suspendida de servicio

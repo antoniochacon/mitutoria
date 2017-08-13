@@ -11,7 +11,7 @@
 				{% for settings in settings_all %}
 					<a id="anchor_set_{{hashids_encode(settings.id)}}"></a>
 					<a href="#user_listado{{hashids_encode(settings.id)}}" class="list-group-item-1" data-toggle="collapse" data-parent="#user" aria-expanded="true" aria-controls="collapse{{hashids_encode(settings.id)}}" title="{{user_by_id(settings.id).username}}">
-						<span class="btn btn-sm {% if not settings.ban %}btn-primary{% else %}btn-light{% endif %}" role="button" title="{{user_by_id(settings.id).username}}">
+						<span class="btn btn-sm {% if not settings.ban %}btn-outline-primary{% else %}btn-light{% endif %}" role="button" title="{{user_by_id(settings.id).username}}">
 							<strong>
 								{{loop.index}}
 							</strong>

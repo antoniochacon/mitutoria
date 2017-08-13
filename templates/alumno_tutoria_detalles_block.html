@@ -15,16 +15,16 @@
 </span>
 <div class="row">
 	<br><br>
-	<div class="contenido-5">
+	<div class="contenido_5">
 		<form action="/alumnos" method="POST" name="analisis{{tutoria.id}}">
 			<input type="hidden" name="current_tutoria_id" value="{{hashids_encode(tutoria.id)}}">
 			<div class="btn-group" role="group" aria-label="...">
-				<button role="button" type="submit" name="selector_button" value="selector_tutoria_analisis" class="btn {% if tutoria.activa %} btn-primary {% else %} btn-light {% endif %}" title="ver informes">
+				<button role="button" type="submit" name="selector_button" value="selector_tutoria_analisis" class="btn {% if tutoria.activa %} btn-outline-primary {% else %} btn-outline-dark{% endif %}" title="ver informes">
 					<i class="material-icons vertical-center">equalizer</i>
 					informes
 				</button>
 				{% if equal_str(tutoria.id, params['current_tutoria_id'])and params['collapse_tutorias'] %}
-					<button role="button" type="submit" name="selector_button" value="selector_tutoria_analisis_close" class="btn {% if tutoria.activa %} btn-light {% else %} btn-light {% endif %}" title="cerrar">
+					<button role="button" type="submit" name="selector_button" value="selector_tutoria_analisis_close" class="btn {% if tutoria.activa %} btn-outline-dark{% else %} btn-outline-dark{% endif %}" title="cerrar">
 						<i class="material-icons
 				vertical-center">close</i>
 					</button>

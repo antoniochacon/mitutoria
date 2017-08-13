@@ -1,7 +1,8 @@
-<div class="contenido">
+<div>
 	{% for tutoria in grupo_tutorias(grupo_activo().id, True) %}
-		<a href="/analisis/{{dic_encode_args({'current_tutoria_id': tutoria.id})}}" class="list-group-item-7" title="ver informe">
-			{{tutoria.fecha.strftime('%A') | capitalize}}
+
+		<a href="/analisis/{{dic_encode_args({'current_tutoria_id': tutoria.id})}}" class="collapse_header_2" title="ver informe">
+				&nbsp; {{tutoria.fecha.strftime('%A') | capitalize}}
 			{{tutoria.fecha.strftime('%d')}}
 			a las
 			{{tutoria.hora.strftime('%H:%M')}}

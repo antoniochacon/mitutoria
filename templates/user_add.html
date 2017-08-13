@@ -1,6 +1,7 @@
 {% extends '_layout.html' %}
 {% block body %}
-	{%from '_macro.html' import field_form, titulo_1%}
+	{%from '_macro.html' import nav_bar_top_no_session, field_form, titulo_1%}
+	{{ nav_bar_top_no_session() }}
 	<div class="col-xs-12 col-xs-offset-0 col-sm-6 col-sm-offset-3 col-md-4 col-sm-offset-4">
 		<div class="paper bg-white contenido">
 			{{titulo_1(url='user_add', bg_color='bg-primary',titulo='Crear nueva cuenta')}}
@@ -9,7 +10,7 @@
 				{{field_form(user_add.password, error=True, error_css=True, addon='password')}}
 				{{field_form(user_add.email, error=True, error_css=True, addon='@')}}
 				<div class="text-center">
-					<button role="button" type="submit" class="btn btn-primary" title="crear nueva cuenta">
+					<button role="button" type="submit" class="btn btn-outline-primary" title="crear nueva cuenta">
 						<i class="material-icons vertical-center">person_add</i>
 						crear cuenta</button>
 				</div>

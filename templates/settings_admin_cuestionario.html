@@ -19,7 +19,7 @@
 				{% for pregunta in preguntas %}
 					<a id="anchor_pre_{{hashids_encode(pregunta.id)}}"></a>
 					<a href="#pregunta_listado{{hashids_encode(pregunta.id)}}" class="list-group-item-1" data-toggle="collapse" data-parent="#pregunta" aria-expanded="true" aria-controls="collapse{{hashids_encode(pregunta.id)}}" title="{{pregunta.enunciado_ticker}}">
-						<span class="btn btn-sm {% if pregunta_visible_check(pregunta.id) %} btn-primary {% else %} btn-light {% endif %}" role="button" title="{{pregunta.enunciado_ticker}}" }>
+						<span class="btn btn-sm {% if pregunta_visible_check(pregunta.id) %} btn-outline-primary {% else %} btn-outline-dark{% endif %}" role="button" title="{{pregunta.enunciado_ticker}}" }>
 							<strong>
 								{{pregunta.orden}}
 							</strong>
@@ -45,7 +45,7 @@
 						<div class="card_XXX-group" id="pregunta{{pregunta.id}}" role="tablist" aria-multiselectable="true">
 							<div class="card_XXX">
 								{# TODO: pregunta_edit (no se puede insertar por include por el contador loop)#}
-								<div class="contenido-2">
+								<div class="contenido_2">
 									<form action="/settings_admin_cuestionario" method="POST">
 										{% if equal_str(pregunta.id, params['current_pregunta_id'])and request.method == 'POST' %}
 											{{field_form(pregunta_edit.enunciado, error=True, error_css=True, addon='enunciado')}}
@@ -63,10 +63,10 @@
 											<div class="row">
 												<div class="col-xs-6">
 													<div class="btn-group-vertical" role="group" aria-label="...">
-														<button role="button" type="submit" name="selector_button" value="selector_move_up" class="btn btn-light" {% if loop.first %} disabled="disabled" {% endif %} title="subir">
+														<button role="button" type="submit" name="selector_button" value="selector_move_up" class="btn btn-outline-dark" {% if loop.first %} disabled="disabled" {% endif %} title="subir">
 															<i class="material-icons vertical-center">arrow_upward</i>
 														</button>
-														<button role="button" type="submit" name="selector_button" value="selector_move_down" class="btn btn-light" {% if loop.last %} disabled="disabled" {% endif %} title="bajar">
+														<button role="button" type="submit" name="selector_button" value="selector_move_down" class="btn btn-outline-dark" {% if loop.last %} disabled="disabled" {% endif %} title="bajar">
 															<i class="material-icons vertical-center">arrow_downward</i>
 														</button>
 													</div>
@@ -97,10 +97,10 @@
 											<div class="row">
 												<div class="col-xs-6">
 													<div class="btn-group-vertical" role="group" aria-label="...">
-														<button role="button" type="submit" name="selector_button" value="selector_move_up" class="btn btn-light" title="subir">
+														<button role="button" type="submit" name="selector_button" value="selector_move_up" class="btn btn-outline-dark" title="subir">
 															<i class="material-icons vertical-center">arrow_upward</i>
 														</button>
-														<button role="button" type="submit" name="selector_button" value="selector_move_down" class="btn btn-light" title="bajar">
+														<button role="button" type="submit" name="selector_button" value="selector_move_down" class="btn btn-outline-dark" title="bajar">
 															<i class="material-icons vertical-center">arrow_downward</i>
 														</button>
 													</div>
@@ -129,7 +129,7 @@
 													<i class="material-icons vertical-center">delete</i>
 													confirmar eliminar
 												</button>
-												<button role="button" type="submit" name="selector_button" value="selector_pregunta_delete_close" class="btn btn-light" title="cancelar eliminar">
+												<button role="button" type="submit" name="selector_button" value="selector_pregunta_delete_close" class="btn btn-outline-dark" title="cancelar eliminar">
 													<i class="material-icons vertical-center">close</i>
 												</button>
 											</div>
@@ -140,18 +140,18 @@
 											</span>
 										{% else %}
 											<div class="btn-group" role="group" aria-label="...">
-												<button role="button" type="submit" name="selector_button" value="selector_pregunta_edit" class="btn btn-primary" title="guardar cambios">
+												<button role="button" type="submit" name="selector_button" value="selector_pregunta_edit" class="btn btn-outline-primary" title="guardar cambios">
 													<i class="material-icons vertical-center">save</i>
 													guardar
 												</button>
-												<button role="button" type="submit" name="selector_button" value="selector_pregunta_edit_rollback" class="btn btn-light" title="deshacer cambios">
+												<button role="button" type="submit" name="selector_button" value="selector_pregunta_edit_rollback" class="btn btn-outline-dark" title="deshacer cambios">
 													<i class="material-icons vertical-center">settings_backup_restore</i>
 												</button>
-												<button role="button" type="submit" name="selector_button" value="selector_pregunta_delete_link" class="btn btn-light" title="eliminar pregunta">
+												<button role="button" type="submit" name="selector_button" value="selector_pregunta_delete_link" class="btn btn-outline-dark" title="eliminar pregunta">
 													<i class="material-icons vertical-center">delete</i>
 												</button>
 												{% if params['collapse_pregunta_edit'] %}
-													<button role="button" type="submit" name="selector_button" value="selector_pregunta_edit_close" class="btn btn-light" title="cerrar">
+													<button role="button" type="submit" name="selector_button" value="selector_pregunta_edit_close" class="btn btn-outline-dark" title="cerrar">
 														<i class="material-icons vertical-center">close</i>
 													</button>
 												{% endif %}

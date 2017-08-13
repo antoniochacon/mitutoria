@@ -1,8 +1,9 @@
 {% extends '_layout.html' %}
 {% block body %}
-	{%from '_macro.html' import titulo_1, highcharts_asignatura,highcharts_cuestionario,highcharts_asignaturas, highcharts_evalucion, highcharts_tutoria_stats%}
+	{%from '_macro.html' import nav_bar_top, titulo_1, highcharts_asignatura,highcharts_cuestionario,highcharts_asignaturas, highcharts_evalucion, highcharts_tutoria_stats%}
+	{{ nav_bar_top(link_active='None',params=params) }}
 	<div class="paper bg-white contenido">
-		<div class="contenido-3">
+		<div class="contenido_3">
 			{% if grupo and alumno and tutoria %}
 				<div class="row">
 					<div class="col-xs-2 col-fix-125">
@@ -24,7 +25,7 @@
 					<br>
 					Hora:
 					{{tutoria.hora.strftime('%H:%M')}}
-					<div class="contenido-6 pull-right">
+					<div class="contenido_6 pull-right">
 						<form action="/tutoria_edit" method="POST" name="analisis{{hashids_encode(tutoria.id)}}">
 							<input type="hidden" name="current_tutoria_id" value="{{hashids_encode(tutoria.id)}}">
 							{% if params['tutoria_delete_link'] %}
@@ -33,11 +34,11 @@
 										<i class="material-icons vertical-center">delete</i>
 										confirmar eliminar</button>
 									{% if tutoria.activa %}
-										<button role="button" type="submit" name="selector_button" value="selector_tutoria_delete_archivar" class="btn {% if tutoria.activa %} btn-light {% else %} btn-light {% endif %}" title="archivar tutoria">
+										<button role="button" type="submit" name="selector_button" value="selector_tutoria_delete_archivar" class="btn btn-sm {% if tutoria.activa %} btn-outline-dark{% else %} btn-outline-dark{% endif %}" title="archivar tutoria">
 											<i class="material-icons vertical-center {% if tutoria.activa %} color-gray-darken-1 {% endif %}">file_download</i>
 										</button>
 									{% endif %}
-									<button role="button" type="submit" name="selector_button" value="selector_tutoria_delete_link_close" class="btn btn-light" title="cancelar eliminar">
+									<button role="button" type="submit" name="selector_button" value="selector_tutoria_delete_link_close" class="btn btn-outline-dark" title="cancelar eliminar">
 										<i class="material-icons vertical-center">close</i>
 									</button>
 								</div>
@@ -49,14 +50,14 @@
 									Una vez elminada no podra ser recuperada.</span>
 							{% else %}
 								<div class="btn-group" role="group" aria-label="...">
-									<button role="button" type="submit" name="selector_button" value="selector_tutoria_edit_link" class="btn {% if tutoria.activa %} btn-light {% else %} btn-light {% endif %}" title="cambiar fecha y hora">
+									<button role="button" type="submit" name="selector_button" value="selector_tutoria_edit_link" class="btn {% if tutoria.activa %} btn-outline-dark{% else %} btn-outline-dark{% endif %}" title="cambiar fecha y hora">
 										<i class="material-icons vertical-center  {% if tutoria.activa %} color-gray-darken-1 {% endif %}">edit</i>
 									</button>
-									<button role="button" type="submit" name="selector_button" value="selector_tutoria_re_enviar_link" class="btn {% if tutoria.activa %} btn-light {% else %} btn-light {% endif %}" title="reenviar emails">
+									<button role="button" type="submit" name="selector_button" value="selector_tutoria_re_enviar_link" class="btn {% if tutoria.activa %} btn-outline-dark{% else %} btn-outline-dark{% endif %}" title="reenviar emails">
 										<i class="material-icons vertical-center {% if tutoria.activa %} color-gray-darken-1 {% endif %}">email</i>
 									</button>
 									{% if tutoria.activa %}
-										<button role="button" type="submit" name="selector_button" value="selector_tutoria_archivar" class="btn {% if tutoria.activa %} btn-light {% else %} btn-light {% endif %}" title="archivar tutoria">
+										<button role="button" type="submit" name="selector_button" value="selector_tutoria_archivar" class="btn {% if tutoria.activa %} btn-outline-dark{% else %} btn-outline-dark{% endif %}" title="archivar tutoria">
 											<i class="material-icons vertical-center {% if tutoria.activa %} color-gray-darken-1 {% endif %}">file_download</i>
 										</button>
 									{% else %}
@@ -64,10 +65,10 @@
 											<i class="material-icons vertical-center">file_upload</i>
 										</button>
 									{% endif %}
-									<button role="button" type="submit" name="selector_button" value="selector_tutoria_delete_link" class="btn {% if tutoria.activa %} btn-light {% else %} btn-light {% endif %} " title="eliminar tutoria">
+									<button role="button" type="submit" name="selector_button" value="selector_tutoria_delete_link" class="btn {% if tutoria.activa %} btn-outline-dark{% else %} btn-outline-dark{% endif %} " title="eliminar tutoria">
 										<i class="material-icons vertical-center{% if tutoria.activa %} color-gray-darken-1 {% endif %}">delete</i>
 									</button>
-									<button role="button" type="submit" name="selector_button" value="selector_tutoria_regresar_alumno" class="btn {% if tutoria.activa %} btn-light {% else %} btn-light {% endif %}" title="regresar a {{alumno.nombre}}">
+									<button role="button" type="submit" name="selector_button" value="selector_tutoria_regresar_alumno" class="btn {% if tutoria.activa %} btn-outline-dark{% else %} btn-outline-dark{% endif %}" title="regresar a {{alumno.nombre}}">
 										<i class="material-icons vertical-center {% if tutoria.activa %} color-gray-darken-1 {% endif %}">person</i>
 									</button>
 								</div>
@@ -112,7 +113,7 @@
 				</a>
 				<div class="collapse in" id="analisis_detallado_asignaturas">
 					<div class="row">
-						<div class="contenido-3">
+						<div class="contenido_3">
 							<div class="contenido">
 								{% if not df_asignaturas_lista(df_data, tutoria.id) %}
 									<span class="text-info">No se han recibido ningun informe para esta tutoría.</span>
@@ -234,11 +235,11 @@
 					<br>
 				</div>
 			{% else %}
-				<div class="contenido-2 text-warning text-center">
+				<div class="contenido_2 text-warning text-center">
 					No se dispone de analisis para esta turoria.
 					<br><br>
 					<div class="btn-group" role="group" aria-label="...">
-						<a class="btn btn-light" href="/alumnos" role="button">listado de alumnos</a>
+						<a class="btn btn-outline-dark" href="/alumnos" role="button">listado de alumnos</a>
 					</div>
 				</div>
 			{% endif %}

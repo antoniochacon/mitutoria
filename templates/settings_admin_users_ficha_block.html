@@ -1,5 +1,5 @@
 <div class="card_XXX">
-	<div class="contenido-2">
+	<div class="contenido_2">
 		<form action="/settings_admin_users" method="POST">
 			<div class="row">
 				{% if equal_str(settings.id, params['current_settings_id']) and request.method=='POST'%}
@@ -57,7 +57,7 @@
 					{{settings.visit_last.strftime('%Y-%m-%d')}}
 					<br>
 					<h6></h6>
-					<a class="btn btn-light" href="/user_ficha_grupos/{{dic_encode_args({'current_user_id': settings.id})}}" role="button">Ficha completa</a>
+					<a class="btn btn-outline-dark" href="/user_ficha_grupos/{{dic_encode_args({'current_user_id': settings.id})}}" role="button">Ficha completa</a>
 				</div>
 				{# TODO: fin datos de usuario #}
 			</div>

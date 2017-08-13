@@ -1,24 +1,32 @@
 <a id="anchor_alu_{{hashids_encode(alumno.id)}}"></a>
-<a data-toggle="collapse" data-parent="#parent_alumno" href="#alumno_{{hashids_encode(alumno.id)}}" class="list-group-item-1" aria-expanded="false" title="{{alumno.apellidos}}, {{alumno.nombre}}">
-	<span
-		class="btn {% if not alumno_asignaturas(alumno.id) %} btn-warning {% else %} {% if alumno_tutorias(alumno.id, True) %} btn-primary {% else %} btn-light color-gray-darken-2 {% endif %} {% endif %}"
-		role="button"
-		title="{% if not alumno_asignaturas(alumno.id) %} sin asignaturas asignadas {% else %}{{alumno.apellidos}}, {{alumno.nombre}} {% endif %}">
-		<strong>
-			{{alumno.apellidos | first | upper}}
-		</strong>
-	</span>
-	<span class="hidden-sm hidden-md hidden-lg">
-		&nbsp;
-		{{alumno.apellidos | truncate(10,true,'..',0)}},
-		{{alumno.nombre | truncate(15,true,'..',0)}}
-	</span>
-	<span class="hidden-xs">
-		&nbsp;
-		{{alumno.apellidos}},
-		{{alumno.nombre}}
-	</span>
-	{% if alumno_tutorias(alumno.id, '') %}
+<a data-toggle="collapse" data-parent="#parent_alumno" href="#alumno_{{hashids_encode(alumno.id)}}" class="collapse_header_1" aria-expanded="false" title="{{alumno.apellidos}}, {{alumno.nombre}}">
+
+	<div class="media">
+		<span class="capital {% if not alumno_asignaturas(alumno.id) %} capital-warning {% else %} {% if alumno_tutorias(alumno.id, True) %} capital-primary active {% else %} capital-gray {% endif %} {% endif %}">A</span>
+		<div class="media-body">
+			<div class="contenido_3">
+				{{alumno.apellidos}},
+				{{alumno.nombre}}
+				{# NOTE badge #}
+				{% if alumno_tutorias(alumno.id, '') %}
+					{% if alumno_tutorias(alumno.id, True) %}
+						<span
+							class="badge badge-primary"
+							title="{{alumno_tutorias(alumno.id, True) | count}} {{singular_plural('tutoria','tutorias', alumno_tutorias(alumno.id, True) | count)}}  {{singular_plural('solicitada','solicitadas', alumno_tutorias(alumno.id, True) | count)}}">
+							{{alumno_tutorias(alumno.id, True) | count}}
+							{{singular_plural('tutoria','tutorias', alumno_tutorias(alumno.id, True) | count)}}
+						</span>
+					{% else %}
+						<span class="badge tag-pill badge tag-pill-primary vertical-center" title="{{alumno_tutorias(alumno.id, '')|count}} {{singular_plural('tutoria','tutorias', alumno_tutorias(alumno.id, '') | count)}} en total">
+							{{alumno_tutorias(alumno.id, '')|count}}
+						</span>
+					{% endif %}
+				{% endif %}
+			</div>
+
+		</div>
+	</div>
+	<!-- {% if alumno_tutorias(alumno.id, '') %}
 		{% if alumno_tutorias(alumno.id, True) %}
 			<span
 				class="badge tag-pill badge tag-pill-success padding_left_1 vertical-center"
@@ -31,7 +39,7 @@
 				{{alumno_tutorias(alumno.id, '')|count}}
 			</span>
 		{% endif %}
-	{% endif %}
+	{% endif %} -->
 </a>
 <div id="alumno_{{hashids_encode(alumno.id)}}" class="collapse {% if equal_str(alumno.id, params['current_alumno_id']) and params['collapse_alumno'] %} in {% endif %}">
 	<div class="card_XXX">

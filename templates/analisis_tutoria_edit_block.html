@@ -35,15 +35,15 @@
 				<br>
 			</div>
 			<div class="btn-group" role="group" aria-label="...">
-				<button role="button" type="submit" class="btn {% if tutoria.activa %} btn-primary {% else %} btn-light {% endif %}" name="selector_button" value="selector_tutoria_edit" title="guardar cambios">
+				<button role="button" type="submit" class="btn {% if tutoria.activa %} btn-outline-primary {% else %} btn-outline-dark{% endif %}" name="selector_button" value="selector_tutoria_edit" title="guardar cambios">
 					<i class="material-icons vertical-center">save</i>
 					Guardar
 				</button>
 			</button>
-			<button role="button" type="submit" name="selector_button" value="selector_tutoria_edit_rollback" class="btn {% if tutoria.activa %} btn-light {% else %} btn-light {% endif %}" title="deshacer cambios">
+			<button role="button" type="submit" name="selector_button" value="selector_tutoria_edit_rollback" class="btn {% if tutoria.activa %} btn-outline-dark{% else %} btn-outline-dark{% endif %}" title="deshacer cambios">
 				<i class="material-icons vertical-center {% if tutoria.activa %} color-gray-darken-1 {% endif %}">settings_backup_restore</i>
 			</button>
-			<button role="button" type="submit" name="selector_button" value="selector_tutoria_edit_close" class="btn {% if tutoria.activa %} btn-light {% else %} btn-light {% endif %}" title="cerrar">
+			<button role="button" type="submit" name="selector_button" value="selector_tutoria_edit_close" class="btn {% if tutoria.activa %} btn-outline-dark{% else %} btn-outline-dark{% endif %}" title="cerrar">
 				<i class="material-icons vertical-center {% if tutoria.activa %} color-gray-darken-1 {% endif %}">close</i>
 			</button>
 		</div>

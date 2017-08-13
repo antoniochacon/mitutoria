@@ -3,7 +3,7 @@
 		<button role="button" type="submit" name="selector_button" value="selector_user_delete" class="btn btn-warning" title="confirmar eliminar asginatura">
 			<i class="material-icons vertical-center">delete</i>
 			confirmar eliminar</button>
-		<button role="button" type="submit" name="selector_button" value="selector_user_delete_close" class="btn btn-light" title="cancelar eliminar">
+		<button role="button" type="submit" name="selector_button" value="selector_user_delete_close" class="btn btn-outline-dark" title="cancelar eliminar">
 			<i class="material-icons vertical-center">close</i>
 		</button>
 	</div>
@@ -14,16 +14,16 @@
 	</span>
 {% else %}
 	<div class="btn-group" role="group" aria-label="...">
-		<button role="button" type="submit" name="selector_button" value="selector_user_edit" class="btn btn-primary" title="guardar cambios">
+		<button role="button" type="submit" name="selector_button" value="selector_user_edit" class="btn btn-outline-primary" title="guardar cambios">
 			<i class="material-icons vertical-center">save</i>
 			guardar</button>
-		<button role="button" type="submit" name="selector_button" value="selector_user_edit_rollback" class="btn btn-light" title="deshacer cambios">
+		<button role="button" type="submit" name="selector_button" value="selector_user_edit_rollback" class="btn btn-outline-dark" title="deshacer cambios">
 			<i class="material-icons vertical-center">settings_backup_restore</i>
-			<button role="button" type="submit" name="selector_button" value="selector_user_delete_link" class="btn btn-light" title="eliminar usuario">
+			<button role="button" type="submit" name="selector_button" value="selector_user_delete_link" class="btn btn-outline-dark" title="eliminar usuario">
 				<i class="material-icons vertical-center">delete</i>
 			</button>
 			{% if equal_str(settings.id, params['current_settings_id'])and params['collapse_user_edit'] %}
-				<button role="button" type="submit" name="selector_button" value="selector_user_edit_close" class="btn btn-light" title="cerrar">
+				<button role="button" type="submit" name="selector_button" value="selector_user_edit_close" class="btn btn-outline-dark" title="cerrar">
 					<i class="material-icons vertical-center">close</i>
 				</button>
 			{% endif %}

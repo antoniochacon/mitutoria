@@ -1,5 +1,5 @@
 <div class="card_XXX">
-	<div class="contenido-2">
+	<div class="contenido_2">
 		<form action="/alumnos" class="form-inline" action="alumnos" method="POST">
 			{% if equal_str(alumno.id, params['current_alumno_id']) and  request.method == 'POST' and params['collapse_tutoria_add'] and not params['from_url']%}
 				<div class="input-group form-group {% if tutoria_add.fecha.errors%} has-error {% else %} has-success {% endif %}">
@@ -30,11 +30,11 @@
 			{% endif %}
 			<input class="form-group form-control" type="hidden" name="current_alumno_id" value={{hashids_encode(alumno.id)}}>
 			<div class="btn-group" role="group" aria-label="...">
-				<button role="button" type="submit" class="btn btn-primary" name="selector_button" value="selector_tutoria_add" title="solicitar tutoria">
+				<button role="button" type="submit" class="btn btn-outline-primary" name="selector_button" value="selector_tutoria_add" title="solicitar tutoria">
 					<i class="material-icons vertical-center">local_post_office</i>
 					Solicitar</button>
 				{% if equal_str(alumno.id, params['current_alumno_id']) and params['collapse_tutoria_add']%}
-					<button role="button" type="submit" name="selector_button" value="selector_tutoria_add_close" class="btn btn-light" title="Cerrar">
+					<button role="button" type="submit" name="selector_button" value="selector_tutoria_add_close" class="btn btn-outline-dark" title="Cerrar">
 						<i class="material-icons vertical-center">close</i>
 					</button>
 				{% endif %}
