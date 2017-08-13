@@ -6,7 +6,7 @@
 		|
 		{{alumnos_not_sorted()|count}}</span>
 </a>
-<div id="asignatura_alumnos_{{hashids_encode(asignatura.id)}}" class="collapse {% if equal_str(asignatura.id, params['current_asignatura_id']) and params['collapse_asignaturas_edit_alumnos'] %} in {% endif %}">
+<div id="asignatura_alumnos_{{hashids_encode(asignatura.id)}}" class="collapse {% if equal_str(asignatura.id, params['current_asignatura_id']) and params['collapse_asignaturas_edit_alumnos'] %} show {% endif %}">
 	<div class="card_XXX">
 		<div class="contenido_2">
 			<a href="/alumnos" class="list-group-item-5" title="Agregar alumno">

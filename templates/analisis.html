@@ -89,7 +89,7 @@
 					<i class="material-icons vertical-center">expand_more</i>
 					Analisis del cuestionario
 				</a>
-				<div class="collapse {% if not (params['tutoria_edit_link'] or params['tutoria_re_enviar_link']) %} in {% endif %}" id="analisis_cuestionario">
+				<div class="collapse {% if not (params['tutoria_edit_link'] or params['tutoria_re_enviar_link']) %} show {% endif %}" id="analisis_cuestionario">
 					<br>
 					<div class="row">
 						{{highcharts_cuestionario(char_id='cuestionario', titulo='', color='#ffa000', df_data=df_data, grupo=grupo, tutoria_id=tutoria.id)}}

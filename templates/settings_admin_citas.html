@@ -16,7 +16,7 @@
 						{{singular_plural('cita','citas', citas | count)}}
 					</span>
 				</a>
-				<div class="collapse {% if params['collapse_cita_add'] %} in {% endif %}" id="cita_add">
+				<div class="collapse {% if params['collapse_cita_add'] %} show {% endif %}" id="cita_add">
 					<div class="dropdown-divider grueso bg-primary"></div>
 					{% include 'settings_admin_citas_add_block.html' %}
 					<div class="dropdown-divider grueso bg-primary"></div>

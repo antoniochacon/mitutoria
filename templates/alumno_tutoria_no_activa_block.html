@@ -13,7 +13,7 @@
 	<div class="progress">
 		<div class="progress-bar bg-gray-3" role="progressbar" aria-valuemin="0" aria-valuemax="100" style="width: {{cociente_porcentual(tutoria_informes(tutoria.id) | count, tutoria_asignaturas_count(tutoria.id))}}%;"></div>
 	</div>
-	<div id="tutoria_{{hashids_encode(tutoria.id)}}" class="collapse {% if equal_str(tutoria.id, params['current_tutoria_id']) and params['collapse_tutoria_no_activas'] %} in {% endif %}">
+	<div id="tutoria_{{hashids_encode(tutoria.id)}}" class="collapse {% if equal_str(tutoria.id, params['current_tutoria_id']) and params['collapse_tutoria_no_activas'] %} show {% endif %}">
 		<div class="card_XXX">
 			{% include 'alumno_tutoria_detalles_block.html' %}
 		</div>

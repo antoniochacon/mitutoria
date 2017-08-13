@@ -11,7 +11,7 @@
 				{% if alumno_tutorias(alumno.id, '') %}
 					{% if alumno_tutorias(alumno.id, True) %}
 						<span
-							class="badge badge-primary"
+							class="badge badge-primary vertical-center"
 							title="{{alumno_tutorias(alumno.id, True) | count}} {{singular_plural('tutoria','tutorias', alumno_tutorias(alumno.id, True) | count)}}  {{singular_plural('solicitada','solicitadas', alumno_tutorias(alumno.id, True) | count)}}">
 							{{alumno_tutorias(alumno.id, True) | count}}
 							{{singular_plural('tutoria','tutorias', alumno_tutorias(alumno.id, True) | count)}}
@@ -26,22 +26,9 @@
 
 		</div>
 	</div>
-	<!-- {% if alumno_tutorias(alumno.id, '') %}
-		{% if alumno_tutorias(alumno.id, True) %}
-			<span
-				class="badge tag-pill badge tag-pill-success padding_left_1 vertical-center"
-				title="{{alumno_tutorias(alumno.id, True) | count}} {{singular_plural('tutoria','tutorias', alumno_tutorias(alumno.id, True) | count)}}  {{singular_plural('solicitada','solicitadas', alumno_tutorias(alumno.id, True) | count)}}">
-				{{alumno_tutorias(alumno.id, True) | count}}
-				{{singular_plural('tutoria','tutorias', alumno_tutorias(alumno.id, True) | count)}}
-			</span>
-		{% else %}
-			<span class="badge tag-pill badge tag-pill-info vertical-center" title="{{alumno_tutorias(alumno.id, '')|count}} {{singular_plural('tutoria','tutorias', alumno_tutorias(alumno.id, '') | count)}} en total">
-				{{alumno_tutorias(alumno.id, '')|count}}
-			</span>
-		{% endif %}
-	{% endif %} -->
+
 </a>
-<div id="alumno_{{hashids_encode(alumno.id)}}" class="collapse {% if equal_str(alumno.id, params['current_alumno_id']) and params['collapse_alumno'] %} in {% endif %}">
+<div id="alumno_{{hashids_encode(alumno.id)}}" class="collapse {% if equal_str(alumno.id, params['current_alumno_id']) and params['collapse_alumno'] %} show {% endif %}">
 	<div class="card_XXX">
 		<div class="dropdown-divider grueso bg-primary"></div>
 		<div class="card_XXX-group" id="alumno_set_{{hashids_encode(alumno.id)}}" aria-multiselectable="true">
@@ -50,7 +37,7 @@
 				<a data-toggle="collapse" data-parent="#alumno_set_{{hashids_encode(alumno.id)}}" href="#tutoria_add_{{hashids_encode(alumno.id)}}" class="list-group-item-6" aria-expanded="false">
 					<i class="material-icons vertical-center">expand_more</i>Solicitar tutoria
 				</a>
-				<div id="tutoria_add_{{hashids_encode(alumno.id)}}" class="collapse {% if equal_str(alumno.id, params['current_alumno_id']) and params['collapse_tutoria_add'] %} in {% endif %}">
+				<div id="tutoria_add_{{hashids_encode(alumno.id)}}" class="collapse {% if equal_str(alumno.id, params['current_alumno_id']) and params['collapse_tutoria_add'] %} show {% endif %}">
 					{% include "alumno_tutoria_add_block.html" %}
 				</div>
 			</div>
@@ -59,7 +46,7 @@
 				<a data-toggle="collapse" data-parent="#alumno_set_{{hashids_encode(alumno.id)}}" href="#tutorias_listado_{{hashids_encode(alumno.id)}}" class="list-group-item-6" aria-expanded="false">
 					<i class="material-icons vertical-center">expand_more</i>Tutorias
 				</a>
-				<div id="tutorias_listado_{{hashids_encode(alumno.id)}}" class="collapse {% if (equal_str(alumno.id, params['current_alumno_id']) and (params['collapse_tutorias']) or alumno_tutorias(alumno.id, True)) %} in {% endif %}">
+				<div id="tutorias_listado_{{hashids_encode(alumno.id)}}" class="collapse {% if (equal_str(alumno.id, params['current_alumno_id']) and (params['collapse_tutorias']) or alumno_tutorias(alumno.id, True)) %} show {% endif %}">
 					{% include "alumno_tutorias_block.html" %}
 				</div>
 			</div>
@@ -68,7 +55,7 @@
 				<a data-toggle="collapse" data-parent="#alumno_set_{{hashids_encode(alumno.id)}}" href="#alumno_ficha_{{hashids_encode(alumno.id)}}" class="list-group-item-6" aria-expanded="false">
 					<i class="material-icons vertical-center">expand_more</i>Ficha
 				</a>
-				<div id="alumno_ficha_{{hashids_encode(alumno.id)}}" class="collapse {% if equal_str(alumno.id, params['current_alumno_id']) and params['collapse_alumno_edit'] %} in {% endif %}">
+				<div id="alumno_ficha_{{hashids_encode(alumno.id)}}" class="collapse {% if equal_str(alumno.id, params['current_alumno_id']) and params['collapse_alumno_edit'] %} show {% endif %}">
 					{% include "alumno_ficha_block.html" %}
 				</div>
 			</div>

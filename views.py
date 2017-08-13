@@ -206,7 +206,7 @@ def alumnos_html(params={}):
                 if alumno:
                     alumno_add_form.nombre.errors = ['']
                     alumno_add_form.apellidos.errors = ['']
-                    flash_toast(Markup('<strong>') + alumno_add_form.nombre.data.title() + Markup('</strong>') + ' ' + Markup('<strong>') + alumno_add_form.apellidos.data.title() + Markup('</strong>') + ' ya existe', 'warning')
+                    flash_toast(Markup('<strong>') + alumno_add_form.nombre.data.title() + Markup('</strong>') + ' ' + Markup('<strong>') + alumno_add_form.apellidos.data.title() + Markup('</strong>') + ' ya esta registrado', 'warning')
                     return render_template(
                         'alumnos.html', fab=fab, alumno_add=alumno_add_form, alumno_edit=Alumno_Add(), tutoria_add=Tutoria_Add(),
                         params=params)
@@ -216,13 +216,17 @@ def alumnos_html(params={}):
                     session_sql.add(alumno_add)
                     session_sql.commit()
 
-                    flash_toast(Markup('<strong>') + alumno_add_form.nombre.data.title() + Markup('</strong>') + ' se agrego correctamente', 'success')
+                    flash_toast(Markup('<strong>') + alumno_add_form.nombre.data.title() + Markup('</strong>') + ' agregado', 'success')
                     return redirect(url_for('alumnos_html', params=dic_encode(params)))
             else:
                 flash_wtforms(alumno_add_form, flash_toast, 'warning')
                 return render_template(
                     'alumnos.html', fab=fab, alumno_add=alumno_add_form, alumno_edit=Alumno_Add(), tutoria_add=Tutoria_Add(),
                     params=params)
+
+        # XXX selector_alumno_add_cerrar
+        if request.form['selector_button'] == 'selector_alumno_add_cerrar':
+            return redirect(url_for('alumnos_html'))
 
         # XXX alumno_importar_link
         if request.form['selector_button'] == 'selector_alumno_importar_link':
@@ -259,7 +263,7 @@ def alumnos_html(params={}):
                             session_sql.add(alumno_add)
                     session_sql.commit()
                     if alumno_add_contador != 0:
-                        flash_toast(Markup('<strong>') + str(alumno_add_contador) + Markup('</strong>') + ' ' + singular_plural('alumno', 'alumnos', alumno_add_contador) + ' ' + singular_plural('agregado', 'agregados', alumno_add_contador) + ' correctamente', 'success')
+                        flash_toast(Markup('<strong>') + str(alumno_add_contador) + Markup('</strong>') + ' ' + singular_plural('alumno', 'alumnos', alumno_add_contador) + ' ' + singular_plural('agregado', 'agregados', alumno_add_contador), 'success')
                     if alumno_repetido_contador != 0:
                         flash_toast(Markup('<strong>') + str(alumno_repetido_contador) + Markup('</strong>') + ' ' + singular_plural('alumno', 'alumnos', alumno_repetido_contador) + ' descartados, ya estan registrados', 'warning')
                     return redirect(url_for('alumnos_html'))
@@ -328,7 +332,7 @@ def alumnos_html(params={}):
             else:
                 if collapse_alumno_edit_asignaturas_contador != 0:
                     params['collapse_alumno_edit_asignaturas'] = True
-                    flash_toast('Asignaturas de ' + Markup('<strong>') + alumno_edit_form.nombre.data + Markup('</strong>') + ' asignadas correctamente', 'success')
+                    flash_toast('Asignadas asignaturas de ' + Markup('<strong>') + alumno_edit_form.nombre.data + Markup('</strong>'), 'success')
                     collapse_alumno_edit_asignaturas_contador = 0
                     return redirect(url_for('alumnos_html', params=dic_encode(params)))
 
@@ -380,7 +384,7 @@ def alumnos_html(params={}):
         if request.form['selector_button'] == 'selector_alumno_delete':
             alumno_delete_form = Alumno_Add(request.form)
             alumno_delete(current_alumno_id)
-            flash_toast(Markup('<strong>') + alumno_delete_form.nombre.data + Markup('</strong>') + ' elminado correctamente', 'success')
+            flash_toast(Markup('<strong>') + alumno_delete_form.nombre.data + Markup('</strong>') + ' elminado', 'success')
             return redirect(url_for('alumnos_html', params=dic_encode(params)))
 
         # XXX alumno_delete_close
@@ -457,7 +461,7 @@ def alumnos_html(params={}):
                             session_sql.add(tutoria_add)
                             session_sql.commit()
                             send_email_tutoria(alumno, tutoria_add)
-                            flash_toast('Enviando emails al equipo educativo de ' + Markup('<strong>') + alumno.nombre + Markup('</strong>'), 'info')
+                            flash_toast('Enviando emails al equipo educativo de ' + Markup('<strong>') + alumno.nombre + Markup('</strong>'), 'secondary')
                             params['current_alumno_id'] = current_alumno_id
                             params['collapse_alumno'] = True
                             params['collapse_tutorias'] = True
@@ -519,20 +523,20 @@ def settings_admin_cuestionario_html(params={}):
                     params['collapse_pregunta_add'] = True
                     if pregunta_enunciado_sql:
                         pregunta_add_form.enunciado.errors = ['']
-                        flash_toast(Markup('<strong>') + pregunta_add_form.enunciado.data + Markup('</strong>') + ' enunciado duplicado', 'warning')
+                        flash_toast('Enunciado duplicado', 'warning')
                     if pregunta_enunciado_ticker_sql:
                         pregunta_add_form.enunciado_ticker.errors = ['']
-                        flash_toast(Markup('<strong>') + pregunta_add_form.enunciado_ticker.data + Markup('</strong>') + ' ticker duplicado', 'warning')
+                        flash_toast('Ticker duplicado', 'warning')
                     if pregunta_orden_sql:
                         pregunta_add_form.orden.errors = ['']
-                        flash_toast(Markup('<strong>') + str(pregunta_add_form.orden.data) + Markup('</strong>') + ' orden duplicado', 'warning')
+                        flash_toast('Orden duplicado', 'warning')
                     return render_template(
                         'settings_admin_cuestionario.html', fab=fab,  pregunta_add=pregunta_add_form, preguntas=preguntas(''),
                         pregunta_edit=Pregunta_Add(), params=params)
                 else:
                     session_sql.add(pregunta_add)
                     session_sql.commit()
-                    flash_toast(Markup('<strong>') + pregunta_add_form.enunciado_ticker.data + Markup('</strong>') + ' se agrego correctamente', 'success')
+                    flash_toast('Pregunta agregada', 'success')
                     return redirect(url_for('settings_admin_cuestionario_html', params=dic_encode(params)))
             else:
                 params['collapse_pregunta_add'] = True
@@ -575,7 +579,7 @@ def settings_admin_cuestionario_html(params={}):
                         pregunta.visible = pregunta_edit_visible
                     if pregunta.active_default != pregunta_edit_active_default:
                         pregunta.active_default = pregunta_edit_active_default
-                    flash_toast(Markup('Pregunta actulizada correctamente', 'success'))
+                    flash_toast('Pregunta actulizada correctamente', 'success')
 
                 if request.form['selector_button'] == 'selector_move_down':
                     for k in range(1, 500):
@@ -584,7 +588,7 @@ def settings_admin_cuestionario_html(params={}):
                             move_down = int(str(pregunta.orden + k))
                             pregunta.orden = pregunta.orden + k
                             pregunta_down.orden = pregunta.orden - k
-                            flash_toast(Markup('<strong>') + pregunta_edit_form.enunciado_ticker.data + Markup('</strong>') + ' bajada', 'success')
+                            flash_toast('Pregunta bajada', 'success')
                             break
 
                 if request.form['selector_button'] == 'selector_move_up':
@@ -594,7 +598,7 @@ def settings_admin_cuestionario_html(params={}):
                             move_up = int(str(pregunta.orden - k))
                             pregunta.orden = pregunta.orden - k
                             pregunta_down.orden = pregunta.orden + k
-                            flash_toast(Markup('<strong>') + pregunta_edit_form.enunciado_ticker.data + Markup('</strong>') + ' subida', 'success')
+                            flash_toast('Pregunta subida', 'success')
                             break
 
                 session_sql.begin_nested()  # FIXME no encuetro el motivo por el cual hace un rollback de varias preguntas
@@ -638,7 +642,7 @@ def settings_admin_cuestionario_html(params={}):
             pregunta_delete = pregunta_by_id(current_pregunta_id, '')
             session_sql.delete(pregunta_delete)
             session_sql.commit()
-            flash_toast(Markup('<strong>') + pregunta_delete_form.enunciado_ticker.data + Markup('</strong>') + ' elminada correctamente', 'success')
+            flash_toast('Pregunta elminada', 'success')
             return redirect(url_for('settings_admin_cuestionario_html'))
 
         # XXX pregunta_delete_close
@@ -785,7 +789,7 @@ def tutoria_edit_html():
             current_tutoria = tutoria_by_id(current_tutoria_id)
             if current_tutoria.activa:
                 if current_tutoria.fecha < g.current_date:
-                    flash_toast('No se puede reenviar una tutoria pasada' + Markup('<br>') + 'Debe cambiar fecha y activarla', 'warning')
+                    flash_toast('No se puede reenviar una tutoria pasada' + Markup('<br>') + 'Debe cambiar fecha', 'warning')
                 else:
 
                     params['tutoria_re_enviar_link'] = True
@@ -813,7 +817,7 @@ def tutoria_edit_html():
                 print('asignaturas_id_lista:', asignaturas_id_lista)
                 print('current_tutoria_id:', current_alumno_id)
                 re_send_email_tutoria(alumno, current_tutoria, asignaturas_id_lista)
-                flash_toast('Reenviando emails al equipo educativo de ' + Markup('<strong>') + alumno.nombre + Markup('</strong>'), 'info')
+                flash_toast('Reenviando emails al equipo educativo de ' + Markup('<strong>') + alumno.nombre + Markup('</strong>'), 'secondary')
                 params['tutoria_re_enviar_link'] = False
                 return redirect(url_for('analisis_html', params=dic_encode(params)))
             else:
@@ -857,7 +861,7 @@ def tutoria_edit_html():
         if request.form['selector_button'] == 'selector_tutoria_delete':
             tutoria_delete = tutoria_by_id(current_tutoria_id)
             alumno = alumno_by_id(tutoria_delete.alumno_id)
-            flash_toast('Tutoria de ' + Markup('<strong>') + alumno.nombre + Markup('</strong>') + ' para el dia ' + Markup('<strong>') + str(tutoria_delete.fecha) + Markup('</strong><br> eliminada correctamente'), 'success')
+            flash_toast('Tutoria de ' + Markup('<strong>') + alumno.nombre + Markup('</strong>') + ' eliminada', 'success')
             session_sql.delete(tutoria_delete)
             session_sql.commit()
             return redirect(url_for('alumnos_html'))
@@ -1051,7 +1055,7 @@ def settings_admin_users_html(params={}):
                 user_sql = session_sql.query(User).filter(User.id == current_settings_id).first()
                 session_sql.delete(user_sql)
                 session_sql.commit()
-                flash_toast(Markup('Usuario <strong>') + user_sql.username + Markup('</strong>') + ' elminado correctamente', 'success')
+                flash_toast(Markup('Usuario <strong>') + user_sql.username + Markup('</strong>') + ' elminado', 'success')
                 return redirect(url_for('settings_admin_users_html'))
 
         # XXX user_delete_close
@@ -1185,7 +1189,7 @@ def settings_grupos_html(params={}):
         if request.form['selector_button'] == 'selector_grupo_delete':
             grupo_delete_form = Grupo_Add(request.form)
             grupo_delete(current_grupo_id)
-            flash_toast(Markup('Grupo <strong>') + grupo_delete_form.nombre.data + Markup('</strong>') + ' elminado correctamente', 'success')
+            flash_toast(Markup('Grupo <strong>') + grupo_delete_form.nombre.data + Markup('</strong>') + ' elminado', 'success')
             return redirect(url_for('settings_grupos_html'))
 
         # XXX selector_grupo_delete_close
@@ -1236,7 +1240,7 @@ def settings_admin_citas_html(params={}):
                 else:
                     session_sql.add(cita_add)
                     session_sql.commit()
-                    flash_toast(Markup('Cita de <strong> Cita de ') + cita_add_form.autor.data + Markup('</strong>') + ' se agrego correctamente', 'success')
+                    flash_toast('Cita agregada', 'success')
                     return redirect(url_for('settings_admin_citas_html', params=dic_encode(params)))
             else:
                 flash_wtforms(cita_add_form, flash_toast, 'warning')
@@ -1267,7 +1271,7 @@ def settings_admin_citas_html(params={}):
                         cita.autor = cita_edit.autor
                     if cita.visible != cita_edit_visible:
                         cita.visible = cita_edit_visible
-                    flash_toast(Markup('Cita de <strong>') + cita_edit.autor + Markup('</strong>') + ' actualizada', 'success')
+                    flash_toast('Cita actualizada', 'success')
                     session_sql.begin_nested()
                     session_sql.commit()
                     return redirect(url_for('settings_admin_citas_html', params=dic_encode(params)))
@@ -1305,7 +1309,7 @@ def settings_admin_citas_html(params={}):
             cita_delete_form = Cita_Add(request.form)
             cita_sql = session_sql.query(Cita).filter(Cita.id == current_cita_id).first()
             session_sql.delete(cita_sql)
-            flash_toast(Markup('Cita de <strong>') + cita_delete_form.autor.data + Markup('</strong>') + ' elminada correctamente', 'success')
+            flash_toast('Cita elminada', 'success')
             session_sql.commit()
             return redirect(url_for('settings_admin_citas_html'))
 
@@ -1486,14 +1490,14 @@ def asignaturas_html(params={}):
                 asignatura_asignatura = session_sql.query(Asignatura).filter(Asignatura.grupo_id == settings().grupo_activo_id, unaccent(func.lower(Asignatura.asignatura)) == unaccent(func.lower(asignatura_add_form.asignatura.data))).first()
                 asignatura_email = session_sql.query(Asignatura).filter(Asignatura.grupo_id == settings().grupo_activo_id, func.lower(Asignatura.email) == func.lower(asignatura_add_form.email.data)).first()
                 if asignatura_asignatura:
-                    flash_toast(Markup('<strong>') + asignatura_add_form.asignatura.data.title() + Markup('</strong>') + ' ya existe como asignautra.', 'warning')
+                    flash_toast('Esta asignatura ya existe', 'warning')
                 elif asignatura_email:
-                    flash_toast(Markup('<strong>') + asignatura_add_form.email.data.lower() + Markup('</strong>') + ' asignado a otra asignatura.', 'warning')
+                    flash_toast('Este email ya esta asignado a otra asignatura', 'warning')
                 else:
                     asignatura_add = Asignatura(grupo_id=settings().grupo_activo_id, nombre=asignatura_add_form.nombre.data.title(), apellidos=asignatura_add_form.apellidos.data.title(), asignatura=asignatura_add_form.asignatura.data.title(), email=asignatura_add_form.email.data.lower())
                     session_sql.add(asignatura_add)
                     session_sql.commit()
-                    flash_toast(Markup('<strong>') + asignatura_add_form.asignatura.data.title() + Markup('</strong>') + ' se agrego correctamente', 'success')
+                    flash_toast('Asignatura agregada', 'success')
                     return redirect(url_for('asignaturas_html'))
             else:
                 flash_wtforms(asignatura_add_form, flash_toast, 'warning')
@@ -1541,7 +1545,7 @@ def asignaturas_html(params={}):
                 if collapse_asignatura_edit_alumnos_contador != 0:
                     params['collapse_asignatura_edit'] = True
                     params['collapse_asignaturas_edit_alumnos'] = True
-                    flash_toast('Alumnos de ' + Markup('<strong>') + asignatura_edit_form.asignatura.data + Markup('</strong>') + ' asignados correctamente', 'success')
+                    flash_toast('Alumnos asignados', 'success')
                     collapse_asignatura_edit_alumnos_contador = 0
             # ****************************************
 
@@ -1568,7 +1572,7 @@ def asignaturas_html(params={}):
                             asignatura_email_unicidad_lista.append(asignatura.id)
                     if len(asignatura_email_unicidad_lista) != 0:
                         asignatura_edit_form.email.errors = ['email asignado a otra asignatura.']
-                        flash_toast(Markup('<strong>') + asignatura_edit_form.email.data + Markup('</strong>') + ' asignado a otra asignatura.', 'warning')
+                        flash_toast('Este email ya esta asignado a otra asignatura.', 'warning')
 
                 asignatura_edit = Asignatura(grupo_id=settings().grupo_activo_id, nombre=asignatura_edit_form.nombre.data.title(), apellidos=asignatura_edit_form.apellidos.data.title(), asignatura=asignatura_edit_form.asignatura.data.title(), email=asignatura_edit_form.email.data)
                 asignatura_sql = session_sql.query(Asignatura).filter(Asignatura.id == current_asignatura_id).first()
@@ -1612,7 +1616,7 @@ def asignaturas_html(params={}):
         if request.form['selector_button'] == 'selector_asignatura_delete':
             asignatura_delete_form = Asignatura_Add(request.form)
             asignatura_delete(current_asignatura_id)
-            flash_toast(Markup('<strong>') + asignatura_delete_form.nombre.data + Markup('</strong>') + ' elminado correctamente', 'success')
+            flash_toast('Asignatura elminada', 'success')
             return redirect(url_for('asignaturas_html'))
 
         # XXX asignatura_delete_close

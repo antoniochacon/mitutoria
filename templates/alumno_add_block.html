@@ -41,6 +41,11 @@
 					<i class="material-icons vertical-center">people</i>
 					importar de Seneca
 				</button>
+				{% if request.method == "POST" %}
+					<button class="btn btn-outline-dark btn-sm" type="submit" name="selector_button" value="selector_alumno_add_cerrar" title="cerrar">
+						<i class="material-icons vertical-center">close</i>
+					</button>
+				{% endif %}
 			{% endif %}
 		</div>
 	</form>

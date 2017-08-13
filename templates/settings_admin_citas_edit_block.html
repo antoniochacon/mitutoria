@@ -15,7 +15,7 @@
 			{{cita.frase}}
 		</span>
 	</a>
-	<div id="cita_listado{{hashids_encode(cita.id)}}" class="collapse {% if equal_str(cita.id, params['current_cita_id']) %} in {% endif %}" role="tabcard_XXX" aria-labelledby="heading{{hashids_encode(cita.id)}}">
+	<div id="cita_listado{{hashids_encode(cita.id)}}" class="collapse {% if equal_str(cita.id, params['current_cita_id']) %} show {% endif %}" role="tabcard_XXX" aria-labelledby="heading{{hashids_encode(cita.id)}}">
 		<div class="dropdown-divider grueso bg-primary"></div>
 		<div class="card_XXX-group" id="cita{{hashids_encode(cita.id)}}" role="tablist" aria-multiselectable="true">
 			<div class="card_XXX">

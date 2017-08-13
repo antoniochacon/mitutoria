@@ -3,7 +3,7 @@
 	<i class="material-icons vertical-center">expand_more</i>Asignaturas de
 	{{alumno.nombre}}
 </a>
-<div id="alumno_asignatura_{{hashids_encode(alumno.id)}}" class="collapse {% if equal_str(alumno.id, params['current_alumno_id']) and params['collapse_alumno_edit_asignaturas'] %} in {% endif %}">
+<div id="alumno_asignatura_{{hashids_encode(alumno.id)}}" class="collapse {% if equal_str(alumno.id, params['current_alumno_id']) and params['collapse_alumno_edit_asignaturas'] %} show {% endif %}">
 	<div class="card_XXX">
 		<div class="contenido_2">
 			<a href="/asignaturas/{{dic_encode_args({'current_alumno_id':alumno.id, 'collapse_asignatura_add': True, 'from_url':'from_alumno_edit_asignaturas'})}}" class="list-group-item-4" title="Agregar asignatura">

@@ -11,7 +11,7 @@
 					&nbsp;
 					<i class="material-icons vertical-center">group_add</i>&nbsp; agregar nueva grupo
 				</a>
-				<div class="collapse {% if params['collapse_grupo_add'] or params['login'] %} in {% endif %}" id="grupo_add">
+				<div class="collapse {% if params['collapse_grupo_add'] or params['login'] %} show {% endif %}" id="grupo_add">
 					<div class="dropdown-divider grueso bg-primary"></div>
 					<div class="contenido_2">
 						<form action="/settings_grupos" method="POST">
@@ -64,7 +64,7 @@
 							{{grupo.nombre}}
 						</span>
 					</a>
-					<div id="grupo_listado{{hashids_encode(grupo.id)}}" class="collapse {% if equal_str(grupo.id, params['current_grupo_id']) and params['collapse_grupo_edit'] %} in {% endif %}" role="tabcard_XXX" aria-labelledby="heading{{hashids_encode(grupo.id)}}">
+					<div id="grupo_listado{{hashids_encode(grupo.id)}}" class="collapse {% if equal_str(grupo.id, params['current_grupo_id']) and params['collapse_grupo_edit'] %} show {% endif %}" role="tabcard_XXX" aria-labelledby="heading{{hashids_encode(grupo.id)}}">
 						<div class="dropdown-divider grueso bg-primary"></div>
 						<div class="card_XXX-group" id="grupo{{hashids_encode(grupo.id)}}" role="tablist" aria-multiselectable="true">
 							<div class="card_XXX">

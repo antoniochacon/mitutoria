@@ -10,7 +10,7 @@
 					&nbsp;
 					<i class="material-icons vertical-center">import_contacts</i>&nbsp; &nbsp; agregar nueva asignatura
 				</a>
-				<div id="asignatura_add" class="collapse {% if params['collapse_asignatura_add'] %} in {% endif %}">
+				<div id="asignatura_add" class="collapse {% if params['collapse_asignatura_add'] %} show {% endif %}">
 					{# TODO: asignaturas_add #}
 					<div class="card_XXX">
 						{%include "asignatura_add_block.html"%}
@@ -48,7 +48,7 @@
 					<div class="progress">
 						<div class="progress-bar bg-gray-3" role="progressbar" aria-valuemin="0" aria-valuemax="100" style="width: {{cociente_porcentual(asignatura_informes_respondidos_count(asignatura.id), asignatura_informes_count(asignatura.id))}}%;"></div>
 					</div>
-					<div id="asignatura_{{hashids_encode(asignatura.id)}}" class="collapse {% if equal_str(asignatura.id, params['current_asignatura_id'])%} in {% endif %}">
+					<div id="asignatura_{{hashids_encode(asignatura.id)}}" class="collapse {% if equal_str(asignatura.id, params['current_asignatura_id'])%} show {% endif %}">
 						<div class="card_XXX">
 							{%include 'asignatura_ficha_block.html'%}
 							<div class="dropdown-divider grueso bg-primary"></div>
