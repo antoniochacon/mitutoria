@@ -448,9 +448,6 @@ def alumnos_html(params={}):
                         tutoria_add_form.fecha.errors = ['Fecha ya pasada.']
                         flash_toast('No generada esta tutoria', 'warning')
                         flash_wtforms(tutoria_add_form, flash_toast, 'warning')
-                        # return render_template(
-                        #     'alumnos.html', fab=fab, alumno_add=Alumno_Add(), alumno_edit=Alumno_Add(),
-                        #     tutoria_add=tutoria_add_form, params=params)
                     else:
                         if tutoria_sql:
                             # NOTE tutoria ya existe y redirect a al modo de edicion de la tutoria

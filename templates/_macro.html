@@ -86,10 +86,10 @@
 	<h5 class='{{text_color}} strong'>
 		{{titulo}}
 		{% if url == 'alumnos' %}
-			<span class='badge tag-pill badge tag-pill-info pull-right'>{{alumnos_not_sorted()|count}}
+			<span class='badge badge-dark float-right'>{{alumnos_not_sorted()|count}}
 				{{singular_plural('alumno', 'alumnos',alumnos_not_sorted()|count)}}</span>
 		{% elif url == 'asignaturas' %}
-			<span class='badge tag-pill badge tag-pill-info pull-right'>{{asignaturas('apellidos', 'nombre', 'asignatura') | count}}
+			<span class='badge badge-dark float-right'>{{asignaturas('apellidos', 'nombre', 'asignatura') | count}}
 				{{singular_plural('asignatura', 'asignaturas', asignaturas('apellidos', 'nombre', 'asignatura') | count)}}</span>
 		{% endif %}
 		{% if subtitulo %}
