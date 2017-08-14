@@ -1,23 +1,22 @@
-{# TODO: tutorias_activas #}
-{% for tutoria in alumno_tutorias(alumno.id, True) %}
-	<a id="anchor_tut_{{hashids_encode(tutoria.id)}}"></a>
-
-	{%include 'alumno_tutoria_detalles_block.html'%}
-
-	<br>
-	{% if not loop.last %}
-		<div class="contenido">
-			<div class="dropdown-divider bg-gray"></div>
-		</div>
-	{% endif %}
-{% endfor %}
-{# TODO: tutorias_no_activas #}
-<div class="card_XXX-group" id="tutorias_no_activas_{{hashids_encode(alumno.id)}}" aria-multiselectable="true">
-	{% for tutoria in alumno_tutorias(alumno.id, False) %}
-		{%include 'alumno_tutoria_no_activa_block.html'%}
+{% if not alumno_tutorias(alumno.id, '') %}
+	<div class="contenido text-muted">Sin tutorias</div>
+{% else %}
+	{# TODO: tutorias_activas #}
+	{% for tutoria in alumno_tutorias(alumno.id, True) %}
+		<a id="anchor_tut_{{hashids_encode(tutoria.id)}}"></a>
+		{%include 'alumno_tutoria_detalles_block.html'%}
+		<br>
+		{% if not loop.last %}
+			<div class="contenido">
+				<div class="dropdown-divider bg-gray"></div>
+			</div>
+		{% endif %}
 	{% endfor %}
-	{% if not alumno_tutorias(alumno.id, '') %}
-		<div class="contenido text-muted">Sin tutorias</div>
-	{% endif %}
-</div>
-<br>
+	{# TODO: tutorias_no_activas #}
+	<div class="card_XXX-group" id="tutorias_no_activas_{{hashids_encode(alumno.id)}}" aria-multiselectable="true">
+		{% for tutoria in alumno_tutorias(alumno.id, False) %}
+			{%include 'alumno_tutoria_no_activa_block.html'%}
+		{% endfor %}
+		<br>
+	</div>
+{% endif %}

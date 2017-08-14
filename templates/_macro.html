@@ -1,4 +1,7 @@
-{% macro nav_bar_top_no_session() %}
+{% macro nav_bar_top_no_session(link_active, dic = {
+	'Iniciar sesión': 'login',
+	'Crear nueva cuenta': 'user_add'
+}) %}
 	<nav class="navbar fixed-top navbar-expand-sm navbar-dark bg-primary z-depth-1-less">
 		<button class="navbar-toggler" role="button" type="button" data-toggle="collapse" data-target="#navbar" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
 			<span class="navbar-toggler-icon"></span>
@@ -6,9 +9,11 @@
 		<a class="navbar-brand strong" href="#">mi tutoria</a>
 		<div class="collapse navbar-collapse" id="navbar">
 			<ul class="navbar-nav mr-auto">
-				<li class="nav-item">
-					<a class="nav-link" href="/login">iniciar sesión</a>
-				</li>
+				{% for link_key in dic.keys() %}
+					<li class="nav-item {% if link_key==link_active %} active strong {% endif %}">
+						<a class="nav-link" href="/{% if link_key==link_active %}#{% else %}{{dic[link_key]}}{% endif %}">{{link_key}}</a>
+					</li>
+				{% endfor %}
 			</ul>
 		</div>
 	</nav>
@@ -26,7 +31,7 @@
 			<ul class="navbar-nav mr-auto">
 				{% for link_key in dic.keys() %}
 					{% if link_key != 'Admin' %}
-						<li class="nav-item {% if link_key==link_active %} active {% endif %}">
+						<li class="nav-item {% if link_key==link_active %} active strong {% endif %}">
 							<a class="nav-link" href="/{% if link_key==link_active %}#{% else %}{{dic[link_key]}}{% endif %}{% if params_args %}/{{params_args}}{% endif %}">{{link_key}}
 								{% if link_key == 'Logout' %}
 									[{{user_by_id(settings().id).username}}]
@@ -34,7 +39,7 @@
 							</a>
 						</li>
 					{% elif link_key == 'Admin' and settings().role == 'admin' %}
-						<li class="nav-item {% if link_key==link_active %} active {% endif %}">
+						<li class="nav-item {% if link_key==link_active %} active strong {% endif %}">
 							<a class="nav-link" href="/{% if link_key==link_active %}#{% else %}{{dic[link_key]}}{% endif %}{% if params_args %}/{{params_args}}{% endif %}">{{link_key}}</a>
 						</li>
 					{% endif %}
@@ -315,69 +320,6 @@
 			]
 		});
 	</script>
-{% endmacro %}
-{% macro field_form(field, value, label, error, error_css, addon) %}
-	<div class='form-group {% if request.method == "POST" %}{% if error_css %}{% if field.errors %} has-error {% endif %} has-success {% endif %}{% endif %}'>
-		{% if field.type == 'StringField' or field.type == 'PasswordField' or field.type == 'EmailField'%}
-			{% if label%}
-				{{field.label}}
-			{% endif %}
-			{% if addon %}
-				<div class="input-group">
-				{% endif %}
-				{% if value%}
-					{{field(class_='form-control', placeholder=field.label.text, value=value,**kwargs)|safe}}
-				{% else %}
-					{{field(class_='form-control', placeholder=field.label.text,**kwargs)|safe}}
-				{% endif %}
-				{% if addon %}
-					<span class="input-group-addon">{{addon}}</span>
-				</div>
-			{% endif %}
-		{% elif field.type == 'HiddenField' %}
-			{% if value%}
-				{{field(class_='form-control', value=value,**kwargs)|safe}}
-			{% else %}
-				{{field(class_='form-control',**kwargs)|safe}}
-			{% endif %}
-		{%elif field.type =='BooleanField'%}
-			{% if value%}
-				{{field(class_='checkbox-inline', value=value,**kwargs)|safe}}
-			{% else %}
-				{{field(class_='checkbox-inline',**kwargs)|safe}}
-			{% endif %}
-			{{field.label}}
-		{%elif field.type =='DateField'%}
-			{% if value%}
-				{{field(class_='form-control', type='date', value=value,**kwargs)|safe}}
-			{% else %}
-				{{field(class_='form-control', type='date',**kwargs)|safe}}
-			{% endif %}
-		{%elif field.type =='IntegerField'%}
-			{% if label%}
-				{{field.label}}
-			{% endif %}
-			{% if addon %}
-				<div class="input-group">
-				{% endif %}
-				{% if value%}
-					{{field(class_='form-control', type='number', step='1', placeholder=field.label.text,value=value,**kwargs)|safe}}
-				{% else %}
-					{{field(class_='form-control', type='number', step='1', placeholder=field.label.text,**kwargs)|safe}}
-				{% endif %}
-				{% if addon %}
-					<span class="input-group-addon">{{addon}}</span>
-				</div>
-			{% endif %}
-		{% endif %}
-		{% if error %}
-			{% if field.errors %}
-				{% for error in field.errors %}
-					<div class='text-warning'>{{error}}</div>
-				{% endfor %}
-			{% endif %}
-		{% endif %}
-	</div>
 {% endmacro %}
 {% macro highcharts_asignatura(char_id, asignatura, alumno, grupo, df_data, tutoria_id) %}
 	<div id='{{char_id | safe}}' class='chart' style='height: 200px'></div>
@@ -875,4 +817,72 @@
 			]
 		});
 	</script>
+{% endmacro %}
+{% macro field_form(field, value, label, error, error_css, addon, size) %}
+{#
+	<div class='form-group col-md-6 {% if request.method == "POST" %}{% if error_css %}{% if field.errors %} is-invalid {% endif %} is-valid {% endif %}{% endif %}'>
+		{% if field.type == 'StringField' or field.type == 'PasswordField' or field.type == 'EmailField'%}
+			{% if label%}
+				{{field.label}}
+			{% endif %}
+			{% if addon %}
+				<div class="input-group">
+				{% endif %}
+				{% if value%}
+					{{field(class_='form-control', placeholder=field.label.text, value=value,**kwargs)|safe}}
+				{% else %}
+					{{field(class_='form-control', placeholder=field.label.text,**kwargs)|safe}}
+				{% endif %}
+				{% if addon %}
+					<span class="input-group-addon">{{addon}}</span>
+				</div>
+			{% endif %}
+		{% elif field.type == 'HiddenField' %}
+			{% if value%}
+				{{field(class_='form-control', value=value,**kwargs)|safe}}
+			{% else %}
+				{{field(class_='form-control',**kwargs)|safe}}
+			{% endif %}
+		{%elif field.type =='BooleanField'%}
+			{% if value%}
+				{{field(class_='checkbox-inline', value=value,**kwargs)|safe}}
+			{% else %}
+				{{field(class_='checkbox-inline',**kwargs)|safe}}
+			{% endif %}
+			{{field.label}}
+		{%elif field.type =='DateField'%}
+			{% if value%}
+				{{field(class_='form-control', type='date', value=value,**kwargs)|safe}}
+			{% else %}
+				{{field(class_='form-control', type='date',**kwargs)|safe}}
+			{% endif %}
+		{%elif field.type =='IntegerField'%}
+			{% if label%}
+				{{field.label}}
+			{% endif %}
+			{% if addon %}
+				<div class="input-group">
+				{% endif %}
+				{% if value%}
+					{{field(class_='form-control', type='number', step='1', placeholder=field.label.text,value=value,**kwargs)|safe}}
+				{% else %}
+					{{field(class_='form-control', type='number', step='1', placeholder=field.label.text,**kwargs)|safe}}
+				{% endif %}
+				{% if addon %}
+					<span class="input-group-addon">{{addon}}</span>
+				</div>
+			{% endif %}
+		{% endif %}
+
+		{% if error %}
+			{% if field.errors %}
+				{% for error in field.errors %}
+					<div class='text-warning'>{{error}}</div>
+				{% endfor %}
+			{% endif %}
+		{% endif %}
+
+
+	</div>
+#}
 {% endmacro %}

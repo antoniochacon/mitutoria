@@ -1,7 +1,7 @@
 <div class="contenido_2">
-	<form action="/alumnos" method="POST" enctype="multipart/form-data">
+	<form class="container" action="/alumnos" method="POST" enctype="multipart/form-data">
 		{% if params['alumno_importar_link'] %}
-			<div class="form-group in-line">
+			<div class="form-group">
 				Localiza y selecciona el archivo *.CSV descargado desde Seneca.
 				<br><br>
 				<label class="btn btn-outline-dark btn-sm" title="seleccionar archivo" for="selector_fichero">
@@ -12,17 +12,35 @@
 				<br>
 			</div>
 		{% else %}
-			{% with %}
-			{% if params['collapse_alumno_add']and request.method == "POST" %}
-				{% set error_css = True %}
-			{% else %}
-				{% set error_css = False %}
-			{% endif %}
-			{{field_form(alumno_add.nombre, error=True, error_css=error_css, addon="nombre")}}
-			{{field_form(alumno_add.apellidos, error=True, error_css=error_css, addon="apellidos")}}
-			{% endwith %}
+			<div class="row">
+				<div class="form-group col-md-6 mb-3">
+					<div class="input-group">
+						<input
+							type="text"
+							class="form-control {% if request.method=='POST' %} {% if alumno_add.nombre.errors %} is-invalid {% else %} is-valid {% endif %} {% endif %}"
+							name="{{alumno_add.nombre.name}}"
+							{% if request.method=='POST' %}
+							value="{{alumno_add.nombre.data}}"
+							{% endif %}
+							placeholder="{{alumno_add.nombre.label.text}}">
+						<span class="input-group-addon {% if request.method=='POST' %} {% if alumno_add.nombre.errors %} form_addon-warning {% else %} form_addon-success {% endif %} {% endif %}">nombre</span>
+					</div>
+				</div>
+				<div class="input-group col-md-6  mb-3">
+					<input
+						type="text"
+						class="form-control {% if request.method=='POST' %} {% if alumno_add.apellidos.errors %} is-invalid {% else %} is-valid {% endif %} {% endif %}"
+						name="{{alumno_add.apellidos.name}}"
+						{% if request.method=='POST' %}
+						value="{{alumno_add.apellidos.data}}"
+						{% endif %}
+						placeholder="{{alumno_add.apellidos.label.text}}">
+					<span class="input-group-addon {% if request.method=='POST' %} {% if alumno_add.apellidos.errors %} form_addon-warning {% else %} form_addon-success {% endif %} {% endif %}">apellidos</span>
+				</div>
+			</div>
 		{% endif %}
-		<div class="btn-group" role="group" aria-label="...">
+		<!-- ****************************** -->
+		<div class="btn-group" role="group">
 			{% if params['alumno_importar_link'] %}
 				<button class="btn btn-outline-primary btn-sm" type="submit" name="selector_button" value="selector_alumno_importar" title="guardar alumnos">
 					<i class="material-icons vertical-center">people</i>
@@ -41,7 +59,7 @@
 					<i class="material-icons vertical-center">people</i>
 					importar de Seneca
 				</button>
-				{% if request.method == "POST" %}
+				{% if request.method == "POST" or params['collapse_alumno_add'] %}
 					<button class="btn btn-outline-dark btn-sm" type="submit" name="selector_button" value="selector_alumno_add_cerrar" title="cerrar">
 						<i class="material-icons vertical-center">close</i>
 					</button>
@@ -49,6 +67,5 @@
 			{% endif %}
 		</div>
 	</form>
-	<br>
 </div>
 <div class="dropdown-divider grueso bg-primary"></div>

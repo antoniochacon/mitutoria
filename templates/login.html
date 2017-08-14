@@ -1,17 +1,44 @@
 {% extends '_layout.html' %}
 {% block body %}
 	{%from '_macro.html' import nav_bar_top_no_session,field_form, titulo_1%}
-	{{ nav_bar_top_no_session() }}
+	{{ nav_bar_top_no_session(link_active='Iniciar sesión') }}
 	<div class="container">
 		<div class="paper bg-white contenido">
-			{{titulo_1(bg_color='bg_black', titulo='Iniciar sesion')}}
+			{{titulo_1(bg_color='bg-dark', titulo='Iniciar sesion')}}
 			<form action="/login" method="POST">
-				{{field_form(user.username, error=True, error_css=True, addon='usuario')}}
-				{{field_form(user.password, error=True, error_css=True, addon='password')}}
+				<div class="form-row align-items-center">
+					<div class="form-group col-md-6">
+						<div class="input-group">
+							<input
+								type="text"
+								class="form-control {% if request.method=='POST' %} {% if user_login.username.errors %} is-invalid {% else %} is-valid {% endif %} {% endif %}"
+								name="{{user_login.username.name}}"
+								{% if request.method=='POST' %}
+								value="{{user_login.username.data}}"
+								{% endif %}
+								placeholder="{{user_login.username.label.text}}">
+							<span class="input-group-addon {% if request.method=='POST' %} {% if user_login.username.errors %} form_addon-warning {% else %} form_addon-success {% endif %} {% endif %}">usuario</span>
+						</div>
+					</div>
+					<div class="form-group col-md-6">
+						<div class="input-group">
+							<input
+								type="password"
+								class="form-control {% if request.method=='POST' %} {% if user_login.password.errors %} is-invalid {% else %} is-valid {% endif %} {% endif %}"
+								name="{{user_login.password.name}}"
+								{% if request.method=='POST' %}
+								value="{{user_login.password.data}}"
+								{% endif %}
+								placeholder="{{user_login.password.label.text}}">
+							<div class="input-group-addon {% if request.method=='POST' %} {% if user_login.password.errors %} form_addon-warning {% else %} form_addon-success {% endif %} {% endif %}">password</div>
+						</div>
+					</div>
+				</div>
 				<div class="text-center">
-					<button role="button" type="submit" class="btn btn-outline-primary" title="iniciar sesion">
+					<button type="submit" class="btn btn-outline-primary" title="iniciar sesion">
 						<i class="material-icons vertical-center">account_circle</i>
-						iniciar sesion</button>
+						iniciar sesion
+					</button>
 				</div>
 			</form>
 			{% if login_fail and not ban %}
@@ -19,10 +46,9 @@
 				<div class="dropdown-divider bg-primary grueso"></div>
 				<br>
 				<div class="text-center">
-
 					<a href="/user_add" class="btn btn-outline-dark" title="crear nueva cuenta">
 						<i class="material-icons vertical-center">person_add</i>
-					aun no tengo cuenta
+						aun no tengo cuenta
 					</a>
 				</div>
 				<br>

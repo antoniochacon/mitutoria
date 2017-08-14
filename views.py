@@ -198,7 +198,6 @@ def alumnos_html(params={}):
         params['current_alumno_id'] = current_alumno_id
         # XXX alumno_add
         if request.form['selector_button'] == 'selector_alumno_add':
-
             params['collapse_alumno_add'] = True
             alumno_add_form = Alumno_Add(request.form)
             if alumno_add_form.validate():
@@ -401,14 +400,13 @@ def alumnos_html(params={}):
             return redirect(url_for('analisis_html', params=dic_encode(params)))
 
         # XXX selector_tutoria_analisis_close
-        # FIXME creo que sobra
         if request.form['selector_button'] == 'selector_tutoria_analisis_close':
             return redirect(url_for('alumnos_html'))
-        # XXX xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-        # XXX xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 
         # XXX tutoria_add
         if request.form['selector_button'] == 'selector_tutoria_add':
+            current_tutoria_id = current_id_request('current_tutoria_id')
+            params['current_tutoria_id'] = current_tutoria_id
             params['anchor'] = 'anchor_alu_' + str(hashids_encode(current_alumno_id))
             params['collapse_alumno'] = True
             params['collapse_tutoria_add'] = True
@@ -423,7 +421,6 @@ def alumnos_html(params={}):
 
             # NOTE check si hay asignaturas asignadas al alumno
             if not alumno_asignaturas(current_alumno_id):
-                params['collpase_alumno'] = True
                 params['collapse_alumno_edit'] = True
                 params['alumno_edit_link'] = True
                 params['collapse_alumno_edit_asignaturas'] = True
@@ -447,9 +444,13 @@ def alumnos_html(params={}):
                     tutoria_sql = session_sql.query(Tutoria).filter(Tutoria.alumno_id == current_alumno_id, Tutoria.fecha == tutoria_add_form_fecha).first()
                     # NOTE tutorias_timeout (tutoria_add)
                     if datetime.datetime.strptime(tutoria_add_form_fecha, '%Y-%m-%d').date() < g.current_date:
+                        params['anchor'] = 'anchor_alu_' + str(current_alumno_id)
                         tutoria_add_form.fecha.errors = ['Fecha ya pasada.']
                         flash_toast('No generada esta tutoria', 'warning')
                         flash_wtforms(tutoria_add_form, flash_toast, 'warning')
+                        # return render_template(
+                        #     'alumnos.html', fab=fab, alumno_add=Alumno_Add(), alumno_edit=Alumno_Add(),
+                        #     tutoria_add=tutoria_add_form, params=params)
                     else:
                         if tutoria_sql:
                             # NOTE tutoria ya existe y redirect a al modo de edicion de la tutoria
@@ -469,10 +470,10 @@ def alumnos_html(params={}):
                             return redirect(url_for('alumnos_html', params=dic_encode(params)))
                 else:
                     flash_wtforms(tutoria_add_form, flash_toast, 'warning')
-
             return render_template(
                 'alumnos.html', fab=fab, alumno_add=Alumno_Add(), alumno_edit=Alumno_Add(),
-                tutoria_add=tutoria_add_form, tutoria=tutoria, params=params)
+                tutoria_add=tutoria_add_form, params=params)
+
         # XXX selector_tutoria_add_close
         if request.form['selector_button'] == 'selector_tutoria_add_close':
 
@@ -1631,7 +1632,7 @@ def asignaturas_html(params={}):
 
 @app.route('/user_add', methods=['GET', 'POST'])
 def user_add_html():
-
+    fab = Fab(True, False, True, False, False, False, False)
     user_add_form = User_Add(request.form)
     if request.method == 'POST':
         if user_add_form.validate():
@@ -1658,8 +1659,8 @@ def user_add_html():
                 return redirect(url_for('alumnos_html'))
         else:
             flash_wtforms(user_add_form, flash_toast, 'warning')
-            return render_template('user_add.html', fab=Fab(True, False, True, False, False, False, False), user_add=user_add_form)
-    return render_template('user_add.html', fab=Fab(True, False, True, False, False, False, False), user_add=User_Add())
+        return render_template('user_add.html', fab=fab, user_add=user_add_form)
+    return render_template('user_add.html', fab=fab, user_add=User_Add())
 
 
 # XXX login
@@ -1674,21 +1675,20 @@ def login_html():
     login_form = User_Login(request.form)
     ban = request.args.get('ban', False)
     if request.method == 'POST' and login_form.validate():
-        user = session_sql.query(User).filter_by(username=login_form.username.data).first()
+        user_sql = session_sql.query(User).filter_by(username=login_form.username.data).first()
 
         if ban:
-            return render_template('login.html', fab=fab, user=login_form, login_fail=login_fail, params=params, ban=ban)
-        if user:
-            if check_password_hash(user.password, login_form.password.data):
-                login_user(user, remember=login_form.remember.data)
-                settings = session_sql.query(Settings).filter(Settings.user_id == user.id).first()
+            return render_template('login.html', fab=fab, user_login=login_form, login_fail=login_fail, params=params, ban=ban)
+        if user_sql:
+            if check_password_hash(user_sql.password, login_form.password.data):
+                login_user(user_sql, remember=login_form.remember.data)
+                settings = session_sql.query(Settings).filter(Settings.user_id == user_sql.id).first()
                 settings.visit_last = datetime.datetime.now()
                 settings.visit_number = settings.visit_number + 1
                 if settings.ban:
                     ban = True
                     login_fail = True
                     flash_toast('Usuario ' + Markup('<strong>') + login_form.username.data + Markup('</strong> se encuentra temporalmente baneado<br>Por favor pongase en contacto con nosotros'), 'warning')
-                    # return render_template('login.html', fab=fab, user=login_form, login_fail=login_fail, ban=ban, params=params)
                     return redirect(url_for('login_html', ban=True))
                 session_sql.commit()
                 flash_toast('Bienvenido ' + Markup('<strong>') + login_form.username.data + Markup('</strong>'), 'success')
@@ -1696,13 +1696,13 @@ def login_html():
                     params['login'] = True  # NOTE Para activar como activo el primer grupo creado y redirect a alumnos (por facilidad para un nuevo usuario)
                     return redirect(url_for('settings_grupos_html', params=dic_encode(params)))
                 return redirect(url_for('alumnos_html'))
-            if user.username == login_form.username:
+            if user_sql.username == login_form.username:
                 flash_toast('Contraseña incorrecta', 'warning')
             else:
                 flash_toast('Usuario no registrado', 'warning')
         flash_toast(Markup('<strong>') + login_form.username.data + Markup('</strong>') + ' no existe como usuario' + Markup('<br>Debería crear una nueva cuenta.'), 'warning')
         login_fail = True
-    return render_template('login.html', fab=fab, user=login_form, login_fail=login_fail, params=params, ban=ban)
+    return render_template('login.html', fab=fab, user_login=login_form, login_fail=login_fail, params=params, ban=ban)
 
 
 @app.route('/logout')
