@@ -689,7 +689,7 @@ def settings_cuestionario_html(params={}):
             session_sql.begin_nested()
             session_sql.commit()
             if not settings().preguntas:
-                flash_toast('Cuestionario sin preguntas asignadas', 'warning')
+                flash_toast('Cuestionario vacío', 'warning')
             else:
                 if contador != 0:
                     flash_toast('Cuestionario  actualizado', 'success')
@@ -1480,6 +1480,7 @@ def asignaturas_html(params={}):
         # NOTE almacena current_asignatura_id para el resto de situacones
         current_asignatura_id = current_id_request('current_asignatura_id')
         params['current_asignatura_id'] = current_asignatura_id
+        params['anchor'] ='anchor_asi_add'
         # XXX selector_asignatura_add
         if request.form['selector_button'] == 'selector_asignatura_add':
             params['collapse_asignatura_add'] = True

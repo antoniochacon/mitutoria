@@ -3,59 +3,34 @@
 	{%from "_macro.html" import nav_bar_top, field_form, titulo_1, checkbox_funky, highcharts_tutoria_stats%}
 	{{ nav_bar_top(link_active='Asignaturas',params=params) }}
 	<div class="paper bg-white padding_contenido">
-		{{titulo_1(url='asignaturas',bg_color='bg-primary',titulo=grupo_activo().nombre, subtitulo=[ grupo_activo().centro, [ grupo_activo().curso_academico, grupo_activo().curso_academico +1 ]|join("-") ]|join(": "))}}
-		<div class="card_XXX-group" id="parent_alumno" aria-multiselectable="true">
-			<div class="card_XXX">
-				<a data-toggle="collapse" data-parent="#parent_alumno" href="#asignatura_add" class="list-group-item-1" aria-expanded="false" title="Agregar asignatura">
-					&nbsp;
-					<i class="material-icons vertical-center">import_contacts</i>&nbsp; &nbsp; agregar nueva asignatura
+current_asignatura_id: {{params['current_asignatura_id']}}
+
+
+		{{titulo_1(url='asignaturas',bg_color='bg-dark',titulo=grupo_activo().nombre, subtitulo=[ grupo_activo().centro, [ grupo_activo().curso_academico, grupo_activo().curso_academico +1 ]|join("-") ]|join(": "))}}
+		<div id="parent_alumno">
+			<a id="anchor_asi_add"></a>
+			<div>
+				<a data-toggle="collapse" data-parent="#parent_alumno" href="#asignatura_add" class="collapse_header_1" aria-expanded="false" title="Agregar asignatura">
+					<div class="media">
+						&nbsp;<i class="material-icons vertical-center">import_contacts</i>&nbsp;
+						<div class="media-body">
+							<div class="padding_2">
+								agregar nueva asignatura
+							</div>
+						</div>
+					</div>
 				</a>
 				<div id="asignatura_add" class="collapse {% if params['collapse_asignatura_add'] %} show {% endif %}">
 					{# TODO: asignaturas_add #}
-					<div class="card_XXX">
-						{%include "asignatura_add_block.html"%}
-					</div>
+					{%include "asignatura_add_block.html"%}
 				</div>
 			</div>
-			{% for asignatura in asignaturas('apellidos', 'nombre', 'asignatura') %}
-				{# TODO: asignaturas_listado #}
-				<div class="card_XXX">
-					<a id="anchor_asi_{{hashids_encode(asignatura.id)}}"></a>
-					<a data-toggle="collapse" data-parent="#parent_alumno" href="#asignatura_{{hashids_encode(asignatura.id)}}" class="list-group-item-7" aria-expanded="false" title="{{asignatura.apellidos}}, {{asignatura.nombre}}">
-						<span class="btn {% if asignatura_alumnos(asignatura.id) %} btn-light-lighten {% else %} btn-outline-primary btn-sm {% endif %}" role="button" title="{{asignatura.asignatura}}" }>
-							<strong>
-								{{asignatura.asignatura | first | upper}}
-							</strong>
-						</span>
-						<span class="hidden-sm hidden-md hidden-lg">
-							&nbsp;
-							{{asignatura.asignatura | truncate(15,true,"..",0)}}
-							|
-							<span class="text-info">{{asignatura.nombre  | truncate(15,true,'..',0)}}</span>
-						</span>
-						<span class="hidden-xs">
-							&nbsp;
-							{{asignatura.asignatura}}
-							|
-							<span class="text-info">{{asignatura.nombre}}</span>
-						</span>
-						{% if asignatura_informes_count(asignatura.id) %}
-							<span class="badge tag-pill badge tag-pill-info">
-								{{cociente_porcentual(asignatura_informes_respondidos_count(asignatura.id), asignatura_informes_count(asignatura.id))}}%
-							</span>
-						{% endif %}
-					</a>
-					<div class="progress">
-						<div class="progress-bar bg-gray-3" role="progressbar" aria-valuemin="0" aria-valuemax="100" style="width: {{cociente_porcentual(asignatura_informes_respondidos_count(asignatura.id), asignatura_informes_count(asignatura.id))}}%;"></div>
-					</div>
-					<div id="asignatura_{{hashids_encode(asignatura.id)}}" class="collapse {% if equal_str(asignatura.id, params['current_asignatura_id'])%} show {% endif %}">
-						<div class="card_XXX">
-							{%include 'asignatura_ficha_block.html'%}
-							<div class="dropdown-divider grueso bg-primary"></div>
-						</div>
-					</div>
-				</div>
-			{% endfor %}
+			<div>
+				{% for asignatura in asignaturas('asignatura', 'apellidos', 'nombre') %}
+					{# TODO: asignaturas_listado #}
+					{%include "asignatura_block.html"%}
+				{% endfor %}
+			</div>
 		</div>
 	</div>
 {% endblock %}

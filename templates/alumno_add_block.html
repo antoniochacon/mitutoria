@@ -20,9 +20,7 @@
 							type="text"
 							class="form-control {% if request.method=='POST' and params['collapse_alumno_add'] %} {% if alumno_add.nombre.errors %} is-invalid {% else %} is-valid {% endif %} {% endif %}"
 							name="{{alumno_add.nombre.name}}"
-							{% if request.method=='POST' %}
 							value="{% if request.method=='POST' and params['collapse_alumno_add'] %}{{alumno_add.nombre.data}}{% endif %}"
-							{% endif %}
 							placeholder="{{alumno_add.nombre.label.text}}">
 						<span class="input-group-addon {% if request.method=='POST' and params['collapse_alumno_add'] %} {% if alumno_add.nombre.errors %} form_addon-warning {% else %} form_addon-success {% endif %} {% endif %}">nombre</span>
 					</div>
@@ -32,9 +30,7 @@
 						type="text"
 						class="form-control {% if request.method=='POST' and params['collapse_alumno_add'] %} {% if alumno_add.apellidos.errors %} is-invalid {% else %} is-valid {% endif %} {% endif %}"
 						name="{{alumno_add.apellidos.name}}"
-						{% if request.method=='POST' %}
 						value="{% if request.method=='POST' and params['collapse_alumno_add'] %}{{alumno_add.apellidos.data}}{% endif %}"
-						{% endif %}
 						placeholder="{{alumno_add.apellidos.label.text}}">
 					<span class="input-group-addon {% if request.method=='POST' and params['collapse_alumno_add'] %} {% if alumno_add.apellidos.errors %} form_addon-warning {% else %} form_addon-success {% endif %} {% endif %}">apellidos</span>
 				</div>

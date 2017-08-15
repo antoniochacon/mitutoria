@@ -20,7 +20,7 @@
 			<ul class="navbar-nav mr-auto">
 				{% for link_key in dic.keys() %}
 					<li class="nav-item {% if link_key==link_active %} active strong {% endif %}">
-						<a class="nav-link" href="/{% if link_key==link_active %}#{% else %}{{dic[link_key]}}{% endif %}">{{link_key}}</a>
+						<a class="nav-link" href="/{{dic[link_key]}}">{{link_key}}</a>
 					</li>
 				{% endfor %}
 			</ul>
@@ -41,7 +41,7 @@
 				{% for link_key in dic.keys() %}
 					{% if link_key != 'Admin' %}
 						<li class="nav-item {% if link_key==link_active %} active strong {% endif %}">
-							<a class="nav-link" href="/{% if link_key==link_active %}#{% else %}{{dic[link_key]}}{% endif %}{% if params_args %}/{{params_args}}{% endif %}">{{link_key}}
+							<a class="nav-link" href="/{{dic[link_key]}}{% if params_args %}/{{params_args}}{% endif %}">{{link_key}}
 								{% if link_key == 'Logout' %}
 									[{{user_by_id(settings().id).username}}]
 								{% endif %}
@@ -49,7 +49,7 @@
 						</li>
 					{% elif link_key == 'Admin' and settings().role == 'admin' %}
 						<li class="nav-item {% if link_key==link_active %} active strong {% endif %}">
-							<a class="nav-link" href="/{% if link_key==link_active %}#{% else %}{{dic[link_key]}}{% endif %}{% if params_args %}/{{params_args}}{% endif %}">{{link_key}}</a>
+							<a class="nav-link" href="/{{dic[link_key]}}{% if params_args %}/{{params_args}}{% endif %}">{{link_key}}</a>
 						</li>
 					{% endif %}
 				{% endfor %}
@@ -61,38 +61,16 @@
 	<ul class="nav nav-tabs">
 		{% for tab_key in dic.keys() %}
 			<li role="presentation" class="{% if tab_key==tab_active %} active {% endif %}">
-				<a href="/{{dic[tab_key]}}{% if params_args %}/{{params_args}}{% endif %}">{{tab_key}}</a>
+				<a href="{% if link_key==link_active %}#{% else %}/{{dic[tab_key]}}{% endif %}{% if params_args %}/{{params_args}}{% endif %}">{{tab_key}}</a>
 			</li>
 		{% endfor %}
 	</ul>
 	<br>
 {% endmacro %}
 {% macro checkbox_funky(tipo_a, tipo_b, tipo, prefix) %}
-	<!-- <div class='funkyradio funkyradio-success'>
-		{% if tipo == 'asignatura' %}
-			<input type='checkbox' name={{tipo}} id='{{prefix}}{{hashids_encode(tipo_a.id)}}{{hashids_encode(tipo_b.id)}}' value='{{hashids_encode(tipo_b.id)}}' {% if association_alumno_asignatura_check(tipo_a.id,tipo_b.id) %} checked {% endif %}/>
-			<label for='{{prefix}}{{hashids_encode(tipo_a.id)}}{{hashids_encode(tipo_b.id)}}'>{{tipo_b.asignatura}}</label>
-		{% elif tipo == 'alumno' %}
-			<input type='checkbox' name={{tipo}} id='{{prefix}}{{hashids_encode(tipo_b.id)}}{{hashids_encode(tipo_a.id)}}' value='{{hashids_encode(tipo_a.id)}}' {% if association_alumno_asignatura_check(tipo_a.id,tipo_b.id) %} checked {% endif %}/>
-			<label for='{{prefix}}{{hashids_encode(tipo_b.id)}}{{hashids_encode(tipo_a.id)}}'>{{tipo_a.apellidos}},
-				{{tipo_a.nombre}}</label>
-		{% elif tipo == 'pregunta' %}
-			<input type='checkbox' name={{tipo}} id='{{prefix}}{{hashids_encode(tipo_a.id)}}{{hashids_encode(tipo_b.id)}}' value='{{hashids_encode(tipo_b.id)}}' {% if association_settings_pregunta_check(tipo_a.id,tipo_b.id) %} checked {% endif %}/>
-			<label for='{{prefix}}{{hashids_encode(tipo_a.id)}}{{hashids_encode(tipo_b.id)}}'>{{tipo_b.enunciado}}</label>
-		{% endif %}
-	</div>
+	macro checkbox_funky a reemplazar
+	<br>
 {% endmacro %}
-{% macro titulo_user_ficha(text_color, bg_color, titulo, user) %}
-	<h3 class='{{text_color}} strong'>
-		{{titulo}}
-		<h5 class='{{text_color}}'>
-			{% include 'user_info_basica_block.html' %}
-			<div class='dropdown-divider {{bg_color}} grueso'></div>
-		</h5>
-	</h3> -->
-{% endmacro %}
-
-
 {% macro titulo_1(url, text_color, bg_color, titulo, subtitulo) %}
 	<h5 class='{{text_color}} strong'>
 		{{titulo}}

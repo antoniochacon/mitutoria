@@ -69,13 +69,13 @@ class Asignatura_Add (Form):
     asignatura = StringField('asignatura', [validators.Required(message='la asignatura es obligatoria'),
                                             validators.length(min=3, message='la asignatura debe tener minimo 3 caracteres'),
                                             validators.length(max=80, message='la asignatura debe tener maximo 80 caracteres')])
-    nombre = StringField('nombre docente', [validators.Required(message='el nombre es obligatorio'),
+    nombre = StringField('nombre del docente', [validators.Required(message='el nombre es obligatorio'),
                                             validators.length(min=3, message='el nomre debe tener minimo 3 caracteres'),
                                             validators.length(max=80, message='el nombre debe tener maximo 80 caracteres')])
-    apellidos = StringField('apellidos docente', [validators.length(min=3, message='los apellidos deben tener minimo 3 caracteres'),
+    apellidos = StringField('apellidos del docente', [validators.length(min=3, message='los apellidos deben tener minimo 3 caracteres'),
                                                   validators.length(max=80, message='los apellidos deben tener maximo 80 caracteres')])
 
-    email = EmailField('email', [validators.Required(message='email es obligatorio'),
+    email = EmailField('email del docente', [validators.Required(message='email es obligatorio'),
                                  validators.Email(message='Escriba una direccion valida de email'),
                                  validators.length(max=120, message='email debe tener maximo 120 caracteres')])
     current_asignatura_id = HiddenField('current_asignatura_id')

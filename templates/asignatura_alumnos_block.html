@@ -1,27 +1,22 @@
-<a data-toggle="collapse" href="#asignatura_alumnos_{{hashids_encode(asignatura.id)}}" class="list-group-item-2" aria-expanded="false">
+<a data-toggle="collapse" href="#asignatura_alumnos_{{hashids_encode(asignatura.id)}}" class="collapse_header_1" aria-expanded="false">
 	<i class="material-icons vertical-center">expand_more</i>Alumnos de
 	{{asignatura.asignatura}}
-	<span class="badge tag-pill badge tag-pill-info">
+	<span class="badge badge-info float-right">
 		{{asignatura_alumnos(asignatura.id)|count}}
 		|
 		{{alumnos_not_sorted()|count}}</span>
 </a>
-<div id="asignatura_alumnos_{{hashids_encode(asignatura.id)}}" class="collapse {% if equal_str(asignatura.id, params['current_asignatura_id']) and params['collapse_asignaturas_edit_alumnos'] %} show {% endif %}">
-	<div class="card_XXX">
-		<div class="padding_3">
-			<a href="/alumnos" class="list-group-item-5" title="Agregar alumno">
-				<span class="material-icons vertical-center">person</span>
-				&nbsp; agregar nuevo alumno
-			</a>
-			{% if not alumnos('apellidos', 'nombre') %}
-				<div class="padding_3 text-warning">Grupo sin alumnos.</div>
-			{% endif %}
-			{% if alumnos('apellidos', 'nombre')%}
-				{% for alumno in alumnos('apellidos', 'nombre') %}
-					{{checkbox_funky(alumno,asignatura,'alumno','asignatura_edit')}}
-				{% endfor %}
-			{% endif %}
-		</div>
+<div id="asignatura_alumnos_{{hashids_encode(asignatura.id)}}" class="collapse {% if not asignatura_alumnos(asignatura.id) %} show {% endif %}">
+	<div class="padding_3">
+		{% if alumnos('apellidos', 'nombre')%}
+			{% for alumno in alumnos('apellidos', 'nombre') %}
+				{{checkbox_funky(alumno,asignatura,'alumno','asignatura_edit')}}
+			{% endfor %}
+		{% else %}
+			<div class="padding_3 text-warning">
+				Grupo sin alumnos.
+			</div>
+		{% endif %}
 	</div>
-	
 </div>
+<br>
