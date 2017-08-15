@@ -9,7 +9,7 @@
 </a>
 <div id="alumno_asignatura_{{hashids_encode(alumno.id)}}" class="collapse {% if equal_str(alumno.id, params['current_alumno_id']) and params['collapse_alumno_edit_asignaturas'] %} show {% endif %}">
 	{# TODO: Listado de asignaturas #}
-	<div class="contenido_5">
+	<div class="contenido_3">
 		<br>
 		{% if not asignaturas('asignatura', 'nombre', 'apellidos') %}
 			<span class="text-warning">Grupo aun sin asignaturas</span>

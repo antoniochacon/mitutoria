@@ -22,7 +22,7 @@
 				<div class="card_XXX">
 					<a id="anchor_asi_{{hashids_encode(asignatura.id)}}"></a>
 					<a data-toggle="collapse" data-parent="#parent_alumno" href="#asignatura_{{hashids_encode(asignatura.id)}}" class="list-group-item-7" aria-expanded="false" title="{{asignatura.apellidos}}, {{asignatura.nombre}}">
-						<span class="btn {% if asignatura_alumnos(asignatura.id) %} btn-light-lighten {% else %} btn-warning {% endif %}" role="button" title="{{asignatura.asignatura}}" }>
+						<span class="btn {% if asignatura_alumnos(asignatura.id) %} btn-light-lighten {% else %} btn-outline-primary btn-sm {% endif %}" role="button" title="{{asignatura.asignatura}}" }>
 							<strong>
 								{{asignatura.asignatura | first | upper}}
 							</strong>

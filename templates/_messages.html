@@ -33,7 +33,7 @@
 							{% endfor %}
 							Deseas reenviar los emails?
 							<div class="btn-group" role="group" aria-label="...">
-								<button role="button" type="submit" class="btn btn-danger" name="selector_button" value="selector_tutoria_ya_existe" title="reenviar tutoria">
+								<button role="button" type="submit" class="btn btn-outline-danger" name="selector_button" value="selector_tutoria_ya_existe" title="reenviar tutoria">
 									si
 								</button>
 								<button role="button" type="button" class="btn btn-outline-primary" data-dismiss="alert" title="no enviar">
@@ -49,9 +49,9 @@
 		{# TODO: Cita #}
 		{% with messages = get_flashed_messages(category_filter = ['cita_random']) %}
 		{% if messages %}
-			<div class="paper contenido bg-white fade-in">
+			<div class="paper contenido bg-white">
 				Cita del dia:
-				<div class="dropdown-divider bg-gray-4"></div>
+				<div class="dropdown-divider bg-mutted"></div>
 				{% for message in messages %}
 					{{message}}
 				{% endfor %}

@@ -21,7 +21,7 @@
 			{{asignatura.nombre}}
 			{{asignatura.apellidos}}
 		{% else %}
-			<div class="contenido_2 text-warning text-center">
+			<div class="contenido_3 text-warning text-center">
 				No disponible el informe de su materia.
 				<br>
 				Consulte con el tutor/a correspodiente.
@@ -29,20 +29,20 @@
 		{% endif %}
 		<br>
 		<div class="row contenido">
-			<div class="col-sm-12 contenido_2 strong">
+			<div class="col-sm-12 contenido_3 strong">
 				Cuestionario
 				<div class="dropdown-divider bg-gray-5"></div>
 			</div>
 			<form action="/informe/{{token_hash}}" method="POST">
 				{% if not invitado_preguntas(invitado_settings(tutoria.id).id) %}
-					<div class="contenido_2">
+					<div class="contenido_3">
 						Las preguntas de este cuestionario han sido descartadas.
 						<br><br>
 					</div>
 				{% endif %}
 				{% for pregunta in invitado_preguntas(invitado_settings(tutoria.id).id) %}
 					<div class="col-sm-4 col-md-4 col-lg-3">
-						<div class="contenido_2">
+						<div class="contenido_3">
 							{{pregunta.enunciado}}:
 						</div>
 						<div class="range-slider">
@@ -67,7 +67,7 @@
 				{% endfor %}
 				{% if informe %}
 					{% if invitado_pruebas_evaluables(informe.id) %}
-						<div class="col-sm-12 contenido_2 strong">
+						<div class="col-sm-12 contenido_3 strong">
 							{{singular_plural('Prueba evaluable', 'Pruebas evaluables', invitado_pruebas_evaluables(informe.id))}}
 							<div class="dropdown-divider bg-gray-5"></div>
 						</div>
@@ -76,7 +76,7 @@
 				{% if informe %}
 					{% for prueba_evaluable in invitado_pruebas_evaluables(informe.id) %}
 						<div class="col-sm-4 col-md-4 col-lg-3">
-							<div class="contenido_2 text-info">
+							<div class="contenido_3 text-info">
 								{% if prueba_evaluable.nombre %}
 									{{prueba_evaluable.nombre}}
 								{% else %}
@@ -93,8 +93,8 @@
 					{% endfor %}
 				{% endif %}
 				<a id="anchor_pru_eva"></a>
-				<div class="col-sm-12 contenido_2">
-					<div class="contenido_2">
+				<div class="col-sm-12 contenido_3">
+					<div class="contenido_3">
 						<div class="btn-group" role="group" aria-label="...">
 							<div class="input-group">
 								<input type="text" name="prueba_evaluable_nombre" class="form-control" placeholder="agregar prueba evaluable">
@@ -118,7 +118,7 @@
 					<span class="strong">Comentario</span>
 					<div class="dropdown-divider bg-gray-5"></div>
 					<br>
-					<div class="contenido_4">
+					<div class="contenido_3">
 						<div class="form-group">
 							<textarea class="form-control vresize" rows="3" name="comentario" id="comentario">{{informe.comentario}}</textarea>
 						</div>

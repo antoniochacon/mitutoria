@@ -13,7 +13,7 @@
 				</a>
 				<div class="collapse {% if params['collapse_grupo_add'] or params['login'] %} show {% endif %}" id="grupo_add">
 					<div class="dropdown-divider grueso bg-primary"></div>
-					<div class="contenido_2">
+					<div class="contenido_3">
 						<form action="/settings_grupos" method="POST">
 							{% with %}
 							{% if params['collapse_grupo_add'] %}
@@ -69,7 +69,7 @@
 						<div class="card_XXX-group" id="grupo{{hashids_encode(grupo.id)}}" role="tablist" aria-multiselectable="true">
 							<div class="card_XXX">
 								{# XXX: grupo_edit #}
-								<div class="contenido_2">
+								<div class="contenido_3">
 									<form action="/settings_grupos" method="POST">
 										{% if equal_str(grupo.id, params['current_grupo_id']) and request.method =='POST'%}
 											{{field_form(grupo_edit.nombre, error=True, error_css=True, addon='nombre')}}
@@ -93,7 +93,7 @@
 										<br>
 										{% if params['grupo_delete_link'] %}
 											<div class="btn-group" role="group" aria-label="...">
-												<button role="button" type="submit" name="selector_button" value="selector_grupo_delete" class="btn btn-warning" title="confirmar eliminar asginatura">
+												<button role="button" type="submit" name="selector_button" value="selector_grupo_delete" class="btn btn-outline-primary btn-sm" title="confirmar eliminar asginatura">
 													<i class="material-icons vertical-center">delete</i>
 													confirmar eliminar</button>
 												<button role="button" type="submit" name="selector_button" value="selector_grupo_delete_close" class="btn btn-outline-dark" title="cancelar eliminar">

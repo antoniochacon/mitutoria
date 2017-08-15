@@ -1,6 +1,6 @@
 <div class="card_XXX">
 	<form action="/asignaturas" method="POST">
-		<div class="contenido_2">
+		<div class="contenido_3">
 			{% if equal_str(asignatura.id, params['current_asignatura_id']) and request.method == 'POST'%}
 				{{field_form(asignatura_edit.asignatura, error=True, error_css=True, addon='asignatura')}}
 				{{field_form(asignatura_edit.nombre, error=True, error_css=True, addon='nombre')}}
@@ -19,7 +19,7 @@
 		<br>
 		{% if params['asignatura_delete_link'] %}
 			<div class="btn-group" role="group" aria-label="...">
-				<button role="button" type="submit" name="selector_button" value="selector_asignatura_delete" class="btn btn-warning" title="confirmar eliminar asginatura">
+				<button role="button" type="submit" name="selector_button" value="selector_asignatura_delete" class="btn btn-outline-primary btn-sm" title="confirmar eliminar asginatura">
 					<i class="material-icons vertical-center">delete</i>
 					confirmar eliminar</button>
 				<button role="button" type="submit" name="selector_button" value="selector_asignatura_delete_close" class="btn btn-outline-dark" title="cancelar eliminar">
@@ -45,5 +45,5 @@
 		{% endif %}
 		<br><br>
 	</form>
-	
+
 </div>

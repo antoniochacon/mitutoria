@@ -3,18 +3,18 @@
 	<div class="media">
 		<span class="capital {% if not alumno_asignaturas(alumno.id) %} capital-warning {% else %} {% if alumno_tutorias(alumno.id, True) %} capital-primary active {% else %} capital-mutted {% endif %} {% endif %}">{{alumno.apellidos | first | upper}}</span>
 		<div class="media-body">
-			<div class="contenido_3">
-				{{alumno.apellidos}},
-				{{alumno.nombre}}
-				{# NOTE badge #}
-				{% if alumno_tutorias(alumno.id, True) %}
-					<span
-						class="badge badge-primary"
-						title="{{alumno_tutorias(alumno.id, True) | count}} {{singular_plural('tutoria','tutorias', alumno_tutorias(alumno.id, True) | count)}}  {{singular_plural('solicitada','solicitadas', alumno_tutorias(alumno.id, True) | count)}}">
-						{{alumno_tutorias(alumno.id, True) | count}}
-						{{singular_plural('tutoria','tutorias', alumno_tutorias(alumno.id, True) | count)}}
-					</span>
-				{% endif %}
+			<div class="contenido_2">
+			{{alumno.apellidos}},
+			{{alumno.nombre}}
+			{# NOTE badge #}
+			{% if alumno_tutorias(alumno.id, True) %}
+				<span
+					class="badge badge-primary float-right"
+					title="{{alumno_tutorias(alumno.id, True) | count}} {{singular_plural('tutoria','tutorias', alumno_tutorias(alumno.id, True) | count)}}  {{singular_plural('solicitada','solicitadas', alumno_tutorias(alumno.id, True) | count)}}">
+					{{alumno_tutorias(alumno.id, True) | count}}
+					{{singular_plural('tutoria','tutorias', alumno_tutorias(alumno.id, True) | count)}}
+				</span>
+			{% endif %}
 			</div>
 		</div>
 	</div>
@@ -37,7 +37,7 @@
 			<a data-toggle="collapse" class="collapse_header_1" role="tab" data-parent="#alumno_set_{{hashids_encode(alumno.id)}}" href="#tutorias_listado_{{hashids_encode(alumno.id)}}" aria-expanded="false">
 				<i class="material-icons vertical-center">expand_more</i>Tutorias
 				{% if alumno_tutorias(alumno.id, '') %}
-					<span class="badge badge-info" title="{{alumno_tutorias(alumno.id, '')|count}} {{singular_plural('tutoria','tutorias', alumno_tutorias(alumno.id, '') | count)}} en total">
+					<span class="badge badge-info float-right" title="{{alumno_tutorias(alumno.id, '')|count}} {{singular_plural('tutoria','tutorias', alumno_tutorias(alumno.id, '') | count)}} en total">
 						{{alumno_tutorias(alumno.id, '')|count}}
 					</span>
 				{% endif %}
@@ -46,7 +46,7 @@
 				{% include "alumno_tutorias_block.html" %}
 			</div>
 		</div>
-		<div >
+		<div class="contenido_3">
 			<a id="anchor_ficha_{{hashids_encode(alumno.id)}}"></a>
 			<a data-toggle="collapse" class="collapse_header_1" role="tab" data-parent="#alumno_set_{{hashids_encode(alumno.id)}}" href="#alumno_ficha_{{hashids_encode(alumno.id)}}" aria-expanded="false">
 				<i class="material-icons vertical-center">expand_more</i>Ficha

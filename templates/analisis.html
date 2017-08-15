@@ -25,12 +25,12 @@
 					<br>
 					Hora:
 					{{tutoria.hora.strftime('%H:%M')}}
-					<div class="contenido_6 pull-right">
+					<div class="contenido_3 pull-right">
 						<form action="/tutoria_edit" method="POST" name="analisis{{hashids_encode(tutoria.id)}}">
 							<input type="hidden" name="current_tutoria_id" value="{{hashids_encode(tutoria.id)}}">
 							{% if params['tutoria_delete_link'] %}
 								<div class="btn-group" role="group" aria-label="...">
-									<button role="button" type="submit" name="selector_button" value="selector_tutoria_delete" class="btn btn-warning" title="confirmar eliminar tutoria">
+									<button role="button" type="submit" name="selector_button" value="selector_tutoria_delete" class="btn btn-outline-primary btn-sm" title="confirmar eliminar tutoria">
 										<i class="material-icons vertical-center">delete</i>
 										confirmar eliminar</button>
 									{% if tutoria.activa %}
@@ -61,7 +61,7 @@
 											<i class="material-icons vertical-center {% if tutoria.activa %} color-gray-darken-1 {% endif %}">file_download</i>
 										</button>
 									{% else %}
-										<button role="button" type="submit" name="selector_button" value="selector_tutoria_activar" class="btn btn-success" title="activar tutoria">
+										<button role="button" type="submit" name="selector_button" value="selector_tutoria_activar" class="btn btn-outline-primary btn-sm" title="activar tutoria">
 											<i class="material-icons vertical-center">file_upload</i>
 										</button>
 									{% endif %}
@@ -235,7 +235,7 @@
 					<br>
 				</div>
 			{% else %}
-				<div class="contenido_2 text-warning text-center">
+				<div class="contenido_3 text-warning text-center">
 					No se dispone de analisis para esta turoria.
 					<br><br>
 					<div class="btn-group" role="group" aria-label="...">

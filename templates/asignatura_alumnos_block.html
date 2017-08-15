@@ -8,13 +8,13 @@
 </a>
 <div id="asignatura_alumnos_{{hashids_encode(asignatura.id)}}" class="collapse {% if equal_str(asignatura.id, params['current_asignatura_id']) and params['collapse_asignaturas_edit_alumnos'] %} show {% endif %}">
 	<div class="card_XXX">
-		<div class="contenido_2">
+		<div class="contenido_3">
 			<a href="/alumnos" class="list-group-item-5" title="Agregar alumno">
 				<span class="material-icons vertical-center">person</span>
 				&nbsp; agregar nuevo alumno
 			</a>
 			{% if not alumnos('apellidos', 'nombre') %}
-				<div class="contenido_2 text-warning">Grupo sin alumnos.</div>
+				<div class="contenido_3 text-warning">Grupo sin alumnos.</div>
 			{% endif %}
 			{% if alumnos('apellidos', 'nombre')%}
 				{% for alumno in alumnos('apellidos', 'nombre') %}

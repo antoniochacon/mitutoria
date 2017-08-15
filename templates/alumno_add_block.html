@@ -1,4 +1,6 @@
-<div class="contenido_2">
+<br>
+<div class="contenido_3">
+
 	<form class="container" action="/alumnos" method="POST" enctype="multipart/form-data">
 		{% if params['alumno_importar_link'] %}
 			<div class="form-group">
@@ -17,25 +19,26 @@
 					<div class="input-group">
 						<input
 							type="text"
-							class="form-control {% if request.method=='POST' %} {% if alumno_add.nombre.errors %} is-invalid {% else %} is-valid {% endif %} {% endif %}"
+							class="form-control {% if request.method=='POST' and params['collapse_alumno_add'] %} {% if alumno_add.nombre.errors %} is-invalid {% else %} is-valid {% endif %} {% endif %}"
 							name="{{alumno_add.nombre.name}}"
 							{% if request.method=='POST' %}
-							value="{{alumno_add.nombre.data}}"
+
+							value="{% if request.method=='POST' and params['collapse_alumno_add'] %}{{alumno_add.nombre.data}}{% endif %}"
 							{% endif %}
 							placeholder="{{alumno_add.nombre.label.text}}">
-						<span class="input-group-addon {% if request.method=='POST' %} {% if alumno_add.nombre.errors %} form_addon-warning {% else %} form_addon-success {% endif %} {% endif %}">nombre</span>
+						<span class="input-group-addon {% if request.method=='POST' and params['collapse_alumno_add'] %} {% if alumno_add.nombre.errors %} form_addon-warning {% else %} form_addon-success {% endif %} {% endif %}">nombre</span>
 					</div>
 				</div>
 				<div class="input-group col-md-6  mb-3">
 					<input
 						type="text"
-						class="form-control {% if request.method=='POST' %} {% if alumno_add.apellidos.errors %} is-invalid {% else %} is-valid {% endif %} {% endif %}"
+						class="form-control {% if request.method=='POST' and params['collapse_alumno_add'] %} {% if alumno_add.apellidos.errors %} is-invalid {% else %} is-valid {% endif %} {% endif %}"
 						name="{{alumno_add.apellidos.name}}"
 						{% if request.method=='POST' %}
-						value="{{alumno_add.apellidos.data}}"
+						value="{% if request.method=='POST' and params['collapse_alumno_add'] %}{{alumno_add.apellidos.data}}{% endif %}"
 						{% endif %}
 						placeholder="{{alumno_add.apellidos.label.text}}">
-					<span class="input-group-addon {% if request.method=='POST' %} {% if alumno_add.apellidos.errors %} form_addon-warning {% else %} form_addon-success {% endif %} {% endif %}">apellidos</span>
+					<span class="input-group-addon {% if request.method=='POST' and params['collapse_alumno_add'] %} {% if alumno_add.apellidos.errors %} form_addon-warning {% else %} form_addon-success {% endif %} {% endif %}">apellidos</span>
 				</div>
 			</div>
 		{% endif %}
@@ -58,7 +61,7 @@
 					<i class="material-icons vertical-center">people</i>
 					importar de Seneca
 				</button>
-				{% if request.method == "POST" or params['collapse_alumno_add'] %}
+				{% if request.method == "POST" and params['collapse_alumno_add'] %}
 					<button class="btn btn-outline-dark btn-sm" type="submit" name="selector_button" value="selector_alumno_add_cerrar" title="cerrar">
 						<i class="material-icons vertical-center">close</i>
 					</button>
@@ -67,4 +70,5 @@
 		</div>
 	</form>
 </div>
+<br>
 <div class="dropdown-divider grueso bg-primary"></div>

@@ -6,7 +6,7 @@
 <div id="asignatura_pick_temporal_{{hashids_encode(alumno.id)}}" class="collapse in">
 	<div class="card_XXX">
 		<form action="/tutoria_edit" method="POST" name="analisis{{hashids_encode(tutoria.id)}}">
-			<div class="contenido_2">
+			<div class="contenido_3">
 				<input type="hidden" name="current_tutoria_id" value="{{hashids_encode(tutoria.id)}}">
 				{% if not asignaturas('asignatura', 'nombre', 'apellidos') %}
 					<a href="/asignaturas" class="list-group-item-4-danger" title="Agregar asignatura">

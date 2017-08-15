@@ -20,7 +20,7 @@
 		<div class="card_XXX-group" id="cita{{hashids_encode(cita.id)}}" role="tablist" aria-multiselectable="true">
 			<div class="card_XXX">
 				{# TODO: cita_edit #}
-				<div class="contenido_2">
+				<div class="contenido_3">
 					<form action="/settings_admin_citas" method="POST">
 						{% if equal_str(cita.id, params['current_cita_id']) and request.method=='POST' %}
 							{{field_form(cita_edit.frase, error=True, error_css=True, addon='frase')}}
@@ -42,7 +42,7 @@
 						<br>
 						{% if equal_str(cita.id, params['current_cita_id']) and params['cita_delete_link'] %}
 							<div class="btn-group" role="group" aria-label="...">
-								<button role="button" type="submit" name="selector_button" value="selector_cita_delete" class="btn btn-warning" title="confirmar eliminar asginatura">
+								<button role="button" type="submit" name="selector_button" value="selector_cita_delete" class="btn btn-outline-primary btn-sm" title="confirmar eliminar asginatura">
 									<i class="material-icons vertical-center">delete</i>
 									confirmar eliminar</button>
 								<button role="button" type="submit" name="selector_button" value="selector_cita_delete_close" class="btn btn-outline-dark" title="cancelar eliminar">

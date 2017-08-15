@@ -1,35 +1,38 @@
-<div class="contenido_2">
+<br>
+<div class="contenido_3">
+		{# XXX Informacion del alumno #}
+		<span class="text-mutted">Nombre:</span>
+		{{alumno.nombre}}
+		<br>
+		<span class="text-mutted">Apellidos:</span>
+		{{alumno.apellidos}}
+		<br>
+		<div class="text-mutted border border-info border-left-0 border-right-0 border-top-0">Asignaturas de
+			{{alumno.nombre}}:
+			<span class="badge badge-info float-right">{{alumno_asignaturas(alumno.id) | count}}
+				|
+				{{asignaturas_not_sorted() | count}}
+			</span>
+		</div>
+		{% if alumno_asignaturas(alumno.id) %}
+			{% for asignatura in alumno_asignaturas(alumno.id) %}
+				<div class="contenido_3">
+					<i class="material-icons vertical-center" style="font-size: 18px">check</i>
+					{{asignatura.asignatura}}
+				</div>
+			{% endfor %}
+			<br>
+		{% else %}
+			<div class="contenido">
+				<span class="text-warning">Sin asignaturas asignadas.</span>
+			</div>
+		{% endif %}
+		{# XXX FIN Informacion del alumno #}
 	<form class="container" action="/alumnos" method="POST">
 		{% if not params['alumno_edit_link']or(params['alumno_edit_link']and not equal_str(alumno.id, params['current_alumno_id'])) %}
-			{# XXX Informacion del alumno #}
-			<span class="text-mutted">Nombre:</span>
-			{{alumno.nombre}}
-			<br>
-			<span class="text-mutted">Apellidos:</span>
-			{{alumno.apellidos}}
-			<br>
-			<div class="text-mutted border border-info border-left-0 border-right-0 border-top-0">Asignaturas de
-				{{alumno.nombre}}:
-				<span class="badge badge-info float-right">{{alumno_asignaturas(alumno.id) | count}}
-					|
-					{{asignaturas_not_sorted() | count}}
-				</span>
-			</div>
-			{% if alumno_asignaturas(alumno.id) %}
-				{% for asignatura in alumno_asignaturas(alumno.id) %}
-					<div class="contenido_4">
-						<i class="material-icons vertical-center" style="font-size: 18px">check</i>
-						{{asignatura.asignatura}}
-					</div>
-				{% endfor %}
-				<br>
-			{% else %}
-				<div class="contenido">
-					<span class="text-warning">Sin asignaturas asignadas.</span>
-				</div>
-			{% endif %}
+
 			<input type="hidden" name="current_alumno_id" value="{{hashids_encode(alumno.id)}}">
-			{# XXX FIN Informacion del alumno #}
+
 			<div class="btn-group" role="group" aria-label="...">
 				<button role="button" type="submit" name="selector_button" class="btn btn-outline-dark btn-sm" value="selector_alumno_edit_link" title="editar ficha">
 					<i class="material-icons vertical-center">edit</i>
@@ -46,3 +49,4 @@
 		{% endif %}
 	</form>
 </div>
+<br>

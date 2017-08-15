@@ -4,7 +4,7 @@
 	{{ nav_bar_top(link_active='Alumnos',params=params) }}
 	{% if alumnos_not_sorted() %}
 		{% if settings().show_tutorias %}
-			<div class="paper bg-white contenido_7">
+			<div class="paper bg-white">
 				<a data-toggle="collapse" class="collpase-header-secondary" role="tab" data-parent="#parent_tutorias" href="#collapse_proxima_tutoria" aria-expanded="false">
 					{% if grupo_tutorias(grupo_activo().id, True) %}
 						{% for tutoria in grupo_tutorias(grupo_activo().id, True) %}

@@ -45,7 +45,7 @@
 						<div class="card_XXX-group" id="pregunta{{pregunta.id}}" role="tablist" aria-multiselectable="true">
 							<div class="card_XXX">
 								{# TODO: pregunta_edit (no se puede insertar por include por el contador loop)#}
-								<div class="contenido_2">
+								<div class="contenido_3">
 									<form action="/settings_admin_cuestionario" method="POST">
 										{% if equal_str(pregunta.id, params['current_pregunta_id'])and request.method == 'POST' %}
 											{{field_form(pregunta_edit.enunciado, error=True, error_css=True, addon='enunciado')}}
@@ -125,7 +125,7 @@
 										<br>
 										{% if equal_str(pregunta.id, params['current_pregunta_id'])and params['pregunta_delete_link'] %}
 											<div class="btn-group" role="group" aria-label="...">
-												<button role="button" type="submit" name="selector_button" value="selector_pregunta_delete" class="btn btn-warning" title="confirmar eliminar asginatura">
+												<button role="button" type="submit" name="selector_button" value="selector_pregunta_delete" class="btn btn-outline-primary btn-sm" title="confirmar eliminar asginatura">
 													<i class="material-icons vertical-center">delete</i>
 													confirmar eliminar
 												</button>
