@@ -16,6 +16,8 @@
 			<span class="navbar-toggler-icon"></span>
 		</button>
 		<a class="navbar-brand strong" href="#">mi tutoria</a>
+		<a class="nav-link" href="/pagina_1">pagina</a>
+		<a class="nav-link" href="/pagina_2">pagina</a>
 		<div class="collapse navbar-collapse" id="navbar">
 			<ul class="navbar-nav mr-auto">
 				{% for link_key in dic.keys() %}
@@ -28,20 +30,45 @@
 	</nav>
 {% endmacro %}
 {% macro nav_bar_top(link_active, params) %}
-	{{nav_bar(link_active, params=params, dic={'Alumnos':'alumnos', 'Asignaturas':'asignaturas', 'Opciones':'settings_cuestionario', 'Admin':'settings_admin_cuestionario', 'Logout':'logout'})}}
+	{{nav_bar(link_active, params=params, dic_1={'Alumnos':'alumnos', 'Asignaturas':'asignaturas'}, dic_2={'Opciones':'settings_cuestionario', 'Admin':'settings_admin_cuestionario', 'Logout':'logout'})}}
 {% endmacro %}
-{% macro nav_bar(link_active, params, params_args, dic) %}
+{% macro nav_bar(link_active, params, params_args, dic_1, dic_2) %}
 	<nav class="navbar fixed-top navbar-expand-md navbar-dark bg-primary z-depth-1-less">
 		<button class="navbar-toggler" role="button" type="button" data-toggle="collapse" data-target="#navbar" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
 			<span class="navbar-toggler-icon"></span>
 		</button>
-		<a class="navbar-brand strong" href="#">mi tutoria</a>
+		<a class="navbar-brand strong" href="/">mi tutoria</a>
+		<div class="clearfix"></div>
+
+
+		<!-- <ul class="list-inline">
+			{% for link_key in dic_1.keys() %}
+				<li>
+					<a href="/{{dic_1[link_key]}}{% if params_args %}/{{params_args}}{% endif %}">{{link_key}}</a>
+				</li>
+			{% endfor %}
+		</ul> -->
+
+<div class="d-flex flex-row">
+	<div class="p-1">
+		 <a href="/alumnos">Alumnos</a>
+	</div>
+		<div class="p-1">
+			  <a href="/asignaturas">Asignaturas</a>
+		</div>
+
+</div>
+
+
+
+
+
 		<div class="collapse navbar-collapse" id="navbar">
 			<ul class="navbar-nav mr-auto">
-				{% for link_key in dic.keys() %}
+				{% for link_key in dic_2.keys() %}
 					{% if link_key != 'Admin' %}
 						<li class="nav-item {% if link_key==link_active %} active strong {% endif %}">
-							<a class="nav-link" href="/{{dic[link_key]}}{% if params_args %}/{{params_args}}{% endif %}">{{link_key}}
+							<a class="nav-link" href="/{{dic_2[link_key]}}{% if params_args %}/{{params_args}}{% endif %}">{{link_key}}
 								{% if link_key == 'Logout' %}
 									[{{user_by_id(settings().id).username}}]
 								{% endif %}
@@ -49,7 +76,7 @@
 						</li>
 					{% elif link_key == 'Admin' and settings().role == 'admin' %}
 						<li class="nav-item {% if link_key==link_active %} active strong {% endif %}">
-							<a class="nav-link" href="/{{dic[link_key]}}{% if params_args %}/{{params_args}}{% endif %}">{{link_key}}</a>
+							<a class="nav-link" href="/{{dic_2[link_key]}}{% if params_args %}/{{params_args}}{% endif %}">{{link_key}}</a>
 						</li>
 					{% endif %}
 				{% endfor %}

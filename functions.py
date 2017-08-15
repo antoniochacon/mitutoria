@@ -759,7 +759,7 @@ def tutorias_timeout():  # Update de TRUE a FALSE la columna activa de una tutor
         alumnos = session_sql.query(Alumno).filter(Alumno.grupo_id == settings().grupo_activo_id).all()
         for alumno in alumnos:
             for tutoria in alumno_tutorias(alumno.id, True):
-                if tutoria.fecha < g.current_date - datetime.timedelta(hours=12):
+                if tutoria.fecha < g.current_date - datetime.timedelta(hours=6):
                     tutoria.activa = False
                     session_sql.commit()
                     flash_toast('Tutoria de ' + Markup('<strong>') + alumno.nombre + Markup('</strong>') + ' para el dia ' + Markup('<strong>') + str(tutoria.fecha) + Markup('</strong>') + ' auto-archivada', 'warning')

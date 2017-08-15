@@ -8,13 +8,21 @@
 </a>
 <div id="asignatura_alumnos_{{hashids_encode(asignatura.id)}}" class="collapse {% if not asignatura_alumnos(asignatura.id) %} show {% endif %}">
 	<div class="padding_3">
-		{% if alumnos('apellidos', 'nombre')%}
-			{% for alumno in alumnos('apellidos', 'nombre') %}
-				{{checkbox_funky(alumno,asignatura,'alumno','asignatura_edit')}}
-			{% endfor %}
+		<br>
+		{% if not alumnos('apellidos', 'nombre') %}
+			<span class="text-warning">Grupo aun sin alumnos</span>
 		{% else %}
-			<div class="padding_3 text-warning">
-				Grupo sin alumnos.
+			<div class="row">
+				{% for alumno in alumnos('apellidos', 'nombre') %}
+					<div class="form-group col-md-6 col-lg-4">
+						<label class="custom-control custom-checkbox">
+							<input type="checkbox" class="custom-control-input" name="alumno" value="{{hashids_encode(alumno.id)}}" {% if association_alumno_asignatura_check(alumno.id,asignatura.id) %} checked {% endif %}>
+							<span class="custom-control-indicator"></span>
+							<span class="custom-control-description {% if not association_alumno_asignatura_check(alumno.id,asignatura.id) %}text-mutted{% endif %}">{{alumno.apellidos}},
+								{{alumno.nombre}}</span>
+						</label>
+					</div>
+				{% endfor %}
 			</div>
 		{% endif %}
 	</div>
