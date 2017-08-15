@@ -123,7 +123,7 @@ def send_email_tutoria(alumno, tutoria):
         send_email(alumno, tutoria)
     send_email_threading = threading.Thread(name='send_email_thread', target=send_email_process, args=(alumno, tutoria))
     send_email_threading.start()
-    flash_toast('Generada tutoria para ' + Markup('<strong>') + alumno.nombre + Markup('</strong>'), 'success')
+    flash_toast('Tutoria generada para ' + Markup('<strong>') + alumno.nombre + Markup('</strong>'), 'success')
 
 
 def re_send_email(alumno, tutoria, asignaturas_id_lista):

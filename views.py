@@ -331,7 +331,7 @@ def alumnos_html(params={}):
             else:
                 if collapse_alumno_edit_asignaturas_contador != 0:
                     params['collapse_alumno_edit_asignaturas'] = True
-                    flash_toast('Asignadas asignaturas de ' + Markup('<strong>') + alumno_edit_form.nombre.data + Markup('</strong>'), 'success')
+                    flash_toast('Asignadas asignaturas a ' + Markup('<strong>') + alumno_edit_form.nombre.data + Markup('</strong>'), 'success')
                     collapse_alumno_edit_asignaturas_contador = 0
                     return redirect(url_for('alumnos_html', params=dic_encode(params)))
 
@@ -577,7 +577,7 @@ def settings_admin_cuestionario_html(params={}):
                         pregunta.visible = pregunta_edit_visible
                     if pregunta.active_default != pregunta_edit_active_default:
                         pregunta.active_default = pregunta_edit_active_default
-                    flash_toast('Pregunta actulizada correctamente', 'success')
+                    flash_toast('Pregunta actualizada', 'success')
 
                 if request.form['selector_button'] == 'selector_move_down':
                     for k in range(1, 500):
@@ -692,7 +692,7 @@ def settings_cuestionario_html(params={}):
                 flash_toast('Cuestionario sin preguntas asignadas', 'warning')
             else:
                 if contador != 0:
-                    flash_toast('Cuestionario  actualizado correctamente', 'success')
+                    flash_toast('Cuestionario  actualizado', 'success')
                     contador = 0
             return redirect(url_for('settings_cuestionario_html'))
     return render_template('settings_cuestionario.html', fab=fab, params=params)
@@ -835,7 +835,7 @@ def tutoria_edit_html():
             tutoria_to_move = tutoria_by_id(current_tutoria_id)
             tutoria_to_move.activa = False
             session_sql.commit()
-            flash_toast('Tutoria archivada correctamente', 'success')
+            flash_toast('Tutoria archivada', 'success')
             return redirect(url_for('analisis_html', params=dic_encode(params)))
 
         # XXX tutoria_activar
@@ -846,7 +846,7 @@ def tutoria_edit_html():
             else:
                 tutoria_to_move.activa = True
                 session_sql.commit()
-                flash_toast('Tutoria activada correctamente', 'success')
+                flash_toast('Tutoria activada', 'success')
             return redirect(url_for('analisis_html', params=dic_encode(params)))
 
         # XXX tutoria_delete_link
@@ -869,7 +869,7 @@ def tutoria_edit_html():
             tutoria_to_move = tutoria_by_id(current_tutoria_id)
             tutoria_to_move.activa = False
             session_sql.commit()
-            flash_toast('Tutoria archivada correctamente', 'success')
+            flash_toast('Tutoria archivada', 'success')
             params['tutoria_delete_link'] = False
             return redirect(url_for('analisis_html', params=dic_encode(params)))
 
@@ -910,7 +910,7 @@ def tutoria_edit_html():
                     tutoria_sql.activa = True
                     session_sql.begin_nested()
                     session_sql.commit()
-                    flash_toast('Tutoria actulizada correctamente', 'success')
+                    flash_toast('Tutoria actualizada', 'success')
                     params['tutoria_edit_link'] = False
                     return redirect(url_for('analisis_html', params=dic_encode(params)))
             else:
@@ -959,7 +959,7 @@ def settings_options_html(params={}):
             settings().tutoria_timeout = settings_edit_tutoria_timeout
             settings().show_tutorias_collapse = settings_edit_show_tutorias_collapse
             settings().calendar = settings_edit_calendar
-            flash_toast('Configuracion actualizada correctamente', 'success')
+            flash_toast('Configuracion actualizada', 'success')
             session_sql.begin_nested()
             session_sql.commit()
             return redirect(url_for('settings_options_html'))
@@ -1115,10 +1115,10 @@ def settings_grupos_html(params={}):
                     # session_sql.refresh(grupo_add)
                     if grupo_add_grupo_activo:
                         settings().grupo_activo_id = grupo_add.id
-                        flash_toast(Markup('Grupo <strong>') + grupo_add_form.nombre.data + Markup('</strong>') + ' se agrego correctamente' + Markup('<br>Ahora este es el nuevo actual grupo activo'), 'success')
+                        flash_toast(Markup('Grupo <strong>') + grupo_add_form.nombre.data + Markup('</strong>') + ' agregado' + Markup('<br>Ahora este es el nuevo actual grupo activo'), 'success')
                     else:
                         if settings().grupo_activo_id:
-                            flash_toast(Markup('Grupo <strong>') + grupo_add_form.nombre.data + Markup('</strong>') + ' se agrego correctamente' + Markup('<br>Si deseas usar este grupo debes activarlo'), 'success')
+                            flash_toast(Markup('Grupo <strong>') + grupo_add_form.nombre.data + Markup('</strong>') + ' agregado' + Markup('<br>Si deseas usar este grupo debes activarlo'), 'success')
                         else:
                             settings().grupo_activo_id = grupo_add.id
 
@@ -1389,7 +1389,7 @@ def informe_html(token_hash):
         if request.form['selector_button'] == 'selector_informe_add':
             session_sql.begin_nested()  # NOTE no tengo claro si esto es util aqui
             session_sql.commit()
-            flash_toast('Infome de ' + Markup('<strong>') + alumno.nombre + Markup('</strong>') + ' enviado correctamente', 'success')
+            flash_toast('Infome de ' + Markup('<strong>') + alumno.nombre + Markup('</strong>') + ' enviado', 'success')
             params = {}
             params['token_hash'] = token_hash
             params['alumno'] = alumno.nombre + ' ' + alumno.apellidos
@@ -1707,5 +1707,5 @@ def logout_html():
     params = {}
     fab = Fab(True, False, True, False, False, False, False)
     logout_user()
-    flash_toast('Session cerrada correctamente', 'success')
+    flash_toast('Session cerrada', 'success')
     return render_template('logout.html', fab=fab, params=params)

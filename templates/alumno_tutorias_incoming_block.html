@@ -10,7 +10,7 @@
 			{{alumno_by_id(tutoria.alumno_id).nombre}}
 		</a>
 		<div class="progress">
-			<div class="progress-bar bg-success" role="progressbar" aria-valuemin="0" aria-valuemax="100" style="height:2px; width: {{cociente_porcentual(tutoria_informes(tutoria.id) | count, tutoria_asignaturas_count(tutoria.id))}}%;"></div>
+			<div class="progress-bar bg-secondary" role="progressbar" aria-valuemin="0" aria-valuemax="100" style="height:2px; width: {{cociente_porcentual(tutoria_informes(tutoria.id) | count, tutoria_asignaturas_count(tutoria.id))}}%;"></div>
 		</div>
 	{% endfor %}
 </div>

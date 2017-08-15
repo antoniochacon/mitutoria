@@ -8,22 +8,18 @@
 				{{alumno.nombre}}
 				{# NOTE badge #}
 				{% if alumno_tutorias(alumno.id, True) %}
-
 					<span
 						class="badge badge-primary"
 						title="{{alumno_tutorias(alumno.id, True) | count}} {{singular_plural('tutoria','tutorias', alumno_tutorias(alumno.id, True) | count)}}  {{singular_plural('solicitada','solicitadas', alumno_tutorias(alumno.id, True) | count)}}">
 						{{alumno_tutorias(alumno.id, True) | count}}
 						{{singular_plural('tutoria','tutorias', alumno_tutorias(alumno.id, True) | count)}}
 					</span>
-
 				{% endif %}
 			</div>
 		</div>
 	</div>
+	<!-- current_alumno_id:{{params['current_alumno_id']}} -->
 </a>
-{#
-current_alumno_id:{{params['current_alumno_id']}}
-#}
 <div id="alumno_{{hashids_encode(alumno.id)}}" class="collapse {% if equal_str(alumno.id, params['current_alumno_id']) and params['collapse_alumno'] %} show {% endif %}">
 	<div class="dropdown-divider bg-primary grueso"></div>
 	<div class="contenido_3" id="alumno_set_{{hashids_encode(alumno.id)}}" aria-multiselectable="true">

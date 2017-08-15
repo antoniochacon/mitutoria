@@ -1,3 +1,12 @@
+{% macro titulo_user_ficha(text_color, bg_color, titulo, user) %}
+	<h3 class='{{text_color}} strong'>
+		{{titulo}}
+		<h5 class='{{text_color}}'>
+			{% include 'user_info_basica_block.html' %}
+			<div class='dropdown-divider {{bg_color}} grueso'></div>
+		</h5>
+	</h3>
+{% endmacro %}
 {% macro nav_bar_top_no_session(link_active, dic = {
 	'Iniciar sesión': 'login',
 	'Crear nueva cuenta': 'user_add'
@@ -59,7 +68,7 @@
 	<br>
 {% endmacro %}
 {% macro checkbox_funky(tipo_a, tipo_b, tipo, prefix) %}
-	<div class='funkyradio funkyradio-success'>
+	<!-- <div class='funkyradio funkyradio-success'>
 		{% if tipo == 'asignatura' %}
 			<input type='checkbox' name={{tipo}} id='{{prefix}}{{hashids_encode(tipo_a.id)}}{{hashids_encode(tipo_b.id)}}' value='{{hashids_encode(tipo_b.id)}}' {% if association_alumno_asignatura_check(tipo_a.id,tipo_b.id) %} checked {% endif %}/>
 			<label for='{{prefix}}{{hashids_encode(tipo_a.id)}}{{hashids_encode(tipo_b.id)}}'>{{tipo_b.asignatura}}</label>
@@ -80,8 +89,10 @@
 			{% include 'user_info_basica_block.html' %}
 			<div class='dropdown-divider {{bg_color}} grueso'></div>
 		</h5>
-	</h3>
+	</h3> -->
 {% endmacro %}
+
+
 {% macro titulo_1(url, text_color, bg_color, titulo, subtitulo) %}
 	<h5 class='{{text_color}} strong'>
 		{{titulo}}

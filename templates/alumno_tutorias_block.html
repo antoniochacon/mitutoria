@@ -6,7 +6,9 @@
 		{% for tutoria in alumno_tutorias(alumno.id, '') %}
 			<a id="anchor_tut_{{hashids_encode(tutoria.id)}}"></a>
 			<a href="/analisis/{{dic_encode_args({'current_tutoria_id': tutoria.id})}}" class="collapse_header_2" title="ver informe">
-				<span class="{% if tutoria.activa %} h4 strong {% else %} text-mutted {% endif %}">{{tutoria.fecha.strftime('%A') | capitalize}}
+				<span class="{% if tutoria.activa %} h5 strong {% else %} text-mutted {% endif %}">
+					{{tutoria.fecha.strftime('%B') | capitalize}}:
+					{{tutoria.fecha.strftime('%A') | capitalize}}
 					{{tutoria.fecha.strftime('%d')}}
 					a las
 					{{tutoria.hora.strftime('%H:%M')}}
@@ -14,7 +16,7 @@
 			</a>
 			<div class="progress rounded-0">
 				<div
-					class="progress-bar {% if tutoria.activa %} bg-success progress-bar-striped progress-bar-animated {% else %} bg-mutted {% endif %}"
+					class="progress-bar {% if tutoria.activa %} bg-secondary progress-bar-striped progress-bar-animated {% else %} bg-mutted {% endif %}"
 					role="progressbar"
 					aria-valuemin="0"
 					aria-valuemax="100"
