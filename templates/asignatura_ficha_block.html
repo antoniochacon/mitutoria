@@ -1,6 +1,6 @@
 <div class="card_XXX">
 	<form action="/asignaturas" method="POST">
-		<div class="contenido_3">
+		<div class="padding_3">
 			{% if equal_str(asignatura.id, params['current_asignatura_id']) and request.method == 'POST'%}
 				{{field_form(asignatura_edit.asignatura, error=True, error_css=True, addon='asignatura')}}
 				{{field_form(asignatura_edit.nombre, error=True, error_css=True, addon='nombre')}}

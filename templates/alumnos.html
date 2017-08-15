@@ -25,7 +25,7 @@
 						{% include "alumno_tutorias_incoming_block.html" %}
 						<br>
 					{% else %}
-						<div class="contenido text-mutted">
+						<div class="padding_contenido text-mutted">
 							ira una frase positiva/divertida o directamente una Cita
 							<br>
 							igual tengo que poner tambien categorias a las citas
@@ -37,7 +37,7 @@
 		{% endif %}
 	{% endif %}
 	{# XXX alumnos #}
-	<div class="paper bg-white contenido">
+	<div class="paper bg-white padding_contenido">
 		<a id="anchor_alumno_add"></a>
 		{{titulo_1(url="alumnos",bg_color="bg-primary",titulo=grupo_activo().nombre, subtitulo=[ grupo_activo().centro, [ grupo_activo().curso_academico, grupo_activo().curso_academico +1 ]|join("-") ]|join(": "))}}
 		<div id="parent_alumno">

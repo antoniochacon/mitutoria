@@ -1,5 +1,6 @@
 <br>
-<div class="contenido_3">
+<div class="padding_3">
+	{% if not params['alumno_edit_link'] %}
 		{# XXX Informacion del alumno #}
 		<span class="text-mutted">Nombre:</span>
 		{{alumno.nombre}}
@@ -15,24 +16,24 @@
 			</span>
 		</div>
 		{% if alumno_asignaturas(alumno.id) %}
+			<h6></h6>
 			{% for asignatura in alumno_asignaturas(alumno.id) %}
-				<div class="contenido_3">
+				<div class="padding_1">
 					<i class="material-icons vertical-center" style="font-size: 18px">check</i>
 					{{asignatura.asignatura}}
 				</div>
 			{% endfor %}
 			<br>
 		{% else %}
-			<div class="contenido">
+			<div class="padding_contenido">
 				<span class="text-warning">Sin asignaturas asignadas.</span>
 			</div>
 		{% endif %}
 		{# XXX FIN Informacion del alumno #}
+	{% endif %}
 	<form class="container" action="/alumnos" method="POST">
 		{% if not params['alumno_edit_link']or(params['alumno_edit_link']and not equal_str(alumno.id, params['current_alumno_id'])) %}
-
 			<input type="hidden" name="current_alumno_id" value="{{hashids_encode(alumno.id)}}">
-
 			<div class="btn-group" role="group" aria-label="...">
 				<button role="button" type="submit" name="selector_button" class="btn btn-outline-dark btn-sm" value="selector_alumno_edit_link" title="editar ficha">
 					<i class="material-icons vertical-center">edit</i>

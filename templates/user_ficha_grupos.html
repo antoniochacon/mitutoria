@@ -1,7 +1,7 @@
 {% extends '_layout.html' %}
 {% block body %}
 	{%from '_macro.html' import field_form, titulo_user_ficha, nav_tabs %}
-	<div class="paper bg-white contenido">
+	<div class="paper bg-white padding_contenido">
 		{{titulo_user_ficha(bg_color='bg-primary', titulo='Admin Settings', user=user)}}
 		{{nav_tabs(tab_active='Grupos', params_args=dic_encode_args({'current_user_id': user.id}), dic={'Grupos':'user_ficha_grupos', 'Alumnos':'user_ficha_alumnos', 'Tutorias':'user_ficha_tutorias', 'Cuestionario':'user_ficha_cuestionario'})}}
 		<!-- ********************************************* -->
@@ -33,7 +33,7 @@
 				<div class="card_XXX-group" id="grupo{{hashids_encode(grupo.id)}}" role="tablist" aria-multiselectable="true">
 					<div class="card_XXX">
 						{# XXX: listado alumnos #}
-						<div class="contenido_3">
+						<div class="padding_3">
 							asdfasdf asdfasdfasdf
 						</div>
 					</div>

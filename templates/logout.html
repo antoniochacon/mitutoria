@@ -3,7 +3,7 @@
 	{%from '_macro.html' import nav_bar_top_no_session, titulo_1%}
 	{{ nav_bar_top_no_session() }}
 	<div class="container">
-		<div class="paper bg-white contenido">
+		<div class="paper bg-white padding_contenido">
 			{{titulo_1(url='logout', bg_color='bg-primary', titulo='Session cerrada')}}
 			<span>
 				{% if cita_random() %}

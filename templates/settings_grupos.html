@@ -1,7 +1,7 @@
 {% extends '_layout.html' %}
 {% block body %}
 	{%from '_macro.html' import titulo_1, nav_tabs, field_form%}
-	<div class='paper bg-white contenido'>
+	<div class='paper bg-white padding_contenido'>
 		{{titulo_1(bg_color='bg-primary',titulo='Configuración')}}
 		{{nav_tabs(tab_active='Grupos', dic={'Cuestionario':'settings_cuestionario', 'Grupos':'#', 'Opciones':'settings_options'})}}
 		<div class="card_XXX-group" id="grupo" role="tablist" aria-multiselectable="true">
@@ -13,7 +13,7 @@
 				</a>
 				<div class="collapse {% if params['collapse_grupo_add'] or params['login'] %} show {% endif %}" id="grupo_add">
 					<div class="dropdown-divider grueso bg-primary"></div>
-					<div class="contenido_3">
+					<div class="padding_3">
 						<form action="/settings_grupos" method="POST">
 							{% with %}
 							{% if params['collapse_grupo_add'] %}
@@ -69,7 +69,7 @@
 						<div class="card_XXX-group" id="grupo{{hashids_encode(grupo.id)}}" role="tablist" aria-multiselectable="true">
 							<div class="card_XXX">
 								{# XXX: grupo_edit #}
-								<div class="contenido_3">
+								<div class="padding_3">
 									<form action="/settings_grupos" method="POST">
 										{% if equal_str(grupo.id, params['current_grupo_id']) and request.method =='POST'%}
 											{{field_form(grupo_edit.nombre, error=True, error_css=True, addon='nombre')}}

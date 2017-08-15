@@ -20,7 +20,7 @@
 		<div class="card_XXX-group" id="cita{{hashids_encode(cita.id)}}" role="tablist" aria-multiselectable="true">
 			<div class="card_XXX">
 				{# TODO: cita_edit #}
-				<div class="contenido_3">
+				<div class="padding_3">
 					<form action="/settings_admin_citas" method="POST">
 						{% if equal_str(cita.id, params['current_cita_id']) and request.method=='POST' %}
 							{{field_form(cita_edit.frase, error=True, error_css=True, addon='frase')}}

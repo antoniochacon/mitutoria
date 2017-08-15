@@ -2,7 +2,7 @@
 {% block body %}
 	{%from '_macro.html' import nav_bar_top, titulo_1, nav_tabs, field_form,%}
 	{{ nav_bar_top(link_active='Admin',params=params) }}
-	<div class="paper bg-white contenido">
+	<div class="paper bg-white padding_contenido">
 		{{titulo_1(bg_color='bg-primary',titulo='Admin Settings')}}
 		{{nav_tabs(tab_active='Cuestionario', dic={'Cuestionario':'#', 'Citas':'settings_admin_citas', 'Usuarios':'settings_admin_users'})}}
 		<div class="card_XXX-group" id="pregunta" role="tablist" aria-multiselectable="true">
@@ -45,7 +45,7 @@
 						<div class="card_XXX-group" id="pregunta{{pregunta.id}}" role="tablist" aria-multiselectable="true">
 							<div class="card_XXX">
 								{# TODO: pregunta_edit (no se puede insertar por include por el contador loop)#}
-								<div class="contenido_3">
+								<div class="padding_3">
 									<form action="/settings_admin_cuestionario" method="POST">
 										{% if equal_str(pregunta.id, params['current_pregunta_id'])and request.method == 'POST' %}
 											{{field_form(pregunta_edit.enunciado, error=True, error_css=True, addon='enunciado')}}

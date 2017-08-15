@@ -1,7 +1,7 @@
 {% extends '_layout.html' %}
 {% block body %}
 	{%from '_macro.html' import titulo_1, nav_tabs %}
-	<div class="paper bg-white contenido">
+	<div class="paper bg-white padding_contenido">
 		{{titulo_1(bg_color='bg-primary',titulo='Configuracion')}}
 		{{nav_tabs(tab_active='Opciones', dic={'Cuestionario':'settings_cuestionario', 'Grupos':'settings_grupos', 'Opciones':'#'})}}
 		<form action="/settings_options" method="POST">

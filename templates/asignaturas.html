@@ -2,7 +2,7 @@
 {% block body %}
 	{%from "_macro.html" import nav_bar_top, field_form, titulo_1, checkbox_funky, highcharts_tutoria_stats%}
 	{{ nav_bar_top(link_active='Asignaturas',params=params) }}
-	<div class="paper bg-white contenido">
+	<div class="paper bg-white padding_contenido">
 		{{titulo_1(url='asignaturas',bg_color='bg-primary',titulo=grupo_activo().nombre, subtitulo=[ grupo_activo().centro, [ grupo_activo().curso_academico, grupo_activo().curso_academico +1 ]|join("-") ]|join(": "))}}
 		<div class="card_XXX-group" id="parent_alumno" aria-multiselectable="true">
 			<div class="card_XXX">

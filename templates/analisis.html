@@ -2,8 +2,8 @@
 {% block body %}
 	{%from '_macro.html' import nav_bar_top, titulo_1, highcharts_asignatura,highcharts_cuestionario,highcharts_asignaturas, highcharts_evalucion, highcharts_tutoria_stats%}
 	{{ nav_bar_top(link_active='None',params=params) }}
-	<div class="paper bg-white contenido">
-		<div class="contenido_3">
+	<div class="paper bg-white padding_contenido">
+		<div class="padding_3">
 			{% if grupo and alumno and tutoria %}
 				<div class="row">
 					<div class="col-xs-2 col-fix-125">
@@ -25,7 +25,7 @@
 					<br>
 					Hora:
 					{{tutoria.hora.strftime('%H:%M')}}
-					<div class="contenido_3 pull-right">
+					<div class="padding_3 pull-right">
 						<form action="/tutoria_edit" method="POST" name="analisis{{hashids_encode(tutoria.id)}}">
 							<input type="hidden" name="current_tutoria_id" value="{{hashids_encode(tutoria.id)}}">
 							{% if params['tutoria_delete_link'] %}
@@ -113,8 +113,8 @@
 				</a>
 				<div class="collapse in" id="analisis_detallado_asignaturas">
 					<div class="row">
-						<div class="contenido_3">
-							<div class="contenido">
+						<div class="padding_3">
+							<div class="padding_contenido">
 								{% if not df_asignaturas_lista(df_data, tutoria.id) %}
 									<span class="text-info">No se han recibido ningun informe para esta tutoría.</span>
 									<br>
@@ -129,7 +129,7 @@
 										{{highcharts_asignatura(char_id=asignatura, asignatura=asignatura, alumno=alumno, grupo=grupo, df_data=df_data, tutoria_id=tutoria.id)}}
 										<br>
 										{% if comentario_by_informe_id_and_asignatura_nombre(tutoria.id, asignatura) %}
-											<div class="contenido">
+											<div class="padding_contenido">
 												<br>
 												<span class="strong">Observaciones:</span>
 												<div class="dropdown-divider bg-gray-4"></div>
@@ -235,7 +235,7 @@
 					<br>
 				</div>
 			{% else %}
-				<div class="contenido_3 text-warning text-center">
+				<div class="padding_3 text-warning text-center">
 					No se dispone de analisis para esta turoria.
 					<br><br>
 					<div class="btn-group" role="group" aria-label="...">

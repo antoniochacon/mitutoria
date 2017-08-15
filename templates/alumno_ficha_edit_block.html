@@ -3,21 +3,21 @@
 		<div class="input-group">
 			<input
 				type="text"
-				class="form-control {% if request.method=='POST' %} {% if alumno_edit.nombre.errors %} is-invalid {% else %} is-valid {% endif %}{% endif %}"
+				class="form-control {% if request.method=='POST' and params['alumno_edit_link'] %} {% if alumno_edit.nombre.errors %} is-invalid {% else %} is-valid {% endif %}{% endif %}"
 				name="{{alumno_edit.nombre.name}}"
-				value="{% if equal_str(alumno.id,params['current_alumno_id']) and request.method=='POST' %}{{alumno_edit.nombre.data}}{% else %}{{alumno.nombre}}{% endif %}"
+				value="{% if equal_str(alumno.id,params['current_alumno_id']) and request.method=='POST' and params['alumno_edit_link'] %}{{alumno_edit.nombre.data}}{% else %}{{alumno.nombre}}{% endif %}"
 				placeholder="{{alumno_edit.nombre.label.text}}">
-			<span class="input-group-addon {% if request.method=='POST' %} {% if alumno_edit.nombre.errors %} form_addon-warning {% else %} form_addon-success {% endif %} {% endif %}">nombre</span>
+			<span class="input-group-addon {% if request.method=='POST' and params['alumno_edit_link'] %} {% if alumno_edit.nombre.errors %} form_addon-warning {% else %} form_addon-success {% endif %} {% endif %}">nombre</span>
 		</div>
 	</div>
 	<div class="input-group col-md-6  mb-3">
 		<input
 			type="text"
-			class="form-control {% if request.method=='POST' %} {% if alumno_edit.apellidos.errors %} is-invalid {% else %} is-valid {% endif %} {% endif %}"
+			class="form-control {% if request.method=='POST' and params['alumno_edit_link'] %} {% if alumno_edit.apellidos.errors %} is-invalid {% else %} is-valid {% endif %} {% endif %}"
 			name="{{alumno_edit.apellidos.name}}"
-			value="{% if equal_str(alumno.id,params['current_alumno_id']) and request.method=='POST' %}{{alumno_edit.apellidos.data}}{% else %}{{alumno.apellidos}}{% endif %}"
+			value="{% if equal_str(alumno.id,params['current_alumno_id']) and request.method=='POST' and params['alumno_edit_link'] %}{{alumno_edit.apellidos.data}}{% else %}{{alumno.apellidos}}{% endif %}"
 			placeholder="{{alumno_edit.apellidos.label.text}}">
-		<span class="input-group-addon {% if request.method=='POST' %} {% if alumno_edit.apellidos.errors %} form_addon-warning {% else %} form_addon-success {% endif %} {% endif %}">apellidos</span>
+		<span class="input-group-addon {% if request.method=='POST' and params['alumno_edit_link'] %} {% if alumno_edit.apellidos.errors %} form_addon-warning {% else %} form_addon-success {% endif %} {% endif %}">apellidos</span>
 	</div>
 </div>
 {% include 'alumno_ficha_edit_asignaturas_block.html' %}
