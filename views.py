@@ -205,6 +205,7 @@ def alumnos_html(params={}):
                 if alumno:
                     alumno_add_form.nombre.errors = ['']
                     alumno_add_form.apellidos.errors = ['']
+                    params['anchor'] = 'anchor_alu_add'
                     flash_toast(Markup('<strong>') + alumno_add_form.nombre.data.title() + Markup('</strong>') + ' ' + Markup('<strong>') + alumno_add_form.apellidos.data.title() + Markup('</strong>') + ' ya esta registrado', 'warning')
                     return render_template(
                         'alumnos.html', fab=fab, alumno_add=alumno_add_form, alumno_edit=Alumno_Add(), tutoria_add=Tutoria_Add(),
@@ -214,10 +215,10 @@ def alumnos_html(params={}):
                     alumno_add = Alumno(grupo_id=settings().grupo_activo_id, apellidos=alumno_add_form.apellidos.data.title(), nombre=alumno_add_form.nombre.data.title())
                     session_sql.add(alumno_add)
                     session_sql.commit()
-
                     flash_toast(Markup('<strong>') + alumno_add_form.nombre.data.title() + Markup('</strong>') + ' agregado', 'success')
                     return redirect(url_for('alumnos_html', params=dic_encode(params)))
             else:
+                params['anchor'] = 'anchor_alu_add'
                 flash_wtforms(alumno_add_form, flash_toast, 'warning')
                 return render_template(
                     'alumnos.html', fab=fab, alumno_add=alumno_add_form, alumno_edit=Alumno_Add(), tutoria_add=Tutoria_Add(),
@@ -231,6 +232,7 @@ def alumnos_html(params={}):
         if request.form['selector_button'] == 'selector_alumno_importar_link':
             params['collapse_alumno_add'] = True
             params['alumno_importar_link'] = True
+            params['anchor'] = 'anchor_alu_add'
             return redirect(url_for('alumnos_html', params=dic_encode(params)))
 
         # XXX alumno_importar
@@ -272,6 +274,7 @@ def alumnos_html(params={}):
         if request.form['selector_button'] == 'selector_alumno_importar_cerrar':
             params['collapse_alumno_add'] = True
             params['alumno_importar_link'] = False
+            params['anchor'] = 'anchor_alu_add'
             return redirect(url_for('alumnos_html', params=dic_encode(params)))
 
         # XXX alumno_edit_link
@@ -292,7 +295,7 @@ def alumnos_html(params={}):
             # NOTE redirect a tutoria_add
             if params['from_url'] == 'from_tutoria_add':
                 params['collapse_tutoria_add'] = True
-                params['anchor'] = 'anchor_tut_add_' + str(hashids_encode(current_alumno_id))
+                params['anchor'] = 'anchor_ficha_' + str(hashids_encode(current_alumno_id))
                 return redirect(url_for('alumnos_html', params=dic_encode(params)))
             return redirect(url_for('alumnos_html', params=dic_encode(params)))
 
@@ -306,7 +309,7 @@ def alumnos_html(params={}):
             params['collapse_alumno'] = True
             params['collapse_alumno_edit'] = True
             params['alumno_edit_link'] = True
-            params['anchor'] = 'anchor_tut_add_' + str(hashids_encode(current_alumno_id))
+            params['anchor'] = 'anchor_ficha_' + str(hashids_encode(current_alumno_id))
             # XXX asignar asignaturas
             # ***************************************
             asignaturas_id_lista_encoded = request.form.getlist('asignatura')
@@ -444,10 +447,8 @@ def alumnos_html(params={}):
                     tutoria_sql = session_sql.query(Tutoria).filter(Tutoria.alumno_id == current_alumno_id, Tutoria.fecha == tutoria_add_form_fecha).first()
                     # NOTE tutorias_timeout (tutoria_add)
                     if datetime.datetime.strptime(tutoria_add_form_fecha, '%Y-%m-%d').date() < g.current_date:
-                        params['anchor'] = 'anchor_alu_' + str(current_alumno_id)
                         tutoria_add_form.fecha.errors = ['Fecha ya pasada.']
-                        flash_toast('No generada esta tutoria', 'warning')
-                        flash_wtforms(tutoria_add_form, flash_toast, 'warning')
+                        flash_toast('Tutoria no generada' + Markup('<br>') + 'Fecha pasada', 'warning')
                     else:
                         if tutoria_sql:
                             # NOTE tutoria ya existe y redirect a al modo de edicion de la tutoria
@@ -463,7 +464,7 @@ def alumnos_html(params={}):
                             params['current_alumno_id'] = current_alumno_id
                             params['collapse_alumno'] = True
                             params['collapse_tutorias'] = True
-                            params['anchor'] = 'anchor_alu_' + str(current_alumno_id)
+                            params['anchor'] = 'anchor_top'
                             return redirect(url_for('alumnos_html', params=dic_encode(params)))
                 else:
                     flash_wtforms(tutoria_add_form, flash_toast, 'warning')
@@ -473,7 +474,6 @@ def alumnos_html(params={}):
 
         # XXX selector_tutoria_add_close
         if request.form['selector_button'] == 'selector_tutoria_add_close':
-
             return redirect(url_for('alumnos_html', params=dic_encode(params)))
 
     # XXX tutorias_timeout

@@ -10,7 +10,7 @@
 			<span class="input-group-addon {% if request.method=='POST' and params['alumno_edit_link'] %} {% if alumno_edit.nombre.errors %} form_addon-warning {% else %} form_addon-success {% endif %} {% endif %}">nombre</span>
 		</div>
 	</div>
-	<div class="input-group col-md-6  mb-3">
+	<div class="input-group col-md-6 mb-3">
 		<input
 			type="text"
 			class="form-control {% if request.method=='POST' and params['alumno_edit_link'] %} {% if alumno_edit.apellidos.errors %} is-invalid {% else %} is-valid {% endif %} {% endif %}"

@@ -41,6 +41,7 @@
 		<a id="anchor_alumno_add"></a>
 		{{titulo_1(url="alumnos",bg_color="bg-primary",titulo=grupo_activo().nombre, subtitulo=[ grupo_activo().centro, [ grupo_activo().curso_academico, grupo_activo().curso_academico +1 ]|join("-") ]|join(": "))}}
 		<div id="parent_alumno">
+			<a id="anchor_alu_add"></a>
 			<div>
 				<a data-toggle="collapse" data-parent="#parent_alumno" href="#alumno_add" class="collapse_header_1" aria-expanded="false" title="Agregar alumno">
 					&nbsp;
@@ -49,7 +50,6 @@
 				<div id="alumno_add" class="collapse {% if params['collapse_alumno_add'] %} show {% endif %}">
 					{# TODO: alumnos_add #}
 					{%include "alumno_add_block.html"%}
-
 				</div>
 			</div>
 			<div>
@@ -59,6 +59,6 @@
 				{% endfor %}
 			</div>
 		</div>
-		<br>
-		<br>
-	{% endblock %}
+	</div>
+
+{% endblock %}

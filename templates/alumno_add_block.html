@@ -1,6 +1,5 @@
 <br>
 <div class="padding_3">
-
 	<form class="container" action="/alumnos" method="POST" enctype="multipart/form-data">
 		{% if params['alumno_importar_link'] %}
 			<div class="form-group">
@@ -22,7 +21,6 @@
 							class="form-control {% if request.method=='POST' and params['collapse_alumno_add'] %} {% if alumno_add.nombre.errors %} is-invalid {% else %} is-valid {% endif %} {% endif %}"
 							name="{{alumno_add.nombre.name}}"
 							{% if request.method=='POST' %}
-
 							value="{% if request.method=='POST' and params['collapse_alumno_add'] %}{{alumno_add.nombre.data}}{% endif %}"
 							{% endif %}
 							placeholder="{{alumno_add.nombre.label.text}}">
