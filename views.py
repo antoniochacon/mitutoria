@@ -1471,6 +1471,7 @@ def asignaturas_html(params={}):
     params['collapse_asignatura_edit'] = params_old.get('collapse_asignatura_edit', False)
     params['current_asignatura_id'] = params_old.get('current_asignatura_id', hashids_encode(0))
     params['asignatura_delete_link'] = params_old.get('asignatura_delete_link', False)
+    params['asignatura_edit_link'] = params_old.get('asignatura_edit_link', False)
 
     if not settings().grupo_activo_id:
         params['collapse_grupo_add'] = True
@@ -1480,9 +1481,10 @@ def asignaturas_html(params={}):
         # NOTE almacena current_asignatura_id para el resto de situacones
         current_asignatura_id = current_id_request('current_asignatura_id')
         params['current_asignatura_id'] = current_asignatura_id
-        params['anchor'] ='anchor_asi_add'
+
         # XXX selector_asignatura_add
         if request.form['selector_button'] == 'selector_asignatura_add':
+            params['anchor'] = 'anchor_asi_add'
             params['collapse_asignatura_add'] = True
             asignatura_add_form = Asignatura_Add(request.form)
             if asignatura_add_form.validate():
@@ -1508,13 +1510,27 @@ def asignaturas_html(params={}):
         if request.form['selector_button'] == 'selector_asignatura_add_cerrar':
             return redirect(url_for('asignaturas_html'))
 
-        # XXX selector_asignatura_add_redirect
-        if request.form['selector_button'] == 'selector_asignatura_add_redirect':
-            return redirect(url_for('alumnos_html', params=dic_encode(params)))
+        # XXX selector_asignatura_edit_link
+        if request.form['selector_button'] == 'selector_asignatura_edit_link':
+            params['collapse_asignatura_edit'] = True
+            params['asignatura_edit_link'] = True
+            params['anchor'] = 'anchor_asi_' + str(hashids_encode(current_asignatura_id))
+            return redirect(url_for('asignaturas_html', params=dic_encode(params)))
+
+        # XXX selector_asignatura_edit_link_close
+        if request.form['selector_button'] == 'selector_asignatura_edit_link_close':
+            params['collapse_asignatura_edit'] = True
+            params['anchor'] = 'anchor_asi_' + str(hashids_encode(current_asignatura_id))
+            return redirect(url_for('asignaturas_html', params=dic_encode(params)))
+
+        # XXX selector_asignatura_edit_close
+        if request.form['selector_button'] == 'selector_asignatura_edit_close':
+            return redirect(url_for('asignaturas_html'))
 
         # XXX selector_asignatura_edit
         if request.form['selector_button'] == 'selector_asignatura_edit':
             params['collapse_asignatura_edit'] = True
+            params['asignatura_edit_link'] = True
             asignatura_edit_form = Asignatura_Add(request.form)
 
             # XXX asignar alumnos
@@ -1600,6 +1616,7 @@ def asignaturas_html(params={}):
 
         # XXX asignatura_edit_rollback
         if request.form['selector_button'] == 'selector_asignatura_edit_rollback':
+            params['asignatura_edit_link'] = True
             params['anchor'] = 'anchor_asi_' + str(hashids_encode(current_asignatura_id))
             session_sql.rollback()
             return redirect(url_for('asignaturas_html', params=dic_encode(params)))
@@ -1607,6 +1624,7 @@ def asignaturas_html(params={}):
         # XXX asignatura_delete_link
         if request.form['selector_button'] == 'selector_asignatura_delete_link':
             params['anchor'] = 'anchor_asi_' + str(hashids_encode(current_asignatura_id))
+            params['asignatura_edit_link'] = True
             params['asignatura_delete_link'] = True
             flash_toast('Debe confirmar la aliminacion', 'warning')
             return redirect(url_for('asignaturas_html', params=dic_encode(params)))
@@ -1620,6 +1638,7 @@ def asignaturas_html(params={}):
 
         # XXX asignatura_delete_close
         if request.form['selector_button'] == 'selector_asignatura_delete_close':
+            params['asignatura_edit_link'] = True
             params['anchor'] = 'anchor_asi_' + str(hashids_encode(current_asignatura_id))
             return redirect(url_for('asignaturas_html', params=dic_encode(params)))
 

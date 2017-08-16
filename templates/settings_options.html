@@ -1,10 +1,24 @@
 {% extends '_layout.html' %}
 {% block body %}
-	{%from '_macro.html' import titulo_1, nav_tabs %}
+	{%from '_macro.html' import nav_bar_top, titulo_1, nav_tabs %}
+	{{ nav_bar_top(link_active='Opciones',params=params) }}
 	<div class="paper bg-white padding_contenido">
-		{{titulo_1(bg_color='bg-primary',titulo='Configuracion')}}
-		{{nav_tabs(tab_active='Opciones', dic={'Cuestionario':'settings_cuestionario', 'Grupos':'settings_grupos', 'Opciones':'#'})}}
+		{{titulo_1(bg_color='bg-dark',titulo='Configuracion')}}
+		{{nav_tabs(tab_active='Opciones', dic={'Cuestionario':'settings_cuestionario', 'Grupos':'settings_grupos', 'Opciones':'settings_options'})}}
+		<div class="padding_3">
+			<form action="settings_options" method="POST">
+				<div class="form-group col-md-6 col-lg-4">
+				<label class="custom-control custom-checkbox">
+					<input type="checkbox" class="custom-control-input" name="settings_edit_tutoria_timeout" value="True" {% if settings_edit_tutoria_timeout %} checked {% endif %}>
+					<span class="custom-control-indicator"></span>
+					<span class="custom-control-description {% if settings_edit_tutoria_timeout %} text-mutted {% endif %}">Auto archivar tutorias</span>
+				</label>
+			</div>
+		</form>
+	</div>
+{#
 		<form action="/settings_options" method="POST">
+
 			{% if request.method == 'POST' %}
 				<div class="funkyradio funkyradio-success">
 					<input type="checkbox" name="settings_edit_tutoria_timeout" id="settings_edit_tutoria_timeout" value="True" {% if settings_edit_tutoria_timeout %} checked {% endif %}/>
@@ -45,6 +59,7 @@
 					guardar</button>
 			</div>
 		</form>
-		<br>
-	</div>
+		#}
+	<br>
+</div>
 {% endblock %}

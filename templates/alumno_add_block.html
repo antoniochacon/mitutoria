@@ -1,20 +1,22 @@
 <br>
 <div class="padding_3">
-	<form class="container" action="/alumnos" method="POST" enctype="multipart/form-data">
-		{% if params['alumno_importar_link'] %}
-			<div class="form-group">
-				Localiza y selecciona el archivo *.CSV descargado desde Seneca.
-				<br><br>
-				<label class="btn btn-outline-dark btn-sm" title="seleccionar archivo" for="selector_fichero">
-					<input id="selector_fichero" type="file" name="fichero" style="display:none" onchange="$(" #upload_file_info").html(this.files[0].name)">
-					Seleccionar archivo CSV
-				</label>
-				<span class="label label-success" id="upload_file_info"></span>
-				<br>
-			</div>
-		{% else %}
-			<div class="row">
-				<div class="form-group col-md-6 mb-3">
+	<form action="/alumnos" method="POST" enctype="multipart/form-data">
+		<div class="row">
+			{% if params['alumno_importar_link'] %}
+				<div class="col-sm-12">
+					Localiza y selecciona el archivo *.CSV descargado desde Seneca.
+					<br><br>
+				</div>
+				<div class="form-group col-auto mb-3">
+					<label class="btn btn-outline-dark btn-sm" title="seleccionar archivo" for="selector_fichero">
+						<input id="selector_fichero" type="file" name="fichero" style="display:none" onchange="$('#upload_file_info').html(this.files[0].name)">
+						Seleccionar archivo CSV
+					</label>
+					<span class="label label-success" id="upload_file_info"></span>
+				</div>
+			{% else %}
+				<!-- <div class="row"> -->
+				<div class="form-group col-md-6 col-lg-4 mb-3">
 					<div class="input-group">
 						<input
 							type="text"
@@ -25,42 +27,45 @@
 						<span class="input-group-addon {% if request.method=='POST' and params['collapse_alumno_add'] %} {% if alumno_add.nombre.errors %} form_addon-warning {% else %} form_addon-success {% endif %} {% endif %}">nombre</span>
 					</div>
 				</div>
-				<div class="input-group col-md-6  mb-3">
-					<input
-						type="text"
-						class="form-control {% if request.method=='POST' and params['collapse_alumno_add'] %} {% if alumno_add.apellidos.errors %} is-invalid {% else %} is-valid {% endif %} {% endif %}"
-						name="{{alumno_add.apellidos.name}}"
-						value="{% if request.method=='POST' and params['collapse_alumno_add'] %}{{alumno_add.apellidos.data}}{% endif %}"
-						placeholder="{{alumno_add.apellidos.label.text}}">
-					<span class="input-group-addon {% if request.method=='POST' and params['collapse_alumno_add'] %} {% if alumno_add.apellidos.errors %} form_addon-warning {% else %} form_addon-success {% endif %} {% endif %}">apellidos</span>
+				<div class="form-group col-md-6 col-lg-4 mb-3">
+					<div class="input-group">
+						<input
+							type="text"
+							class="form-control {% if request.method=='POST' and params['collapse_alumno_add'] %} {% if alumno_add.apellidos.errors %} is-invalid {% else %} is-valid {% endif %} {% endif %}"
+							name="{{alumno_add.apellidos.name}}"
+							value="{% if request.method=='POST' and params['collapse_alumno_add'] %}{{alumno_add.apellidos.data}}{% endif %}"
+							placeholder="{{alumno_add.apellidos.label.text}}">
+						<span class="input-group-addon {% if request.method=='POST' and params['collapse_alumno_add'] %} {% if alumno_add.apellidos.errors %} form_addon-warning {% else %} form_addon-success {% endif %} {% endif %}">apellidos</span>
+					</div>
 				</div>
-			</div>
-		{% endif %}
-		<div class="btn-group" role="group">
-			{% if params['alumno_importar_link'] %}
-				<button class="btn btn-outline-primary btn-sm" type="submit" name="selector_button" value="selector_alumno_importar" title="guardar alumnos">
-					<i class="material-icons vertical-center">people</i>
-					guardar alumnos
-				</button>
-				<button class="btn btn-outline-dark btn-sm" type="submit" name="selector_button" value="selector_alumno_importar_cerrar" title="cerrar">
-					<i class="material-icons vertical-center">close</i>
-				</button>
-				<br>
-			{% else %}
-				<button class="btn btn-outline-primary btn-sm" type="submit" name="selector_button" value="selector_alumno_add" title="agregar alumno">
-					<i class="material-icons vertical-center">person</i>
-					agregar
-				</button>
-				<button class="btn btn-outline-dark btn-sm" type="submit" name="selector_button" value="selector_alumno_importar_link" title="importar seneca">
-					<i class="material-icons vertical-center">people</i>
-					importar de Seneca
-				</button>
-				{% if request.method == "POST" and params['collapse_alumno_add'] %}
-					<button class="btn btn-outline-dark btn-sm" type="submit" name="selector_button" value="selector_alumno_add_cerrar" title="cerrar">
+				<!-- </div> -->
+			{% endif %}
+			<div class="btn-group col-auto mb-3" role="group">
+				{% if params['alumno_importar_link'] %}
+					<button class="btn btn-outline-primary btn-sm" type="submit" name="selector_button" value="selector_alumno_importar" title="guardar alumnos">
+						<i class="material-icons vertical-center">people</i>
+						guardar alumnos
+					</button>
+					<button class="btn btn-outline-dark btn-sm" type="submit" name="selector_button" value="selector_alumno_importar_cerrar" title="cerrar">
 						<i class="material-icons vertical-center">close</i>
 					</button>
+					<br>
+				{% else %}
+					<button class="btn btn-outline-primary btn-sm" type="submit" name="selector_button" value="selector_alumno_add" title="agregar alumno">
+						<i class="material-icons vertical-center">person</i>
+						agregar
+					</button>
+					<button class="btn btn-outline-dark btn-sm" type="submit" name="selector_button" value="selector_alumno_importar_link" title="importar seneca">
+						<i class="material-icons vertical-center">people</i>
+						importar de Seneca
+					</button>
+					{% if request.method == "POST" and params['collapse_alumno_add'] %}
+						<button class="btn btn-outline-dark btn-sm" type="submit" name="selector_button" value="selector_alumno_add_cerrar" title="cerrar">
+							<i class="material-icons vertical-center">close</i>
+						</button>
+					{% endif %}
 				{% endif %}
-			{% endif %}
+			</div>
 		</div>
 	</form>
 </div>

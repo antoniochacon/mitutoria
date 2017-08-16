@@ -6,23 +6,28 @@
 		|
 		{{alumnos_not_sorted()|count}}</span>
 </a>
-<div id="asignatura_alumnos_{{hashids_encode(asignatura.id)}}" class="collapse {% if not asignatura_alumnos(asignatura.id) %} show {% endif %}">
+<div id="asignatura_alumnos_{{hashids_encode(asignatura.id)}}" class="collapse show">
 	<div class="padding_3">
 		<br>
 		{% if not alumnos('apellidos', 'nombre') %}
 			<span class="text-warning">Grupo aun sin alumnos</span>
 		{% else %}
 			<div class="row">
-				{% for alumno in alumnos('apellidos', 'nombre') %}
-					<div class="form-group col-md-6 col-lg-4">
-						<label class="custom-control custom-checkbox">
-							<input type="checkbox" class="custom-control-input" name="alumno" value="{{hashids_encode(alumno.id)}}" {% if association_alumno_asignatura_check(alumno.id,asignatura.id) %} checked {% endif %}>
-							<span class="custom-control-indicator"></span>
-							<span class="custom-control-description {% if not association_alumno_asignatura_check(alumno.id,asignatura.id) %}text-mutted{% endif %}">{{alumno.apellidos}},
-								{{alumno.nombre}}</span>
-						</label>
-					</div>
-				{% endfor %}
+				{% if equal_str(asignatura.id, params['current_asignatura_id'])and params['asignatura_edit_link'] %}
+					{% for alumno in alumnos('apellidos', 'nombre') %}
+						{% include 'asignatura_alumnos_listado_block.html' %}
+					{% endfor %}
+				{% else %}
+					{% if asignatura_alumnos(asignatura.id) %}
+						{% for alumno in alumnos('apellidos', 'nombre') %}
+							{% if association_alumno_asignatura_check(alumno.id, asignatura.id) %}
+								{% include 'asignatura_alumnos_listado_block.html' %}
+							{% endif %}
+						{% endfor %}
+					{% else %}
+						<span class="text-warning">Asignatura sin alumnos asignados</span>
+					{% endif %}
+				{% endif %}
 			</div>
 		{% endif %}
 	</div>

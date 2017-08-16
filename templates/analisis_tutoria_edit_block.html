@@ -2,7 +2,7 @@
 	<div class="clearfix visible-xs"></div>
 	<div class="padding_contenido">
 		{#TODO: datepicker and clockpicker  #}
-		<form class="form-inline" action="/tutoria_edit" method="POST" name="tutoria_edit{{hashids_encode(tutoria.id)}}">
+		<form action="/tutoria_edit" method="POST" name="tutoria_edit{{hashids_encode(tutoria.id)}}">
 			{% if request.method == 'POST' %}
 				<div class="input-group form-group {% if tutoria_edit.fecha.errors %} has-error {% else %} has-success {% endif %}">
 					<input class="form-control datepicker cursor" type="text" name="fecha" value={{tutoria_edit.fecha.data}}>

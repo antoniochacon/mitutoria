@@ -1,9 +1,11 @@
 {% extends '_layout.html' %}
 {% block body %}
-	{%from '_macro.html' import titulo_1, nav_tabs, field_form%}
+<!-- FIXME elimnar este field_form -->
+	{%from '_macro.html' import nav_bar_top, titulo_1, nav_tabs, field_form %}
+	{{ nav_bar_top(link_active='Grupos',params=params) }}
 	<div class='paper bg-white padding_contenido'>
 		{{titulo_1(bg_color='bg-primary',titulo='Configuración')}}
-		{{nav_tabs(tab_active='Grupos', dic={'Cuestionario':'settings_cuestionario', 'Grupos':'#', 'Opciones':'settings_options'})}}
+		{{nav_tabs(tab_active='Grupos', dic={'Cuestionario':'settings_cuestionario', 'Grupos':'settings_grupos', 'Opciones':'settings_options'})}}
 		<div class="card_XXX-group" id="grupo" role="tablist" aria-multiselectable="true">
 			<div class="card_XXX">
 				{# TODO: grupo_add #}
@@ -21,10 +23,12 @@
 							{% else %}
 								{% set error_css = False %}
 							{% endif %}
+
 							{{field_form(grupo_add.nombre, error=True, error_css=True, addon='nombre')}}
 							{{field_form(grupo_add.tutor, error=True, error_css=True, addon='tutor')}}
 							{{field_form(grupo_add.centro, error=True, error_css=True, addon='centro')}}
 							{{field_form(grupo_add.curso_academico, value=curso())}}
+
 							{% if not params['login'] %}
 								<div class="funkyradio funkyradio-success">
 									<input type="checkbox" name="grupo_add_grupo_activo" id="grupo_add_grupo_activo" value="True" checked/>

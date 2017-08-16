@@ -3,28 +3,32 @@
 	{%from '_macro.html' import nav_bar_top, titulo_1, nav_tabs, checkbox_funky %}
 	{{ nav_bar_top(link_active='Opciones',params=params) }}
 	<div class="paper bg-white padding_contenido">
-		{{titulo_1(bg_color='bg-primary', titulo='Configuración')}}
-		{{nav_tabs(tab_active='Cuestionario', dic={'Cuestionario':'#', 'Grupos':'settings_grupos', 'Opciones':'settings_options'})}}
-		Selecciona las preguntas que desee que formen su cuestionario.
-		<br><br>
-		<form action="settings_cuestionario" method="POST">
-			{% if preguntas(True) %}
-				{% for pregunta in preguntas(True) %}
-					{{checkbox_funky(settings(), pregunta, 'pregunta', 'pregunta_edit')}}
-					<div class="dropdown-divider bg-info">
-						<br>
+		{{titulo_1(bg_color='bg-dark', titulo='Configuración')}}
+		{{nav_tabs(tab_active='Cuestionario', dic={'Cuestionario':'settings_cuestionario', 'Grupos':'settings_grupos', 'Opciones':'settings_options'})}}
+		<div class="padding_3">
+			Selecciona las preguntas que desee que formen su cuestionario.
+			<br><br>
+			<form action="settings_cuestionario" method="POST">
+				{% if preguntas(True) %}
+					<div class="row">
+						{% for pregunta in preguntas(True) %}
+							<div class="form-group col-md-6">
+								<label class="custom-control custom-checkbox">
+									<input type="checkbox" class="custom-control-input" name="pregunta" value="{{hashids_encode(pregunta.id)}}" {% if association_settings_pregunta_check(settings().id,pregunta.id) %} checked {% endif %}>
+									<span class="custom-control-indicator"></span>
+									<span class="custom-control-description {% if not association_settings_pregunta_check(settings().id,pregunta.id) %} text-muted {% endif %}">{{pregunta.enunciado}}</span>
+								</label>
+							</div>
+						{% endfor %}
 					</div>
-				{% endfor %}
-				<br>
-				<button role="button" type="submit" name="selector_button" value="selector_settings_cuestionario" class="btn btn-outline-primary" title="guardar cambios">
+				{% else %}
+					<span class="text-mutted">En estos momentos no hay preguntas disponibles.</span>
+				{% endif %}
+				<button role="button" type="submit" name="selector_button" value="selector_settings_cuestionario" class="btn btn-outline-primary btn-sm" title="guardar cambios">
 					<i class="material-icons vertical-center">save</i>
-					guardar</button>
-				<br>
-			{% else %}
-				<span class="text-info">En estos momentos no hay preguntas disponibles.</span>
-				<br>
-			{% endif %}
-		</form>
-		<br>
+					guardar
+				</button>
+			</form>
+		</div>
 	</div>
 {% endblock %}

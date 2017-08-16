@@ -1,39 +1,72 @@
-<h6></h6>
+<br>
 <div class="padding_3">
-	{% if not params['alumno_edit_link'] %}
-		{# XXX Informacion del alumno #}
-		<span class="text-mutted">Nombre:</span>
-		{{alumno.nombre}}
-		<br>
-		<span class="text-mutted">Apellidos:</span>
-		{{alumno.apellidos}}
-		<br>
-		<div class="text-mutted border border-info border-left-0 border-right-0 border-top-0">Asignaturas de
-			{{alumno.nombre}}:
-			<span class="badge badge-info float-right">{{alumno_asignaturas(alumno.id) | count}}
-				|
-				{{asignaturas_not_sorted() | count}}
-			</span>
-		</div>
-		{% if alumno_asignaturas(alumno.id) %}
-			<h6></h6>
-			{% for asignatura in alumno_asignaturas(alumno.id) %}
-				<div class="padding_1">
-					<i class="material-icons vertical-center" style="font-size: 18px">check</i>
-					{{asignatura.asignatura}}
+	<form action="/alumnos" method="POST">
+		<!-- ******************************* -->
+		<div class="row">
+			<div class="form-group col-md-6 mb-3">
+				<div class="input-group">
+					<input
+						type="text"
+						{% if not equal_str(alumno.id, params['current_alumno_id']) or not params['alumno_edit_link'] %}
+						readonly
+						{% endif %}
+						class="form-control {% if request.method=='POST' and params['collpase_alumno_edit'] %} {% if alumno_edit.nombre.errors %} is-invalid {% else %} is-valid {% endif %}{% endif %}"
+						name="{{alumno_edit.nombre.name}}"
+						value="{% if equal_str(alumno.id,params['current_alumno_id']) and request.method=='POST' and params['collpase_alumno_edit'] %}{{alumno_edit.nombre.data}}{% else %}{{alumno.nombre}}{% endif %}"
+						placeholder="{{alumno_edit.nombre.label.text}}">
+					<span class="input-group-addon {% if request.method=='POST' and params['collpase_alumno_edit'] %} {% if alumno_edit.nombre.errors %} form_addon-warning {% else %} form_addon-success {% endif %} {% endif %}">nombre</span>
 				</div>
-			{% endfor %}
-			<br>
-		{% else %}
-			<div class="padding_contenido">
-				<span class="text-warning">Sin asignaturas asignadas.</span>
 			</div>
-		{% endif %}
-		{# XXX FIN Informacion del alumno #}
-	{% endif %}
-	<form class="container" action="/alumnos" method="POST">
-		{% if not params['alumno_edit_link']or(params['alumno_edit_link']and not equal_str(alumno.id, params['current_alumno_id'])) %}
-			<input type="hidden" name="current_alumno_id" value="{{hashids_encode(alumno.id)}}">
+			<div class="form-group col-md-6 mb-3">
+				<div class="input-group">
+					<input
+						type="text"
+						type="text"
+						{% if not equal_str(alumno.id, params['current_alumno_id']) or not params['alumno_edit_link'] %}
+						readonly
+						{% endif %}
+						class="form-control {% if request.method=='POST' and params['collpase_alumno_edit'] %} {% if alumno_edit.apellidos.errors %} is-invalid {% else %} is-valid {% endif %} {% endif %}"
+						name="{{alumno_edit.apellidos.name}}"
+						value="{% if equal_str(alumno.id,params['current_alumno_id']) and request.method=='POST' and params['collpase_alumno_edit'] %}{{alumno_edit.apellidos.data}}{% else %}{{alumno.apellidos}}{% endif %}"
+						placeholder="{{alumno_edit.apellidos.label.text}}">
+					<span class="input-group-addon {% if request.method=='POST' and params['collpase_alumno_edit'] %} {% if alumno_edit.apellidos.errors %} form_addon-warning {% else %} form_addon-success {% endif %} {% endif %}">apellidos</span>
+				</div>
+			</div>
+		</div>
+		<input type="hidden" name="current_alumno_id" value="{{hashids_encode(alumno.id)}}">
+		{% include 'alumno_ficha_asignaturas_block.html' %}
+		<!-- ********************* -->
+		{% if equal_str(alumno.id, params['current_alumno_id'])and params['alumno_edit_link'] %}
+			{% if params['alumno_delete_link'] %}
+				<div class="btn-group" role="group" aria-label="...">
+					<button role="button" type="submit" name="selector_button" value="selector_alumno_delete" class="btn btn-outline-warning btn-sm" title="confirmar eliminar alumno">
+						<i class="material-icons vertical-center">delete</i>
+						confirmar eliminar</button>
+					<button role="button" type="submit" name="selector_button" value="selector_alumno_delete_close" class="btn btn-outline-dark btn-sm" title="cancelar eliminar">
+						<i class="material-icons vertical-center">close</i>
+					</button>
+				</div>
+				<br>
+				<span class="text-warning small">
+					Una vez elminado no podra ser recuperado.</span>
+			{% else %}
+				<div class="btn-group" role="group" aria-label="...">
+					<button role="button" type="submit" name="selector_button" value="selector_alumno_edit" class="btn btn-outline-primary btn-sm" title="guardar cambios">
+						<i class="material-icons vertical-center">save</i>
+						guardar</button>
+					<button role="button" type="submit" name="selector_button" value="selector_alumno_edit_rollback" class="btn btn-outline-dark btn-sm" title="deshacer cambios">
+						<i class="material-icons vertical-center">settings_backup_restore</i>
+					</button>
+					<button role="button" type="submit" name="selector_button" value="selector_alumno_delete_link" class="btn btn-outline-dark btn-sm" title="eliminar alumno">
+						<i class="material-icons vertical-center">delete</i>
+					</button>
+					<button role="button" type="submit" name="selector_button" value="selector_alumno_edit_link_close" class="btn btn-outline-dark btn-sm" title="cerrar edición">
+						<i class="material-icons vertical-center">close</i>
+					</button>
+				</div>
+			{% endif %}
+			<!-- ********************************* -->
+		{% else %}
 			<div class="btn-group" role="group" aria-label="...">
 				<button role="button" type="submit" name="selector_button" class="btn btn-outline-dark btn-sm" value="selector_alumno_edit_link" title="editar ficha">
 					<i class="material-icons vertical-center">edit</i>
@@ -45,8 +78,6 @@
 					</button>
 				{% endif %}
 			</div>
-		{% else %}
-			{% include 'alumno_ficha_edit_block.html' %}
 		{% endif %}
 	</form>
 </div>

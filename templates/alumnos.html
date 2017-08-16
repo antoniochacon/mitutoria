@@ -1,6 +1,6 @@
 {% extends "_layout.html" %}
 {% block body %}
-	{%from "_macro.html" import field_form,titulo_1, checkbox_funky,checkbox, highcharts_tutoria_stats, nav_bar_top%}
+	{% from "_macro.html" import nav_bar_top, titulo_1, highcharts_tutoria_stats %}
 	{{ nav_bar_top(link_active='Alumnos',params=params) }}
 	{% if alumnos_not_sorted() %}
 		{% if settings().show_tutorias %}
