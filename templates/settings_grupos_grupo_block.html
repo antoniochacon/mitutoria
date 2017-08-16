@@ -1,5 +1,5 @@
 <a id="anchor_gru_{{hashids_encode(grupo.id)}}"></a>
-<a data-toggle="collapse" data-parent="#grupo" href="#grupo_listado{{hashids_encode(grupo.id)}}" class="collapse_header_1" aria-expanded="true" title="{{grupo.nombre}}">
+<a data-toggle="collapse" class="collapse_header_1" data-parent="#grupo" href="#grupo_listado{{hashids_encode(grupo.id)}}" aria-expanded="true" title="{{grupo.nombre}}">
 	<div class="media">
 		<span class="curso_academico {% if grupo_activo_check(grupo.id) %} curso_academico-primary {% else %} curso_academico-mutted {% endif %}">{{grupo.curso_academico}}
 			|
@@ -22,48 +22,95 @@
 		</div>
 	</div>
 </a>
-<div id="grupo_listado{{hashids_encode(grupo.id)}}" class="collapse {% if equal_str(grupo.id, params['current_grupo_id']) and params['collapse_grupo_edit'] %} show {% endif %}" role="tabcard_XXX" aria-labelledby="heading{{hashids_encode(grupo.id)}}">
+<div id="grupo_listado{{hashids_encode(grupo.id)}}" class="collapse {% if equal_str(grupo.id, params['current_grupo_id']) and params['collapse_grupo_edit'] %} show {% endif %}" role="tab">
 	<div class="dropdown-divider grueso bg-primary"></div>
-	<div class="card_XXX-group" id="grupo{{hashids_encode(grupo.id)}}" role="tablist" aria-multiselectable="true">
-		<div class="card_XXX">
-			{# XXX: grupo_edit #}
-			<div class="padding_3">
-				<form action="/settings_grupos" method="POST">
-					{% if equal_str(grupo.id, params['current_grupo_id']) and request.method =='POST'%}
-						{{field_form(grupo_edit.nombre, error=True, error_css=True, addon='nombre')}}
-						{{field_form(grupo_edit.tutor, error=True, error_css=True, addon='tutor')}}
-						{{field_form(grupo_edit.centro, error=True, error_css=True, addon='centro')}}
-						{{field_form(grupo_edit.current_grupo_id)}}
-						<div class="funkyradio funkyradio-success">
-							<input type="checkbox" name="grupo_edit_grupo_activo_switch" id="grupo_edit_grupo_activo_switch{{hashids_encode(grupo.id)}}" value="True" {% if grupo_activo_check(grupo.id) %} checked {% endif %}/>
-							<label for="grupo_edit_grupo_activo_switch{{hashids_encode(grupo.id)}}">Establecer como grupo activo</label>
+	<div id="grupo{{hashids_encode(grupo.id)}}">
+		{# XXX: grupo_edit #}
+		<!-- ****************************** -->
+		<br>
+		<div class="padding_3">
+			<form action="/settings_grupos" method="POST">
+				<div class="row">
+					<div class="form-group col-md-6 mb-3">
+						<div class="input-group">
+							<input
+								type="text"
+								{% if not equal_str(grupo.id, params['current_grupo_id']) or not params['grupo_edit_link'] %}
+								readonly
+								{% endif %}
+								class="form-control {% if request.method=='POST' and params['collpase_grupo_edit'] %} {% if grupo_edit.nombre.errors %} is-invalid {% else %} is-valid {% endif %}{% endif %}"
+								name="{{grupo_edit.nombre.name}}"
+								value="{% if equal_str(grupo.id,params['current_grupo_id']) and request.method=='POST' and params['collpase_grupo_edit'] %}{{grupo_edit.nombre.data}}{% else %}{{grupo.nombre}}{% endif %}"
+								placeholder="{{grupo_edit.nombre.label.text}}">
+							<span class="input-group-addon {% if request.method=='POST' and params['collpase_grupo_edit'] %} {% if grupo_edit.nombre.errors %} form_addon-warning {% else %} form_addon-success {% endif %} {% endif %}">nombre</span>
 						</div>
-						{%else%}
-						{{field_form(grupo_edit.nombre, value=grupo.nombre, addon='nombre')}}
-						{{field_form(grupo_edit.tutor, value=grupo.tutor, addon='tutor')}}
-						{{field_form(grupo_edit.centro, value=grupo.centro, addon='centro')}}
-						{{field_form(grupo_edit.current_grupo_id, value=hashids_encode(grupo.id))}}
-						<div class="funkyradio funkyradio-success">
-							<input type="checkbox" name="grupo_edit_grupo_activo_switch" id="grupo_edit_grupo_activo_switch{{hashids_encode(grupo.id)}}" value="True" {% if grupo_activo_check(grupo.id) %} checked {% endif %}/>
-							<label for="grupo_edit_grupo_activo_switch{{hashids_encode(grupo.id)}}">Establecer como grupo activo</label>
+					</div>
+					<div class="form-group col-md-6 mb-3">
+						<div class="input-group">
+							<input
+								type="text"
+								{% if not equal_str(grupo.id, params['current_grupo_id']) or not params['grupo_edit_link'] %}
+								readonly
+								{% endif %}
+								class="form-control {% if request.method=='POST' and params['collpase_grupo_edit'] %} {% if grupo_edit.tutor.errors %} is-invalid {% else %} is-valid {% endif %}{% endif %}"
+								name="{{grupo_edit.tutor.name}}"
+								value="{% if equal_str(grupo.id,params['current_grupo_id']) and request.method=='POST' and params['collpase_grupo_edit'] %}{{grupo_edit.tutor.data}}{% else %}{{grupo.tutor}}{% endif %}"
+								placeholder="{{grupo_edit.tutor.label.text}}">
+							<span class="input-group-addon {% if request.method=='POST' and params['collpase_grupo_edit'] %} {% if grupo_edit.tutor.errors %} form_addon-warning {% else %} form_addon-success {% endif %} {% endif %}">tutor</span>
+						</div>
+					</div>
+					<div class="form-group col-md-6 mb-3">
+						<div class="input-group">
+							<input
+								type="text"
+								{% if not equal_str(grupo.id, params['current_grupo_id']) or not params['grupo_edit_link'] %}
+								readonly
+								{% endif %}
+								class="form-control {% if request.method=='POST' and params['collpase_grupo_edit'] %} {% if grupo_edit.centro.errors %} is-invalid {% else %} is-valid {% endif %}{% endif %}"
+								name="{{grupo_edit.centro.name}}"
+								value="{% if equal_str(grupo.id,params['current_grupo_id']) and request.method=='POST' and params['collpase_grupo_edit'] %}{{grupo_edit.centro.data}}{% else %}{{grupo.centro}}{% endif %}"
+								placeholder="{{grupo_edit.centro.label.text}}">
+							<span class="input-group-addon {% if request.method=='POST' and params['collpase_grupo_edit'] %} {% if grupo_edit.centro.errors %} form_addon-warning {% else %} form_addon-success {% endif %} {% endif %}">centro</span>
+						</div>
+					</div>
+					<input type="hidden" name="curso_academico" value="{{curso()}}">
+					{% if not params['login'] %}
+						<div class="form-group col-md-6 mb-3">
+							<label class="custom-control custom-checkbox">
+								<input
+									type="checkbox"
+									{% if not equal_str(grupo.id, params['current_grupo_id']) or not params['grupo_edit_link'] %}
+									disabled
+									{% endif %}
+									class="custom-control-input"
+									name="grupo_edit_grupo_activo_switch"
+									value="True"
+									{% if equal_str(grupo.id, settings().grupo_activo_id) %}
+									checked
+									{% endif %}>
+								<span class="custom-control-indicator"></span>
+								<span class="custom-control-description">Establecer como actual grupo activo</span>
+							</label>
 						</div>
 					{% endif %}
-					<br>
+				</div>
+				<input type="hidden" name="current_grupo_id" value="{{hashids_encode(grupo.id)}}">
+				<!-- ************************************* -->
+				{% if equal_str(grupo.id, params['current_grupo_id'])and params['grupo_edit_link'] %}
 					{% if params['grupo_delete_link'] %}
 						<div class="btn-group" role="group" aria-label="...">
-							<button role="button" type="submit" name="selector_button" value="selector_grupo_delete" class="btn btn-outline-primary btn-sm" title="confirmar eliminar asginatura">
+							<button role="button" type="submit" name="selector_button" value="selector_grupo_delete" class="btn btn-outline-warning btn-sm" title="confirmar eliminar grupo">
 								<i class="material-icons vertical-center">delete</i>
 								confirmar eliminar</button>
 							<button role="button" type="submit" name="selector_button" value="selector_grupo_delete_close" class="btn btn-outline-dark btn-sm" title="cancelar eliminar">
 								<i class="material-icons vertical-center">close</i>
 							</button>
 						</div>
-						<div class="clearfix"></div>
 						<br>
-						<span class="text-warning">
-							Si elimina un grupo se borrarán todos sus alumnos, equipo educativo y estadísticas correspondientes.</span>
+						<span class="text-warning small">
+							Una vez elminado no podra ser recuperado.</span>
 					{% else %}
-						<div class="btn-group" role="group" aria-label.="...">
+						<div class="btn-group" role="group" aria-label="...">
 							<button role="button" type="submit" name="selector_button" value="selector_grupo_edit" class="btn btn-outline-primary btn-sm" title="guardar cambios">
 								<i class="material-icons vertical-center">save</i>
 								guardar</button>
@@ -73,17 +120,28 @@
 							<button role="button" type="submit" name="selector_button" value="selector_grupo_delete_link" class="btn btn-outline-dark btn-sm" title="eliminar grupo">
 								<i class="material-icons vertical-center">delete</i>
 							</button>
-							{% if params['collapse_grupo_edit'] %}
-								<button role="button" type="submit" name="selector_button" value="selector_grupo_edit_close" class="btn btn-outline-dark btn-sm" title="cerrar">
-									<i class="material-icons vertical-center">close</i>
-								</button>
-							{% endif %}
+							<button role="button" type="submit" name="selector_button" value="selector_grupo_edit_link_close" class="btn btn-outline-dark btn-sm" title="cerrar edición">
+								<i class="material-icons vertical-center">close</i>
+							</button>
 						</div>
 					{% endif %}
-				</form>
-				<br>
-			</div>
+					<!-- ********************************* -->
+				{% else %}
+					<div class="btn-group" role="group" aria-label="...">
+						<button role="button" type="submit" name="selector_button" class="btn btn-outline-dark btn-sm" value="selector_grupo_edit_link" title="editar ficha">
+							<i class="material-icons vertical-center">edit</i>
+							editar ficha
+						</button>
+						{% if equal_str(grupo.id,params['current_grupo_id']) and params['collapse_grupo_edit']%}
+							<button role="button" type="submit" name="selector_button" class="btn btn-outline-dark btn-sm" value="selector_grupo_edit_close" title="cerrar ficha">
+								<i class="material-icons vertical-center">close</i>
+							</button>
+						{% endif %}
+					</div>
+				{% endif %}
+			</form>
 		</div>
+		<br>
+		<div class="dropdown-divider grueso bg-primary"></div>
 	</div>
-	<div class="dropdown-divider grueso bg-primary"></div>
 </div>

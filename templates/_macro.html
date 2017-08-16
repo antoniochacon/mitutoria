@@ -9,11 +9,11 @@
 	<br>
 {% endmacro %}
 {% macro titulo_user_ficha(text_color, bg_color, titulo, user) %}
-	<h3 class='{{text_color}} strong'>
+	<h3 class="{{text_color}} strong">
 		{{titulo}}
-		<h5 class='{{text_color}}'>
+		<h5 class="{{text_color}}">
 			{% include 'user_info_basica_block.html' %}
-			<div class='dropdown-divider {{bg_color}} grueso'></div>
+			<div class="dropdown-divider {{bg_color}} grueso"></div>
 		</h5>
 	</h3>
 {% endmacro %}
@@ -72,7 +72,7 @@
 	<br>
 {% endmacro %}
 {% macro titulo_1(url, text_color, bg_color, titulo, subtitulo) %}
-	<h5 class='{{text_color}} strong'>
+	<h5 class="{{text_color}} strong">
 		{{titulo}}
 		{% if url == 'alumnos' %}
 			<span class="badge badge-dark float-right">{{alumnos_not_sorted()|count}}
@@ -82,7 +82,7 @@
 				{{singular_plural('asignatura', 'asignaturas', asignaturas('apellidos', 'nombre', 'asignatura') | count)}}</span>
 		{% endif %}
 		{% if subtitulo %}
-			<h6 class='{{text_color}}'>
+			<h6 class="{{text_color}}">
 				{{subtitulo}}
 				<div class="dropdown-divider {{bg_color}} grueso"></div>
 			</h6>

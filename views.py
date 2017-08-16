@@ -1087,7 +1087,8 @@ def settings_grupos_html(params={}):
     params['collapse_grupo_add'] = params_old.get('collapse_grupo_add', False)
     params['grupo_delete_link'] = params_old.get('grupo_delete_link', False)
     params['collapse_grupo_edit'] = params_old.get('collapse_grupo_edit', False)
-    params['current_grupo_id'] = params_old.get('current_grupo_id', 0)
+    params['current_grupo_id'] = params_old.get('current_grupo_id', hashids_encode(0))
+    params['grupo_edit_link'] = params_old.get('grupo_edit_link', False)
 
     if request.method == 'POST':
         # NOTE recoge current_grupo_id para el resto de situaciones
@@ -1133,10 +1134,20 @@ def settings_grupos_html(params={}):
             return render_template('settings_grupos.html',
                                    fab=fab, grupo_add=grupo_add_form, grupo_edit=Grupo_Add(), grupos=grupos(), params=params)
 
+        # XXX selector_grupo_edit_link
+        if request.form['selector_button'] == 'selector_grupo_edit_link':
+            params['collapse_grupo_edit'] = True
+            params['grupo_edit_link'] = True
+            params['anchor'] = 'anchor_gru_' + str(hashids_encode(current_grupo_id))
+            # current_grupo_id = current_id_request('current_grupo_id')
+            # params['current_grupo_id'] = current_grupo_id
+            return redirect(url_for('settings_grupos_html', params=dic_encode(params)))
+
         # XXX selector_grupo_edit
         if request.form['selector_button'] == 'selector_grupo_edit':
             grupo_edit_form = Grupo_Add(request.form)
             params['collapse_grupo_edit'] = True
+            params['grupo_edit_link'] = True
             params['anchor'] = 'anchor_gru_' + str(hashids_encode(current_grupo_id))
             grupo_edit_grupo_activo_switch = request.form.get('grupo_edit_grupo_activo_switch')
             if not grupo_edit_grupo_activo_switch:
@@ -1155,7 +1166,7 @@ def settings_grupos_html(params={}):
                         settings().grupo_activo_id = current_grupo_id
                     else:
                         settings().grupo_activo_id = None
-                    flash_toast(Markup('Grupo de <strong>') + grupo_edit.tutor + Markup('</strong>') + ' actualizado', 'success')
+                    flash_toast(Markup('Grupo <strong>') + grupo_edit.nombre + Markup('</strong>') + ' actualizado', 'success')
                     session_sql.begin_nested()
                     session_sql.commit()
                     return redirect(url_for('settings_grupos_html', params=dic_encode(params)))
@@ -1171,6 +1182,7 @@ def settings_grupos_html(params={}):
         # XXX selector_grupo_edit_rollback
         if request.form['selector_button'] == 'selector_grupo_edit_rollback':
             params['collapse_grupo_edit'] = True
+            params['grupo_edit_link'] = True
             params['anchor'] = 'anchor_gru_' + str(hashids_encode(current_grupo_id))
             session_sql.rollback()
             return redirect(url_for('settings_grupos_html', params=dic_encode(params)))
@@ -1178,6 +1190,7 @@ def settings_grupos_html(params={}):
         # XXX selector_grupo_delete_link
         if request.form['selector_button'] == 'selector_grupo_delete_link':
             params['collapse_grupo_edit'] = True
+            params['grupo_edit_link'] = True
             params['grupo_delete_link'] = True
             params['anchor'] = 'anchor_gru_' + str(hashids_encode(current_grupo_id))
             flash_toast('Debe confirmar la aliminacion', 'warning')
@@ -1193,6 +1206,7 @@ def settings_grupos_html(params={}):
         # XXX selector_grupo_delete_close
         if request.form['selector_button'] == 'selector_grupo_delete_close':
             params['collapse_grupo_edit'] = True
+            params['grupo_edit_link'] = True
             params['anchor'] = 'anchor_gru_' + str(hashids_encode(current_grupo_id))
             return redirect(url_for('settings_grupos_html', params=dic_encode(params)))
     return render_template(
