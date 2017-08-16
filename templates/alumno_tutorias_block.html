@@ -14,15 +14,14 @@
 					a las
 					{{tutoria.hora.strftime('%H:%M')}}
 				</span>
-
-{% if tutoria.activa %}
-<span class="badge badge-secondary float-right" title="{{cociente_porcentual(tutoria_informes(tutoria.id) | count, tutoria_asignaturas_count(tutoria.id))}}% de los informes recibidos">
-	{{cociente_porcentual(tutoria_informes(tutoria.id) | count, tutoria_asignaturas_count(tutoria.id))}}%
-</span>
-{% endif %}
-
-
 			</a>
+			{% if tutoria.activa %}
+
+					<span class="badge badge-secondary float-right" title="{{cociente_porcentual(tutoria_informes(tutoria.id) | count, tutoria_asignaturas_count(tutoria.id))}}% de los informes recibidos">
+						{{cociente_porcentual(tutoria_informes(tutoria.id) | count, tutoria_asignaturas_count(tutoria.id))}}%
+					</span>
+			
+			{% endif %}
 			<div class="progress rounded-0">
 				<div
 					class="progress-bar {% if tutoria.activa %} bg-secondary progress-bar-striped progress-bar-animated {% else %} bg-mutted {% endif %}"

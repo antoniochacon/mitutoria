@@ -1,248 +1,267 @@
 {% extends '_layout.html' %}
 {% block body %}
 	{%from '_macro.html' import nav_bar_top, titulo_1, highcharts_asignatura,highcharts_cuestionario,highcharts_asignaturas, highcharts_evalucion, highcharts_tutoria_stats%}
-	{{ nav_bar_top(link_active='None',params=params) }}
+	{{ nav_bar_top(link_active='Alumnos',params=params) }}
 	<div class="paper bg-white padding_contenido">
-		<div class="padding_3">
-			{% if grupo and alumno and tutoria %}
-				<div class="row">
-					<div class="col-xs-2 col-fix-125">
-						{% if tutoria.activa %}
-							{{highcharts_tutoria_stats(char_id='tutoria_stats_{{hashids_encode(tutoria.id)}}', height='125', weight='125', tooltip_x='22', tooltip_y='48',font_size='1.4', titulo='', color_1='#26c6da', color_2='#f5f5f5', tutoria_stats=tutoria_stats(tutoria.id))}}
-						{% else %}
-							{{highcharts_tutoria_stats(char_id='tutoria_stats_{{hashids_encode(tutoria.id)}}', height='125', weight='125', tooltip_x='22', tooltip_y='48',font_size='1.4', titulo='', color_1='#b2ebf2', color_2='#fafafa', tutoria_stats=tutoria_stats(tutoria.id))}}
-						{% endif %}
-					</div>
-					{{titulo_1(url='analisis',bg_color='bg-primary',titulo='Analisis de tutoría')}}
+		<!-- <div class="padding_3"> -->
+		{% if grupo and alumno and tutoria %}
+			{{titulo_1(url='analisis',bg_color='bg-dark', titulo='Análisis gráfico de la tutoría')}}
+			<div class="row padding_3_3">
+				<div class="col-md-6 col-lg-4">
+					<span class="text-mutted">Alumno:
+					</span>
 					<h5 class="strong">
 						{{alumno.nombre}}
 						{{alumno.apellidos}}
 					</h5>
+				</div>
+				<div class="col-md-6 col-lg-4">
+					<span class="text-mutted">Fecha:
+					</span>
+					<span class="strong">
 					{{tutoria.fecha.strftime('%B') | capitalize}}
 					-
 					{{tutoria.fecha.strftime('%A') | capitalize}}
 					{{tutoria.fecha.strftime('%d')}}
+					</span>
 					<br>
-					Hora:
-					{{tutoria.hora.strftime('%H:%M')}}
-					<div class="padding_3 pull-right">
-						<form action="/tutoria_edit" method="POST" name="analisis{{hashids_encode(tutoria.id)}}">
-							<input type="hidden" name="current_tutoria_id" value="{{hashids_encode(tutoria.id)}}">
-							{% if params['tutoria_delete_link'] %}
-								<div class="btn-group" role="group" aria-label="...">
-									<button role="button" type="submit" name="selector_button" value="selector_tutoria_delete" class="btn btn-outline-primary btn-sm" title="confirmar eliminar tutoria">
-										<i class="material-icons vertical-center">delete</i>
-										confirmar eliminar</button>
-									{% if tutoria.activa %}
-										<button role="button" type="submit" name="selector_button" value="selector_tutoria_delete_archivar" class="btn btn-sm {% if tutoria.activa %} btn-outline-dark{% else %} btn-outline-dark{% endif %}" title="archivar tutoria">
-											<i class="material-icons vertical-center {% if tutoria.activa %} color-gray-darken-1 {% endif %}">file_download</i>
-										</button>
-									{% endif %}
-									<button role="button" type="submit" name="selector_button" value="selector_tutoria_delete_link_close" class="btn btn-outline-dark" title="cancelar eliminar">
-										<i class="material-icons vertical-center">close</i>
-									</button>
-								</div>
-								<div class="clearfix"></div>
-								<br>
-								<span class="text-warning small">
-									Es aconsejable archivar en vez de eliminar.
-									<br>
-									Una vez elminada no podra ser recuperada.</span>
-							{% else %}
-								<div class="btn-group" role="group" aria-label="...">
-									<button role="button" type="submit" name="selector_button" value="selector_tutoria_edit_link" class="btn {% if tutoria.activa %} btn-outline-dark{% else %} btn-outline-dark{% endif %}" title="cambiar fecha y hora">
-										<i class="material-icons vertical-center {% if tutoria.activa %} color-gray-darken-1 {% endif %}">edit</i>
-									</button>
-									<button role="button" type="submit" name="selector_button" value="selector_tutoria_re_enviar_link" class="btn {% if tutoria.activa %} btn-outline-dark{% else %} btn-outline-dark{% endif %}" title="reenviar emails">
-										<i class="material-icons vertical-center {% if tutoria.activa %} color-gray-darken-1 {% endif %}">email</i>
-									</button>
-									{% if tutoria.activa %}
-										<button role="button" type="submit" name="selector_button" value="selector_tutoria_archivar" class="btn {% if tutoria.activa %} btn-outline-dark{% else %} btn-outline-dark{% endif %}" title="archivar tutoria">
-											<i class="material-icons vertical-center {% if tutoria.activa %} color-gray-darken-1 {% endif %}">file_download</i>
-										</button>
-									{% else %}
-										<button role="button" type="submit" name="selector_button" value="selector_tutoria_activar" class="btn btn-outline-primary btn-sm" title="activar tutoria">
-											<i class="material-icons vertical-center">file_upload</i>
-										</button>
-									{% endif %}
-									<button role="button" type="submit" name="selector_button" value="selector_tutoria_delete_link" class="btn {% if tutoria.activa %} btn-outline-dark{% else %} btn-outline-dark{% endif %} " title="eliminar tutoria">
-										<i class="material-icons vertical-center{% if tutoria.activa %} color-gray-darken-1 {% endif %}">delete</i>
-									</button>
-									<button role="button" type="submit" name="selector_button" value="selector_tutoria_regresar_alumno" class="btn {% if tutoria.activa %} btn-outline-dark{% else %} btn-outline-dark{% endif %}" title="regresar a {{alumno.nombre}}">
-										<i class="material-icons vertical-center {% if tutoria.activa %} color-gray-darken-1 {% endif %}">person</i>
-									</button>
-								</div>
-							{% endif %}
-						</form>
-					</div>
+					<span class="text-mutted">Hora:
+					</span>
+					<span class="strong">{{tutoria.hora.strftime('%H:%M')}}</span>
 				</div>
-				<br>
-				{% if params['tutoria_re_enviar_link']%}
-					{% include 'analisis_re_enviar_a_block.html' %}
-					<br>
-				{% endif %}
-				{% if params['tutoria_edit_link'] %}
-					{% include 'analisis_tutoria_edit_block.html' %}
-				{% endif %}
-				<br>
-				<a href="#analisis_cuestionario" class="list-group-item-6" data-toggle="collapse">
-					<i class="material-icons vertical-center">expand_more</i>
-					Analisis del cuestionario
-				</a>
-				<div class="collapse {% if not (params['tutoria_edit_link'] or params['tutoria_re_enviar_link']) %} show {% endif %}" id="analisis_cuestionario">
-					<br>
-					<div class="row">
-						{{highcharts_cuestionario(char_id='cuestionario', titulo='', color='#ffa000', df_data=df_data, grupo=grupo, tutoria_id=tutoria.id)}}
-					</div>
-					<br>
-				</div>
-				<a href="#analisis_general_asignaturas" class="list-group-item-6" data-toggle="collapse" data-parent="#analisis" aria-expanded="true" aria-controls="collapse_analisis_general_asignaturas" title="Analisis general de las asiginaturas">
-					<i class="material-icons vertical-center">expand_more</i>
-					Analisis general de las asiginaturas
-				</a>
-				<div class="collapse" id="analisis_general_asignaturas">
-					<br>
-					<div class="row">
-						{{highcharts_asignaturas(char_id='asignaturas', titulo='',color_1='#ec407a',color_2='#f48fb1', df_data=df_data, grupo=grupo, tutoria_id=tutoria.id)}}
-					</div>
-					<br>
-				</div>
-				<a href="#analisis_detallado_asignaturas" class="list-group-item-6" data-toggle="collapse" data-parent="#analisis" aria-expanded="true" aria-controls="collapse_analisis_detallado_asignaturas" title="Analisis detallado por asignaturas">
-					<i class="material-icons vertical-center">expand_more</i>
-					Analisis detallado por asignatura
-				</a>
-				<div class="collapse in" id="analisis_detallado_asignaturas">
-					<div class="row">
-						<div class="padding_3">
-							<div class="padding_contenido">
-								{% if not df_asignaturas_lista(df_data, tutoria.id) %}
-									<span class="text-info">No se han recibido ningun informe para esta tutoría.</span>
-									<br>
+				<div class="col-md-6 col-lg-4">
+					<form action="/tutoria_edit" method="POST" name="analisis{{hashids_encode(tutoria.id)}}">
+						<input type="hidden" name="current_tutoria_id" value="{{hashids_encode(tutoria.id)}}">
+						{% if params['tutoria_delete_link'] %}
+							<div class="btn-group align-bottom" role="group" aria-label="...">
+								<button role="button" type="submit" name="selector_button" value="selector_tutoria_delete" class="btn btn-outline-dark btn-sm" title="confirmar eliminar tutoria">
+									<i class="material-icons vertical-center">delete</i>
+									confirmar eliminar</button>
+								{% if tutoria.activa %}
+									<button role="button" type="submit" name="selector_button" value="selector_tutoria_delete_archivar" class="btn btn-sm {% if tutoria.activa %} btn-outline-mutted{% else %} btn-outline-mutted{% endif %}" title="archivar tutoria">
+										<i class="material-icons vertical-center {% if tutoria.activa %} color-gray-darken-1 {% endif %}">file_download</i>
+									</button>
 								{% endif %}
+								<button role="button" type="submit" name="selector_button" value="selector_tutoria_delete_link_close" class="btn btn-outline-mutted" title="cancelar eliminar">
+									<i class="material-icons vertical-center">close</i>
+								</button>
 							</div>
-						</div>
-						<!-- FIXME bucle temporal para ver como se comporatan varias asignaturas -->
-						{% for item in range(4) %}
-							{% for asignatura in df_asignaturas_lista(df_data, tutoria.id) %}
-								<div class="col-sm-12 col-sm-6 col-md-6 col-lg-3">
-									<div class="border_1 z-depth-1-1-less">
-										{{highcharts_asignatura(char_id=asignatura, asignatura=asignatura, alumno=alumno, grupo=grupo, df_data=df_data, tutoria_id=tutoria.id)}}
-										<br>
-										{% if comentario_by_informe_id_and_asignatura_nombre(tutoria.id, asignatura) %}
-											<div class="padding_contenido">
-												<br>
-												<span class="strong">Observaciones:</span>
-												<div class="dropdown-divider bg-gray-4"></div>
-												<h6></h6>
-												<div class="line_break">
-													{{-comentario_by_informe_id_and_asignatura_nombre(tutoria.id, asignatura)-}}
-												</div>
-												<br>
-											</div>
-										{% endif %}
-									</div>
-								</div>
-							{% endfor %}
-						{% endfor %}
-						<!-- ********************************************************* -->
-						<div class="card_XXX-columns">
-							<div class="card_XXX">
-								<img class="card_XXX-img-top img-fluid" src="..." alt="card_XXX image cap">
-								<div class="card_XXX-block">
-									<h4 class="card_XXX-title">card_XXX title that wraps to a new line</h4>
-									<p class="card_XXX-text">This is a longer card_XXX with supporting text below as a natural lead-in to additional content. This content is a little bit longer.</p>
-								</div>
+							<div class="clearfix"></div>
+							<br>
+							<span class="text-warning small">
+								Es aconsejable archivar en vez de eliminar.
+								<br>
+								Una vez elminada no podra ser recuperada.</span>
+						{% else %}
+							<div class="btn-group" role="group" aria-label="...">
+								<button role="button" type="submit" name="selector_button" value="selector_tutoria_edit_link" class="btn {% if tutoria.activa %} btn-outline-dark{% else %} btn-outline-mutted{% endif %}" title="cambiar fecha y hora">
+									<i class="material-icons vertical-center {% if tutoria.activa %} color-gray-darken-1 {% endif %}">edit</i>
+								</button>
+								<button role="button" type="submit" name="selector_button" value="selector_tutoria_re_enviar_link" class="btn {% if tutoria.activa %} btn-outline-dark{% else %} btn-outline-mutted{% endif %}" title="reenviar emails">
+									<i class="material-icons vertical-center {% if tutoria.activa %} color-gray-darken-1 {% endif %}">email</i>
+								</button>
+								{% if tutoria.activa %}
+									<button role="button" type="submit" name="selector_button" value="selector_tutoria_archivar" class="btn {% if tutoria.activa %} btn-outline-dark{% else %} btn-outline-mutted{% endif %}" title="archivar tutoria">
+										<i class="material-icons vertical-center {% if tutoria.activa %} color-gray-darken-1 {% endif %}">file_download</i>
+									</button>
+								{% else %}
+									<button role="button" type="submit" name="selector_button" value="selector_tutoria_activar" class="btn btn-outline-dark btn-sm" title="activar tutoria">
+										<i class="material-icons vertical-center">file_upload</i>
+									</button>
+								{% endif %}
+								<button role="button" type="submit" name="selector_button" value="selector_tutoria_delete_link" class="btn {% if tutoria.activa %} btn-outline-dark{% else %} btn-outline-mutted{% endif %} " title="eliminar tutoria">
+									<i class="material-icons vertical-center{% if tutoria.activa %} color-gray-darken-1 {% endif %}">delete</i>
+								</button>
+								<button role="button" type="submit" name="selector_button" value="selector_tutoria_regresar_alumno" class="btn {% if tutoria.activa %} btn-outline-dark{% else %} btn-outline-mutted{% endif %}" title="regresar a {{alumno.nombre}}">
+									<i class="material-icons vertical-center {% if tutoria.activa %} color-gray-darken-1 {% endif %}">person</i>
+								</button>
 							</div>
-							<div class="card_XXX p-3">
-								<blockquote class="card_XXX-block card_XXX-blockquote">
-									<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer posuere erat a ante.</p>
-									<footer>
-										<small class="text-muted">
-											Someone famous in
-											<cite title="Source Title">Source Title</cite>
-										</small>
-									</footer>
-								</blockquote>
-							</div>
-							<div class="card_XXX">
-								<img class="card_XXX-img-top img-fluid" src="..." alt="card_XXX image cap">
-								<div class="card_XXX-block">
-									<h4 class="card_XXX-title">card_XXX title</h4>
-									<p class="card_XXX-text">This card_XXX has supporting text below as a natural lead-in to additional content.</p>
-									<p class="card_XXX-text">
-										<small class="text-muted">Last updated 3 mins ago</small>
-									</p>
-								</div>
-							</div>
-							<div class="card_XXX card_XXX-inverse card_XXX-primary p-3 text-center">
-								<blockquote class="card_XXX-blockquote">
-									<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer posuere erat.</p>
-									<footer>
-										<small>
-											Someone famous in
-											<cite title="Source Title">Source Title</cite>
-										</small>
-									</footer>
-								</blockquote>
-							</div>
-							<div class="card_XXX text-center">
-								<div class="card_XXX-block">
-									<h4 class="card_XXX-title">card_XXX title</h4>
-									<p class="card_XXX-text">This card_XXX has supporting text below as a natural lead-in to additional content.</p>
-									<p class="card_XXX-text">
-										<small class="text-muted">Last updated 3 mins ago</small>
-									</p>
-								</div>
-							</div>
-							<div class="card_XXX">
-								<img class="card_XXX-img img-fluid" src="..." alt="card_XXX image">
-							</div>
-							<div class="card_XXX p-3 text-right">
-								<blockquote class="card_XXX-blockquote">
-									<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer posuere erat a ante.</p>
-									<footer>
-										<small class="text-muted">
-											Someone famous in
-											<cite title="Source Title">Source Title</cite>
-										</small>
-									</footer>
-								</blockquote>
-							</div>
-							<div class="card_XXX">
-								<div class="card_XXX-block">
-									<h4 class="card_XXX-title">card_XXX title</h4>
-									<p class="card_XXX-text">This is a wider card_XXX with supporting text below as a natural lead-in to additional content. This card_XXX has even longer content than the first to show that equal height action.</p>
-									<p class="card_XXX-text">
-										<small class="text-muted">Last updated 3 mins ago</small>
-									</p>
-								</div>
-							</div>
-						</div>
-						<!-- ***************************************************************** -->
-						<br>
-					</div>
-					<br><br>
+						{% endif %}
+					</form>
 				</div>
-				<a href="#analisis_evoluacion" class="list-group-item-6" data-toggle="collapse" data-parent="#analisis" aria-expanded="true" aria-controls="collapse_analisis_evoluacion" title="Analisis en el tiempo">
-					<i class="material-icons vertical-center">expand_more</i>
-					Analisis en el tiempo
-				</a>
-				<div class="collapse" id="analisis_evoluacion">
-					<br>
-					<div class="row">
-						{{highcharts_evalucion(char_id='evalucion', titulo='',color_1='#ec407a',color_2='#f48fb1', df_data=df_data, grupo=grupo, alumno=alumno)}}
-					</div>
-					<br>
-				</div>
-			{% else %}
-				<div class="padding_3 text-warning text-center">
-					No se dispone de analisis para esta turoria.
-					<br><br>
-					<div class="btn-group" role="group" aria-label="...">
-						<a class="btn btn-outline-dark" href="/alumnos" role="button">listado de alumnos</a>
-					</div>
-				</div>
+			</div>
+			<br>
+			{# NOTE badge #}
+			<h4>
+				<span class="badge badge-secondary float-right" title="{{cociente_porcentual(tutoria_informes(tutoria.id) | count, tutoria_asignaturas_count(tutoria.id))}}% de los informes recibidos">
+					{{cociente_porcentual(tutoria_informes(tutoria.id) | count, tutoria_asignaturas_count(tutoria.id))}}%
+				</span>
+			</h4>
+			<div class="progress rounded-0">
+				<div
+					class="progress-bar {% if tutoria.activa %} bg-secondary progress-bar-striped progress-bar-animated {% else %} bg-mutted {% endif %}"
+					role="progressbar"
+					aria-valuemin="0"
+					aria-valuemax="100"
+					style="{% if not tutoria.activa %} height:2px; {% endif %} width: {{cociente_porcentual(tutoria_informes(tutoria.id) | count, tutoria_asignaturas_count(tutoria.id))}}%;"></div>
+			</div>
+			<br>
+			{% if params['tutoria_re_enviar_link']%}
+				{% include 'analisis_re_enviar_a_block.html' %}
+				<br>
 			{% endif %}
-		</div>
+			{% if params['tutoria_edit_link'] %}
+				{% include 'analisis_tutoria_edit_block.html' %}
+			{% endif %}
+			<br>
+			<a href="#analisis_cuestionario" class="list-group-item-6" data-toggle="collapse">
+				<i class="material-icons vertical-center">expand_more</i>
+				Analisis del cuestionario
+			</a>
+			<div class="collapse {% if not (params['tutoria_edit_link'] or params['tutoria_re_enviar_link']) %} show {% endif %}" id="analisis_cuestionario">
+				<br>
+				<div class="row">
+					{{highcharts_cuestionario(char_id='cuestionario', titulo='', color='#ffa000', df_data=df_data, grupo=grupo, tutoria_id=tutoria.id)}}
+				</div>
+				<br>
+			</div>
+			<a href="#analisis_general_asignaturas" class="list-group-item-6" data-toggle="collapse" data-parent="#analisis" aria-expanded="true" aria-controls="collapse_analisis_general_asignaturas" title="Analisis general de las asiginaturas">
+				<i class="material-icons vertical-center">expand_more</i>
+				Analisis general de las asiginaturas
+			</a>
+			<div class="collapse" id="analisis_general_asignaturas">
+				<br>
+				<div class="row">
+					{{highcharts_asignaturas(char_id='asignaturas', titulo='',color_1='#ec407a',color_2='#f48fb1', df_data=df_data, grupo=grupo, tutoria_id=tutoria.id)}}
+				</div>
+				<br>
+			</div>
+			<a href="#analisis_detallado_asignaturas" class="list-group-item-6" data-toggle="collapse" data-parent="#analisis" aria-expanded="true" aria-controls="collapse_analisis_detallado_asignaturas" title="Analisis detallado por asignaturas">
+				<i class="material-icons vertical-center">expand_more</i>
+				Analisis detallado por asignatura
+			</a>
+			<div class="collapse in" id="analisis_detallado_asignaturas">
+				<div class="row">
+					<div class="padding_3">
+						<div class="padding_contenido">
+							{% if not df_asignaturas_lista(df_data, tutoria.id) %}
+								<span class="text-info">No se han recibido ningun informe para esta tutoría.</span>
+								<br>
+							{% endif %}
+						</div>
+					</div>
+					<!-- FIXME bucle temporal para ver como se comporatan varias asignaturas -->
+					{% for item in range(4) %}
+						{% for asignatura in df_asignaturas_lista(df_data, tutoria.id) %}
+							<div class="col-sm-12 col-sm-6 col-md-6 col-lg-3">
+								<div class="border_1 z-depth-1-1-less">
+									{{highcharts_asignatura(char_id=asignatura, asignatura=asignatura, alumno=alumno, grupo=grupo, df_data=df_data, tutoria_id=tutoria.id)}}
+									<br>
+									{% if comentario_by_informe_id_and_asignatura_nombre(tutoria.id, asignatura) %}
+										<div class="padding_contenido">
+											<br>
+											<span class="strong">Observaciones:</span>
+											<div class="dropdown-divider bg-gray-4"></div>
+											<h6></h6>
+											<div class="line_break">
+												{{-comentario_by_informe_id_and_asignatura_nombre(tutoria.id, asignatura)-}}
+											</div>
+											<br>
+										</div>
+									{% endif %}
+								</div>
+							</div>
+						{% endfor %}
+					{% endfor %}
+					<!-- ********************************************************* -->
+					<div class="card_XXX-columns">
+						<div class="card_XXX">
+							<img class="card_XXX-img-top img-fluid" src="..." alt="card_XXX image cap">
+							<div class="card_XXX-block">
+								<h4 class="card_XXX-title">card_XXX title that wraps to a new line</h4>
+								<p class="card_XXX-text">This is a longer card_XXX with supporting text below as a natural lead-in to additional content. This content is a little bit longer.</p>
+							</div>
+						</div>
+						<div class="card_XXX p-3">
+							<blockquote class="card_XXX-block card_XXX-blockquote">
+								<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer posuere erat a ante.</p>
+								<footer>
+									<small class="text-muted">
+										Someone famous in
+										<cite title="Source Title">Source Title</cite>
+									</small>
+								</footer>
+							</blockquote>
+						</div>
+						<div class="card_XXX">
+							<img class="card_XXX-img-top img-fluid" src="..." alt="card_XXX image cap">
+							<div class="card_XXX-block">
+								<h4 class="card_XXX-title">card_XXX title</h4>
+								<p class="card_XXX-text">This card_XXX has supporting text below as a natural lead-in to additional content.</p>
+								<p class="card_XXX-text">
+									<small class="text-muted">Last updated 3 mins ago</small>
+								</p>
+							</div>
+						</div>
+						<div class="card_XXX card_XXX-inverse card_XXX-primary p-3 text-center">
+							<blockquote class="card_XXX-blockquote">
+								<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer posuere erat.</p>
+								<footer>
+									<small>
+										Someone famous in
+										<cite title="Source Title">Source Title</cite>
+									</small>
+								</footer>
+							</blockquote>
+						</div>
+						<div class="card_XXX text-center">
+							<div class="card_XXX-block">
+								<h4 class="card_XXX-title">card_XXX title</h4>
+								<p class="card_XXX-text">This card_XXX has supporting text below as a natural lead-in to additional content.</p>
+								<p class="card_XXX-text">
+									<small class="text-muted">Last updated 3 mins ago</small>
+								</p>
+							</div>
+						</div>
+						<div class="card_XXX">
+							<img class="card_XXX-img img-fluid" src="..." alt="card_XXX image">
+						</div>
+						<div class="card_XXX p-3 text-right">
+							<blockquote class="card_XXX-blockquote">
+								<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer posuere erat a ante.</p>
+								<footer>
+									<small class="text-muted">
+										Someone famous in
+										<cite title="Source Title">Source Title</cite>
+									</small>
+								</footer>
+							</blockquote>
+						</div>
+						<div class="card_XXX">
+							<div class="card_XXX-block">
+								<h4 class="card_XXX-title">card_XXX title</h4>
+								<p class="card_XXX-text">This is a wider card_XXX with supporting text below as a natural lead-in to additional content. This card_XXX has even longer content than the first to show that equal height action.</p>
+								<p class="card_XXX-text">
+									<small class="text-muted">Last updated 3 mins ago</small>
+								</p>
+							</div>
+						</div>
+					</div>
+					<!-- ***************************************************************** -->
+					<br>
+				</div>
+				<br><br>
+			</div>
+			<a href="#analisis_evoluacion" class="list-group-item-6" data-toggle="collapse" data-parent="#analisis" aria-expanded="true" aria-controls="collapse_analisis_evoluacion" title="Analisis en el tiempo">
+				<i class="material-icons vertical-center">expand_more</i>
+				Analisis en el tiempo
+			</a>
+			<div class="collapse" id="analisis_evoluacion">
+				<br>
+				<div class="row">
+					{{highcharts_evalucion(char_id='evalucion', titulo='',color_1='#ec407a',color_2='#f48fb1', df_data=df_data, grupo=grupo, alumno=alumno)}}
+				</div>
+				<br>
+			</div>
+		{% else %}
+			<div class="padding_3 text-warning text-center">
+				No se dispone de analisis para esta turoria.
+				<br><br>
+				<div class="btn-group" role="group" aria-label="...">
+					<a class="btn btn-outline-mutted" href="/alumnos" role="button">listado de alumnos</a>
+				</div>
+			</div>
+		{% endif %}
+		<!-- </div> -->
 	</div>
 {% endblock %}
