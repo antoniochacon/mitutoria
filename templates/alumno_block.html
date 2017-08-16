@@ -4,21 +4,20 @@
 		<span class="capital {% if not alumno_asignaturas(alumno.id) %} capital-warning {% else %} {% if alumno_tutorias(alumno.id, True) %} capital-primary active {% else %} capital-mutted {% endif %} {% endif %}">{{alumno.apellidos | first | upper}}</span>
 		<div class="media-body">
 			<div class="padding_2">
-			{{alumno.apellidos}},
-			{{alumno.nombre}}
-			{# NOTE badge #}
-			{% if alumno_tutorias(alumno.id, True) %}
-				<span
-					class="badge badge-primary float-right"
-					title="{{alumno_tutorias(alumno.id, True) | count}} {{singular_plural('tutoria','tutorias', alumno_tutorias(alumno.id, True) | count)}}  {{singular_plural('solicitada','solicitadas', alumno_tutorias(alumno.id, True) | count)}}">
-					{{alumno_tutorias(alumno.id, True) | count}}
-					{{singular_plural('tutoria','tutorias', alumno_tutorias(alumno.id, True) | count)}}
-				</span>
-			{% endif %}
+				{{alumno.apellidos}},
+				{{alumno.nombre}}
+				{# NOTE badge #}
+				{% if alumno_tutorias(alumno.id, True) %}
+					<span
+						class="badge badge-primary float-right"
+						title="{{alumno_tutorias(alumno.id, True) | count}} {{singular_plural('tutoria','tutorias', alumno_tutorias(alumno.id, True) | count)}} {{singular_plural('solicitada','solicitadas', alumno_tutorias(alumno.id, True) | count)}}">
+						{{alumno_tutorias(alumno.id, True) | count}}
+						{{singular_plural('tutoria','tutorias', alumno_tutorias(alumno.id, True) | count)}}
+					</span>
+				{% endif %}
 			</div>
 		</div>
 	</div>
-	<!-- current_alumno_id:{{params['current_alumno_id']}} -->
 </a>
 <div id="alumno_{{hashids_encode(alumno.id)}}" class="collapse {% if equal_str(alumno.id, params['current_alumno_id']) and params['collapse_alumno'] %} show {% endif %}">
 	<div class="dropdown-divider bg-primary grueso"></div>

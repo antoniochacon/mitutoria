@@ -18,7 +18,7 @@
 	</div>
 </a>
 <div class="progress rounded-0">
-	<div class="progress-bar bg-dark" role="progressbar" aria-valuemin="0" aria-valuemax="100" style="height:2px;  width: {{cociente_porcentual(asignatura_informes_respondidos_count(asignatura.id), asignatura_informes_count(asignatura.id))}}%;"></div>
+	<div class="progress-bar bg-dark" role="progressbar" aria-valuemin="0" aria-valuemax="100" style="height:2px; width: {{cociente_porcentual(asignatura_informes_respondidos_count(asignatura.id), asignatura_informes_count(asignatura.id))}}%;"></div>
 </div>
 <div id="asignatura_{{hashids_encode(asignatura.id)}}" class="collapse {% if equal_str(asignatura.id, params['current_asignatura_id'])%} show {% endif %}">
 	<br>

@@ -1,0 +1,70 @@
+<br>
+<div class="padding_3">
+	<form action="/settings_grupos" method="POST">
+		<div class="row">
+			<div class="form-group col-md-6 mb-3">
+				<div class="input-group">
+					<input
+						type="text"
+						class="form-control {% if request.method=='POST' and params['collapse_grupo_add'] %} {% if grupo_add.nombre.errors %} is-invalid {% else %} is-valid {% endif %} {% endif %}"
+						name="{{grupo_add.nombre.name}}"
+						{% if request.method=='POST' %}
+						value="{% if request.method=='POST' and params['collapse_grupo_add'] %}{{grupo_add.nombre.data}}{% endif %}"
+						{% endif %}
+						placeholder="{{grupo_add.nombre.label.text}}">
+					<span class="input-group-addon {% if request.method=='POST' and params['collapse_grupo_add'] %} {% if grupo_add.nombre.errors %} form_addon-warning {% else %} form_addon-success {% endif %} {% endif %}">grupo</span>
+				</div>
+			</div>
+			<div class="form-group col-md-6 mb-3">
+				<div class="input-group">
+					<input
+						type="text"
+						class="form-control {% if request.method=='POST' and params['collapse_grupo_add'] %} {% if grupo_add.tutor.errors %} is-invalid {% else %} is-valid {% endif %} {% endif %}"
+						name="{{grupo_add.tutor.name}}"
+						{% if request.method=='POST' %}
+						value="{% if request.method=='POST' and params['collapse_grupo_add'] %}{{grupo_add.tutor.data}}{% endif %}"
+						{% endif %}
+						placeholder="{{grupo_add.tutor.label.text}}">
+					<span class="input-group-addon {% if request.method=='POST' and params['collapse_grupo_add'] %} {% if grupo_add.tutor.errors %} form_addon-warning {% else %} form_addon-success {% endif %} {% endif %}">grupo</span>
+				</div>
+			</div>
+			<div class="form-group col-md-6 mb-3">
+				<div class="input-group">
+					<input
+						type="text"
+						class="form-control {% if request.method=='POST' and params['collapse_grupo_add'] %} {% if grupo_add.centro.errors %} is-invalid {% else %} is-valid {% endif %} {% endif %}"
+						name="{{grupo_add.centro.name}}"
+						{% if request.method=='POST' %}
+						value="{% if request.method=='POST' and params['collapse_grupo_add'] %}{{grupo_add.centro.data}}{% endif %}"
+						{% endif %}
+						placeholder="{{grupo_add.centro.label.text}}">
+					<span class="input-group-addon {% if request.method=='POST' and params['collapse_grupo_add'] %} {% if grupo_add.centro.errors %} form_addon-warning {% else %} form_addon-success {% endif %} {% endif %}">grupo</span>
+				</div>
+			</div>
+			<input type="hidden" name="curso_academico" value="{{curso()}}">
+			{% if not params['login'] %}
+				<div class="form-group col-md-6 mb-3">
+					<label class="custom-control custom-checkbox">
+						<input type="checkbox" class="custom-control-input" name="grupo_add_grupo_activo" value="True" checked>
+						<span class="custom-control-indicator"></span>
+						<span class="custom-control-description">Establecer como actual grupo activo</span>
+					</label>
+				</div>
+			{% endif %}
+		</div>
+		<div class="btn-group" role="group" aria-label="...">
+			<div class="btn-group" role="group" aria-label="...">
+				<button role="button" type="submit" name="selector_button" value="selector_grupo_add" class="btn btn-outline-primary btn-sm" title="agregar asignatura">
+					<span class="material-icons vertical-center">import_contacts</span>&nbsp; agregar
+				</button>
+				{% if params['collapse_grupo_add'] %}
+					<button role="button" type="submit" name="selector_button" value="selector_grupo_add_cerrar" class="btn btn-outline-dark btn-sm" title="cerrar">
+						<i class="material-icons vertical-center">close</i>
+					</button>
+				{% endif %}
+			</div>
+		</div>
+	</form>
+	<br>
+</div>
+<div class="dropdown-divider grueso bg-primary"></div>

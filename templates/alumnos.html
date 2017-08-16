@@ -1,6 +1,8 @@
 {% extends "_layout.html" %}
 {% block body %}
-	{% from "_macro.html" import nav_bar_top, titulo_1, highcharts_tutoria_stats %}
+	{% from "_macro.html" import nav_bar_top,
+	titulo_1,
+	highcharts_tutoria_stats %}
 	{{ nav_bar_top(link_active='Alumnos',params=params) }}
 	{% if alumnos_not_sorted() %}
 		{% if settings().show_tutorias %}
@@ -53,14 +55,14 @@
 						</div>
 					</div>
 				</a>
+				{# TODO: alumnos_add #}
 				<div id="alumno_add" class="collapse {% if params['collapse_alumno_add'] %} show {% endif %}">
-					{# TODO: alumnos_add #}
 					{%include "alumno_add_block.html"%}
 				</div>
 			</div>
+			{# TODO: alumnos_listado #}
 			<div>
 				{% for alumno in alumnos("apellidos", "nombre")%}
-					{# TODO: alumnos_listado #}
 					{%include "alumno_block.html"%}
 				{% endfor %}
 			</div>

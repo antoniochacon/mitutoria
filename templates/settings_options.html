@@ -3,63 +3,41 @@
 	{%from '_macro.html' import nav_bar_top, titulo_1, nav_tabs %}
 	{{ nav_bar_top(link_active='Opciones',params=params) }}
 	<div class="paper bg-white padding_contenido">
-		{{titulo_1(bg_color='bg-dark',titulo='Configuracion')}}
+		{{titulo_1(bg_color='bg-dark',titulo='Configuración')}}
 		{{nav_tabs(tab_active='Opciones', dic={'Cuestionario':'settings_cuestionario', 'Grupos':'settings_grupos', 'Opciones':'settings_options'})}}
 		<div class="padding_3">
 			<form action="settings_options" method="POST">
-				<div class="form-group col-md-6 col-lg-4">
-				<label class="custom-control custom-checkbox">
-					<input type="checkbox" class="custom-control-input" name="settings_edit_tutoria_timeout" value="True" {% if settings_edit_tutoria_timeout %} checked {% endif %}>
-					<span class="custom-control-indicator"></span>
-					<span class="custom-control-description {% if settings_edit_tutoria_timeout %} text-mutted {% endif %}">Auto archivar tutorias</span>
-				</label>
-			</div>
-		</form>
+				<div class="row">
+					<div class="form-group col-md-6 col-lg-4">
+						<label class="custom-control custom-checkbox">
+							<input type="checkbox" class="custom-control-input" name="settings_edit_tutoria_timeout" value="True" {% if settings_user.tutoria_timeout %} checked {% endif %}>
+							<span class="custom-control-indicator"></span>
+							<span class="custom-control-description {% if not settings_user.tutoria_timeout %}text-mutted{% endif %}">Auto archivar tutorias</span>
+						</label>
+					</div>
+					<div class="form-group col-md-6 col-lg-4">
+						<label class="custom-control custom-checkbox">
+							<input type="checkbox" class="custom-control-input" name="settings_edit_show_tutorias_collapse" value="True" {% if settings_user.show_tutorias_collapse %} checked {% endif %}>
+							<span class="custom-control-indicator"></span>
+							<span class="custom-control-description {% if not settings_user.show_tutorias_collapse %}text-mutted{% endif %}">Desplegar tutorias solicitadas</span>
+						</label>
+					</div>
+					{% if settings().role=='admin'%}
+						<div class="form-group col-md-6 col-lg-4">
+							<label class="custom-control custom-checkbox">
+								<input type="checkbox" class="custom-control-input" name="settings_edit_calendar" value="True" {% if settings_user.calendar %} checked {% endif %}>
+								<span class="custom-control-indicator"></span>
+								<span class="custom-control-description {% if not settings_user.calendar %}text-mutted{% endif %}">Agregar eventos a la agenda</span>
+							</label>
+						</div>
+					{% endif %}
+				</div>
+				<div class="btn-group" role="group" aria-label="...">
+					<button type="submit" name="selector_button" value="selector_user_edit" class="btn btn-outline-primary btn-sm" title="guardar cambios">
+						<i class="material-icons vertical-center">save</i>
+						guardar</button>
+				</div>
+			</form>
+		</div>
 	</div>
-{#
-		<form action="/settings_options" method="POST">
-
-			{% if request.method == 'POST' %}
-				<div class="funkyradio funkyradio-success">
-					<input type="checkbox" name="settings_edit_tutoria_timeout" id="settings_edit_tutoria_timeout" value="True" {% if settings_edit_tutoria_timeout %} checked {% endif %}/>
-					<label for="settings_edit_tutoria_timeout">Autoarchivar tutorias.</label>
-				</div>
-				<div class="funkyradio funkyradio-success">
-					<input type="checkbox" name="settings_edit_show_tutorias_collapse" id="settings_edit_show_tutorias_collapse" value="True" {% if settings_edit_show_tutorias_collapse %} checked {% endif %}/>
-					<label for="settings_edit_show_tutorias_collapse">Desplegar tutorias solicitadas.</label>
-				</div>
-				{% if settings().role=='admin'%}
-					<div class="funkyradio funkyradio-success">
-						<input type="checkbox" name="settings_edit_calendar" id="settings_edit_calendar" value="True" {% if settings_edit_calendar %} checked {% endif %}/>
-						<label for="settings_edit_calendar">Agregar eventos a la agenda.</label>
-					</div>
-				{% endif %}
-				<br>
-				{%else%}
-				<div class="funkyradio funkyradio-success">
-					<input type="checkbox" name="settings_edit_tutoria_timeout" id="settings_edit_tutoria_timeout" value="True" {% if settings_user.tutoria_timeout %} checked {% endif %}/>
-					<label for="settings_edit_tutoria_timeout">Autoarchivar tutorias.</label>
-				</div>
-				<div class="funkyradio funkyradio-success">
-					<input type="checkbox" name="settings_edit_show_tutorias_collapse" id="settings_edit_show_tutorias_collapse" value="True" {% if settings_user.show_tutorias_collapse %} checked {% endif %}/>
-					<label for="settings_edit_show_tutorias_collapse">Desplegar tutorias solicitadas.</label>
-				</div>
-				{% if settings().role=='admin'%}
-					<div class="funkyradio funkyradio-success">
-						<input type="checkbox" name="settings_edit_calendar" id="settings_edit_calendar" value="True" {% if settings.calendar %} checked {% endif %}/>
-						<label for="settings_edit_calendar">Agregar eventos a la agenda.</label>
-					</div>
-				{% endif %}
-				<br>
-			{% endif %}
-			<br>
-			<div class="btn-group" role="group" aria-label="...">
-				<button role="button" type="submit" name="selector_button" value="selector_user_edit" class="btn btn-outline-primary" title="guardar cambios">
-					<i class="material-icons vertical-center">save</i>
-					guardar</button>
-			</div>
-		</form>
-		#}
-	<br>
-</div>
 {% endblock %}

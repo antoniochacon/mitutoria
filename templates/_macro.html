@@ -75,19 +75,19 @@
 	<h5 class='{{text_color}} strong'>
 		{{titulo}}
 		{% if url == 'alumnos' %}
-			<span class='badge badge-dark float-right'>{{alumnos_not_sorted()|count}}
+			<span class="badge badge-dark float-right">{{alumnos_not_sorted()|count}}
 				{{singular_plural('alumno', 'alumnos',alumnos_not_sorted()|count)}}</span>
 		{% elif url == 'asignaturas' %}
-			<span class='badge badge-dark float-right'>{{asignaturas('apellidos', 'nombre', 'asignatura') | count}}
+			<span class="badge badge-dark float-right">{{asignaturas('apellidos', 'nombre', 'asignatura') | count}}
 				{{singular_plural('asignatura', 'asignaturas', asignaturas('apellidos', 'nombre', 'asignatura') | count)}}</span>
 		{% endif %}
 		{% if subtitulo %}
 			<h6 class='{{text_color}}'>
 				{{subtitulo}}
-				<div class='dropdown-divider {{bg_color}} grueso'></div>
+				<div class="dropdown-divider {{bg_color}} grueso"></div>
 			</h6>
 			{%else%}
-			<div class='dropdown-divider {{bg_color}} grueso line-height-1'></div>
+			<div class="dropdown-divider {{bg_color}} grueso line-height-1"></div>
 		{% endif %}
 	</h5>
 {% endmacro %}
@@ -646,7 +646,7 @@
 					{
 						type: 'column',
 						maxPointWidth: 20,
-						name: 'Notas({{notas_asignatura(df_data, tutoria_id, asignatura)[0] | count}}): {{notas_asignatura(df_data, tutoria_id, asignatura)[0] |replace(",", " |")  | safe}}',
+						name: 'Notas({{notas_asignatura(df_data, tutoria_id, asignatura)[0] | count}}): {{notas_asignatura(df_data, tutoria_id, asignatura)[0] |replace(",", " |") | safe}}',
 						data: [
 							{
 								x: {{loop.index}}-1,
