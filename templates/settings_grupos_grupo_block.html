@@ -6,8 +6,6 @@
 			{{grupo.curso_academico+1}}</span>
 		<div class="media-body">
 			<div class="padding_2">
-				{{grupo.centro}}
-				|
 				{{grupo.nombre}}
 				{# NOTE badge #}
 				<span class="badge float-right {% if grupo_alumnos_count(grupo.id) %}badge-mutted{% else %}badge-warning{% endif %}" title="{{grupo_alumnos_count(grupo.id)}} {{singular_plural('alumno','alumnos', grupo_alumnos_count(grupo.id))}}">
