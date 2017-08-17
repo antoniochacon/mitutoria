@@ -6,35 +6,36 @@
 		<!-- <div class="padding_3"> -->
 		{% if grupo and alumno and tutoria %}
 			{{titulo_1(url='analisis',bg_color='bg-dark', titulo='Análisis gráfico de la tutoría')}}
-			<div class="row align-items-center">
-				<div class="col-md-6 col-lg-5">
-					<span class="text-mutted">Alumno:
-					</span>
-					<h5 class="strong">
-						{{alumno.nombre}}
-						{{alumno.apellidos}}
-					</h5>
-				</div>
-				<div class="col-md-6 col-lg-4">
-					<span class="text-mutted">Fecha:
-					</span>
-					<span class="strong">
-						{{tutoria.fecha.strftime('%B') | capitalize}}
-						-
-						{{tutoria.fecha.strftime('%A') | capitalize}}
-						{{tutoria.fecha.strftime('%d')}}
-					</span>
-					<br>
-					<span class="text-mutted">Hora:
-					</span>
-					<span class="strong">{{tutoria.hora.strftime('%H:%M')}}</span>
-				</div>
-				<div class="d-flex align-items-center">
-					<div class="padding_contenido">
-						<form action="/tutoria_edit" method="POST" name="analisis{{hashids_encode(tutoria.id)}}">
-							<input type="hidden" name="current_tutoria_id" value="{{hashids_encode(tutoria.id)}}">
+			<form action="/tutoria_edit" method="POST" name="analisis{{hashids_encode(tutoria.id)}}">
+				<div class="row align-items-center">
+					<div class="col-sm-12 col-md-6 col-lg-4">
+						<span class="text-mutted">Alumno:
+						</span>
+						<h5 class="strong">
+							{{alumno.nombre}}
+							{{alumno.apellidos}}
+						</h5>
+					</div>
+					<div class="col-sm-12 col-md-6 col-lg-3">
+						<span class="text-mutted">Fecha:
+						</span>
+						<span class="strong">
+							{{tutoria.fecha.strftime('%B') | capitalize}}
+							-
+							{{tutoria.fecha.strftime('%A') | capitalize}}
+							{{tutoria.fecha.strftime('%d')}}
+						</span>
+						<br>
+						<span class="text-mutted">Hora:
+						</span>
+						<span class="strong">{{tutoria.hora.strftime('%H:%M')}}</span>
+					</div>
+					<!-- <div class="padding_contenido"> -->
+					<input type="hidden" name="current_tutoria_id" value="{{hashids_encode(tutoria.id)}}">
+					<div class="row col-sm-12 col-md-12 col-lg">
+						<div class="col">
 							{% if params['tutoria_delete_link'] %}
-								<div class="btn-group align-bottom" role="group" aria-label="...">
+								<div class="btn-group" role="group" aria-label="...">
 									<button role="button" type="submit" name="selector_button" value="selector_tutoria_delete" class="btn btn-outline-warning btn-sm" title="confirmar eliminar tutoria">
 										<i class="material-icons vertical-center">delete</i>
 										confirmar eliminar</button>
@@ -43,7 +44,7 @@
 											<i class="material-icons vertical-center {% if tutoria.activa %} color-gray-darken-1 {% endif %}">file_download</i>
 										</button>
 									{% endif %}
-									<button role="button" type="submit" name="selector_button" value="selector_tutoria_delete_link_close" class="btn btn-outline-mutted" title="cancelar eliminar">
+									<button role="button" type="submit" name="selector_button" value="selector_tutoria_delete_link_close" class="btn btn-outline-mutted btn-sm" title="cancelar eliminar">
 										<i class="material-icons vertical-center">close</i>
 									</button>
 								</div>
@@ -54,14 +55,14 @@
 									Una vez elminada no podra ser recuperada.</span>
 							{% else %}
 								<div class="btn-group" role="group" aria-label="...">
-									<button role="button" type="submit" name="selector_button" value="selector_tutoria_edit_link" class="btn {% if tutoria.activa %} btn-outline-dark{% else %} btn-outline-mutted{% endif %}" title="cambiar fecha y hora">
+									<button role="button" type="submit" name="selector_button" value="selector_tutoria_edit_link" class="btn btn-sm{% if tutoria.activa %} btn-outline-dark{% else %} btn-outline-mutted{% endif %}" title="cambiar fecha y hora">
 										<i class="material-icons vertical-center {% if tutoria.activa %} color-gray-darken-1 {% endif %}">edit</i>
 									</button>
-									<button role="button" type="submit" name="selector_button" value="selector_tutoria_re_enviar_link" class="btn {% if tutoria.activa %} btn-outline-dark{% else %} btn-outline-mutted{% endif %}" title="reenviar emails">
+									<button role="button" type="submit" name="selector_button" value="selector_tutoria_re_enviar_link" class="btn btn-sm {% if tutoria.activa %} btn-outline-dark{% else %} btn-outline-mutted{% endif %}" title="reenviar emails">
 										<i class="material-icons vertical-center {% if tutoria.activa %} color-gray-darken-1 {% endif %}">email</i>
 									</button>
 									{% if tutoria.activa %}
-										<button role="button" type="submit" name="selector_button" value="selector_tutoria_archivar" class="btn {% if tutoria.activa %} btn-outline-dark{% else %} btn-outline-mutted{% endif %}" title="archivar tutoria">
+										<button role="button" type="submit" name="selector_button" value="selector_tutoria_archivar" class="btn btn-sm {% if tutoria.activa %} btn-outline-dark{% else %} btn-outline-mutted{% endif %}" title="archivar tutoria">
 											<i class="material-icons vertical-center {% if tutoria.activa %} color-gray-darken-1 {% endif %}">file_download</i>
 										</button>
 									{% else %}
@@ -69,44 +70,43 @@
 											<i class="material-icons vertical-center">file_upload</i>
 										</button>
 									{% endif %}
-									<button role="button" type="submit" name="selector_button" value="selector_tutoria_delete_link" class="btn {% if tutoria.activa %} btn-outline-dark{% else %} btn-outline-mutted{% endif %} " title="eliminar tutoria">
+									<button role="button" type="submit" name="selector_button" value="selector_tutoria_delete_link" class="btn btn-sm {% if tutoria.activa %} btn-outline-dark{% else %} btn-outline-mutted{% endif %}" title="eliminar tutoria">
 										<i class="material-icons vertical-center{% if tutoria.activa %} color-gray-darken-1 {% endif %}">delete</i>
 									</button>
-									<button role="button" type="submit" name="selector_button" value="selector_tutoria_regresar_alumno" class="btn {% if tutoria.activa %} btn-outline-dark{% else %} btn-outline-mutted{% endif %}" title="regresar a {{alumno.nombre}}">
+									<button role="button" type="submit" name="selector_button" value="selector_tutoria_regresar_alumno" class="btn btn-sm {% if tutoria.activa %} btn-outline-dark{% else %} btn-outline-mutted{% endif %}" title="regresar a {{alumno.nombre}}">
 										<i class="material-icons vertical-center {% if tutoria.activa %} color-gray-darken-1 {% endif %}">person</i>
 									</button>
 								</div>
-							{% endif %}
-						</form>
-					</div>
-					&nbsp;
-					<div class="padding_contenido">
-						{# NOTE badge #}
-						<h4>
-							<span class="badge badge-secondary" title="{{cociente_porcentual(tutoria_informes(tutoria.id) | count, tutoria_asignaturas_count(tutoria.id))}}% de los informes recibidos">
-								{{cociente_porcentual(tutoria_informes(tutoria.id) | count, tutoria_asignaturas_count(tutoria.id))}}%
-							</span>
-						</h4>
+							</div>
+						{% endif %}
+						<div class="col">
+							{# NOTE badge #}
+							<h4>
+								<span class="badge badge-secondary float-right" title="{{cociente_porcentual(tutoria_informes(tutoria.id) | count, tutoria_asignaturas_count(tutoria.id))}}% de los informes recibidos">
+									{{cociente_porcentual(tutoria_informes(tutoria.id) | count, tutoria_asignaturas_count(tutoria.id))}}%
+								</span>
+							</h4>
+						</div>
 					</div>
 				</div>
-			</div>
-			<div class="progress rounded-0">
-				<div
-					class="progress-bar {% if tutoria.activa %} bg-secondary progress-bar-striped progress-bar-animated {% else %} bg-mutted {% endif %}"
-					role="progressbar"
-					aria-valuemin="0"
-					aria-valuemax="100"
-					style="{% if not tutoria.activa %} height:2px; {% endif %} width: {{cociente_porcentual(tutoria_informes(tutoria.id) | count, tutoria_asignaturas_count(tutoria.id))}}%;"></div>
-			</div>
-			<!-- *************************** -->
-			<br>
-			{% if params['tutoria_re_enviar_link']%}
-				{% include 'analisis_re_enviar_a_block.html' %}
+				<div class="progress rounded-0">
+					<div
+						class="progress-bar {% if tutoria.activa %} bg-secondary progress-bar-striped progress-bar-animated {% else %} bg-mutted {% endif %}"
+						role="progressbar"
+						aria-valuemin="0"
+						aria-valuemax="100"
+						style="{% if not tutoria.activa %} height:2px; {% endif %} width: {{cociente_porcentual(tutoria_informes(tutoria.id) | count, tutoria_asignaturas_count(tutoria.id))}}%;"></div>
+				</div>
+				<!-- *************************** -->
 				<br>
-			{% endif %}
-			{% if params['tutoria_edit_link'] %}
-				{% include 'analisis_tutoria_edit_block.html' %}
-			{% endif %}
+				{% if params['tutoria_re_enviar_link']%}
+					{% include 'analisis_re_enviar_a_block.html' %}
+					<br>
+				{% endif %}
+				{% if params['tutoria_edit_link'] %}
+					{% include 'analisis_tutoria_edit_block.html' %}
+				{% endif %}
+			</form>
 			<br>
 			<a href="#analisis_cuestionario" class="list-group-item-6" data-toggle="collapse">
 				<i class="material-icons vertical-center">expand_more</i>
