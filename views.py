@@ -502,16 +502,17 @@ def settings_admin_cuestionario_html(params={}):
     params['collapse_pregunta_edit'] = params_old.get('collapse_pregunta_edit', False)
     params['pregunta_delete_link'] = params_old.get('pregunta_delete_link', False)
     params['collapse_pregunta_add'] = params_old.get('collapse_pregunta_add', False)
+    params['pregunta_edit_link'] = params_old.get('pregunta_edit_link', False)
 
     if request.method == 'POST':
+        current_pregunta_id = current_id_request('current_pregunta_id')
+        params['current_pregunta_id'] = current_pregunta_id
 
         # XXX pregunta_add
         if request.form['selector_button'] == 'selector_pregunta_add':
             params['collapse_pregunta_add'] = True
             pregunta_add_form = Pregunta_Add(request.form)
             if pregunta_add_form.validate():
-                # pregunta_add_visible = request.form.get('pregunta_add_visible')
-                pregunta_add_active_default = request.form.get('pregunta_add_active_default')
                 pregunta_add = Pregunta(enunciado=pregunta_add_form.enunciado.data, enunciado_ticker=pregunta_add_form.enunciado_ticker.data,
                                         orden=pregunta_add_form.orden.data, visible=pregunta_add_form.visible.data, active_default=pregunta_add_form.active_default.data)
                 # NOTE checking unicidad de enunciado, ticker y orden
@@ -547,36 +548,43 @@ def settings_admin_cuestionario_html(params={}):
         if request.form['selector_button'] == 'selector_pregunta_add_close':
             return redirect(url_for('settings_admin_cuestionario_html'))
 
+        # XXX selector_pregunta_edit_link
+        if request.form['selector_button'] == 'selector_pregunta_edit_link':
+            params['pregunta_edit_link'] = True
+            params['collapse_pregunta_edit'] = True
+            params['anchor'] = 'anchor_pre_' + str(hashids_encode(current_pregunta_id))
+            return redirect(url_for('settings_admin_cuestionario_html', params=dic_encode(params)))
+
         # XXX pregunta_edit
         if request.form['selector_button'] in ['selector_pregunta_edit', 'selector_move_down', 'selector_move_up']:
-            current_pregunta_id = current_id_request('current_pregunta_id')
             params['current_pregunta_id'] = current_pregunta_id
             params['collapse_pregunta_edit'] = True
+            params['pregunta_edit_link'] = True
             params['anchor'] = 'anchor_pre_' + str(hashids_encode(current_pregunta_id))
             move_up = False
             move_down = False
             pregunta_edit_form = Pregunta_Add(request.form)
-            pregunta_edit_visible = request.form.get('pregunta_edit_visible')
-            pregunta_edit_active_default = request.form.get('pregunta_edit_active_default')
-            if not pregunta_edit_visible:
-                pregunta_edit_visible = False
-            if not pregunta_edit_active_default:
-                pregunta_edit_active_default = False
+            visible=pregunta_edit_form.visible.data
+            active_default=pregunta_edit_form.active_default.data
+            if not visible:
+                visible = False
+            if not active_default:
+                active_default = False
             if pregunta_edit_form.validate():
                 pregunta_edit = Pregunta(enunciado=pregunta_edit_form.enunciado.data, enunciado_ticker=pregunta_edit_form.enunciado_ticker.data,
-                                         orden=pregunta_edit_form.orden.data, visible=pregunta_edit_visible, active_default=pregunta_edit_active_default)
+                                         orden=pregunta_edit_form.orden.data, visible=visible, active_default=active_default)
                 pregunta = session_sql.query(Pregunta).filter(Pregunta.id == current_pregunta_id).first()
-                if pregunta.enunciado.lower() != pregunta_edit.enunciado.lower() or pregunta.enunciado_ticker.lower() != pregunta_edit.enunciado_ticker.lower() or pregunta.orden != pregunta_edit.orden or str(pregunta.visible) != str(pregunta_edit_visible) or str(pregunta.active_default) != str(pregunta_edit_active_default):
+                if pregunta.enunciado.lower() != pregunta_edit.enunciado.lower() or pregunta.enunciado_ticker.lower() != pregunta_edit.enunciado_ticker.lower() or pregunta.orden != pregunta_edit.orden or str(pregunta.visible) != str(visible) or str(pregunta.active_default) != str(active_default):
                     if pregunta.enunciado.lower() != pregunta_edit.enunciado.lower():
                         pregunta.enunciado = pregunta_edit.enunciado
                     if pregunta.enunciado_ticker.lower() != pregunta_edit.enunciado_ticker.lower():
                         pregunta.enunciado_ticker = pregunta_edit.enunciado_ticker
                     if pregunta.orden != pregunta_edit.orden:
                         pregunta.orden = pregunta_edit.orden
-                    if pregunta.visible != pregunta_edit_visible:
-                        pregunta.visible = pregunta_edit_visible
-                    if pregunta.active_default != pregunta_edit_active_default:
-                        pregunta.active_default = pregunta_edit_active_default
+                    if pregunta.visible != visible:
+                        pregunta.visible = visible
+                    if pregunta.active_default != active_default:
+                        pregunta.active_default = active_default
                     flash_toast('Pregunta actualizada', 'success')
 
                 if request.form['selector_button'] == 'selector_move_down':
@@ -607,8 +615,8 @@ def settings_admin_cuestionario_html(params={}):
                 flash_wtforms(pregunta_edit_form, flash_toast, 'warning')
             return render_template(
                 'settings_admin_cuestionario.html', fab=fab, pregunta_add=Pregunta_Add(), preguntas=preguntas(''),
-                pregunta_edit=pregunta_edit_form, move_down=move_down, move_up=move_up, visible=pregunta_edit_visible,
-                active_default=pregunta_edit_active_default, params=params)
+                pregunta_edit=pregunta_edit_form, move_down=move_down, move_up=move_up, visible=visible,
+                active_default=active_default, params=params)
 
         # XXX selector_pregunta_edit_close
         if request.form['selector_button'] == 'selector_pregunta_edit_close':

@@ -48,7 +48,7 @@
 							{% if request.method=='POST' %}
 							value="{% if request.method=='POST' and params['collapse_pregunta_add'] %}{{pregunta_add.orden.data}}{% endif %}"
 							{% endif %}
-							placeholder="{{pregunta_add.orden.label.text}}">
+							placeholder="{{preguntas | count +1}}">
 						<span class="input-group-addon {% if request.method=='POST' and params['collapse_pregunta_add'] %} {% if pregunta_add.orden.errors %} form_addon-warning {% else %} form_addon-success {% endif %} {% endif %}">{{pregunta_add.orden.label.text}}</span>
 					</div>
 				</div>
