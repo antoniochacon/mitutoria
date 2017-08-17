@@ -6,8 +6,8 @@
 		<!-- <div class="padding_3"> -->
 		{% if grupo and alumno and tutoria %}
 			{{titulo_1(url='analisis',bg_color='bg-dark', titulo='Análisis gráfico de la tutoría')}}
-			<div class="row padding_3_3">
-				<div class="col-md-6 col-lg-4">
+			<div class="row align-items-center">
+				<div class="col-md-6 col-lg-5">
 					<span class="text-mutted">Alumno:
 					</span>
 					<h5 class="strong">
@@ -19,74 +19,77 @@
 					<span class="text-mutted">Fecha:
 					</span>
 					<span class="strong">
-					{{tutoria.fecha.strftime('%B') | capitalize}}
-					-
-					{{tutoria.fecha.strftime('%A') | capitalize}}
-					{{tutoria.fecha.strftime('%d')}}
+						{{tutoria.fecha.strftime('%B') | capitalize}}
+						-
+						{{tutoria.fecha.strftime('%A') | capitalize}}
+						{{tutoria.fecha.strftime('%d')}}
 					</span>
 					<br>
 					<span class="text-mutted">Hora:
 					</span>
 					<span class="strong">{{tutoria.hora.strftime('%H:%M')}}</span>
 				</div>
-				<div class="col-md-6 col-lg-4">
-					<form action="/tutoria_edit" method="POST" name="analisis{{hashids_encode(tutoria.id)}}">
-						<input type="hidden" name="current_tutoria_id" value="{{hashids_encode(tutoria.id)}}">
-						{% if params['tutoria_delete_link'] %}
-							<div class="btn-group align-bottom" role="group" aria-label="...">
-								<button role="button" type="submit" name="selector_button" value="selector_tutoria_delete" class="btn btn-outline-dark btn-sm" title="confirmar eliminar tutoria">
-									<i class="material-icons vertical-center">delete</i>
-									confirmar eliminar</button>
-								{% if tutoria.activa %}
-									<button role="button" type="submit" name="selector_button" value="selector_tutoria_delete_archivar" class="btn btn-sm {% if tutoria.activa %} btn-outline-mutted{% else %} btn-outline-mutted{% endif %}" title="archivar tutoria">
-										<i class="material-icons vertical-center {% if tutoria.activa %} color-gray-darken-1 {% endif %}">file_download</i>
+				<div class="d-flex align-items-center">
+					<div class="padding_contenido">
+						<form action="/tutoria_edit" method="POST" name="analisis{{hashids_encode(tutoria.id)}}">
+							<input type="hidden" name="current_tutoria_id" value="{{hashids_encode(tutoria.id)}}">
+							{% if params['tutoria_delete_link'] %}
+								<div class="btn-group align-bottom" role="group" aria-label="...">
+									<button role="button" type="submit" name="selector_button" value="selector_tutoria_delete" class="btn btn-outline-warning btn-sm" title="confirmar eliminar tutoria">
+										<i class="material-icons vertical-center">delete</i>
+										confirmar eliminar</button>
+									{% if tutoria.activa %}
+										<button role="button" type="submit" name="selector_button" value="selector_tutoria_delete_archivar" class="btn btn-sm {% if tutoria.activa %} btn-outline-mutted{% else %} btn-outline-mutted{% endif %}" title="archivar tutoria">
+											<i class="material-icons vertical-center {% if tutoria.activa %} color-gray-darken-1 {% endif %}">file_download</i>
+										</button>
+									{% endif %}
+									<button role="button" type="submit" name="selector_button" value="selector_tutoria_delete_link_close" class="btn btn-outline-mutted" title="cancelar eliminar">
+										<i class="material-icons vertical-center">close</i>
 									</button>
-								{% endif %}
-								<button role="button" type="submit" name="selector_button" value="selector_tutoria_delete_link_close" class="btn btn-outline-mutted" title="cancelar eliminar">
-									<i class="material-icons vertical-center">close</i>
-								</button>
-							</div>
-							<div class="clearfix"></div>
-							<br>
-							<span class="text-warning small">
-								Es aconsejable archivar en vez de eliminar.
+								</div>
 								<br>
-								Una vez elminada no podra ser recuperada.</span>
-						{% else %}
-							<div class="btn-group" role="group" aria-label="...">
-								<button role="button" type="submit" name="selector_button" value="selector_tutoria_edit_link" class="btn {% if tutoria.activa %} btn-outline-dark{% else %} btn-outline-mutted{% endif %}" title="cambiar fecha y hora">
-									<i class="material-icons vertical-center {% if tutoria.activa %} color-gray-darken-1 {% endif %}">edit</i>
-								</button>
-								<button role="button" type="submit" name="selector_button" value="selector_tutoria_re_enviar_link" class="btn {% if tutoria.activa %} btn-outline-dark{% else %} btn-outline-mutted{% endif %}" title="reenviar emails">
-									<i class="material-icons vertical-center {% if tutoria.activa %} color-gray-darken-1 {% endif %}">email</i>
-								</button>
-								{% if tutoria.activa %}
-									<button role="button" type="submit" name="selector_button" value="selector_tutoria_archivar" class="btn {% if tutoria.activa %} btn-outline-dark{% else %} btn-outline-mutted{% endif %}" title="archivar tutoria">
-										<i class="material-icons vertical-center {% if tutoria.activa %} color-gray-darken-1 {% endif %}">file_download</i>
+								<span class="text-warning small">
+									Es aconsejable archivar en vez de eliminar.
+									<br>
+									Una vez elminada no podra ser recuperada.</span>
+							{% else %}
+								<div class="btn-group" role="group" aria-label="...">
+									<button role="button" type="submit" name="selector_button" value="selector_tutoria_edit_link" class="btn {% if tutoria.activa %} btn-outline-dark{% else %} btn-outline-mutted{% endif %}" title="cambiar fecha y hora">
+										<i class="material-icons vertical-center {% if tutoria.activa %} color-gray-darken-1 {% endif %}">edit</i>
 									</button>
-								{% else %}
-									<button role="button" type="submit" name="selector_button" value="selector_tutoria_activar" class="btn btn-outline-dark btn-sm" title="activar tutoria">
-										<i class="material-icons vertical-center">file_upload</i>
+									<button role="button" type="submit" name="selector_button" value="selector_tutoria_re_enviar_link" class="btn {% if tutoria.activa %} btn-outline-dark{% else %} btn-outline-mutted{% endif %}" title="reenviar emails">
+										<i class="material-icons vertical-center {% if tutoria.activa %} color-gray-darken-1 {% endif %}">email</i>
 									</button>
-								{% endif %}
-								<button role="button" type="submit" name="selector_button" value="selector_tutoria_delete_link" class="btn {% if tutoria.activa %} btn-outline-dark{% else %} btn-outline-mutted{% endif %} " title="eliminar tutoria">
-									<i class="material-icons vertical-center{% if tutoria.activa %} color-gray-darken-1 {% endif %}">delete</i>
-								</button>
-								<button role="button" type="submit" name="selector_button" value="selector_tutoria_regresar_alumno" class="btn {% if tutoria.activa %} btn-outline-dark{% else %} btn-outline-mutted{% endif %}" title="regresar a {{alumno.nombre}}">
-									<i class="material-icons vertical-center {% if tutoria.activa %} color-gray-darken-1 {% endif %}">person</i>
-								</button>
-							</div>
-						{% endif %}
-					</form>
+									{% if tutoria.activa %}
+										<button role="button" type="submit" name="selector_button" value="selector_tutoria_archivar" class="btn {% if tutoria.activa %} btn-outline-dark{% else %} btn-outline-mutted{% endif %}" title="archivar tutoria">
+											<i class="material-icons vertical-center {% if tutoria.activa %} color-gray-darken-1 {% endif %}">file_download</i>
+										</button>
+									{% else %}
+										<button role="button" type="submit" name="selector_button" value="selector_tutoria_activar" class="btn btn-outline-dark btn-sm" title="activar tutoria">
+											<i class="material-icons vertical-center">file_upload</i>
+										</button>
+									{% endif %}
+									<button role="button" type="submit" name="selector_button" value="selector_tutoria_delete_link" class="btn {% if tutoria.activa %} btn-outline-dark{% else %} btn-outline-mutted{% endif %} " title="eliminar tutoria">
+										<i class="material-icons vertical-center{% if tutoria.activa %} color-gray-darken-1 {% endif %}">delete</i>
+									</button>
+									<button role="button" type="submit" name="selector_button" value="selector_tutoria_regresar_alumno" class="btn {% if tutoria.activa %} btn-outline-dark{% else %} btn-outline-mutted{% endif %}" title="regresar a {{alumno.nombre}}">
+										<i class="material-icons vertical-center {% if tutoria.activa %} color-gray-darken-1 {% endif %}">person</i>
+									</button>
+								</div>
+							{% endif %}
+						</form>
+					</div>
+					&nbsp;
+					<div class="padding_contenido">
+						{# NOTE badge #}
+						<h4>
+							<span class="badge badge-secondary" title="{{cociente_porcentual(tutoria_informes(tutoria.id) | count, tutoria_asignaturas_count(tutoria.id))}}% de los informes recibidos">
+								{{cociente_porcentual(tutoria_informes(tutoria.id) | count, tutoria_asignaturas_count(tutoria.id))}}%
+							</span>
+						</h4>
+					</div>
 				</div>
 			</div>
-			<br>
-			{# NOTE badge #}
-			<h4>
-				<span class="badge badge-secondary float-right" title="{{cociente_porcentual(tutoria_informes(tutoria.id) | count, tutoria_asignaturas_count(tutoria.id))}}% de los informes recibidos">
-					{{cociente_porcentual(tutoria_informes(tutoria.id) | count, tutoria_asignaturas_count(tutoria.id))}}%
-				</span>
-			</h4>
 			<div class="progress rounded-0">
 				<div
 					class="progress-bar {% if tutoria.activa %} bg-secondary progress-bar-striped progress-bar-animated {% else %} bg-mutted {% endif %}"
@@ -95,6 +98,7 @@
 					aria-valuemax="100"
 					style="{% if not tutoria.activa %} height:2px; {% endif %} width: {{cociente_porcentual(tutoria_informes(tutoria.id) | count, tutoria_asignaturas_count(tutoria.id))}}%;"></div>
 			</div>
+			<!-- *************************** -->
 			<br>
 			{% if params['tutoria_re_enviar_link']%}
 				{% include 'analisis_re_enviar_a_block.html' %}
