@@ -53,7 +53,6 @@ class Grupo_Add (Form):
     current_grupo_id = HiddenField('current_grupo_id')
 
 
-
 class Alumno_Add (Form):
     nombre = StringField('nombre', [validators.Required(message='el nombre es obligatorio'),
                                     validators.length(min=3, message='el nomre debe tener minimo 3 caracteres'),
@@ -70,14 +69,14 @@ class Asignatura_Add (Form):
                                             validators.length(min=3, message='la asignatura debe tener minimo 3 caracteres'),
                                             validators.length(max=80, message='la asignatura debe tener maximo 80 caracteres')])
     nombre = StringField('nombre del docente', [validators.Required(message='el nombre es obligatorio'),
-                                            validators.length(min=3, message='el nomre debe tener minimo 3 caracteres'),
-                                            validators.length(max=80, message='el nombre debe tener maximo 80 caracteres')])
+                                                validators.length(min=3, message='el nomre debe tener minimo 3 caracteres'),
+                                                validators.length(max=80, message='el nombre debe tener maximo 80 caracteres')])
     apellidos = StringField('apellidos del docente', [validators.length(min=3, message='los apellidos deben tener minimo 3 caracteres'),
-                                                  validators.length(max=80, message='los apellidos deben tener maximo 80 caracteres')])
+                                                      validators.length(max=80, message='los apellidos deben tener maximo 80 caracteres')])
 
     email = EmailField('email del docente', [validators.Required(message='email es obligatorio'),
-                                 validators.Email(message='Escriba una direccion valida de email'),
-                                 validators.length(max=120, message='email debe tener maximo 120 caracteres')])
+                                             validators.Email(message='Escriba una direccion valida de email'),
+                                             validators.length(max=120, message='email debe tener maximo 120 caracteres')])
     current_asignatura_id = HiddenField('current_asignatura_id')
 
 
@@ -105,4 +104,6 @@ class Pregunta_Add (Form):
     enunciado = StringField('enunciado', [validators.Required(message='enunciado es obligatorio')])
     enunciado_ticker = StringField('ticker', [validators.Required(message='ticker es obligatorio')])
     orden = IntegerField('orden', [validators.Required(message='orden es obligatorio')])
+    visible = BooleanField('visible')
+    active_default = BooleanField('active_default')
     current_pregunta_id = HiddenField('current_pregunta_id')

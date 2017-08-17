@@ -40,28 +40,14 @@
 	{% endif %}
 	{# XXX alumnos #}
 	<div class="paper bg-white padding_contenido">
-		<a id="anchor_alumno_add"></a>
 		{{titulo_1(url="alumnos",bg_color="bg-dark",titulo=grupo_activo().nombre, subtitulo=[ grupo_activo().centro, [ grupo_activo().curso_academico, grupo_activo().curso_academico +1 ]|join("-") ]|join(": "))}}
 		<div id="parent_alumno">
-			<a id="anchor_alu_add"></a>
 			<div>
-				<a data-toggle="collapse" data-parent="#parent_alumno" href="#alumno_add" class="collapse_header_1" aria-expanded="false" title="Agregar alumno">
-					<div class="media">
-						&nbsp;<i class="material-icons vertical-center">person</i>&nbsp;
-						<div class="media-body">
-							<div class="padding_2">
-								agregar nuevo alumno
-							</div>
-						</div>
-					</div>
-				</a>
 				{# TODO: alumnos_add #}
-				<div id="alumno_add" class="collapse {% if params['collapse_alumno_add'] %} show {% endif %}">
-					{%include "alumno_add_block.html"%}
-				</div>
+				{%include "alumno_add_block.html"%}
 			</div>
-			{# TODO: alumnos_listado #}
 			<div>
+				{# TODO: alumnos_listado #}
 				{% for alumno in alumnos("apellidos", "nombre")%}
 					{%include "alumno_block.html"%}
 				{% endfor %}

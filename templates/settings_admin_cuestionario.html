@@ -1,172 +1,80 @@
 {% extends '_layout.html' %}
 {% block body %}
-	{%from '_macro.html' import nav_bar_top, titulo_1, nav_tabs, field_form,%}
+	{%from '_macro.html' import nav_bar_top, titulo_1, nav_tabs,%}
 	{{ nav_bar_top(link_active='Admin',params=params) }}
 	<div class="paper bg-white padding_contenido">
 		{{titulo_1(bg_color='bg-primary',titulo='Admin Settings')}}
-		{{nav_tabs(tab_active='Cuestionario', dic={'Cuestionario':'#', 'Citas':'settings_admin_citas', 'Usuarios':'settings_admin_users'})}}
-		<div class="card_XXX-group" id="pregunta" role="tablist" aria-multiselectable="true">
-			<div class="card_XXX">
-				{# TODO: pregunta_add #}
-				<a href="#pregunta_add" class="list-group-item-1" data-toggle="collapse" data-parent="#pregunta" aria-expanded="true" aria-controls="collapsepregunta_add" title="Agregar pregunta">
-					&nbsp;
-					<i class="material-icons vertical-center">playlist_add</i>&nbsp; &nbsp; agregar nueva pregunta
-				</a>
-				<div class="collapse {% if params['collapse_pregunta_add'] %} show {% endif %}" id="pregunta_add">
-					{% include 'settings_admin_cuestionario_add_block.html' %}
-				</div>
-				{# TODO: preguntas_listado #}
+		{{nav_tabs(tab_active='Cuestionario', dic={'Cuestionario':'settings_admin_cuestionario', 'Citas':'settings_admin_citas', 'Usuarios':'settings_admin_users'})}}
+		<div id="parent_pregunta">
+			<a id="anchor_pre_add"></a>
+			<div>
+				{# XXX: pregunta_add #}
+				{% include 'settings_admin_cuestionario_add_block.html' %}
+			</div>
+			<div>
+				{# XXX: preguntas_listado #}
 				{% for pregunta in preguntas %}
+					<!-- *********************************** -->
 					<a id="anchor_pre_{{hashids_encode(pregunta.id)}}"></a>
-					<a href="#pregunta_listado{{hashids_encode(pregunta.id)}}" class="list-group-item-1" data-toggle="collapse" data-parent="#pregunta" aria-expanded="true" aria-controls="collapse{{hashids_encode(pregunta.id)}}" title="{{pregunta.enunciado_ticker}}">
-						<span class="btn btn-sm {% if pregunta_visible_check(pregunta.id) %} btn-outline-primary {% else %} btn-outline-dark{% endif %}" role="button" title="{{pregunta.enunciado_ticker}}" }>
-							<strong>
-								{{pregunta.orden}}
-							</strong>
-						</span>
-						<span class="hidden-sm hidden-md hidden-lg">
-							&nbsp;
-							{{pregunta.enunciado | truncate(20,true,'..',0)}}
-						</span>
-						<span class="hidden-xs">
-							&nbsp;
-							{{pregunta.enunciado}}
-						</span>
-						{% if pregunta_active_default_check(pregunta.id) %}
-							<span class="badge tag-pill badge tag-pill-info">Default</span>
-						{% endif %}
-					</a>
-					<div
-						id="pregunta_listado{{hashids_encode(pregunta.id)}}"
-						class="collapse {% if equal_str(pregunta.id, params['current_pregunta_id']) and params['collapse_pregunta_edit'] %} show {% endif %}"
-						role="tabcard_XXX"
-						aria-labelledby="heading{{hashids_encode(pregunta.id)}}">
-						<div class="dropdown-divider grueso bg-primary"></div>
-						<div class="card_XXX-group" id="pregunta{{pregunta.id}}" role="tablist" aria-multiselectable="true">
-							<div class="card_XXX">
-								{# TODO: pregunta_edit (no se puede insertar por include por el contador loop)#}
-								<div class="padding_3">
-									<form action="/settings_admin_cuestionario" method="POST">
-										{% if equal_str(pregunta.id, params['current_pregunta_id'])and request.method == 'POST' %}
-											{{field_form(pregunta_edit.enunciado, error=True, error_css=True, addon='enunciado')}}
-											{{field_form(pregunta_edit.enunciado_ticker, error=True, error_css=True, addon='ticker')}}
-											{{field_form(pregunta_edit.current_pregunta_id)}}
-											<div class="col-fix-175 col-xs-6 vertical-align">
-												{% if move_down %}
-													{{field_form(pregunta_edit.orden, value=move_down, addon='orden')}}
-												{% elif move_up%}
-													{{field_form(pregunta_edit.orden, value=move_up, addon='orden')}}
-												{% else %}
-													{{field_form(pregunta_edit.orden, error=True, error_css=True, addon='orden')}}
-												{% endif %}
-											</div>
-											<div class="row">
-												<div class="col-xs-6">
-													<div class="btn-group-vertical" role="group" aria-label="...">
-														<button role="button" type="submit" name="selector_button" value="selector_move_up" class="btn btn-outline-dark" {% if loop.first %} disabled="disabled" {% endif %} title="subir">
-															<i class="material-icons vertical-center">arrow_upward</i>
-														</button>
-														<button role="button" type="submit" name="selector_button" value="selector_move_down" class="btn btn-outline-dark" {% if loop.last %} disabled="disabled" {% endif %} title="bajar">
-															<i class="material-icons vertical-center">arrow_downward</i>
-														</button>
-													</div>
-												</div>
-											</div>
-											<br>
-											<div class="row">
-												<div class="col-xs-6">
-													<div class="funkyradio funkyradio-success">
-														<input type="checkbox" name="pregunta_edit_visible" id="pregunta_edit_visible_{{hashids_encode(pregunta.id)}}" value="True" {% if visible %} checked {% endif %}/>
-														<label for="pregunta_edit_visible_{{hashids_encode(pregunta.id)}}">visible</label>
-													</div>
-												</div>
-												<div class="col-xs-6">
-													<div class="funkyradio funkyradio-success">
-														<input type="checkbox" name="pregunta_edit_active_default" id="pregunta_edit_active_default_{{hashids_encode(pregunta.id)}}" value="True" {% if active_default %} checked {% endif %}/>
-														<label for="pregunta_edit_active_default_{{hashids_encode(pregunta.id)}}">default</label>
-													</div>
-												</div>
-											</div>
-											{%else%}
-											{{field_form(pregunta_edit.enunciado, value=pregunta.enunciado, addon='enunciado')}}
-											{{field_form(pregunta_edit.enunciado_ticker, value=pregunta.enunciado_ticker, addon='ticker')}}
-											{{field_form(pregunta_edit.current_pregunta_id, value=hashids_encode(pregunta.id))}}
-											<div class="col-fix-175 col-xs-6 vertical-align">
-												{{field_form(pregunta_edit.orden, value=pregunta.orden, addon='orden')}}
-											</div>
-											<div class="row">
-												<div class="col-xs-6">
-													<div class="btn-group-vertical" role="group" aria-label="...">
-														<button role="button" type="submit" name="selector_button" value="selector_move_up" class="btn btn-outline-dark" title="subir">
-															<i class="material-icons vertical-center">arrow_upward</i>
-														</button>
-														<button role="button" type="submit" name="selector_button" value="selector_move_down" class="btn btn-outline-dark" title="bajar">
-															<i class="material-icons vertical-center">arrow_downward</i>
-														</button>
-													</div>
-												</div>
-											</div>
-											<br>
-											<div class="row">
-												<div class="col-xs-6">
-													<div class="funkyradio funkyradio-success">
-														<input type="checkbox" name="pregunta_edit_visible" id="pregunta_edit_visible_{{hashids_encode(pregunta.id)}}" value="True" {% if pregunta_visible_check(pregunta.id) %} checked {% endif %}/>
-														<label for="pregunta_edit_visible_{{hashids_encode(pregunta.id)}}">visible</label>
-													</div>
-												</div>
-												<div class="col-xs-6">
-													<div class="funkyradio funkyradio-success">
-														<input type="checkbox" name="pregunta_edit_active_default" id="pregunta_edit_active_default_{{hashids_encode(pregunta.id)}}" value="True" {% if pregunta_active_default_check(pregunta.id) %} checked {% endif %}/>
-														<label for="pregunta_edit_active_default_{{hashids_encode(pregunta.id)}}">default</label>
-													</div>
-												</div>
-											</div>
-										{% endif %}
-										<br>
-										{% if equal_str(pregunta.id, params['current_pregunta_id'])and params['pregunta_delete_link'] %}
-											<div class="btn-group" role="group" aria-label="...">
-												<button role="button" type="submit" name="selector_button" value="selector_pregunta_delete" class="btn btn-outline-primary btn-sm" title="confirmar eliminar asginatura">
-													<i class="material-icons vertical-center">delete</i>
-													confirmar eliminar
-												</button>
-												<button role="button" type="submit" name="selector_button" value="selector_pregunta_delete_close" class="btn btn-outline-dark" title="cancelar eliminar">
-													<i class="material-icons vertical-center">close</i>
-												</button>
-											</div>
-											<div class="clearfix"></div>
-											<br>
-											<span class="text-warning small">
-												Una vez elminada no podra ser recuperada.
-											</span>
-										{% else %}
-											<div class="btn-group" role="group" aria-label="...">
-												<button role="button" type="submit" name="selector_button" value="selector_pregunta_edit" class="btn btn-outline-primary" title="guardar cambios">
-													<i class="material-icons vertical-center">save</i>
-													guardar
-												</button>
-												<button role="button" type="submit" name="selector_button" value="selector_pregunta_edit_rollback" class="btn btn-outline-dark" title="deshacer cambios">
-													<i class="material-icons vertical-center">settings_backup_restore</i>
-												</button>
-												<button role="button" type="submit" name="selector_button" value="selector_pregunta_delete_link" class="btn btn-outline-dark" title="eliminar pregunta">
-													<i class="material-icons vertical-center">delete</i>
-												</button>
-												{% if params['collapse_pregunta_edit'] %}
-													<button role="button" type="submit" name="selector_button" value="selector_pregunta_edit_close" class="btn btn-outline-dark" title="cerrar">
-														<i class="material-icons vertical-center">close</i>
-													</button>
-												{% endif %}
-											</div>
-										{% endif %}
-									</form>
+					<a data-toggle="collapse" data-parent="#parent_pregunta" href="#pregunta_{{hashids_encode(pregunta.id)}}" class="collapse_header_1" aria-expanded="false" title="{{pregunta.apellidos}}, {{pregunta.nombre}}">
+						<div class="media">
+							<span class="capital {% if pregunta.visible %}capital-mutted{% else %}capital-warning{% endif %}">{{pregunta.orden}}</span>
+							<div class="media-body">
+								<div class="padding_2">
+									{{pregunta.enunciado}}
+									{# NOTE badge #}
+									{% if pregunta.active_default %}
+										<span class="badge badge-info float-right" title="activa por defecto">
+											default
+										</span>
+									{% endif %}
 								</div>
-								<br>
 							</div>
 						</div>
-						<div class="dropdown-divider grueso bg-primary"></div>
+					</a>
+					<div id="pregunta_{{hashids_encode(pregunta.id)}}" class="collapse {% if equal_str(pregunta.id, params['current_pregunta_id']) and params['collapse_pregunta'] %} show {% endif %}">
+						<div class="padding_3">
+							<form action="/settings_admin_cuestionario" method="POST">
+								{% if equal_str(pregunta.id, params['current_pregunta_id'])and params['pregunta_delete_link'] %}
+									<div class="btn-group" role="group" aria-label="...">
+										<button role="button" type="submit" name="selector_button" value="selector_pregunta_delete" class="btn btn-outline-primary btn-sm" title="confirmar eliminar asginatura">
+											<i class="material-icons vertical-center">delete</i>
+											confirmar eliminar
+										</button>
+										<button role="button" type="submit" name="selector_button" value="selector_pregunta_delete_close" class="btn btn-outline-dark" title="cancelar eliminar">
+											<i class="material-icons vertical-center">close</i>
+										</button>
+									</div>
+									<div class="clearfix"></div>
+									<br>
+									<span class="text-warning small">
+										Una vez elminada no podra ser recuperada.
+									</span>
+								{% else %}
+									<div class="btn-group" role="group" aria-label="...">
+										<button role="button" type="submit" name="selector_button" value="selector_pregunta_edit" class="btn btn-outline-primary" title="guardar cambios">
+											<i class="material-icons vertical-center">save</i>
+											guardar
+										</button>
+										<button role="button" type="submit" name="selector_button" value="selector_pregunta_edit_rollback" class="btn btn-outline-dark" title="deshacer cambios">
+											<i class="material-icons vertical-center">settings_backup_restore</i>
+										</button>
+										<button role="button" type="submit" name="selector_button" value="selector_pregunta_delete_link" class="btn btn-outline-dark" title="eliminar pregunta">
+											<i class="material-icons vertical-center">delete</i>
+										</button>
+										{% if params['collapse_pregunta_edit'] %}
+											<button role="button" type="submit" name="selector_button" value="selector_pregunta_edit_close" class="btn btn-outline-dark" title="cerrar">
+												<i class="material-icons vertical-center">close</i>
+											</button>
+										{% endif %}
+									</div>
+								{% endif %}
+							</form>
+						</div>
 					</div>
+					<!-- *********************************** -->
 				{% endfor %}
 			</div>
-			<br>
 		</div>
 	</div>
 {% endblock %}

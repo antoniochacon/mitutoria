@@ -1,5 +1,5 @@
 <a id="anchor_gru_{{hashids_encode(grupo.id)}}"></a>
-<a data-toggle="collapse" class="collapse_header_1" data-parent="#grupo" href="#grupo_listado{{hashids_encode(grupo.id)}}" aria-expanded="true" title="{{grupo.nombre}}">
+<a data-toggle="collapse" class="collapse_header_1" data-parent="#parent_grupo" href="#grupo_listado{{hashids_encode(grupo.id)}}" aria-expanded="true" title="{{grupo.nombre}}">
 	<div class="media">
 		<span class="curso_academico {% if grupo_activo_check(grupo.id) %} curso_academico-primary {% else %} curso_academico-mutted {% endif %}">{{grupo.curso_academico}}
 			|
@@ -24,7 +24,6 @@
 	<div class="dropdown-divider grueso bg-primary"></div>
 	<div id="grupo{{hashids_encode(grupo.id)}}">
 		{# XXX: grupo_edit #}
-		<!-- ****************************** -->
 		<br>
 		<div class="padding_3">
 			<form action="/settings_grupos" method="POST">
@@ -91,8 +90,8 @@
 							</label>
 						</div>
 					{% endif %}
+					<input type="hidden" name="current_grupo_id" value="{{hashids_encode(grupo.id)}}">
 				</div>
-				<input type="hidden" name="current_grupo_id" value="{{hashids_encode(grupo.id)}}">
 				<!-- ************************************* -->
 				{% if equal_str(grupo.id, params['current_grupo_id'])and params['grupo_edit_link'] %}
 					{% if params['grupo_delete_link'] %}

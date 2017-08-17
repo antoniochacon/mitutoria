@@ -507,18 +507,18 @@ def settings_admin_cuestionario_html(params={}):
 
         # XXX pregunta_add
         if request.form['selector_button'] == 'selector_pregunta_add':
+            params['collapse_pregunta_add'] = True
             pregunta_add_form = Pregunta_Add(request.form)
             if pregunta_add_form.validate():
-                pregunta_add_visible = request.form.get('pregunta_add_visible')
+                # pregunta_add_visible = request.form.get('pregunta_add_visible')
                 pregunta_add_active_default = request.form.get('pregunta_add_active_default')
                 pregunta_add = Pregunta(enunciado=pregunta_add_form.enunciado.data, enunciado_ticker=pregunta_add_form.enunciado_ticker.data,
-                                        orden=pregunta_add_form.orden.data, visible=pregunta_add_visible, active_default=pregunta_add_active_default)
+                                        orden=pregunta_add_form.orden.data, visible=pregunta_add_form.visible.data, active_default=pregunta_add_form.active_default.data)
                 # NOTE checking unicidad de enunciado, ticker y orden
                 pregunta_enunciado_sql = session_sql.query(Pregunta).filter(Pregunta.enunciado == pregunta_add_form.enunciado.data).first()
                 pregunta_enunciado_ticker_sql = session_sql.query(Pregunta).filter(Pregunta.enunciado_ticker == pregunta_add_form.enunciado_ticker.data).first()
                 pregunta_orden_sql = session_sql.query(Pregunta).filter(Pregunta.orden == pregunta_add_form.orden.data).first()
                 if pregunta_enunciado_sql or pregunta_enunciado_ticker_sql or pregunta_orden_sql:
-                    params['collapse_pregunta_add'] = True
                     if pregunta_enunciado_sql:
                         pregunta_add_form.enunciado.errors = ['']
                         flash_toast('Enunciado duplicado', 'warning')

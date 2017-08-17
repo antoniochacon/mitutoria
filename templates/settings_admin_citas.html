@@ -4,11 +4,11 @@
 		{{ nav_bar_top(link_active='Admin',params=params) }}
 	<div class="paper bg-white padding_contenido">
 		{{titulo_1(bg_color='bg-primary',titulo='Admin Settings')}}
-		{{nav_tabs(tab_active='Citas', dic={'Cuestionario':'settings_admin_cuestionario', 'Citas':'#', 'Usuarios':'settings_admin_users'})}}
-		<div class="card_XXX-group" id="cita" role="tablist" aria-multiselectable="true">
+		{{nav_tabs(tab_active='Citas', dic={'Cuestionario':'settings_admin_cuestionario', 'Citas':'settings_admin_citas', 'Usuarios':'settings_admin_users'})}}
+		<div id="cita">
 			<div class="card_XXX">
 				{# TODO: cita_add #}
-				<a href="#cita_add" class="list-group-item-1" data-toggle="collapse" data-parent="#cita" aria-expanded="true" aria-controls="collapsecita_add" title="Agregar cita">
+				<a data-toggle="collapse" data-parent="#cita" href="#cita_add" class="collapse_header_1"  aria-expanded="true" aria-controls="collapsecita_add" title="Agregar cita">
 					&nbsp;
 					<i class="material-icons vertical-center">message</i>&nbsp; &nbsp; agregar nueva cita
 					<span class="badge tag-pill badge tag-pill-info vertical-center" title="{{citas | count}} {{singular_plural('cita','citas', citas | count)}}">
