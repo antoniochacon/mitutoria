@@ -1327,8 +1327,8 @@ def informe_html(token_hash):
 
     if request.method == 'POST':
         token_hash = request.form.get('token_hash')
-        tutoria_id = request.form.get('tutoria_id')
-        asignatura_id = request.form.get('asignatura_id')
+        tutoria_id = current_id_request('tutoria_id')
+        asignatura_id = current_id_request('asignatura_id')
         tutoria = tutoria_by_id(tutoria_id)
         asignatura = asignatura_by_id(asignatura_id)
         grupo = invitado_grupo(tutoria_id)
@@ -1336,27 +1336,26 @@ def informe_html(token_hash):
         settings = invitado_settings(tutoria_id)
         informe = invitado_informe(tutoria.id, asignatura.id)
         if not informe:
-            informe_exist = 'False'
+            # informe_exist = False  # NOTE quite las comillas (no veo donde se use esto)
             informe = Informe(tutoria_id=tutoria.id, asignatura_id=asignatura.id, comentario=request.form.get('comentario'))
             session_sql.add(informe)
             for pregunta in invitado_preguntas(settings.id):
-                respuesta = Respuesta(informe_id=informe.id, pregunta_id=pregunta.id, resultado=request.form.get('pregunta' + str(pregunta.id)))
+                respuesta = Respuesta(informe_id=informe.id, pregunta_id=pregunta.id, resultado=request.form.get('pregunta_' + str(hashids_encode(pregunta.id))))
                 session_sql.add(respuesta)
         else:
-            informe_exist = 'True'
+            # informe_exist = True  # NOTE quite las comillas (no veo donde se use esto)
             informe.comentario = comentario = request.form.get('comentario')
-
             for pregunta in invitado_preguntas(settings.id):
                 respuesta = invitado_respuesta(informe.id, pregunta.id)
                 if not respuesta:
-                    respuesta_add = Respuesta(informe_id=informe.id, pregunta_id=pregunta.id, resultado=request.form.get('pregunta' + str(pregunta.id)))
+                    respuesta_add = Respuesta(informe_id=informe.id, pregunta_id=pregunta.id, resultado=request.form.get('pregunta_' + str(hashids_encode(pregunta.id))))
                     session_sql.add(respuesta_add)
                 else:
-                    respuesta.resultado = request.form.get('pregunta' + str(pregunta.id))
-            session_sql.commit()
+                    respuesta.resultado = request.form.get('pregunta_' + str(hashids_encode(pregunta.id)))
+        session_sql.commit()  # NOTE este era el problema de no generar los graficos, era un problema de identado
 
         for prueba_evaluable in invitado_pruebas_evaluables(informe.id):
-            prueba_evaluable.nota = request.form.get('prueba_evaluable_nota_' + str(prueba_evaluable.id))
+            prueba_evaluable.nota = request.form.get('prueba_evaluable_nota_' + str(hashids_encode(prueba_evaluable.id)))
 
         if request.form['selector_button'] == 'selector_prueba_evaluable_add':
             anchor = 'anchor_pru_eva'
@@ -1388,9 +1387,7 @@ def informe_html(token_hash):
             params['docente'] = asignatura.nombre + ' ' + asignatura.apellidos
             params['params_anchor_off'] = True
             params['invitado'] = True
-
             return redirect(url_for('informe_success_html', params=dic_encode(params)))
-
         return render_template(
             'informe.html', token_hash=token_hash, tutoria=tutoria, asignatura=asignatura,
             alumno=alumno, grupo=grupo, informe=informe)

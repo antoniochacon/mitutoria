@@ -304,13 +304,13 @@ def preguntas_active_default(settings_id):  # Inserta las preguntas_active_defau
 
 
 # NOTE: hay que usarlo para mantener el formato de texto asi como su posterior manipulacion
-def comentario_by_informe_id_and_asignatura_nombre(tutoria_id, asignatura_asignatura):
-    comentario_by_informe_id_and_asignatura_nombre = ''
+def asignatura_comentario(tutoria_id, asignatura_asignatura):
+    asignatura_comentario = ''
     for informe in tutoria_informes(tutoria_id):
         asignatura = session_sql.query(Asignatura).filter(Asignatura.id == informe.asignatura_id).first()
         if asignatura.asignatura == asignatura_asignatura:
-            comentario_by_informe_id_and_asignatura_nombre = informe.comentario
-    return comentario_by_informe_id_and_asignatura_nombre
+            asignatura_comentario = informe.comentario
+    return asignatura_comentario
 
 # XXX: pandas
 # -----------------------------------------------------------------------
@@ -782,8 +782,9 @@ def alumno_asignaturas(alumno_id):  # (asignaturas) de un alumno
     alumno_asignaturas = session_sql.query(Asignatura).join(Association_Alumno_Asignatura).filter(Association_Alumno_Asignatura.alumno_id == alumno_id).all()
     return alumno_asignaturas
 
-def grupo_alumnos_count(grupo_id): #{alumnos_count} de un grupo
-    return session_sql.query(Alumno).join(Grupo).filter(Grupo.id==grupo_id).count()
+
+def grupo_alumnos_count(grupo_id):  # {alumnos_count} de un grupo
+    return session_sql.query(Alumno).join(Grupo).filter(Grupo.id == grupo_id).count()
 
 
 def asignaturas(order_by_1, order_by_2, order_by_3):  # [asignaturas] sorted de un grupo
@@ -858,4 +859,4 @@ def cita_random():
 
 
 app.jinja_env.globals.update(settings=settings, cita_random=cita_random,  singular_plural=singular_plural, grupo_activo=grupo_activo, curso=curso, alumnos_not_sorted=alumnos_not_sorted, alumnos=alumnos, alumno_tutorias=alumno_tutorias, equal_str=equal_str, alumno_asignaturas_id=alumno_asignaturas_id, asignaturas=asignaturas, asignatura_alumnos=asignatura_alumnos, association_alumno_asignatura_check=association_alumno_asignatura_check,
-                             tutoria_asignaturas_count=tutoria_asignaturas_count, string_to_date=string_to_date, association_settings_pregunta_check=association_settings_pregunta_check, preguntas=preguntas, informe_preguntas=informe_preguntas, invitado_settings=invitado_settings, invitado_preguntas=invitado_preguntas, invitado_settings_by_id=invitado_settings_by_id, invitado_respuesta=invitado_respuesta, invitado_pruebas_evaluables=invitado_pruebas_evaluables, invitado_informe=invitado_informe, tutoria_informes=tutoria_informes, cociente_porcentual=cociente_porcentual, tutoria_asignaturas=tutoria_asignaturas, df_analisis_asignatura_stacked=df_analisis_asignatura_stacked, df_cuestion_stacked=df_cuestion_stacked, df_asignaturas_lista=df_asignaturas_lista, df_cuestiones_lista=df_cuestiones_lista, df_cuestion_grupo_spline=df_cuestion_grupo_spline, df_asignatura_stacked=df_asignatura_stacked, df_asignatura_grupo_spline=df_asignatura_grupo_spline, df_analisis_asignatura=df_analisis_asignatura, comentario_by_informe_id_and_asignatura_nombre=comentario_by_informe_id_and_asignatura_nombre, pregunta_active_default_check=pregunta_active_default_check, notas_asignatura=notas_asignatura, notas_asignatura_grupo=notas_asignatura_grupo, pregunta_visible_check=pregunta_visible_check, grupo_activo_check=grupo_activo_check, user_by_id=user_by_id, df_evolucion=df_evolucion, df_evolucion_notas=df_evolucion_notas, tutoria_stats=tutoria_stats, arrow_fecha=arrow_fecha, asignatura_informes_count=asignatura_informes_count, asignatura_informes_respondidos_count=asignatura_informes_respondidos_count, alumno_asignaturas=alumno_asignaturas, asignaturas_not_sorted=asignaturas_not_sorted, grupo_tutorias=grupo_tutorias, alumno_by_id=alumno_by_id, hashids_encode=hashids_encode, hashids_decode=hashids_decode, f_encode=f_encode, f_decode=f_decode, dic_encode_args=dic_encode_args, dic_try=dic_try, settings_by_id=settings_by_id, user_grupos=user_grupos, grupo_alumnos_count=grupo_alumnos_count)
+                             tutoria_asignaturas_count=tutoria_asignaturas_count, string_to_date=string_to_date, association_settings_pregunta_check=association_settings_pregunta_check, preguntas=preguntas, informe_preguntas=informe_preguntas, invitado_settings=invitado_settings, invitado_preguntas=invitado_preguntas, invitado_settings_by_id=invitado_settings_by_id, invitado_respuesta=invitado_respuesta, invitado_pruebas_evaluables=invitado_pruebas_evaluables, invitado_informe=invitado_informe, tutoria_informes=tutoria_informes, cociente_porcentual=cociente_porcentual, tutoria_asignaturas=tutoria_asignaturas, df_analisis_asignatura_stacked=df_analisis_asignatura_stacked, df_cuestion_stacked=df_cuestion_stacked, df_asignaturas_lista=df_asignaturas_lista, df_cuestiones_lista=df_cuestiones_lista, df_cuestion_grupo_spline=df_cuestion_grupo_spline, df_asignatura_stacked=df_asignatura_stacked, df_asignatura_grupo_spline=df_asignatura_grupo_spline, df_analisis_asignatura=df_analisis_asignatura, asignatura_comentario=asignatura_comentario, pregunta_active_default_check=pregunta_active_default_check, notas_asignatura=notas_asignatura, notas_asignatura_grupo=notas_asignatura_grupo, pregunta_visible_check=pregunta_visible_check, grupo_activo_check=grupo_activo_check, user_by_id=user_by_id, df_evolucion=df_evolucion, df_evolucion_notas=df_evolucion_notas, tutoria_stats=tutoria_stats, arrow_fecha=arrow_fecha, asignatura_informes_count=asignatura_informes_count, asignatura_informes_respondidos_count=asignatura_informes_respondidos_count, alumno_asignaturas=alumno_asignaturas, asignaturas_not_sorted=asignaturas_not_sorted, grupo_tutorias=grupo_tutorias, alumno_by_id=alumno_by_id, hashids_encode=hashids_encode, hashids_decode=hashids_decode, f_encode=f_encode, f_decode=f_decode, dic_encode_args=dic_encode_args, dic_try=dic_try, settings_by_id=settings_by_id, user_grupos=user_grupos, grupo_alumnos_count=grupo_alumnos_count)

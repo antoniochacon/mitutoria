@@ -2,10 +2,10 @@
 {% block body %}
 	{%from '_macro.html' import nav_bar_top, titulo_1%}
 	{{nav_bar_top(current_user=current_user)}}
-	<div class="col-xs-12 col-sm-8 col-sm-offset-2 col-md-6 col-md-offset-3 col-lg-4 col-lg-offset-4">
+	<div class="container">
 		<div class="paper bg-white padding_contenido">
-			{{titulo_1(url='informe', bg_color='bg-primary', titulo='Informe de '+ params['alumno'], subtitulo=params['grupo'])}}
-			<span class="text-info">Fecha de la tutoria:
+			{{titulo_1(bg_color='bg-dark', titulo='Informe de '+ params['alumno'], subtitulo=params['grupo'])}}
+			<span class="text-mutted">Fecha de la tutoria:
 			</span>
 			{{params['fecha'].strftime('%A') | capitalize}}
 			{{params['fecha'].strftime('%d')}}
@@ -13,16 +13,16 @@
 			{{params['fecha'].strftime('%B') | capitalize}}&nbsp; | &nbsp;{{params['hora'].strftime('%H:%M')}}
 			horas
 			<br>
-			<span class="text-info">Asignatura:
+			<span class="text-mutted">Asignatura:
 			</span>
 			{{params['asignatura']}}
 			<br>
-			<span class="text-info">Docente:
+			<span class="text-mutted">Docente:
 			</span>
 			{{params['docente']}}
 			<h6></h6>
-			<div class="dropdown-divider bg-info"></div>
-			<div class="padding_3 text-success text-center">
+			<div class="divider bg-mutted"></div>
+			<div class="text-center pt-3">
 				Gracias por enviar su informe
 				<br><br>
 				<a class="btn btn-outline-dark" href="/informe/{{params['token_hash']}}" role="button">Consultar o editar informe</a>

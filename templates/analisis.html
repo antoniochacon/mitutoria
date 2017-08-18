@@ -50,7 +50,9 @@
 								<span class="text-warning small">
 									Es aconsejable archivar en vez de eliminar.
 									<br>
-									Una vez elminada no podra ser recuperada.</span>
+									Una vez elminada no podra ser recuperada y se perderan las estadísticas asociadas.
+								<br>
+							</span>
 							{% else %}
 								<div class="btn-group" role="group" aria-label="...">
 									<button role="button" type="submit" name="selector_button" value="selector_tutoria_edit_link" class="btn btn-sm{% if tutoria.activa %} btn-outline-dark{% else %} btn-outline-mutted{% endif %}" title="cambiar fecha y hora">
@@ -87,7 +89,7 @@
 						</div>
 					</div>
 				</div>
-				<div class="progress rounded-0">
+				<div class="progress rounded-0 mb-3">
 					<div
 						class="progress-bar {% if tutoria.activa %} bg-secondary progress-bar-striped progress-bar-animated {% else %} bg-mutted {% endif %}"
 						role="progressbar"
@@ -95,10 +97,8 @@
 						aria-valuemax="100"
 						style="{% if not tutoria.activa %} height:2px; {% endif %} width: {{cociente_porcentual(tutoria_informes(tutoria.id) | count, tutoria_asignaturas_count(tutoria.id))}}%;"></div>
 				</div>
-				<!-- *************************** -->
 				{% if params['tutoria_re_enviar_link']%}
 					{% include 'analisis_re_enviar_a_block.html' %}
-
 				{% endif %}
 				{% if params['tutoria_edit_link'] %}
 					{% include 'analisis_tutoria_edit_block.html' %}
@@ -126,42 +126,38 @@
 				<i class="material-icons vertical-center">expand_more</i>
 				Analisis detallado por asignatura
 			</a>
-			<div class="collapse in" id="analisis_detallado_asignaturas">
+			<div class="collapse" id="analisis_detallado_asignaturas">
 				<div class="row">
 					<div class="padding_3">
 						<div class="padding_contenido">
 							{% if not df_asignaturas_lista(df_data, tutoria.id) %}
 								<span class="text-info">No se han recibido ningun informe para esta tutoría.</span>
-
 							{% endif %}
 						</div>
 					</div>
-					<!-- FIXME bucle temporal para ver como se comporatan varias asignaturas -->
-					{% for item in range(4) %}
-						{% for asignatura in df_asignaturas_lista(df_data, tutoria.id) %}
-							<div class="col-sm-12 col-sm-6 col-md-6 col-lg-3">
-								<div class="border_1 z-depth-1-1-less">
-									{{highcharts_asignatura(char_id=asignatura, asignatura=asignatura, alumno=alumno, grupo=grupo, df_data=df_data, tutoria_id=tutoria.id)}}
-									<br>
-									{% if comentario_by_informe_id_and_asignatura_nombre(tutoria.id, asignatura) %}
-										<div class="padding_contenido">
-											<br>
-											<span class="strong">Observaciones:</span>
-											<div class="dropdown-divider bg-gray-4"></div>
-											<h6></h6>
-											<div class="line_break">
-												{{-comentario_by_informe_id_and_asignatura_nombre(tutoria.id, asignatura)-}}
-											</div>
-											<br>
-										</div>
-									{% endif %}
-								</div>
-							</div>
-						{% endfor %}
-					{% endfor %}
-					<br>
 				</div>
-				<br><br>
+				<div class="row">
+					{% for asignatura in df_asignaturas_lista(df_data, tutoria.id) %}
+						<div class="col-sm-12 col-md-6 col-lg-4 pb-4">
+							<div class="card border-mutted">
+								<div class="card-header text-center strong bg-info text-dark">
+									{{asignatura}}
+								</div>
+								<div class="card-body">
+									{{highcharts_asignatura(char_id=asignatura, asignatura=asignatura, alumno=alumno, grupo=grupo, df_data=df_data, tutoria_id=tutoria.id)}}
+								</div>
+								{% if asignatura_comentario(tutoria.id, asignatura) %}
+									<div class="card-footer">
+										<div class="strong">Observaciones:</div>
+										<div class="line_break">
+											{{-asignatura_comentario(tutoria.id, asignatura)-}}
+										</div>
+									</div>
+								{% endif %}
+							</div>
+						</div>
+					{% endfor %}
+				</div>
 			</div>
 			<a data-toggle="collapse" href="#analisis_evoluacion" class="collapse_header_1" aria-expanded="false" title="Analisis en el tiempo">
 				<i class="material-icons vertical-center">expand_more</i>
