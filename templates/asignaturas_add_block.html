@@ -1,0 +1,70 @@
+<!-- <div class="dropdown-divider grueso bg-primary"></div> -->
+<br>
+<div class="padding_3">
+	<form action="/asignaturas" method="POST">
+		<div class="row">
+			<div class="form-group col-md-6 mb-3">
+				<div class="input-group">
+					<input
+						type="text"
+						class="form-control {% if request.method=='POST' and params['collapse_asignatura_add'] %} {% if asignatura_add.asignatura.errors %} is-invalid {% else %} is-valid {% endif %} {% endif %}"
+						name="{{asignatura_add.asignatura.name}}"
+						{% if request.method=='POST' %}
+						value="{% if request.method=='POST' and params['collapse_asignatura_add'] %}{{asignatura_add.asignatura.data}}{% endif %}"
+						{% endif %}
+						placeholder="{{asignatura_add.asignatura.label.text}}">
+					<span class="input-group-addon {% if request.method=='POST' and params['collapse_asignatura_add'] %} {% if asignatura_add.asignatura.errors %} form_addon-warning {% else %} form_addon-success {% endif %} {% endif %}">asignatura</span>
+				</div>
+			</div>
+			<div class="input-group col-md-6 mb-3">
+				<input
+					type="text"
+					class="form-control {% if request.method=='POST' and params['collapse_asignatura_add'] %} {% if asignatura_add.email.errors %} is-invalid {% else %} is-valid {% endif %} {% endif %}"
+					name="{{asignatura_add.email.name}}"
+					{% if request.method=='POST' %}
+					value="{% if request.method=='POST' and params['collapse_asignatura_add'] %}{{asignatura_add.email.data}}{% endif %}"
+					{% endif %}
+					placeholder="{{asignatura_add.email.label.text}}">
+				<span class="input-group-addon {% if request.method=='POST' and params['collapse_asignatura_add'] %} {% if asignatura_add.email.errors %} form_addon-warning {% else %} form_addon-success {% endif %} {% endif %}">email</span>
+			</div>
+			<div class="form-group col-md-6 mb-3">
+				<div class="input-group">
+					<input
+						type="text"
+						class="form-control {% if request.method=='POST' and params['collapse_asignatura_add'] %} {% if asignatura_add.nombre.errors %} is-invalid {% else %} is-valid {% endif %} {% endif %}"
+						name="{{asignatura_add.nombre.name}}"
+						{% if request.method=='POST' %}
+						value="{% if request.method=='POST' and params['collapse_asignatura_add'] %}{{asignatura_add.nombre.data}}{% endif %}"
+						{% endif %}
+						placeholder="{{asignatura_add.nombre.label.text}}">
+					<span class="input-group-addon {% if request.method=='POST' and params['collapse_asignatura_add'] %} {% if asignatura_add.nombre.errors %} form_addon-warning {% else %} form_addon-success {% endif %} {% endif %}">nombre</span>
+				</div>
+			</div>
+			<div class="input-group col-md-6 mb-3">
+				<input
+					type="text"
+					class="form-control {% if request.method=='POST' and params['collapse_asignatura_add'] %} {% if asignatura_add.apellidos.errors %} is-invalid {% else %} is-valid {% endif %} {% endif %}"
+					name="{{asignatura_add.apellidos.name}}"
+					{% if request.method=='POST' %}
+					value="{% if request.method=='POST' and params['collapse_asignatura_add'] %}{{asignatura_add.apellidos.data}}{% endif %}"
+					{% endif %}
+					placeholder="{{asignatura_add.apellidos.label.text}}">
+				<span class="input-group-addon {% if request.method=='POST' and params['collapse_asignatura_add'] %} {% if asignatura_add.apellidos.errors %} form_addon-warning {% else %} form_addon-success {% endif %} {% endif %}">apellidos</span>
+			</div>
+		</div>
+		<div class="btn-group" role="group" aria-label="...">
+			<div class="btn-group" role="group" aria-label="...">
+				<button role="button" type="submit" name="selector_button" value="selector_asignatura_add" class="btn btn-outline-dark btn-sm" title="agregar asignatura">
+					<span class="material-icons vertical-center">import_contacts</span>&nbsp; agregar
+				</button>
+				{% if params['collapse_asignatura_add'] %}
+					<button role="button" type="submit" name="selector_button" value="selector_asignatura_add_cerrar" class="btn btn-outline-dark btn-sm" title="cerrar">
+						<i class="material-icons vertical-center">close</i>
+					</button>
+				{% endif %}
+			</div>
+		</div>
+	</form>
+	<br>
+</div>
+<div class="dropdown-divider grueso bg-primary"></div>

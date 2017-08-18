@@ -3,11 +3,10 @@
 	{%from '_macro.html' import nav_bar_top, titulo_1, highcharts_asignatura,highcharts_cuestionario,highcharts_asignaturas, highcharts_evalucion, highcharts_tutoria_stats%}
 	{{ nav_bar_top(link_active='Alumnos',params=params) }}
 	<div class="paper bg-white padding_contenido">
-		<!-- <div class="padding_3"> -->
 		{% if grupo and alumno and tutoria %}
 			{{titulo_1(url='analisis',bg_color='bg-dark', titulo='Análisis gráfico de la tutoría')}}
 			<form action="/tutoria_edit" method="POST" name="analisis{{hashids_encode(tutoria.id)}}">
-				<div class="row align-items-center">
+				<div class="row align-items-center pb-2">
 					<div class="col-sm-12 col-md-6 col-lg-4">
 						<span class="text-mutted">Alumno:
 						</span>
@@ -16,7 +15,7 @@
 							{{alumno.apellidos}}
 						</h5>
 					</div>
-					<div class="col-sm-12 col-md-6 col-lg-3">
+					<div class="col-sm-12 col-md-6 col-lg-3 pb-2">
 						<span class="text-mutted">Fecha:
 						</span>
 						<span class="strong">
@@ -30,7 +29,6 @@
 						</span>
 						<span class="strong">{{tutoria.hora.strftime('%H:%M')}}</span>
 					</div>
-					<!-- <div class="padding_contenido"> -->
 					<input type="hidden" name="current_tutoria_id" value="{{hashids_encode(tutoria.id)}}">
 					<div class="row col-sm-12 col-md-12 col-lg">
 						<div class="col">
@@ -98,7 +96,6 @@
 						style="{% if not tutoria.activa %} height:2px; {% endif %} width: {{cociente_porcentual(tutoria_informes(tutoria.id) | count, tutoria_asignaturas_count(tutoria.id))}}%;"></div>
 				</div>
 				<!-- *************************** -->
-				<br>
 				{% if params['tutoria_re_enviar_link']%}
 					{% include 'analisis_re_enviar_a_block.html' %}
 					<br>
@@ -108,29 +105,25 @@
 				{% endif %}
 			</form>
 			<br>
-			<a href="#analisis_cuestionario" class="list-group-item-6" data-toggle="collapse">
+			<a data-toggle="collapse" href="#analisis_cuestionario" class="collapse_header_1" aria-expanded="true" title="Analisis del cuestionario">
 				<i class="material-icons vertical-center">expand_more</i>
 				Analisis del cuestionario
 			</a>
-			<div class="collapse {% if not (params['tutoria_edit_link'] or params['tutoria_re_enviar_link']) %} show {% endif %}" id="analisis_cuestionario">
-				<br>
-				<div class="row">
+			<div class="collapse show" id="analisis_cuestionario">
+				<div class="col pt-4 pb-3">
 					{{highcharts_cuestionario(char_id='cuestionario', titulo='', color='#ffa000', df_data=df_data, grupo=grupo, tutoria_id=tutoria.id)}}
 				</div>
-				<br>
 			</div>
-			<a href="#analisis_general_asignaturas" class="list-group-item-6" data-toggle="collapse" data-parent="#analisis" aria-expanded="true" aria-controls="collapse_analisis_general_asignaturas" title="Analisis general de las asiginaturas">
+			<a data-toggle="collapse" href="#analisis_general_asignaturas" class="collapse_header_1" aria-expanded="false" title="Analisis general de las asiginaturas">
 				<i class="material-icons vertical-center">expand_more</i>
 				Analisis general de las asiginaturas
 			</a>
 			<div class="collapse" id="analisis_general_asignaturas">
-				<br>
-				<div class="row">
+				<div class="col pt-4 pb-3">
 					{{highcharts_asignaturas(char_id='asignaturas', titulo='',color_1='#ec407a',color_2='#f48fb1', df_data=df_data, grupo=grupo, tutoria_id=tutoria.id)}}
 				</div>
-				<br>
 			</div>
-			<a href="#analisis_detallado_asignaturas" class="list-group-item-6" data-toggle="collapse" data-parent="#analisis" aria-expanded="true" aria-controls="collapse_analisis_detallado_asignaturas" title="Analisis detallado por asignaturas">
+			<a data-toggle="collapse" href="#analisis_detallado_asignaturas" class="collapse_header_1" aria-expanded="false" title="Analisis detallado por asignaturas">
 				<i class="material-icons vertical-center">expand_more</i>
 				Analisis detallado por asignatura
 			</a>
@@ -167,105 +160,27 @@
 							</div>
 						{% endfor %}
 					{% endfor %}
-					<!-- ********************************************************* -->
-					<div class="card_XXX-columns">
-						<div class="card_XXX">
-							<img class="card_XXX-img-top img-fluid" src="..." alt="card_XXX image cap">
-							<div class="card_XXX-block">
-								<h4 class="card_XXX-title">card_XXX title that wraps to a new line</h4>
-								<p class="card_XXX-text">This is a longer card_XXX with supporting text below as a natural lead-in to additional content. This content is a little bit longer.</p>
-							</div>
-						</div>
-						<div class="card_XXX p-3">
-							<blockquote class="card_XXX-block card_XXX-blockquote">
-								<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer posuere erat a ante.</p>
-								<footer>
-									<small class="text-muted">
-										Someone famous in
-										<cite title="Source Title">Source Title</cite>
-									</small>
-								</footer>
-							</blockquote>
-						</div>
-						<div class="card_XXX">
-							<img class="card_XXX-img-top img-fluid" src="..." alt="card_XXX image cap">
-							<div class="card_XXX-block">
-								<h4 class="card_XXX-title">card_XXX title</h4>
-								<p class="card_XXX-text">This card_XXX has supporting text below as a natural lead-in to additional content.</p>
-								<p class="card_XXX-text">
-									<small class="text-muted">Last updated 3 mins ago</small>
-								</p>
-							</div>
-						</div>
-						<div class="card_XXX card_XXX-inverse card_XXX-primary p-3 text-center">
-							<blockquote class="card_XXX-blockquote">
-								<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer posuere erat.</p>
-								<footer>
-									<small>
-										Someone famous in
-										<cite title="Source Title">Source Title</cite>
-									</small>
-								</footer>
-							</blockquote>
-						</div>
-						<div class="card_XXX text-center">
-							<div class="card_XXX-block">
-								<h4 class="card_XXX-title">card_XXX title</h4>
-								<p class="card_XXX-text">This card_XXX has supporting text below as a natural lead-in to additional content.</p>
-								<p class="card_XXX-text">
-									<small class="text-muted">Last updated 3 mins ago</small>
-								</p>
-							</div>
-						</div>
-						<div class="card_XXX">
-							<img class="card_XXX-img img-fluid" src="..." alt="card_XXX image">
-						</div>
-						<div class="card_XXX p-3 text-right">
-							<blockquote class="card_XXX-blockquote">
-								<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer posuere erat a ante.</p>
-								<footer>
-									<small class="text-muted">
-										Someone famous in
-										<cite title="Source Title">Source Title</cite>
-									</small>
-								</footer>
-							</blockquote>
-						</div>
-						<div class="card_XXX">
-							<div class="card_XXX-block">
-								<h4 class="card_XXX-title">card_XXX title</h4>
-								<p class="card_XXX-text">This is a wider card_XXX with supporting text below as a natural lead-in to additional content. This card_XXX has even longer content than the first to show that equal height action.</p>
-								<p class="card_XXX-text">
-									<small class="text-muted">Last updated 3 mins ago</small>
-								</p>
-							</div>
-						</div>
-					</div>
-					<!-- ***************************************************************** -->
 					<br>
 				</div>
 				<br><br>
 			</div>
-			<a href="#analisis_evoluacion" class="list-group-item-6" data-toggle="collapse" data-parent="#analisis" aria-expanded="true" aria-controls="collapse_analisis_evoluacion" title="Analisis en el tiempo">
+			<a data-toggle="collapse" href="#analisis_evoluacion" class="collapse_header_1" aria-expanded="false" title="Analisis en el tiempo">
 				<i class="material-icons vertical-center">expand_more</i>
 				Analisis en el tiempo
 			</a>
 			<div class="collapse" id="analisis_evoluacion">
-				<br>
-				<div class="row">
+				<div class="col pt-4 pb-3">
 					{{highcharts_evalucion(char_id='evalucion', titulo='',color_1='#ec407a',color_2='#f48fb1', df_data=df_data, grupo=grupo, alumno=alumno)}}
 				</div>
-				<br>
 			</div>
 		{% else %}
 			<div class="padding_3 text-warning text-center">
 				No se dispone de analisis para esta turoria.
 				<br><br>
 				<div class="btn-group" role="group" aria-label="...">
-					<a class="btn btn-outline-mutted" href="/alumnos" role="button">listado de alumnos</a>
+					<a class="btn btn-outline-mutted btn-sm" href="/alumnos" role="button">listado de alumnos</a>
 				</div>
 			</div>
 		{% endif %}
-		<!-- </div> -->
 	</div>
 {% endblock %}

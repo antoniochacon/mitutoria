@@ -19,13 +19,13 @@
 				</a>
 				<div id="asignatura_add" class="collapse {% if params['collapse_asignatura_add'] %} show {% endif %}">
 					{# TODO: asignaturas_add #}
-					{%include "asignatura_add_block.html"%}
+					{% include 'asignaturas_add_block.html' %}
 				</div>
 			</div>
 			<div>
 				{% for asignatura in asignaturas('asignatura', 'apellidos', 'nombre') %}
 					{# TODO: asignaturas_listado #}
-					{%include "asignatura_block.html"%}
+					{% include 'asignatura_block.html' %}
 				{% endfor %}
 			</div>
 		</div>

@@ -1,0 +1,18 @@
+<div class="form-group col-md-6 col-lg-4">
+	<label class="custom-control custom-checkbox check_box_1">
+		<input
+			type="checkbox"
+			{% if not equal_str(asignatura.id, params['current_asignatura_id']) or not params['asignatura_edit_link'] %}
+			disabled
+			{% endif %}
+			class="custom-control-input"
+			name="alumno"
+			value="{{hashids_encode(alumno.id)}}"
+			{% if association_alumno_asignatura_check(alumno.id,asignatura.id) %}
+			checked
+			{% endif %}>
+		<span class="custom-control-indicator"></span>
+		<span class="custom-control-description {% if not association_alumno_asignatura_check(alumno.id,asignatura.id) %}text-muted{% endif %}">{{alumno.apellidos}},
+			{{alumno.nombre}}</span>
+	</label>
+</div>

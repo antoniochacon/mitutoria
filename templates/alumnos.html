@@ -7,36 +7,10 @@
 	{% if alumnos_not_sorted() %}
 		{% if settings().show_tutorias %}
 			<div class="paper bg-white">
-				<a data-toggle="collapse" class="collpase-header-secondary" role="tab" data-parent="#parent_tutorias" href="#collapse_proxima_tutoria" aria-expanded="false">
-					{% if grupo_tutorias(grupo_activo().id, True) %}
-						{% for tutoria in grupo_tutorias(grupo_activo().id, True) %}
-							<i class="material-icons vertical-center">cloud</i>
-						{% endfor %}
-						<strong>
-							&nbsp;
-							{{singular_plural("tutoria", "tutorias", grupo_tutorias(grupo_activo().id, True) | count)}}
-							{{singular_plural("solicitada", "solicitadas", grupo_tutorias(grupo_activo().id, True) | count)}}
-						</strong>
-					{% else %}
-						<i class="material-icons vertical-center">wb_sunny</i>
-						&nbsp;Relax, no tienes tutorias
-					{% endif %}
-				</a>
-				<div id="collapse_proxima_tutoria" role="tabpanel" class="collapse {% if settings().show_tutorias_collapse and grupo_tutorias(grupo_activo().id, True) %} show {% endif %}">
-					{% if grupo_tutorias(grupo_activo().id, True) %}
-						{% include "alumno_tutorias_incoming_block.html" %}
-						<br>
-					{% else %}
-						<div class="padding_contenido text-mutted">
-							ira una frase positiva/divertida o directamente una Cita
-							<br>
-							igual tengo que poner tambien categorias a las citas
-						</div>
-					{% endif %}
-				</div>
+				{% include 'alumnos_tutorias_incoming_block.html' %}
 			</div>
-			<br>
 		{% endif %}
+		<br>
 	{% endif %}
 	{# XXX alumnos #}
 	<div class="paper bg-white padding_contenido">
@@ -44,12 +18,12 @@
 		<div id="parent_alumno">
 			<div>
 				{# TODO: alumnos_add #}
-				{%include "alumno_add_block.html"%}
+				{% include 'alumnos_add_block.html' %}
 			</div>
 			<div>
 				{# TODO: alumnos_listado #}
 				{% for alumno in alumnos("apellidos", "nombre")%}
-					{%include "alumno_block.html"%}
+					{% include 'alumnos_block.html' %}
 				{% endfor %}
 			</div>
 		</div>
