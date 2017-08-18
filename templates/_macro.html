@@ -17,30 +17,14 @@
 		</h5>
 	</h3>
 {% endmacro %}
-{% macro nav_bar_top_no_session(link_active, dic = {
-	'Iniciar sesión': 'login',
-	'Crear nueva cuenta': 'user_add'
-}) %}
-	<nav class="navbar fixed-top navbar-expand-sm navbar-dark bg-primary z-depth-1-less">
-		<button class="navbar-toggler" role="button" type="button" data-toggle="collapse" data-target="#navbar" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-			<span class="navbar-toggler-icon"></span>
-		</button>
-		<a class="navbar-brand strong" href="#">mi tutoria</a>
-		<div class="collapse navbar-collapse" id="navbar">
-			<ul class="navbar-nav mr-auto">
-				{% for link_key in dic.keys() %}
-					<li class="nav-item {% if link_key==link_active %} active strong {% endif %}">
-						<a class="nav-link" href="/{{dic[link_key]}}">{{link_key}}</a>
-					</li>
-				{% endfor %}
-			</ul>
-		</div>
-	</nav>
+{% macro nav_bar_top(link_active, params, current_user) %}
+	{% if current_user.is_authenticated  %}
+		{{nav_bar(link_active, params=params, dic={'Alumnos':'alumnos', 'Asignaturas':'asignaturas', 'Opciones':'settings_cuestionario', 'Admin':'settings_admin_cuestionario', 'Logout':'logout'})}}
+	{% else %}
+		{{nav_bar(link_active, params=params,  dic = {'Iniciar sesión': 'login','Crear nueva cuenta': 'user_add'})}}
+	{% endif %}
 {% endmacro %}
-{% macro nav_bar_top(link_active, params) %}
-	{{nav_bar(link_active, params=params, dic={'Alumnos':'alumnos', 'Asignaturas':'asignaturas', 'Opciones':'settings_cuestionario', 'Admin':'settings_admin_cuestionario', 'Logout':'logout'})}}
-{% endmacro %}
-{% macro nav_bar(link_active, params, params_args, dic) %}
+{% macro nav_bar(link_active, params, params_args, dic, current_user) %}
 	<nav class="navbar fixed-top navbar-expand-md navbar-dark bg-primary z-depth-1-less">
 		<button class="navbar-toggler" role="button" type="button" data-toggle="collapse" data-target="#navbar" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
 			<span class="navbar-toggler-icon"></span>

@@ -1,7 +1,7 @@
 {% extends '_layout.html' %}
 {% block body %}
-	{%from '_macro.html' import nav_bar_top_no_session, titulo_1%}
-	{{ nav_bar_top_no_session() }}
+	{%from '_macro.html' import nav_bar_top, titulo_1%}
+	{{ nav_bar_top(current_user=current_user) }}
 	<div class="container">
 		<div class="paper bg-white padding_contenido">
 			{{titulo_1(url='logout', bg_color='bg-dark', titulo='Session cerrada')}}

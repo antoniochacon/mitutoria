@@ -1,11 +1,9 @@
 {% extends '_layout.html' %}
 {% block body %}
-	{%from '_macro.html' import field_form, titulo_1%}
+	{%from '_macro.html' import nav_bar_top, titulo_1%}
+	{{nav_bar_top(current_user=current_user)}}
 	<div class="col-xs-12 col-sm-8 col-sm-offset-2 col-md-6 col-md-offset-3 col-lg-4 col-lg-offset-4">
 		<div class="paper bg-white padding_contenido">
-
-
-
 			{{titulo_1(url='informe', bg_color='bg-primary', titulo='Informe de '+ params['alumno'], subtitulo=params['grupo'])}}
 			<span class="text-info">Fecha de la tutoria:
 			</span>
@@ -22,7 +20,6 @@
 			<span class="text-info">Docente:
 			</span>
 			{{params['docente']}}
-
 			<h6></h6>
 			<div class="dropdown-divider bg-info"></div>
 			<div class="padding_3 text-success text-center">

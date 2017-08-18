@@ -1,5 +1,5 @@
 {#TODO: invocados por flash_toast #}
-{% with messages = get_flashed_messages(category_filter = ['success', 'secondary', 'warning']) %}
+{% with messages = get_flashed_messages(category_filter = ['success', 'info', 'warning']) %}
 {% if messages %}
 	{% for message in messages %}
 		{{message}}

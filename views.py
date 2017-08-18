@@ -45,6 +45,7 @@ def before_request_html():
     g.current_year = datetime.date.today().year
     g.current_date = datetime.date.today()
     g.current_time = datetime.datetime.now()
+    g.current_user = current_user
 
 
 @app.route('/getos')
@@ -54,9 +55,8 @@ def getos():
 
 @app.errorhandler(404)
 def page_not_found_html(warning):
-    params = params_default
-    fab = Fab(True, False, False, True, True, True, True)
-    return render_template('page_not_found.html', fab=fab, params=params)
+
+    return render_template('page_not_found.html')
 
 # NOTE calendar_token
 # de momento he forzado False, mas adelante sera tomado de settings
@@ -79,14 +79,13 @@ def user_ficha_grupos_html(params={}):
         abort(404)
 
     params = {}
-    fab = Fab(True, False, False, True, True, True, True)
     params['anchor'] = params_old.get('anchor', 'anchor_top')
-    params['current_user_id'] = params_old.get('current_user_id', hashids_encode(0))
+    params['current_user_id'] = params_old.get('current_user_id', 0)
     current_user_id = params['current_user_id']
     user = user_by_id(current_user_id)
 
     return render_template(
-        'user_ficha_grupos.html', fab=fab, user=user, params=params)
+        'user_ficha_grupos.html', user=user, params=params)
 
 
 # XXX user_ficha_alumnos
@@ -101,14 +100,13 @@ def user_ficha_alumnos_html(params={}):
         abort(404)
 
     params = {}
-    fab = Fab(True, False, False, True, True, True, True)
     params['anchor'] = params_old.get('anchor', 'anchor_top')
-    params['current_user_id'] = params_old.get('current_user_id', hashids_encode(0))
+    params['current_user_id'] = params_old.get('current_user_id', 0)
     current_user_id = params['current_user_id']
     user = user_by_id(current_user_id)
 
     return render_template(
-        'user_ficha_alumnos.html', fab=fab, user=user, params=params)
+        'user_ficha_alumnos.html', user=user, params=params)
 
 
 # XXX pruebas
@@ -171,7 +169,6 @@ def alumnos_html(params={}):
         abort(404)
 
     params = {}
-    fab = Fab(True, False, False, False, True, True, True)
     params['anchor'] = params_old.get('anchor', 'anchor_top')
     params['collapse_alumno_add'] = params_old.get('collapse_alumno_add', False)
     params['alumno_importar_link'] = params_old.get('alumno_importar_link', False)
@@ -179,12 +176,12 @@ def alumnos_html(params={}):
     params['alumno_edit_link'] = params_old.get('alumno_edit_link', False)
     params['collapse_alumno_edit'] = params_old.get('collapse_alumno_edit', False)
     params['collapse_alumno_edit_asignaturas'] = params_old.get('collapse_alumno_edit_asignaturas', False)
-    params['current_alumno_id'] = params_old.get('current_alumno_id', hashids_encode(0))
+    params['current_alumno_id'] = params_old.get('current_alumno_id', 0)
     params['from_url'] = params_old.get('from_url', False)
     params['alumno_delete_link'] = params_old.get('alumno_delete_link', False)
     params['collapse_tutorias'] = params_old.get('collapse_tutorias', False)
     params['collapse_tutoria_no_activas'] = params_old.get('collapse_tutoria_no_activas', False)
-    params['current_tutoria_id'] = params_old.get('current_tutoria_id', hashids_encode(0))
+    params['current_tutoria_id'] = params_old.get('current_tutoria_id', 0)
     params['invitado'] = params_old.get('invitado', False)
 
     if not settings().grupo_activo_id:
@@ -208,7 +205,7 @@ def alumnos_html(params={}):
                     params['anchor'] = 'anchor_alu_add'
                     flash_toast(Markup('<strong>') + alumno_add_form.nombre.data.title() + Markup('</strong>') + ' ' + Markup('<strong>') + alumno_add_form.apellidos.data.title() + Markup('</strong>') + ' ya esta registrado', 'warning')
                     return render_template(
-                        'alumnos.html', fab=fab, alumno_add=alumno_add_form, alumno_edit=Alumno_Add(), tutoria_add=Tutoria_Add(),
+                        'alumnos.html', alumno_add=alumno_add_form, alumno_edit=Alumno_Add(), tutoria_add=Tutoria_Add(),
                         params=params)
                 else:
                     params['collapse_alumno_add'] = False
@@ -221,7 +218,7 @@ def alumnos_html(params={}):
                 params['anchor'] = 'anchor_alu_add'
                 flash_wtforms(alumno_add_form, flash_toast, 'warning')
                 return render_template(
-                    'alumnos.html', fab=fab, alumno_add=alumno_add_form, alumno_edit=Alumno_Add(), tutoria_add=Tutoria_Add(),
+                    'alumnos.html', alumno_add=alumno_add_form, alumno_edit=Alumno_Add(), tutoria_add=Tutoria_Add(),
                     params=params)
 
         # XXX selector_alumno_add_cerrar
@@ -361,7 +358,7 @@ def alumnos_html(params={}):
                     return redirect(url_for('alumnos_html', params=dic_encode(params)))
             else:
                 flash_wtforms(alumno_edit_form, flash_toast, 'warning')
-            return render_template('alumnos.html', fab=fab, alumno_add=Alumno_Add(), alumno_edit=alumno_edit_form,
+            return render_template('alumnos.html', alumno_add=Alumno_Add(), alumno_edit=alumno_edit_form,
                                    grupo_add=Grupo_Add(), tutoria_add=Tutoria_Add(), params=params)
         # XXX alumno_edit_rollback
         if request.form['selector_button'] == 'selector_alumno_edit_rollback':
@@ -460,7 +457,7 @@ def alumnos_html(params={}):
                             session_sql.add(tutoria_add)
                             session_sql.commit()
                             send_email_tutoria(alumno, tutoria_add)
-                            flash_toast('Enviando emails al equipo educativo de ' + Markup('<strong>') + alumno.nombre + Markup('</strong>'), 'secondary')
+                            flash_toast('Enviando emails al equipo educativo de ' + Markup('<strong>') + alumno.nombre + Markup('</strong>'), 'info')
                             params['current_alumno_id'] = current_alumno_id
                             params['collapse_alumno'] = True
                             params['collapse_tutorias'] = True
@@ -469,7 +466,7 @@ def alumnos_html(params={}):
                 else:
                     flash_wtforms(tutoria_add_form, flash_toast, 'warning')
             return render_template(
-                'alumnos.html', fab=fab, alumno_add=Alumno_Add(), alumno_edit=Alumno_Add(),
+                'alumnos.html', alumno_add=Alumno_Add(), alumno_edit=Alumno_Add(),
                 tutoria_add=tutoria_add_form, params=params)
 
         # XXX selector_tutoria_add_close
@@ -479,7 +476,7 @@ def alumnos_html(params={}):
     # XXX tutorias_timeout
     tutorias_timeout()
     return render_template(
-        'alumnos.html', fab=fab, alumno_add=Alumno_Add(), alumno_edit=Alumno_Add(),
+        'alumnos.html', alumno_add=Alumno_Add(), alumno_edit=Alumno_Add(),
         tutoria_add=Tutoria_Add(), tutoria_edit=Tutoria_Add(), asignatura_add=Asignatura_Add(),
         params=params)
 
@@ -496,9 +493,8 @@ def settings_admin_cuestionario_html(params={}):
         params_old = {}
         abort(404)
     params = {}
-    fab = Fab(True, False, False, True, True, True, False)
     params['anchor'] = params_old.get('anchor', 'anchor_top')
-    params['current_pregunta_id'] = params_old.get('current_pregunta_id', hashids_encode(0))
+    params['current_pregunta_id'] = params_old.get('current_pregunta_id', 0)
     params['collapse_pregunta_edit'] = params_old.get('collapse_pregunta_edit', False)
     params['pregunta_delete_link'] = params_old.get('pregunta_delete_link', False)
     params['collapse_pregunta_add'] = params_old.get('collapse_pregunta_add', False)
@@ -530,7 +526,7 @@ def settings_admin_cuestionario_html(params={}):
                         pregunta_add_form.orden.errors = ['']
                         flash_toast('Orden duplicado', 'warning')
                     return render_template(
-                        'settings_admin_cuestionario.html', fab=fab,  pregunta_add=pregunta_add_form, preguntas=preguntas(''),
+                        'settings_admin_cuestionario.html',  pregunta_add=pregunta_add_form, preguntas=preguntas(''),
                         pregunta_edit=Pregunta_Add(), params=params)
                 else:
                     session_sql.add(pregunta_add)
@@ -541,7 +537,7 @@ def settings_admin_cuestionario_html(params={}):
                 params['collapse_pregunta_add'] = True
                 flash_wtforms(pregunta_add_form, flash_toast, 'warning')
             return render_template(
-                'settings_admin_cuestionario.html', fab=fab, pregunta_add=pregunta_add_form, preguntas=preguntas(''),
+                'settings_admin_cuestionario.html', pregunta_add=pregunta_add_form, preguntas=preguntas(''),
                 pregunta_edit=Pregunta_Add(), params=params)
 
         # XXX selector_pregunta_add_close
@@ -564,8 +560,8 @@ def settings_admin_cuestionario_html(params={}):
             move_up = False
             move_down = False
             pregunta_edit_form = Pregunta_Add(request.form)
-            visible=pregunta_edit_form.visible.data
-            active_default=pregunta_edit_form.active_default.data
+            visible = pregunta_edit_form.visible.data
+            active_default = pregunta_edit_form.active_default.data
             if not visible:
                 visible = False
             if not active_default:
@@ -614,7 +610,7 @@ def settings_admin_cuestionario_html(params={}):
             else:
                 flash_wtforms(pregunta_edit_form, flash_toast, 'warning')
             return render_template(
-                'settings_admin_cuestionario.html', fab=fab, pregunta_add=Pregunta_Add(), preguntas=preguntas(''),
+                'settings_admin_cuestionario.html', pregunta_add=Pregunta_Add(), preguntas=preguntas(''),
                 pregunta_edit=pregunta_edit_form, move_down=move_down, move_up=move_up, visible=visible,
                 active_default=active_default, params=params)
 
@@ -660,7 +656,7 @@ def settings_admin_cuestionario_html(params={}):
             return redirect(url_for('settings_admin_cuestionario_html', params=dic_encode(params)))
 
     return render_template(
-        'settings_admin_cuestionario.html', fab=fab, pregunta_add=Pregunta_Add(), preguntas=preguntas(''),
+        'settings_admin_cuestionario.html', pregunta_add=Pregunta_Add(), preguntas=preguntas(''),
         pregunta_edit=Pregunta_Add(), params=params)
 
 
@@ -674,7 +670,6 @@ def settings_cuestionario_html(params={}):
         params_old = {}
         abort(404)
     params = {}
-    fab = Fab(True, False, False, True, True, False, True)
     if request.method == 'POST':
         if request.form['selector_button'] == 'selector_settings_cuestionario':
             preguntas_id_lista_encoded = request.form.getlist('pregunta')
@@ -703,7 +698,7 @@ def settings_cuestionario_html(params={}):
                     flash_toast('Cuestionario  actualizado', 'success')
                     contador = 0
             return redirect(url_for('settings_cuestionario_html'))
-    return render_template('settings_cuestionario.html', fab=fab, params=params)
+    return render_template('settings_cuestionario.html', params=params)
 
 # XXX user_grupos
 
@@ -715,24 +710,22 @@ def user_grupos_html():
     current_user_id = request.args.get('i_7', False)
     user = user_by_id(current_user_id)
     grupos = user_grupos(current_user_id)
-    return render_template('user_grupos.html', fab=Fab(True, False, False, True, True, True, True), user=user, grupos=grupos)
+    return render_template('user_grupos.html'(True, False, False, True, True, True, True), user=user, grupos=grupos)
 
 # XXX analisis
 
 
-@app.route('/tutoria_no_disponible', methods=['GET', 'POST'])
-@app.route('/tutoria_no_disponible/<params>', methods=['GET', 'POST'])
+@app.route('/analisis_tutoria_no_disponible', methods=['GET', 'POST'])
+@app.route('/analisis_tutoria_no_disponible/<params>', methods=['GET', 'POST'])
 @login_required
-def tutoria_no_disponible_html(params={}):
+def analisis_tutoria_no_disponible_html(params={}):
     try:
-        params_old = dic_decode(params)  # NOTE matiene siempre una copia de entrada original por si se necesita mas adelante
+        params_old = dic_decode(params)
     except:
         params_old = {}
         abort(404)
-
     params = {}
-    fab = Fab(True, False, False, True, True, True, True)
-    return render_template('tutoria_no_disponible.html', fab=fab, params=params)
+    return render_template('analisis_tutoria_no_disponible.html', params=params)
 
 
 @app.route('/analisis', methods=['GET', 'POST'])
@@ -740,38 +733,23 @@ def tutoria_no_disponible_html(params={}):
 @login_required
 def analisis_html(params={}):
     try:
-        params_old = dic_decode(params)  # NOTE matiene siempre una copia de entrada original por si se necesita mas adelante
+        params_old = dic_decode(params)
     except:
         params_old = {}
         abort(404)
     params = {}
-    fab = Fab(True, False, False, True, True, True, True)
-    params['current_tutoria_id'] = params_old.get('current_tutoria_id', hashids_encode(0))
-    current_tutoria_id = params['current_tutoria_id']
+    params['current_tutoria_id'] = params_old.get('current_tutoria_id', 0)
+    current_tutoria_id = params['current_tutoria_id']  # NOTE current_tutoria_id evaluado correctamente
     params['tutoria_delete_link'] = params_old.get('tutoria_delete_link', False)
     params['tutoria_re_enviar_link'] = params_old.get('tutoria_re_enviar_link', False)
     params['tutoria_edit_link'] = params_old.get('tutoria_edit_link', False)
-
-    if current_tutoria_id == hashids_encode(0):
-        return redirect(url_for('tutoria_no_disponible_html', params=dic_encode(params)))
 
     grupo = grupo_activo()
     tutoria = tutoria_by_id(current_tutoria_id)
     alumno = invitado_alumno(current_tutoria_id)
     df_data = df_load()
-    return render_template(
-        'analisis.html', fab=fab, grupo=grupo, alumno=alumno, tutoria=tutoria, df_data=df_data,
-        tutoria_edit=Tutoria_Add(), params=params)
-
-
-# XXX tutoria_edit
-@app.route('/tutoria_edit', methods=['GET', 'POST'])
-@login_required
-def tutoria_edit_html():
 
     if request.method == 'POST':
-        fab = Fab(True, False, False, True, True, True, True)
-        params = {}
         current_tutoria_id = current_id_request('current_tutoria_id')
         params['current_tutoria_id'] = current_tutoria_id
 
@@ -791,13 +769,11 @@ def tutoria_edit_html():
 
         # XXX tutoria_re_enviar_link
         if request.form['selector_button'] == 'selector_tutoria_re_enviar_link':
-
             current_tutoria = tutoria_by_id(current_tutoria_id)
             if current_tutoria.activa:
                 if current_tutoria.fecha < g.current_date:
                     flash_toast('No se puede reenviar una tutoria pasada' + Markup('<br>') + 'Debe cambiar fecha', 'warning')
                 else:
-
                     params['tutoria_re_enviar_link'] = True
                     return redirect(url_for('analisis_html', params=dic_encode(params)))
             else:
@@ -815,27 +791,19 @@ def tutoria_edit_html():
             for asignatura_by_id_encoded in asignaturas_id_lista_encoded:
                 asignatura_id = hashids_decode(str(asignatura_by_id_encoded))
                 asignaturas_id_lista.append(asignatura_id)
-
             current_tutoria = tutoria_by_id(current_tutoria_id)
             alumno = alumno_by_id(current_tutoria.alumno_id)
             current_alumno_id = alumno.id
             if asignaturas_id_lista:
-                print('asignaturas_id_lista:', asignaturas_id_lista)
-                print('current_tutoria_id:', current_alumno_id)
+                # flash_toast('Reenviando emails al equipo educativo de ' + Markup('<strong>') + alumno.nombre + Markup('</strong>'), 'info')
                 re_send_email_tutoria(alumno, current_tutoria, asignaturas_id_lista)
-                flash_toast('Reenviando emails al equipo educativo de ' + Markup('<strong>') + alumno.nombre + Markup('</strong>'), 'secondary')
-                params['tutoria_re_enviar_link'] = False
+                flash_toast('Reenviando emails a las asignaturas elegidas', 'info')
+                # params['tutoria_re_enviar_link'] = False
                 return redirect(url_for('analisis_html', params=dic_encode(params)))
             else:
                 params['tutoria_re_enviar_link'] = True
-                # ***************************
-                grupo = invitado_grupo(current_tutoria_id)
-                tutoria = tutoria_by_id(current_tutoria_id)
-                alumno = invitado_alumno(current_tutoria_id)
-                df_data = df_load()
-                # ***************************
                 flash_toast('Emails no reenviados' + Markup('<br>') + 'Hay que asignar al menos una asignatura', 'warning')
-                return render_template('analisis.html', fab=fab, grupo=grupo, alumno=alumno, tutoria=tutoria, df_data=df_data, params=params)
+                return render_template('analisis.html', grupo=grupo, alumno=alumno, tutoria=tutoria, df_data=df_data, params=params)
             return redirect(url_for('analisis_html', params=dic_encode(params)))
 
         # XXX tutoria_mover_historial
@@ -850,7 +818,7 @@ def tutoria_edit_html():
         if request.form['selector_button'] == 'selector_tutoria_activar':
             tutoria_to_move = tutoria_by_id(current_tutoria_id)
             if tutoria_to_move.fecha < g.current_date:
-                flash_toast('No se puede activar una tutoria pasada' + Markup('<br>') + 'Debe cambiar fecha y activarla', 'warning')
+                flash_toast('No se puede activar una tutoria pasada' + Markup('<br>') + 'Debe cambiar fecha', 'warning')
             else:
                 tutoria_to_move.activa = True
                 session_sql.commit()
@@ -897,10 +865,6 @@ def tutoria_edit_html():
         # XXX tutoria_edit
         if request.form['selector_button'] == 'selector_tutoria_edit':
             params['tutoria_edit_link'] = True
-            grupo = invitado_grupo(current_tutoria_id)
-            tutoria = tutoria_by_id(current_tutoria_id)
-            alumno = invitado_alumno(current_tutoria_id)
-            df_data = df_load()
             tutoria_sql = session_sql.query(Tutoria).filter(Tutoria.id == current_tutoria_id).first()
             tutoria_edit_form = Tutoria_Add(current_tutoria_id=current_tutoria_id, fecha=request.form.get('fecha'), hora=request.form.get('hora'))
             if tutoria_edit_form.validate():
@@ -910,32 +874,38 @@ def tutoria_edit_html():
                     flash_wtforms(tutoria_edit_form, flash_toast, 'warning')
                     flash_toast('Debe indicar una fecha posterior', 'warning')
                     return render_template(
-                        'analisis.html', fab=fab, grupo=grupo, alumno=alumno, tutoria=tutoria, df_data=df_data,
+                        'analisis.html', grupo=grupo, alumno=alumno, tutoria=tutoria, df_data=df_data,
                         tutoria_edit=tutoria_edit_form, params=params)
                 else:
                     tutoria_sql.fecha = tutoria_edit_form_fecha
                     tutoria_sql.hora = string_to_time(tutoria_edit_form.hora.data)
                     tutoria_sql.activa = True
-                    session_sql.begin_nested()
+                    # session_sql.begin_nested()
                     session_sql.commit()
                     flash_toast('Tutoria actualizada', 'success')
-                    params['tutoria_edit_link'] = False
+                    params['tutoria_edit_link'] = True
                     return redirect(url_for('analisis_html', params=dic_encode(params)))
             else:
                 flash_wtforms(tutoria_edit_form, flash_toast, 'warning')
                 return render_template(
-                    'analisis.html', fab=fab, grupo=grupo, alumno=alumno, tutoria=tutoria, df_data=df_data,
+                    'analisis.html', grupo=grupo, alumno=alumno, tutoria=tutoria, df_data=df_data,
                     tutoria_edit=tutoria_edit_form, params=params)
 
         # XXX tutoria_edit_rollback
         if request.form['selector_button'] == 'selector_tutoria_edit_rollback':
             session_sql.rollback()
             return redirect(url_for('analisis_html', params=dic_encode(params)))
-    else:
-        abort(404)
 
+    if current_tutoria_id == 0:
+        return redirect(url_for('analisis_tutoria_no_disponible_html', params=dic_encode(params)))
+
+    return render_template(
+        'analisis.html', grupo=grupo, alumno=alumno, tutoria=tutoria, df_data=df_data,
+        tutoria_edit=Tutoria_Add(), params=params)
 
 # XXX settings_options
+
+
 @app.route('/settings_options', methods=['GET', 'POST'])
 @app.route('/settings_options/<params>', methods=['GET', 'POST'])
 @login_required
@@ -947,7 +917,6 @@ def settings_options_html(params={}):
         abort(404)
 
     params = {}
-    fab = Fab(True, False, False, True, True, False, True)
     params['anchor'] = params_old.get('anchor', 'anchor_top')
 
     settings_user = settings()
@@ -973,7 +942,7 @@ def settings_options_html(params={}):
             return redirect(url_for('settings_options_html'))
 
     return render_template(
-        'settings_options.html', fab=fab, settings_user=settings_user, params=params)
+        'settings_options.html', settings_user=settings_user, params=params)
 
 
 # XXX settings_admin_users
@@ -987,9 +956,8 @@ def settings_admin_users_html(params={}):
         params_old = {}
         abort(404)
     params = {}
-    fab = Fab(True, False, False, True, True, True, False)
     params['anchor'] = params_old.get('anchor', 'anchor_top')
-    params['current_settings_id'] = params_old.get('current_settings_id', hashids_encode(0))
+    params['current_settings_id'] = params_old.get('current_settings_id', 0)
     params['collapse_user_edit'] = params_old.get('collapse_user_edit', False)
     params['user_delete_link'] = params_old.get('user_delete_link', False)
 
@@ -1027,7 +995,7 @@ def settings_admin_users_html(params={}):
                 flash_wtforms(settings_edit_form, flash_toast, 'warning')
 
             return render_template(
-                'settings_admin_users.html', fab=fab, settings_all=settings_all, settings_edit=settings_edit_form,
+                'settings_admin_users.html', settings_all=settings_all, settings_edit=settings_edit_form,
                 settings_edit_ban=settings_edit_ban, settings_edit_tutoria_timeout=settings_edit_tutoria_timeout,
                 settings_edit_calendar=settings_edit_calendar, params=params)
 
@@ -1073,7 +1041,7 @@ def settings_admin_users_html(params={}):
             return redirect(url_for('settings_admin_users_html', params=dic_encode(params)))
 
     return render_template(
-        'settings_admin_users.html', fab=fab, settings_all=settings_all, settings_edit=Settings_Edit(),
+        'settings_admin_users.html', settings_all=settings_all, settings_edit=Settings_Edit(),
         params=params)
 
 
@@ -1087,15 +1055,13 @@ def settings_grupos_html(params={}):
     except:
         params_old = {}
         abort(404)
-
     params = {}
-    fab = Fab(True, False, False, True, True, False, True)
     params['anchor'] = params_old.get('anchor', 'anchor_top')
     params['login'] = params_old.get('login', False)
     params['collapse_grupo_add'] = params_old.get('collapse_grupo_add', False)
     params['grupo_delete_link'] = params_old.get('grupo_delete_link', False)
     params['collapse_grupo_edit'] = params_old.get('collapse_grupo_edit', False)
-    params['current_grupo_id'] = params_old.get('current_grupo_id', hashids_encode(0))
+    params['current_grupo_id'] = params_old.get('current_grupo_id', 0)
     params['grupo_edit_link'] = params_old.get('grupo_edit_link', False)
 
     if request.method == 'POST':
@@ -1116,7 +1082,7 @@ def settings_grupos_html(params={}):
                     grupo_add_form.nombre.errors = ['']
                     flash_toast(Markup('<strong>') + grupo_add.nombre + Markup('</strong> ya existe en ') + str(grupo_add.curso_academico) + Markup(' | ') + str(int(grupo_add.curso_academico) + 1) + Markup('<br> Cambie el nombre'), 'warning')
                     return render_template(
-                        'settings_grupos.html', fab=fab, grupo_add=grupo_add_form, grupo_edit=Grupo_Add(), grupos=grupos(), params=params)
+                        'settings_grupos.html', grupo_add=grupo_add_form, grupo_edit=Grupo_Add(), grupos=grupos(), params=params)
                 else:
                     # NOTE set grupo_activo
                     session_sql.add(grupo_add)
@@ -1139,8 +1105,9 @@ def settings_grupos_html(params={}):
                         return redirect(url_for('settings_grupos_html', params=dic_encode(params)))
             else:
                 flash_wtforms(grupo_add_form, flash_toast, 'warning')
-            return render_template('settings_grupos.html',
-                                   fab=fab, grupo_add=grupo_add_form, grupo_edit=Grupo_Add(), grupos=grupos(), params=params)
+            return render_template(
+                'settings_grupos.html', grupo_add=grupo_add_form, grupo_edit=Grupo_Add(),
+                grupos=grupos(), params=params)
 
         # XXX selector_grupo_edit_link
         if request.form['selector_button'] == 'selector_grupo_edit_link':
@@ -1181,7 +1148,7 @@ def settings_grupos_html(params={}):
             else:
                 flash_wtforms(grupo_edit_form, flash_toast, 'warning')
             return render_template(
-                'settings_grupos.html', fab=fab, grupo_add=Grupo_Add(), grupos=grupos(), grupo_edit=grupo_edit_form, params=params)
+                'settings_grupos.html', grupo_add=Grupo_Add(), grupos=grupos(), grupo_edit=grupo_edit_form, params=params)
 
         # XXX selector_grupo_edit_close
         if request.form['selector_button'] == 'selector_grupo_edit_close':
@@ -1218,7 +1185,7 @@ def settings_grupos_html(params={}):
             params['anchor'] = 'anchor_gru_' + str(hashids_encode(current_grupo_id))
             return redirect(url_for('settings_grupos_html', params=dic_encode(params)))
     return render_template(
-        'settings_grupos.html', fab=fab, grupo_add=Grupo_Add(), grupo_edit=Grupo_Add(), grupos=grupos(), params=params)
+        'settings_grupos.html', grupo_add=Grupo_Add(), grupo_edit=Grupo_Add(), grupos=grupos(), params=params)
 
 
 # XXX settings_admin_citas
@@ -1233,11 +1200,10 @@ def settings_admin_citas_html(params={}):
         abort(404)
 
     params = {}
-    fab = Fab(True, False, False, True, True, True, False)
     citas = session_sql.query(Cita).order_by(desc('created_at')).all()
     params['anchor'] = params_old.get('anchor', 'anchor_top')
     params['collapse_cita_add'] = params_old.get('collapse_cita_add', False)
-    params['current_cita_id'] = params_old.get('current_cita_id', hashids_encode(0))
+    params['current_cita_id'] = params_old.get('current_cita_id', 0)
     params['collapse_cita_edit'] = params_old.get('collapse_cita_edit', False)
     params['cita_delete_link'] = params_old.get('cita_delete_link', False)
 
@@ -1255,7 +1221,7 @@ def settings_admin_citas_html(params={}):
                     cita_add_form.frase.errors = ['']
                     flash_toast(Markup('<strong>') + 'Cita duplicada' + Markup('</strong>'), 'warning')
                     return render_template(
-                        'settings_admin_citas.html', fab=fab, cita_add=cita_add_form, cita_edit=Cita_Add(), citas=citas,
+                        'settings_admin_citas.html', cita_add=cita_add_form, cita_edit=Cita_Add(), citas=citas,
                         params=params)
                 else:
                     session_sql.add(cita_add)
@@ -1265,7 +1231,7 @@ def settings_admin_citas_html(params={}):
             else:
                 flash_wtforms(cita_add_form, flash_toast, 'warning')
             return render_template(
-                'settings_admin_citas.html', fab=fab, cita_add=cita_add_form, cita_edit=Cita_Add(), citas=citas,
+                'settings_admin_citas.html', cita_add=cita_add_form, cita_edit=Cita_Add(), citas=citas,
                 params=params)
 
         if request.form['selector_button'] == 'selector_cita_add_close':
@@ -1298,7 +1264,7 @@ def settings_admin_citas_html(params={}):
             else:
                 flash_wtforms(cita_edit_form, flash_toast, 'warning')
             return render_template(
-                'settings_admin_citas.html', fab=fab, cita_add=Cita_Add(), citas=citas, cita_edit=cita_edit_form,
+                'settings_admin_citas.html', cita_add=Cita_Add(), citas=citas, cita_edit=cita_edit_form,
                 cita_edit_visible=cita_edit_visible, params=params)
         # XXX selector_cita_edit_close
         if request.form['selector_button'] == 'selector_cita_edit_close':
@@ -1339,18 +1305,18 @@ def settings_admin_citas_html(params={}):
             return redirect(url_for('settings_admin_citas_html', params=dic_encode(params)))
 
     return render_template(
-        'settings_admin_citas.html', fab=fab, cita_add=Cita_Add(), cita_edit=Cita_Add(), citas=citas,
+        'settings_admin_citas.html', cita_add=Cita_Add(), cita_edit=Cita_Add(), citas=citas,
         params=params)
 
 
 # XXX informe_no_disponible
 @app.route('/informe_no_disponible', methods=['GET', 'POST'])
 def informe_no_disponible_html():
-
-    return render_template('informe_no_disponible.html', params=params)
-
+    return render_template('informe_no_disponible.html')
 
 # XXX informe
+
+
 @app.route('/informe/<token_hash>', methods=['GET', 'POST'])
 def informe_html(token_hash):
     try:
@@ -1358,6 +1324,7 @@ def informe_html(token_hash):
     except:
         return redirect(url_for('informe_no_disponible_html'))
     params_anchor_off = True  # NOTE necesario para activar el anchor sin pasarlo por params
+
     if request.method == 'POST':
         token_hash = request.form.get('token_hash')
         tutoria_id = request.form.get('tutoria_id')
@@ -1403,7 +1370,6 @@ def informe_html(token_hash):
         if request.form['selector_button'] == 'selector_prueba_evaluable_delete':
             anchor = 'anchor_pru_eva'
             prueba_evaluable_delete = invitado_pruebas_evaluables(informe.id)[-1]
-            print('nota:', prueba_evaluable_delete.nota)
             session_sql.delete(prueba_evaluable_delete)
             session_sql.commit()
             return redirect(url_for('informe_html', token_hash=token_hash, anchor=anchor))
@@ -1422,6 +1388,7 @@ def informe_html(token_hash):
             params['docente'] = asignatura.nombre + ' ' + asignatura.apellidos
             params['params_anchor_off'] = True
             params['invitado'] = True
+
             return redirect(url_for('informe_success_html', params=dic_encode(params)))
 
         return render_template(
@@ -1438,7 +1405,6 @@ def informe_html(token_hash):
         grupo = alumno_grupo(alumno.id)
         informe = invitado_informe(tutoria_id, asignatura_id)
         anchor = request.args.get('anchor', 'anchor_top')
-
         return render_template(
             'informe.html', tutoria=tutoria, asignatura=asignatura,
             alumno=alumno, grupo=grupo, informe=informe, token_hash=token_hash,
@@ -1486,12 +1452,10 @@ def asignaturas_html(params={}):
         params_old = {}
         abort(404)
     params = {}
-
-    fab = Fab(True, False, False, True, False, True, True)
     params['anchor'] = params_old.get('anchor', 'anchor_top')
     params['collapse_asignatura_add'] = params_old.get('collapse_asignatura_add', False)
     params['collapse_asignatura_edit'] = params_old.get('collapse_asignatura_edit', False)
-    params['current_asignatura_id'] = params_old.get('current_asignatura_id', hashids_encode(0))
+    params['current_asignatura_id'] = params_old.get('current_asignatura_id', 0)
     params['asignatura_delete_link'] = params_old.get('asignatura_delete_link', False)
     params['asignatura_edit_link'] = params_old.get('asignatura_edit_link', False)
 
@@ -1525,7 +1489,7 @@ def asignaturas_html(params={}):
             else:
                 flash_wtforms(asignatura_add_form, flash_toast, 'warning')
             return render_template(
-                'asignaturas.html', fab=fab, asignatura_add=asignatura_add_form, asignatura_edit=Asignatura_Add(),
+                'asignaturas.html', asignatura_add=asignatura_add_form, asignatura_edit=Asignatura_Add(),
                 params=params)
 
         # XXX selector_asignatura_add_cerrar
@@ -1633,7 +1597,7 @@ def asignaturas_html(params={}):
             else:
                 flash_wtforms(asignatura_edit_form, flash_toast, 'warning')
             return render_template(
-                'asignaturas.html', fab=fab, asignatura_add=Asignatura_Add(), asignatura_edit=asignatura_edit_form,
+                'asignaturas.html', asignatura_add=Asignatura_Add(), asignatura_edit=asignatura_edit_form,
                 params=params)
 
         # XXX asignatura_edit_rollback
@@ -1665,13 +1629,12 @@ def asignaturas_html(params={}):
             return redirect(url_for('asignaturas_html', params=dic_encode(params)))
 
     return render_template(
-        'asignaturas.html', fab=fab, asignatura_add=Asignatura_Add(), asignatura_edit=Asignatura_Add(),
+        'asignaturas.html', asignatura_add=Asignatura_Add(), asignatura_edit=Asignatura_Add(),
         asignaturas=asignaturas, params=params)
 
 
 @app.route('/user_add', methods=['GET', 'POST'])
 def user_add_html():
-    fab = Fab(True, False, True, False, False, False, False)
     user_add_form = User_Add(request.form)
     if request.method == 'POST':
         if user_add_form.validate():
@@ -1698,8 +1661,8 @@ def user_add_html():
                 return redirect(url_for('alumnos_html'))
         else:
             flash_wtforms(user_add_form, flash_toast, 'warning')
-        return render_template('user_add.html', fab=fab, user_add=user_add_form)
-    return render_template('user_add.html', fab=fab, user_add=User_Add())
+        return render_template('user_add.html', user_add=user_add_form)
+    return render_template('user_add.html', user_add=User_Add())
 
 
 # XXX login
@@ -1708,7 +1671,6 @@ def user_add_html():
 @app.route('/login', methods=['GET', 'POST'])
 def login_html():
     params = {}
-    fab = Fab(True, True, False, False, False, False, False)
     session.clear()
     login_fail = False
     login_form = User_Login(request.form)
@@ -1717,7 +1679,7 @@ def login_html():
         user_sql = session_sql.query(User).filter_by(username=login_form.username.data).first()
 
         if ban:
-            return render_template('login.html', fab=fab, user_login=login_form, login_fail=login_fail, params=params, ban=ban)
+            return render_template('login.html', user_login=login_form, login_fail=login_fail, params=params, ban=ban)
         if user_sql:
             if check_password_hash(user_sql.password, login_form.password.data):
                 login_user(user_sql, remember=login_form.remember.data)
@@ -1741,13 +1703,12 @@ def login_html():
                 flash_toast('Usuario no registrado', 'warning')
         flash_toast(Markup('<strong>') + login_form.username.data + Markup('</strong>') + ' no existe como usuario' + Markup('<br>Debería crear una nueva cuenta.'), 'warning')
         login_fail = True
-    return render_template('login.html', fab=fab, user_login=login_form, login_fail=login_fail, params=params, ban=ban)
+    return render_template('login.html', user_login=login_form, login_fail=login_fail, params=params, ban=ban)
 
 
 @app.route('/logout')
 def logout_html():
     params = {}
-    fab = Fab(True, False, True, False, False, False, False)
     logout_user()
     flash_toast('Session cerrada', 'success')
-    return render_template('logout.html', fab=fab, params=params)
+    return render_template('logout.html', params=params)

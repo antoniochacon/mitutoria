@@ -1,6 +1,7 @@
 {% extends '_layout.html' %}
 {% block body %}
-	{%from '_macro.html' import field_form, titulo_1%}
+	{%from '_macro.html' import nav_bar_top, titulo_1%}
+	{{ nav_bar_top(link_active='Alumnos',params=params, current_user=current_user) }}
 	<div class="paper bg-white padding_contenido">
 		{{titulo_1(bg_color='bg-primary', titulo='Tutoría no existe ')}}
 		<div class="padding_3 text-warning text-center">
@@ -12,5 +13,4 @@
 		</div>
 		<br>
 	</div>
-	<br><br>
 {% endblock %}

@@ -1,13 +1,15 @@
 {% extends '_layout.html' %}
 {% block body %}
-	{%from '_macro.html' import field_form, titulo_1%}
-	<div class="paper bg-white padding_contenido">
-		{{titulo_1(url='informe', bg_color='bg-primary', titulo='Informe no disponible')}}
-		<div class="padding_3 text-warning text-center">
-			Este informe no esta disponible.
-			<br>
-			Consulte con el tutor/a correspodiente.
+	{%from '_macro.html' import nav_bar_top, titulo_1%}
+{% macro nav_bar_top(current_user=current_user) %}
+	<div class="container">
+		<div class="paper bg-white padding_contenido">
+			{{titulo_1(url='informe', bg_color='bg-primary', titulo='Informe no disponible')}}
+			<div class="padding_3 text-warning text-center">
+				Este informe no esta disponible.
+				<br>
+				Consulte con el tutor/a correspodiente.
+			</div>
 		</div>
 	</div>
-	<br><br>
 {% endblock %}

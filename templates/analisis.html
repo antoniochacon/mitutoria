@@ -1,11 +1,11 @@
 {% extends '_layout.html' %}
 {% block body %}
 	{%from '_macro.html' import nav_bar_top, titulo_1, highcharts_asignatura,highcharts_cuestionario,highcharts_asignaturas, highcharts_evalucion, highcharts_tutoria_stats%}
-	{{ nav_bar_top(link_active='Alumnos',params=params) }}
+	{{ nav_bar_top(link_active='Alumnos',params=params, current_user=current_user) }}
 	<div class="paper bg-white padding_contenido">
 		{% if grupo and alumno and tutoria %}
-			{{titulo_1(url='analisis',bg_color='bg-dark', titulo='Análisis gráfico de la tutoría')}}
-			<form action="/tutoria_edit" method="POST" name="analisis{{hashids_encode(tutoria.id)}}">
+			{{titulo_1(bg_color='bg-dark', titulo='Análisis gráfico de la tutoría')}}
+			<form action="/analisis" method="POST">
 				<div class="row align-items-center pb-2">
 					<div class="col-sm-12 col-md-6 col-lg-4">
 						<span class="text-mutted">Alumno:
@@ -71,7 +71,7 @@
 									<button role="button" type="submit" name="selector_button" value="selector_tutoria_delete_link" class="btn btn-sm {% if tutoria.activa %} btn-outline-dark{% else %} btn-outline-mutted{% endif %}" title="eliminar tutoria">
 										<i class="material-icons vertical-center{% if tutoria.activa %} color-gray-darken-1 {% endif %}">delete</i>
 									</button>
-									<button role="button" type="submit" name="selector_button" value="selector_tutoria_regresar_alumno" class="btn btn-sm {% if tutoria.activa %} btn-outline-dark{% else %} btn-outline-mutted{% endif %}" title="regresar a {{alumno.nombre}}">
+									<button role="button" type="submit" name="selector_button" value="selector_tutoria_regresar_alumno" class="btn btn-sm {% if tutoria.activa %} btn-outline-dark{% else %} btn-outline-mutted{% endif %}" title="ver ficha de {{alumno.nombre}}">
 										<i class="material-icons vertical-center {% if tutoria.activa %} color-gray-darken-1 {% endif %}">person</i>
 									</button>
 								</div>
@@ -98,13 +98,12 @@
 				<!-- *************************** -->
 				{% if params['tutoria_re_enviar_link']%}
 					{% include 'analisis_re_enviar_a_block.html' %}
-					<br>
+
 				{% endif %}
 				{% if params['tutoria_edit_link'] %}
 					{% include 'analisis_tutoria_edit_block.html' %}
 				{% endif %}
 			</form>
-			<br>
 			<a data-toggle="collapse" href="#analisis_cuestionario" class="collapse_header_1" aria-expanded="true" title="Analisis del cuestionario">
 				<i class="material-icons vertical-center">expand_more</i>
 				Analisis del cuestionario
@@ -133,7 +132,7 @@
 						<div class="padding_contenido">
 							{% if not df_asignaturas_lista(df_data, tutoria.id) %}
 								<span class="text-info">No se han recibido ningun informe para esta tutoría.</span>
-								<br>
+
 							{% endif %}
 						</div>
 					</div>
@@ -175,10 +174,10 @@
 			</div>
 		{% else %}
 			<div class="padding_3 text-warning text-center">
-				No se dispone de analisis para esta turoria.
+				Esta tutoria no existe.
 				<br><br>
 				<div class="btn-group" role="group" aria-label="...">
-					<a class="btn btn-outline-mutted btn-sm" href="/alumnos" role="button">listado de alumnos</a>
+					<a class="btn btn-outline-dark btn-sm" href="/alumnos" role="button">ir a inicio</a>
 				</div>
 			</div>
 		{% endif %}
