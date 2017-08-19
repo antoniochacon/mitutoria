@@ -480,13 +480,13 @@ def alumnos_html(params={}):
         tutoria_add=Tutoria_Add(), tutoria_edit=Tutoria_Add(), asignatura_add=Asignatura_Add(),
         params=params)
 
-# XXX settings_admin_cuestionario
+# XXX admin_cuestionario
 
 
-@app.route('/settings_admin_cuestionario', methods=['GET', 'POST'])
-@app.route('/settings_admin_cuestionario/<params>', methods=['GET', 'POST'])
+@app.route('/admin_cuestionario', methods=['GET', 'POST'])
+@app.route('/admin_cuestionario/<params>', methods=['GET', 'POST'])
 @login_required
-def settings_admin_cuestionario_html(params={}):
+def admin_cuestionario_html(params={}):
     try:
         params_old = dic_decode(params)  # NOTE matiene siempre una copia de entrada original por si se necesita mas adelante
     except:
@@ -526,30 +526,30 @@ def settings_admin_cuestionario_html(params={}):
                         pregunta_add_form.orden.errors = ['']
                         flash_toast('Orden duplicado', 'warning')
                     return render_template(
-                        'settings_admin_cuestionario.html',  pregunta_add=pregunta_add_form, preguntas=preguntas(''),
+                        'admin_cuestionario.html',  pregunta_add=pregunta_add_form, preguntas=preguntas(''),
                         pregunta_edit=Pregunta_Add(), params=params)
                 else:
                     session_sql.add(pregunta_add)
                     session_sql.commit()
                     flash_toast('Pregunta agregada', 'success')
-                    return redirect(url_for('settings_admin_cuestionario_html', params=dic_encode(params)))
+                    return redirect(url_for('admin_cuestionario_html', params=dic_encode(params)))
             else:
                 params['collapse_pregunta_add'] = True
                 flash_wtforms(pregunta_add_form, flash_toast, 'warning')
             return render_template(
-                'settings_admin_cuestionario.html', pregunta_add=pregunta_add_form, preguntas=preguntas(''),
+                'admin_cuestionario.html', pregunta_add=pregunta_add_form, preguntas=preguntas(''),
                 pregunta_edit=Pregunta_Add(), params=params)
 
         # XXX selector_pregunta_add_close
         if request.form['selector_button'] == 'selector_pregunta_add_close':
-            return redirect(url_for('settings_admin_cuestionario_html'))
+            return redirect(url_for('admin_cuestionario_html'))
 
         # XXX selector_pregunta_edit_link
         if request.form['selector_button'] == 'selector_pregunta_edit_link':
             params['pregunta_edit_link'] = True
             params['collapse_pregunta_edit'] = True
             params['anchor'] = 'anchor_pre_' + str(hashids_encode(current_pregunta_id))
-            return redirect(url_for('settings_admin_cuestionario_html', params=dic_encode(params)))
+            return redirect(url_for('admin_cuestionario_html', params=dic_encode(params)))
 
         # XXX pregunta_edit
         if request.form['selector_button'] in ['selector_pregunta_edit', 'selector_move_down', 'selector_move_up']:
@@ -606,17 +606,17 @@ def settings_admin_cuestionario_html(params={}):
                             break
 
                 session_sql.commit()
-                return redirect(url_for('settings_admin_cuestionario_html', params=dic_encode(params)))
+                return redirect(url_for('admin_cuestionario_html', params=dic_encode(params)))
             else:
                 flash_wtforms(pregunta_edit_form, flash_toast, 'warning')
             return render_template(
-                'settings_admin_cuestionario.html', pregunta_add=Pregunta_Add(), preguntas=preguntas(''),
+                'admin_cuestionario.html', pregunta_add=Pregunta_Add(), preguntas=preguntas(''),
                 pregunta_edit=pregunta_edit_form, move_down=move_down, move_up=move_up, visible=visible,
                 active_default=active_default, params=params)
 
         # XXX selector_pregunta_edit_close
         if request.form['selector_button'] == 'selector_pregunta_edit_close':
-            return redirect(url_for('settings_admin_cuestionario_html'))
+            return redirect(url_for('admin_cuestionario_html'))
 
         # XXX selector_pregunta_edit_rollback
         if request.form['selector_button'] == 'selector_pregunta_edit_rollback':
@@ -625,7 +625,7 @@ def settings_admin_cuestionario_html(params={}):
             params['collapse_pregunta_edit'] = True
             params['anchor'] = 'anchor_pre_' + str(hashids_encode(current_pregunta_id))
             session_sql.rollback()
-            return redirect(url_for('settings_admin_cuestionario_html', params=dic_encode(params)))
+            return redirect(url_for('admin_cuestionario_html', params=dic_encode(params)))
 
         # XXX selector_pregunta_delete_link
         if request.form['selector_button'] == 'selector_pregunta_delete_link':
@@ -633,9 +633,10 @@ def settings_admin_cuestionario_html(params={}):
             params['current_pregunta_id'] = current_pregunta_id
             params['collapse_pregunta_edit'] = True
             params['anchor'] = 'anchor_pre_' + str(hashids_encode(current_pregunta_id))
+            params['pregunta_edit_link'] = True
             params['pregunta_delete_link'] = True
             flash_toast('Debe confirmar la aliminacion', 'warning')
-            return redirect(url_for('settings_admin_cuestionario_html', params=dic_encode(params)))
+            return redirect(url_for('admin_cuestionario_html', params=dic_encode(params)))
 
         # XXX pregunta_delete
         if request.form['selector_button'] == 'selector_pregunta_delete':
@@ -645,7 +646,7 @@ def settings_admin_cuestionario_html(params={}):
             session_sql.delete(pregunta_delete)
             session_sql.commit()
             flash_toast('Pregunta elminada', 'success')
-            return redirect(url_for('settings_admin_cuestionario_html'))
+            return redirect(url_for('admin_cuestionario_html'))
 
         # XXX pregunta_delete_close
         if request.form['selector_button'] == 'selector_pregunta_delete_close':
@@ -653,10 +654,10 @@ def settings_admin_cuestionario_html(params={}):
             params['current_pregunta_id'] = current_pregunta_id
             params['collapse_pregunta_edit'] = True
             params['anchor'] = 'anchor_pre_' + str(hashids_encode(current_pregunta_id))
-            return redirect(url_for('settings_admin_cuestionario_html', params=dic_encode(params)))
+            return redirect(url_for('admin_cuestionario_html', params=dic_encode(params)))
 
     return render_template(
-        'settings_admin_cuestionario.html', pregunta_add=Pregunta_Add(), preguntas=preguntas(''),
+        'admin_cuestionario.html', pregunta_add=Pregunta_Add(), preguntas=preguntas(''),
         pregunta_edit=Pregunta_Add(), params=params)
 
 
@@ -942,11 +943,11 @@ def settings_options_html(params={}):
         'settings_options.html', settings_user=settings_user, params=params)
 
 
-# XXX settings_admin_users
-@app.route('/settings_admin_users', methods=['GET', 'POST'])
-@app.route('/settings_admin_users/<params>', methods=['GET', 'POST'])
+# XXX admin_users
+@app.route('/admin_users', methods=['GET', 'POST'])
+@app.route('/admin_users/<params>', methods=['GET', 'POST'])
 @login_required
-def settings_admin_users_html(params={}):
+def admin_users_html(params={}):
     try:
         params_old = dic_decode(params)
     except:
@@ -985,19 +986,19 @@ def settings_admin_users_html(params={}):
                 settings_sql.calendar = settings_edit_calendar
                 flash_toast(Markup('Usuario <strong>') + user_by_id(current_settings_id).username + Markup('</strong>') + ' actualizado', 'success')
                 session_sql.commit()
-                return redirect(url_for('settings_admin_users_html', params=dic_encode(params)))
+                return redirect(url_for('admin_users_html', params=dic_encode(params)))
 
             else:
                 flash_wtforms(settings_edit_form, flash_toast, 'warning')
 
             return render_template(
-                'settings_admin_users.html', settings_all=settings_all, settings_edit=settings_edit_form,
+                'admin_users.html', settings_all=settings_all, settings_edit=settings_edit_form,
                 settings_edit_ban=settings_edit_ban, settings_edit_tutoria_timeout=settings_edit_tutoria_timeout,
                 settings_edit_calendar=settings_edit_calendar, params=params)
 
         # XXX selector_user_edit_close
         if request.form['selector_button'] == 'selector_user_edit_close':
-            return redirect(url_for('settings_admin_users_html'))
+            return redirect(url_for('admin_users_html'))
 
         # XXX user_edit_rollback
         if request.form['selector_button'] == 'selector_user_edit_rollback':
@@ -1006,7 +1007,7 @@ def settings_admin_users_html(params={}):
             params['collapse_user_edit'] = True
             params['anchor'] = 'anchor_set_' + str(hashids_encode(current_settings_id))
             session_sql.rollback()
-            return redirect(url_for('settings_admin_users_html', params=dic_encode(params)))
+            return redirect(url_for('admin_users_html', params=dic_encode(params)))
 
         # XXX user_delete_link
         if request.form['selector_button'] == 'selector_user_delete_link':
@@ -1016,7 +1017,7 @@ def settings_admin_users_html(params={}):
             params['anchor'] = 'anchor_set_' + str(hashids_encode(current_settings_id))
             params['user_delete_link'] = True
             flash_toast('Debe confirmar la aliminacion', 'warning')
-            return redirect(url_for('settings_admin_users_html', params=dic_encode(params)))
+            return redirect(url_for('admin_users_html', params=dic_encode(params)))
 
         # XXX user_delete
         if request.form['selector_button'] == 'selector_user_delete':
@@ -1026,7 +1027,7 @@ def settings_admin_users_html(params={}):
                 session_sql.delete(user_sql)
                 session_sql.commit()
                 flash_toast(Markup('Usuario <strong>') + user_sql.username + Markup('</strong>') + ' elminado', 'success')
-                return redirect(url_for('settings_admin_users_html'))
+                return redirect(url_for('admin_users_html'))
 
         # XXX user_delete_close
         if request.form['selector_button'] == 'selector_user_delete_close':
@@ -1034,10 +1035,10 @@ def settings_admin_users_html(params={}):
             params['current_settings_id'] = current_settings_id
             params['collapse_user_edit'] = True
             params['anchor'] = 'anchor_set_' + str(hashids_encode(current_settings_id))
-            return redirect(url_for('settings_admin_users_html', params=dic_encode(params)))
+            return redirect(url_for('admin_users_html', params=dic_encode(params)))
 
     return render_template(
-        'settings_admin_users.html', settings_all=settings_all, settings_edit=Settings_Edit(),
+        'admin_users.html', settings_all=settings_all, settings_edit=Settings_Edit(),
         params=params)
 
 
@@ -1183,11 +1184,11 @@ def settings_grupos_html(params={}):
         'settings_grupos.html', grupo_add=Grupo_Add(), grupo_edit=Grupo_Add(), grupos=grupos(), params=params)
 
 
-# XXX settings_admin_citas
-@app.route('/settings_admin_citas', methods=['GET', 'POST'])
-@app.route('/settings_admin_citas/<params>', methods=['GET', 'POST'])
+# XXX admin_citas
+@app.route('/admin_citas', methods=['GET', 'POST'])
+@app.route('/admin_citas/<params>', methods=['GET', 'POST'])
 @login_required
-def settings_admin_citas_html(params={}):
+def admin_citas_html(params={}):
     try:
         params_old = dic_decode(params)  # NOTE matiene siempre una copia de entrada original por si se necesita mas adelante
     except:
@@ -1216,21 +1217,21 @@ def settings_admin_citas_html(params={}):
                     cita_add_form.frase.errors = ['']
                     flash_toast(Markup('<strong>') + 'Cita duplicada' + Markup('</strong>'), 'warning')
                     return render_template(
-                        'settings_admin_citas.html', cita_add=cita_add_form, cita_edit=Cita_Add(), citas=citas,
+                        'admin_citas.html', cita_add=cita_add_form, cita_edit=Cita_Add(), citas=citas,
                         params=params)
                 else:
                     session_sql.add(cita_add)
                     session_sql.commit()
                     flash_toast('Cita agregada', 'success')
-                    return redirect(url_for('settings_admin_citas_html', params=dic_encode(params)))
+                    return redirect(url_for('admin_citas_html', params=dic_encode(params)))
             else:
                 flash_wtforms(cita_add_form, flash_toast, 'warning')
             return render_template(
-                'settings_admin_citas.html', cita_add=cita_add_form, cita_edit=Cita_Add(), citas=citas,
+                'admin_citas.html', cita_add=cita_add_form, cita_edit=Cita_Add(), citas=citas,
                 params=params)
 
         if request.form['selector_button'] == 'selector_cita_add_close':
-            return redirect(url_for('settings_admin_citas_html'))
+            return redirect(url_for('admin_citas_html'))
 
         # XXX cita_edit
         if request.form['selector_button'] == 'selector_cita_edit':
@@ -1254,15 +1255,15 @@ def settings_admin_citas_html(params={}):
                         cita.visible = cita_edit_visible
                     flash_toast('Cita actualizada', 'success')
                     session_sql.commit()
-                    return redirect(url_for('settings_admin_citas_html', params=dic_encode(params)))
+                    return redirect(url_for('admin_citas_html', params=dic_encode(params)))
             else:
                 flash_wtforms(cita_edit_form, flash_toast, 'warning')
             return render_template(
-                'settings_admin_citas.html', cita_add=Cita_Add(), citas=citas, cita_edit=cita_edit_form,
+                'admin_citas.html', cita_add=Cita_Add(), citas=citas, cita_edit=cita_edit_form,
                 cita_edit_visible=cita_edit_visible, params=params)
         # XXX selector_cita_edit_close
         if request.form['selector_button'] == 'selector_cita_edit_close':
-            return redirect(url_for('settings_admin_citas_html'))
+            return redirect(url_for('admin_citas_html'))
 
         # XXX cita_edit_rollback
         if request.form['selector_button'] == 'selector_cita_edit_rollback':
@@ -1271,7 +1272,7 @@ def settings_admin_citas_html(params={}):
             params['collapse_cita_edit'] = True
             params['anchor'] = 'anchor_cit_' + str(hashids_encode(current_cita_id))
             session_sql.rollback()
-            return redirect(url_for('settings_admin_citas_html', params=dic_encode(params)))
+            return redirect(url_for('admin_citas_html', params=dic_encode(params)))
 
         # XXX cita_delete_link
         if request.form['selector_button'] == 'selector_cita_delete_link':
@@ -1281,7 +1282,7 @@ def settings_admin_citas_html(params={}):
             params['anchor'] = 'anchor_cit_' + str(hashids_encode(current_cita_id))
             params['cita_delete_link'] = True
             flash_toast('Debe confirmar la aliminacion', 'warning')
-            return redirect(url_for('settings_admin_citas_html', params=dic_encode(params)))
+            return redirect(url_for('admin_citas_html', params=dic_encode(params)))
 
         # XXX cita_delete
         if request.form['selector_button'] == 'selector_cita_delete':
@@ -1291,15 +1292,15 @@ def settings_admin_citas_html(params={}):
             session_sql.delete(cita_sql)
             flash_toast('Cita elminada', 'success')
             session_sql.commit()
-            return redirect(url_for('settings_admin_citas_html'))
+            return redirect(url_for('admin_citas_html'))
 
         # XXX cita_delete_close
         if request.form['selector_button'] == 'selector_cita_delete_close':
             params['cita_delete_link'] = False
-            return redirect(url_for('settings_admin_citas_html', params=dic_encode(params)))
+            return redirect(url_for('admin_citas_html', params=dic_encode(params)))
 
     return render_template(
-        'settings_admin_citas.html', cita_add=Cita_Add(), cita_edit=Cita_Add(), citas=citas,
+        'admin_citas.html', cita_add=Cita_Add(), cita_edit=Cita_Add(), citas=citas,
         params=params)
 
 

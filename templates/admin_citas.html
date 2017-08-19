@@ -1,10 +1,10 @@
-{% extends '_layout.html' %}
+admin_citas{% extends '_layout.html' %}
 {% block body %}
 	{%from '_macro.html' import nav_bar_top, titulo_1, nav_tabs, field_form%}
 		{{ nav_bar_top(link_active='Admin',params=params, current_user=current_user) }}
 	<div class="paper bg-white padding_contenido">
 		{{titulo_1(bg_color='bg-primary',titulo='Admin Settings')}}
-		{{nav_tabs(tab_active='Citas', dic={'Cuestionario':'settings_admin_cuestionario', 'Citas':'settings_admin_citas', 'Usuarios':'settings_admin_users'})}}
+		{{nav_tabs(tab_active='Citas', dic={'Cuestionario':'admin_cuestionario', 'Citas':'admin_citas', 'Usuarios':'admin_users'})}}
 		<div id="cita">
 			<div class="card_XXX">
 				{# TODO: cita_add #}
@@ -18,11 +18,11 @@
 				</a>
 				<div class="collapse {% if params['collapse_cita_add'] %} show {% endif %}" id="cita_add">
 					<div class="divider grueso bg-primary"></div>
-					{% include 'settings_admin_citas_add_block.html' %}
+					{% include 'admin_citas_add_block.html' %}
 					<div class="divider grueso bg-primary"></div>
 				</div>
 				{# TODO: citas_listado #}
-				{% include 'settings_admin_citas_edit_block.html' %}
+				{% include 'admin_citas_edit_block.html' %}
 				<br>
 			</div>
 		{% endblock %}

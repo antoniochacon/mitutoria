@@ -1,6 +1,6 @@
 <div class="card_XXX">
 	<div class="padding_3">
-		<form action="/settings_admin_users" method="POST">
+		<form action="/admin_users" method="POST">
 			<div class="row">
 				{% if equal_str(settings.id, params['current_settings_id']) and request.method=='POST'%}
 					<div class="col-xs-12 col-sm-12 col-md-6 col-lg-4">
@@ -19,7 +19,7 @@
 							<label for="settings_edit_calendar{{hashids_encode(settings.id)}}">agenda</label>
 						</div>
 						<br>
-						{% include 'settings_admin_users_ficha_buttons_block.html' %}
+						{% include 'admin_users_ficha_buttons_block.html' %}
 					</div>
 					{%else%}
 					<div class="col-xs-12 col-sm-12 col-md-4 col-lg-4">
@@ -38,7 +38,7 @@
 							<label for="settings_edit_calendar{{hashids_encode(settings.id)}}">agenda</label>
 						</div>
 						<br>
-						{% include 'settings_admin_users_ficha_buttons_block.html' %}
+						{% include 'admin_users_ficha_buttons_block.html' %}
 					</div>
 				{% endif %}
 				{# TODO: datos de usuario #}
