@@ -8,14 +8,15 @@
 		<div class="padding_3">
 			<form action="settings_options" method="POST">
 				<div class="row">
-					<div class="form-group col-md-6 col-lg-4">
+					<div class="col-md-6 col-lg-4">
+						{# NOTE elminado el form-group para ajustar mejor #}
 						<label class="custom-control custom-checkbox check_box_1">
 							<input type="checkbox" class="custom-control-input" name="settings_edit_tutoria_timeout" value="True" {% if settings_user.tutoria_timeout %} checked {% endif %}>
 							<span class="custom-control-indicator"></span>
 							<span class="custom-control-description {% if not settings_user.tutoria_timeout %}text-mutted{% endif %}">Auto archivar tutorias</span>
 						</label>
 					</div>
-					<div class="form-group col-md-6 col-lg-4">
+					<div class="col-md-6 col-lg-4">
 						<label class="custom-control custom-checkbox check_box_1">
 							<input type="checkbox" class="custom-control-input" name="settings_edit_show_tutorias_collapse" value="True" {% if settings_user.show_tutorias_collapse %} checked {% endif %}>
 							<span class="custom-control-indicator"></span>
@@ -23,7 +24,7 @@
 						</label>
 					</div>
 					{% if settings().role=='admin'%}
-						<div class="form-group col-md-6 col-lg-4">
+						<div class="col-md-6 col-lg-4">
 							<label class="custom-control custom-checkbox check_box_1">
 								<input type="checkbox" class="custom-control-input" name="settings_edit_calendar" value="True" {% if settings_user.calendar %} checked {% endif %}>
 								<span class="custom-control-indicator"></span>

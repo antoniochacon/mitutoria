@@ -4,6 +4,7 @@ import functions
 
 # ****************************
 
+
 @app.url_defaults  # Fuerza el reload de los archivos de static
 def hashed_url_for_static_file(endpoint, values):
     if 'static' == endpoint or endpoint.endswith('.static'):
@@ -332,23 +333,23 @@ def alumnos_html(params={}):
                     params['collapse_alumno_edit_asignaturas'] = True
                     flash_toast('Asignadas asignaturas a ' + Markup('<strong>') + alumno_edit_form.nombre.data + Markup('</strong>'), 'success')
                     collapse_alumno_edit_asignaturas_contador = 0
-                    return redirect(url_for('alumnos_html', params=dic_encode(params)))
+                    # return redirect(url_for('alumnos_html', params=dic_encode(params)))
+            session_sql.commit()  # NOTE agregado en caso de no modificar datos del alumno y solo asignacion de asignaturas
 
             # ***************************************
             if alumno_edit_form.validate():
                 alumno_edit = Alumno(grupo_id=settings().grupo_activo_id, nombre=alumno_edit_form.nombre.data.title(), apellidos=alumno_edit_form.apellidos.data.title())
                 alumno_sql = session_sql.query(Alumno).filter_by(id=current_alumno_id).first()
                 if alumno_sql.nombre.lower() != alumno_edit.nombre.lower() or alumno_sql.apellidos.lower() != alumno_edit.apellidos.lower():
-                    session_sql.begin_nested()
                     if alumno_sql.nombre.lower() != alumno_edit.nombre.lower():
                         alumno_sql.nombre = alumno_edit.nombre.title()
                         flash_toast(Markup('<strong>') + alumno_edit.nombre + Markup('</strong>') + ' actualizado', 'success')
                     if alumno_sql.apellidos.lower() != alumno_edit.apellidos.lower():
                         alumno_sql.apellidos = alumno_edit.apellidos.title()
                         flash_toast(Markup('<strong>') + alumno_edit.apellidos + Markup('</strong>') + ' actualizado', 'success')
+                    session_sql.commit()
                     return redirect(url_for('alumnos_html', params=dic_encode(params)))
-                session_sql.begin_nested()
-                session_sql.commit()
+
                 # XXX redirect a tutoria_add
                 if params['from_url'] == 'from_tutoria_add':
                     params['collapse_alumno'] = True
@@ -563,8 +564,10 @@ def settings_admin_cuestionario_html(params={}):
             active_default = pregunta_edit_form.active_default.data
             if not visible:
                 visible = False
+
             if not active_default:
                 active_default = False
+
             if pregunta_edit_form.validate():
                 pregunta_edit = Pregunta(enunciado=pregunta_edit_form.enunciado.data, enunciado_ticker=pregunta_edit_form.enunciado_ticker.data,
                                          orden=pregunta_edit_form.orden.data, visible=visible, active_default=active_default)
@@ -580,8 +583,8 @@ def settings_admin_cuestionario_html(params={}):
                         pregunta.visible = visible
                     if pregunta.active_default != active_default:
                         pregunta.active_default = active_default
-                    flash_toast('Pregunta actualizada', 'success')
 
+                    flash_toast('Pregunta actualizada', 'success')
                 if request.form['selector_button'] == 'selector_move_down':
                     for k in range(1, 500):
                         pregunta_down = session_sql.query(Pregunta).filter(Pregunta.orden == (pregunta.orden + k)).first()
@@ -602,10 +605,8 @@ def settings_admin_cuestionario_html(params={}):
                             flash_toast('Pregunta subida', 'success')
                             break
 
-                session_sql.begin_nested()  # FIXME no encuetro el motivo por el cual hace un rollback de varias preguntas
                 session_sql.commit()
                 return redirect(url_for('settings_admin_cuestionario_html', params=dic_encode(params)))
-
             else:
                 flash_wtforms(pregunta_edit_form, flash_toast, 'warning')
             return render_template(
@@ -688,7 +689,6 @@ def settings_cuestionario_html(params={}):
                     if association_settings_pregunta_sql:
                         session_sql.delete(association_settings_pregunta_sql)
                         contador += 1
-            session_sql.begin_nested()
             session_sql.commit()
             if not settings().preguntas:
                 flash_toast('Cuestionario vacío', 'warning')
@@ -879,7 +879,6 @@ def analisis_html(params={}):
                     tutoria_sql.fecha = tutoria_edit_form_fecha
                     tutoria_sql.hora = string_to_time(tutoria_edit_form.hora.data)
                     tutoria_sql.activa = True
-                    # session_sql.begin_nested()
                     session_sql.commit()
                     flash_toast('Tutoria actualizada', 'success')
                     params['tutoria_edit_link'] = True
@@ -936,7 +935,6 @@ def settings_options_html(params={}):
             settings().show_tutorias_collapse = settings_edit_show_tutorias_collapse
             settings().calendar = settings_edit_calendar
             flash_toast('Configuracion actualizada', 'success')
-            session_sql.begin_nested()
             session_sql.commit()
             return redirect(url_for('settings_options_html'))
 
@@ -986,7 +984,6 @@ def settings_admin_users_html(params={}):
                 settings_sql.tutoria_timeout = settings_edit_tutoria_timeout
                 settings_sql.calendar = settings_edit_calendar
                 flash_toast(Markup('Usuario <strong>') + user_by_id(current_settings_id).username + Markup('</strong>') + ' actualizado', 'success')
-                session_sql.begin_nested()
                 session_sql.commit()
                 return redirect(url_for('settings_admin_users_html', params=dic_encode(params)))
 
@@ -1141,7 +1138,6 @@ def settings_grupos_html(params={}):
                     else:
                         settings().grupo_activo_id = None
                     flash_toast(Markup('Grupo <strong>') + grupo_edit.nombre + Markup('</strong>') + ' actualizado', 'success')
-                    session_sql.begin_nested()
                     session_sql.commit()
                     return redirect(url_for('settings_grupos_html', params=dic_encode(params)))
             else:
@@ -1257,7 +1253,6 @@ def settings_admin_citas_html(params={}):
                     if cita.visible != cita_edit_visible:
                         cita.visible = cita_edit_visible
                     flash_toast('Cita actualizada', 'success')
-                    session_sql.begin_nested()
                     session_sql.commit()
                     return redirect(url_for('settings_admin_citas_html', params=dic_encode(params)))
             else:
@@ -1373,7 +1368,6 @@ def informe_html(params):
             return redirect(url_for('informe_html', token_hash=token_hash, anchor=anchor))
 
         if request.form['selector_button'] == 'selector_informe_add':
-            session_sql.begin_nested()  # NOTE no tengo claro si esto es util aqui
             session_sql.commit()
             flash_toast('Infome de ' + Markup('<strong>') + alumno.nombre + Markup('</strong>') + ' enviado', 'success')
             params = {}
@@ -1544,6 +1538,7 @@ def asignaturas_html(params={}):
                     params['collapse_asignaturas_edit_alumnos'] = True
                     flash_toast('Alumnos asignados', 'success')
                     collapse_asignatura_edit_alumnos_contador = 0
+            session_sql.commit()  # NOTE agregado en caso de no modificar datos del alumno y solo asignacion de asignaturas
             # ****************************************
 
             if asignatura_edit_form.validate():
@@ -1587,7 +1582,6 @@ def asignaturas_html(params={}):
                     if asignatura_sql.email.lower() != asignatura_edit_form.email.data.lower():
                         asignatura_sql.email = asignatura_edit_form.email.data
                         flash_toast(Markup('<strong>') + asignatura_edit_form.email.data + Markup('</strong>') + ' actualizado', 'success')
-                session_sql.begin_nested()
                 session_sql.commit()
                 return redirect(url_for('asignaturas_html', params=dic_encode(params)))
             else:

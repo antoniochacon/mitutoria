@@ -22,7 +22,7 @@
 				{# TODO: cita_edit #}
 				<div class="padding_3">
 					<form action="/settings_admin_citas" method="POST">
-						{% if equal_str(cita.id, params['current_cita_id']) and request.method=='POST' %}
+						{% if equal_str(cita.id, params['current_cita_id'])and request.method == 'POST' %}
 							{{field_form(cita_edit.frase, error=True, error_css=True, addon='frase')}}
 							{{field_form(cita_edit.autor, error=True, error_css=True, addon='autor')}}
 							{{field_form(cita_edit.current_cita_id)}}
@@ -40,7 +40,7 @@
 							</div>
 						{% endif %}
 						<br>
-						{% if equal_str(cita.id, params['current_cita_id']) and params['cita_delete_link'] %}
+						{% if equal_str(cita.id, params['current_cita_id'])and params['cita_delete_link'] %}
 							<div class="btn-group" role="group" aria-label="...">
 								<button role="button" type="submit" name="selector_button" value="selector_cita_delete" class="btn btn-outline-primary btn-sm" title="confirmar eliminar asginatura">
 									<i class="material-icons vertical-center">delete</i>
@@ -58,14 +58,13 @@
 							<div class="btn-group" role="group" aria-label="...">
 								<button role="button" type="submit" name="selector_button" value="selector_cita_edit" class="btn btn-outline-primary" title="guardar cambios">
 									<i class="material-icons vertical-center">save</i>
-									guardar</button>
-								<button role="button" type="submit" name="selector_button" value="selector_cita_edit_rollback" class="btn btn-outline-dark" title="deshacer cambios">
-									<i class="material-icons vertical-center">settings_backup_restore</i>
+									guardar
 								</button>
+								{# <button role="button" type="submit" name="selector_button" value="selector_cita_edit_rollback" class="btn btn-outline-dark" title="deshacer cambios"> <i class="material-icons vertical-center">settings_backup_restore</i> </button> #}
 								<button role="button" type="submit" name="selector_button" value="selector_cita_delete_link" class="btn btn-outline-dark" title="eliminar cita">
 									<i class="material-icons vertical-center">delete</i>
 								</button>
-								{% if equal_str(cita.id, params['current_cita_id']) and params['collapse_cita_edit'] %}
+								{% if equal_str(cita.id, params['current_cita_id'])and params['collapse_cita_edit'] %}
 									<button role="button" type="submit" name="selector_button" value="selector_cita_edit_close" class="btn btn-outline-dark" title="cerrar">
 										<i class="material-icons vertical-center">close</i>
 									</button>

@@ -7,12 +7,13 @@
 		{{nav_tabs(tab_active='Cuestionario', dic={'Cuestionario':'settings_cuestionario', 'Grupos':'settings_grupos', 'Opciones':'settings_options'})}}
 		<div class="padding_3">
 			Selecciona las preguntas que desee que formen su cuestionario.
-			<br><br>
+			<br>
 			<form action="settings_cuestionario" method="POST">
 				{% if preguntas(True) %}
 					<div class="row">
 						{% for pregunta in preguntas(True) %}
-							<div class="form-group col-md-6">
+							<div class="col-md-6">
+								{# NOTE elminado el form-group para ajustar mejor #}
 								<label class="custom-control custom-checkbox check_box_1">
 									<input type="checkbox" class="custom-control-input" name="pregunta" value="{{hashids_encode(pregunta.id)}}" {% if association_settings_pregunta_check(settings().id,pregunta.id) %} checked {% endif %}>
 									<span class="custom-control-indicator"></span>

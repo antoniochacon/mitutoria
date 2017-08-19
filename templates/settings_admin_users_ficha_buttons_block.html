@@ -16,17 +16,20 @@
 	<div class="btn-group" role="group" aria-label="...">
 		<button role="button" type="submit" name="selector_button" value="selector_user_edit" class="btn btn-outline-primary" title="guardar cambios">
 			<i class="material-icons vertical-center">save</i>
-			guardar</button>
+			guardar
+		</button>
+		{#
 		<button role="button" type="submit" name="selector_button" value="selector_user_edit_rollback" class="btn btn-outline-dark" title="deshacer cambios">
 			<i class="material-icons vertical-center">settings_backup_restore</i>
-			<button role="button" type="submit" name="selector_button" value="selector_user_delete_link" class="btn btn-outline-dark" title="eliminar usuario">
-				<i class="material-icons vertical-center">delete</i>
+		</button>#}
+		<button role="button" type="submit" name="selector_button" value="selector_user_delete_link" class="btn btn-outline-dark" title="eliminar usuario">
+			<i class="material-icons vertical-center">delete</i>
+		</button>
+		{% if equal_str(settings.id, params['current_settings_id'])and params['collapse_user_edit'] %}
+			<button role="button" type="submit" name="selector_button" value="selector_user_edit_close" class="btn btn-outline-dark" title="cerrar">
+				<i class="material-icons vertical-center">close</i>
 			</button>
-			{% if equal_str(settings.id, params['current_settings_id'])and params['collapse_user_edit'] %}
-				<button role="button" type="submit" name="selector_button" value="selector_user_edit_close" class="btn btn-outline-dark" title="cerrar">
-					<i class="material-icons vertical-center">close</i>
-				</button>
-			{% endif %}
-		</div>
-	{% endif %}
-	<br><br>
+		{% endif %}
+	</div>
+{% endif %}
+<br><br>

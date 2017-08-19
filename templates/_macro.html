@@ -101,14 +101,15 @@
 	</script>
 {% endmacro %}
 {% macro nav_tabs(tab_active, params_args, dic) %}
-	<ul class="nav nav-tabs">
-		{% for tab_key in dic.keys() %}
-			<li class="nav-items">
-				<a class="nav-link {% if tab_key==tab_active %} active {% endif %}" href="/{{dic[tab_key]}}{% if params_args %}/{{params_args}}{% endif %}">{{tab_key}}</a>
-			</li>
-		{% endfor %}
-	</ul>
-	<br>
+	<div class="pb-2">
+		<ul class="nav nav-tabs">
+			{% for tab_key in dic.keys() %}
+				<li class="nav-items">
+					<a class="nav-link {% if tab_key==tab_active %} active {% endif %}" href="/{{dic[tab_key]}}{% if params_args %}/{{params_args}}{% endif %}">{{tab_key}}</a>
+				</li>
+			{% endfor %}
+		</ul>
+	</div>
 {% endmacro %}
 {% macro titulo_user_ficha(text_color, bg_color, titulo, user) %}
 	<h3 class="{{text_color}} strong">

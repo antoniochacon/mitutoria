@@ -35,11 +35,11 @@
 					<div id="pregunta_{{hashids_encode(pregunta.id)}}" class="collapse {% if equal_str(pregunta.id, params['current_pregunta_id']) and params['collapse_pregunta_edit'] %} show {% endif %}">
 						<div class="divider grueso bg-primary"></div>
 						{# XXX: pregunta_edit #}
-						<div class="padding_3">
+						<div class="padding_3 pt-3 pb-3">
 							<form action="/settings_admin_cuestionario" method="POST">
 								<div class="row">
 									<!-- *********************************** -->
-									<div class="form-group col-md-12 mb-3">
+									<div class="form-group col-md-12">
 										<div class="input-group">
 											<input
 												type="text"
@@ -53,7 +53,7 @@
 											<span class="input-group-addon {% if request.method=='POST' and params['collpase_pregunta_edit'] %} {% if pregunta_edit.enunciado.errors %} form_addon-warning {% else %} form_addon-success {% endif %} {% endif %}">{{pregunta_edit.enunciado.label.text}}</span>
 										</div>
 									</div>
-									<div class="form-group col-md-12 mb-3">
+									<div class="form-group col-md-12">
 										<div class="input-group">
 											<input
 												type="text"
@@ -68,7 +68,7 @@
 										</div>
 									</div>
 									<div class="media col-sm-12 col-md-6 col-lg-4">
-										<div class="form-group align-self-center mr-3">
+										<div class="form-group align-self-center mr-1">
 											<div class="input-group">
 												<input
 													type="number"
@@ -174,9 +174,7 @@
 												<i class="material-icons vertical-center">save</i>
 												guardar
 											</button>
-											<button role="button" type="submit" name="selector_button" value="selector_pregunta_edit_rollback" class="btn btn-outline-dark btn-sm" title="deshacer cambios">
-												<i class="material-icons vertical-center">settings_backup_restore</i>
-											</button>
+											{# <button role="button" type="submit" name="selector_button" value="selector_pregunta_edit_rollback" class="btn btn-outline-dark btn-sm" title="deshacer cambios"> <i class="material-icons vertical-center">settings_backup_restore</i> </button> #}
 											<button role="button" type="submit" name="selector_button" value="selector_pregunta_delete_link" class="btn btn-outline-dark btn-sm" title="eliminar pregunta">
 												<i class="material-icons vertical-center">delete</i>
 											</button>
