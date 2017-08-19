@@ -8,7 +8,7 @@
 			<div class="padding_2">
 				{{grupo.nombre}}
 				{# NOTE badge #}
-				<span class="badge float-right {% if grupo_alumnos_count(grupo.id) %}badge-mutted{% else %}badge-warning{% endif %}" title="{{grupo_alumnos_count(grupo.id)}} {{singular_plural('alumno','alumnos', grupo_alumnos_count(grupo.id))}}">
+				<span class="badge float-right {% if grupo_alumnos_count(grupo.id) %}badge-mutted{% else %}badge-warning{% endif %} text-white" title="{{grupo_alumnos_count(grupo.id)}} {{singular_plural('alumno','alumnos', grupo_alumnos_count(grupo.id))}}">
 					{% if grupo_alumnos_count(grupo.id) %}
 						{{grupo_alumnos_count(grupo.id)}}
 						{{singular_plural('alumno', 'alumnos', grupo_alumnos_count(grupo.id))}}

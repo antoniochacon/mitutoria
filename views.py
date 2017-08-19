@@ -1311,33 +1311,41 @@ def informe_no_disponible_html():
 # XXX informe
 
 
-@app.route('/informe/<params>', methods=['GET', 'POST'])
-def informe_html(params):
+@app.route('/informe/<current_tutoria_asignatura_id>/', methods=['GET', 'POST'])
+@app.route('/informe/<current_tutoria_asignatura_id>/<params>', methods=['GET', 'POST'])
+def informe_html(current_tutoria_asignatura_id, params={}):
     try:
-        informe_check = session_sql.query(Association_Tutoria_Asignatura).filter(Association_Tutoria_Asignatura.token == token_hash).first()
+        current_tutoria_asignatura_id = hashids_decode(current_tutoria_asignatura_id)
+        current_tutoria_asignatura = session_sql.query(Association_Tutoria_Asignatura).filter(Association_Tutoria_Asignatura.id == current_tutoria_asignatura_id).first()
     except:
         return redirect(url_for('informe_no_disponible_html'))
-    params_anchor_off = True  # NOTE necesario para activar el anchor sin pasarlo por params
+
+    try:
+        params_old = dic_decode(params)  # NOTE matiene siempre una copia de entrada original por si se necesita mas adelante
+    except:
+        params_old = {}
+        abort(404)
+    params = {}
+    params['anchor'] = params_old.get('anchor', 'anchor_top')
 
     if request.method == 'POST':
-        token_hash = request.form.get('token_hash')
-        tutoria_id = current_id_request('tutoria_id')
-        asignatura_id = current_id_request('asignatura_id')
+        tutoria_id = current_tutoria_asignatura.tutoria_id
+        asignatura_id = current_tutoria_asignatura.asignatura_id
         tutoria = tutoria_by_id(tutoria_id)
         asignatura = asignatura_by_id(asignatura_id)
         grupo = invitado_grupo(tutoria_id)
         alumno = invitado_alumno(tutoria_id)
         settings = invitado_settings(tutoria_id)
-        informe = invitado_informe(tutoria.id, asignatura.id)
-        if not informe:
-            # informe_exist = False  # NOTE quite las comillas (no veo donde se use esto)
-            informe = Informe(tutoria_id=tutoria.id, asignatura_id=asignatura.id, comentario=request.form.get('comentario'))
+        informe_sql = invitado_informe(tutoria.id, asignatura.id)
+
+        if not informe_sql:
+            informe = Informe(tutoria_id=tutoria_id, asignatura_id=asignatura_id, comentario=request.form.get('comentario'))
             session_sql.add(informe)
             for pregunta in invitado_preguntas(settings.id):
                 respuesta = Respuesta(informe_id=informe.id, pregunta_id=pregunta.id, resultado=request.form.get('pregunta_' + str(hashids_encode(pregunta.id))))
                 session_sql.add(respuesta)
         else:
-            # informe_exist = True  # NOTE quite las comillas (no veo donde se use esto)
+            informe = informe_sql
             informe.comentario = comentario = request.form.get('comentario')
             for pregunta in invitado_preguntas(settings.id):
                 respuesta = invitado_respuesta(informe.id, pregunta.id)
@@ -1346,59 +1354,57 @@ def informe_html(params):
                     session_sql.add(respuesta_add)
                 else:
                     respuesta.resultado = request.form.get('pregunta_' + str(hashids_encode(pregunta.id)))
-        session_sql.commit()  # NOTE este era el problema de no generar los graficos, era un problema de identado
+        session_sql.commit()  # NOTE (NO BORRAR ESTA NOTA)este era el problema de no generar los graficos, era un problema de identado
 
         for prueba_evaluable in invitado_pruebas_evaluables(informe.id):
             prueba_evaluable.nota = request.form.get('prueba_evaluable_nota_' + str(hashids_encode(prueba_evaluable.id)))
 
         if request.form['selector_button'] == 'selector_prueba_evaluable_add':
-            anchor = 'anchor_pru_eva'
+            params['anchor'] = 'anchor_pru_eva'
             prueba_evaluable_nombre = request.form.get('prueba_evaluable_nombre')
             if not prueba_evaluable_nombre or prueba_evaluable_nombre == 'agregar prueba evaluable':
                 prueba_evaluable = False
             prueba_evaluable_add = Prueba_Evaluable(informe_id=informe.id, nombre=prueba_evaluable_nombre, nota=0)
             session_sql.add(prueba_evaluable_add)
-            return redirect(url_for('informe_html', token_hash=token_hash, anchor=anchor))
+            return redirect(url_for('informe_html', current_tutoria_asignatura_id=hashids_encode(current_tutoria_asignatura_id), params=dic_encode(params)))
 
         if request.form['selector_button'] == 'selector_prueba_evaluable_delete':
-            anchor = 'anchor_pru_eva'
+            params['anchor'] = 'anchor_pru_eva'
             prueba_evaluable_delete = invitado_pruebas_evaluables(informe.id)[-1]
             session_sql.delete(prueba_evaluable_delete)
             session_sql.commit()
-            return redirect(url_for('informe_html', token_hash=token_hash, anchor=anchor))
+            return redirect(url_for('informe_html', current_tutoria_asignatura_id=hashids_encode(current_tutoria_asignatura_id), params=dic_encode(params)))
 
         if request.form['selector_button'] == 'selector_informe_add':
             session_sql.commit()
             flash_toast('Infome de ' + Markup('<strong>') + alumno.nombre + Markup('</strong>') + ' enviado', 'success')
             params = {}
-            params['token_hash'] = token_hash
+            params['current_tutoria_asignatura_id'] = current_tutoria_asignatura_id
             params['alumno'] = alumno.nombre + ' ' + alumno.apellidos
             params['grupo'] = grupo.nombre
             params['fecha'] = tutoria.fecha
             params['hora'] = tutoria.hora
             params['asignatura'] = asignatura.asignatura
             params['docente'] = asignatura.nombre + ' ' + asignatura.apellidos
-            params['params_anchor_off'] = True
             params['invitado'] = True
             return redirect(url_for('informe_success_html', params=dic_encode(params)))
         return render_template(
-            'informe.html', token_hash=token_hash, tutoria=tutoria, asignatura=asignatura,
-            alumno=alumno, grupo=grupo, informe=informe)
+            'informe.html', tutoria=tutoria, asignatura=asignatura,
+            alumno=alumno, grupo=grupo, informe=informe, params=params)
 
     else:
-        tutoria_id = int(informe_check.tutoria_id)
-        asignatura_id = informe_check.asignatura_id
+        tutoria_id = int(current_tutoria_asignatura.tutoria_id)
+        asignatura_id = current_tutoria_asignatura.asignatura_id
         tutoria = tutoria_by_id(tutoria_id)
         asignatura = asignatura_by_id(asignatura_id)
         alumno = alumno_by_id(tutoria.alumno_id)
         settings = invitado_settings(tutoria_id)
         grupo = alumno_grupo(alumno.id)
         informe = invitado_informe(tutoria_id, asignatura_id)
-        anchor = request.args.get('anchor', 'anchor_top')
         return render_template(
             'informe.html', tutoria=tutoria, asignatura=asignatura,
-            alumno=alumno, grupo=grupo, informe=informe, token_hash=token_hash,
-            params_anchor_off=params_anchor_off, anchor=anchor)
+            alumno=alumno, grupo=grupo, informe=informe, current_tutoria_asignatura_id=current_tutoria_asignatura_id,
+            params=params)
 
 # XXX informe_success
 
@@ -1411,8 +1417,9 @@ def informe_success_html(params={}):
         params_old = {}
         abort(404)
     params = {}
-    params_anchor_off = True  # NOTE necesario para activar el anchor sin pasarlo por params
-    params['token_hash'] = params_old.get('token_hash', False)
+    # params_anchor_off = True  # NOTE necesario para activar el anchor sin pasarlo por params
+    params['current_tutoria_asignatura_id'] = params_old.get('current_tutoria_asignatura_id', 0)
+    params['anchor'] = params_old.get('anchor', 'anchor_top')
     params['alumno'] = params_old.get('alumno', False)
     params['grupo'] = params_old.get('grupo', False)
     params['fecha'] = params_old.get('fecha', False)

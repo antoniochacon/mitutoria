@@ -8,26 +8,26 @@
 			<form action="/analisis" method="POST">
 				<div class="row align-items-center pb-2">
 					<div class="col-sm-12 col-md-6 col-lg-4">
-						<span class="text-mutted">Alumno:
+						<span class="{% if tutoria.activa %}text-mutted{% else %}text-info{% endif %}">Alumno:
 						</span>
-						<h5 class="strong">
+						<h5 class="strong {% if not tutoria.activa %}text-mutted{% endif %}">
 							{{alumno.nombre}}
 							{{alumno.apellidos}}
 						</h5>
 					</div>
 					<div class="col-sm-12 col-md-6 col-lg-3 pb-2">
-						<span class="text-mutted">Fecha:
+						<span class="{% if tutoria.activa %}text-mutted{% else %}text-info{% endif %}">Fecha:
 						</span>
-						<span class="strong">
+						<span class="strong {% if not tutoria.activa %}text-mutted{% endif %}">
 							{{tutoria.fecha.strftime('%B') | capitalize}}
 							-
 							{{tutoria.fecha.strftime('%A') | capitalize}}
 							{{tutoria.fecha.strftime('%d')}}
 						</span>
 						<br>
-						<span class="text-mutted">Hora:
+						<span class="{% if tutoria.activa %}text-mutted{% else %}text-info{% endif %}">Hora:
 						</span>
-						<span class="strong">{{tutoria.hora.strftime('%H:%M')}}</span>
+						<span class="strong {% if not tutoria.activa %}text-mutted{% endif %}">{{tutoria.hora.strftime('%H:%M')}}</span>
 					</div>
 					<input type="hidden" name="current_tutoria_id" value="{{hashids_encode(tutoria.id)}}">
 					<div class="row col-sm-12 col-md-12 col-lg">
@@ -36,7 +36,8 @@
 								<div class="btn-group" role="group" aria-label="...">
 									<button role="button" type="submit" name="selector_button" value="selector_tutoria_delete" class="btn btn-outline-warning btn-sm" title="confirmar eliminar tutoria">
 										<i class="material-icons vertical-center">delete</i>
-										confirmar eliminar</button>
+										confirmar eliminar
+									</button>
 									{% if tutoria.activa %}
 										<button role="button" type="submit" name="selector_button" value="selector_tutoria_delete_archivar" class="btn btn-sm {% if tutoria.activa %} btn-outline-mutted{% else %} btn-outline-mutted{% endif %}" title="archivar tutoria">
 											<i class="material-icons vertical-center {% if tutoria.activa %} color-gray-darken-1 {% endif %}">file_download</i>
@@ -48,11 +49,15 @@
 								</div>
 								<br>
 								<span class="text-warning small">
-									Es aconsejable archivar en vez de eliminar.
+									{% if tutoria.activa %}
+										Es aconsejable archivar en vez de eliminar.
+										<br>
+									{% endif %}
+									Una vez elminada no podra ser recuperada.
 									<br>
-									Una vez elminada no podra ser recuperada y se perderan las estadísticas asociadas.
-								<br>
-							</span>
+									Se perderan las estadísticas asociadas.
+									<br>
+								</span>
 							{% else %}
 								<div class="btn-group" role="group" aria-label="...">
 									<button role="button" type="submit" name="selector_button" value="selector_tutoria_edit_link" class="btn btn-sm{% if tutoria.activa %} btn-outline-dark{% else %} btn-outline-mutted{% endif %}" title="cambiar fecha y hora">
@@ -77,12 +82,12 @@
 										<i class="material-icons vertical-center {% if tutoria.activa %} color-gray-darken-1 {% endif %}">person</i>
 									</button>
 								</div>
-							</div>
-						{% endif %}
+							{% endif %}
+						</div>
 						<div class="col">
 							{# NOTE badge #}
 							<h4>
-								<span class="badge badge-secondary float-right" title="{{cociente_porcentual(tutoria_informes(tutoria.id) | count, tutoria_asignaturas_count(tutoria.id))}}% de los informes recibidos">
+								<span class="badge {% if tutoria.activa %}badge-secondary{% else %}badge-info text-white{% endif %} float-right" title="{{cociente_porcentual(tutoria_informes(tutoria.id) | count, tutoria_asignaturas_count(tutoria.id))}}% de los informes recibidos">
 									{{cociente_porcentual(tutoria_informes(tutoria.id) | count, tutoria_asignaturas_count(tutoria.id))}}%
 								</span>
 							</h4>
@@ -108,7 +113,7 @@
 				<i class="material-icons vertical-center">expand_more</i>
 				Analisis del cuestionario
 			</a>
-			<div class="collapse show" id="analisis_cuestionario">
+			<div class="collapse {% if tutoria.activa %}show{% endif %}" id="analisis_cuestionario">
 				<div class="col pt-4 pb-3">
 					{{highcharts_cuestionario(char_id='cuestionario', titulo='', color='#ffa000', df_data=df_data, grupo=grupo, tutoria_id=tutoria.id)}}
 				</div>

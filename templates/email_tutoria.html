@@ -14,7 +14,7 @@
 					</td>
 				</tr>
 				<tr>
-					<td align="center" valign="top" onclick="location.href='http://localhost:5000/informe/{{token}}'">
+					<td align="center" valign="top">
 						<table border="0" cellpadding="10" cellspacing="0" width="100%" id="emailBody">
 							<tr>
 								<td align="center" valign="top">
@@ -26,7 +26,7 @@
 									{{asignatura.asignatura}}
 									<br><br>
 									<a
-										href="{{tutoria_email_link}}{{token|string}}"
+										href="{{tutoria_email_link}}{{hashids_encode(tutoria_asignatura_id|int)}}"
 										style="background-color:#ffffff; border:1px solid #e0e0e0; border-radius:4px; color:#757575; display:inline-block; font-family:sans-serif; font-size:12px; line-height:40px; text-align:center; text-decoration:none; width:175px; -webkit-text-size-adjust:none; mso-hide:all;">Rellenar informe
 									</a>
 								</td>

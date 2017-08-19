@@ -35,7 +35,7 @@
 				<div class="divider bg-mutted"></div>
 			</div>
 		</div>
-		<form action="/informe/{{token_hash}}" method="POST">
+		<form action="/informe/{{hashids_encode(current_tutoria_asignatura_id)}}/" method="POST">
 			<div class="row">
 				{% if not invitado_preguntas(invitado_settings(tutoria.id).id) %}
 					<div class="text-warning">
@@ -118,10 +118,6 @@
 					<div class="form-group">
 						<textarea class="form-control vresize" rows="3" name="comentario" id="comentario">{{informe.comentario}}</textarea>
 					</div>
-					{# hidden fields #}
-					<input type="hidden" name="tutoria_id" value={{hashids_encode(tutoria.id)}}>
-					<input type="hidden" name="asignatura_id" value={{hashids_encode(asignatura.id)}}>
-					<input type="hidden" name="token_hash" value={{token_hash}}>
 				</div>
 				<div class="col">
 					<button role="button" type="submit" name="selector_button" value="selector_informe_add" class="btn btn-outline-primary" title="enviar informe">
