@@ -67,11 +67,11 @@ def index_html():
     return redirect(url_for('alumnos_html'))
 
 
-# XXX user_ficha_grupos
-@app.route('/user_ficha_grupos', methods=['GET', 'POST'])
-@app.route('/user_ficha_grupos/<params>', methods=['GET', 'POST'])
+# XXX admin_user_ficha_grupos
+@app.route('/admin_user_ficha_grupos', methods=['GET', 'POST'])
+@app.route('/admin_user_ficha_grupos/<params>', methods=['GET', 'POST'])
 @login_required
-def user_ficha_grupos_html(params={}):
+def admin_user_ficha_grupos_html(params={}):
     try:
         params_old = dic_decode(params)
     except:
@@ -85,7 +85,7 @@ def user_ficha_grupos_html(params={}):
     user = user_by_id(current_user_id)
 
     return render_template(
-        'user_ficha_grupos.html', user=user, params=params)
+        'admin_user_ficha_grupos.html', user=user, params=params)
 
 
 # XXX user_ficha_alumnos
@@ -1198,12 +1198,15 @@ def admin_citas_html(params={}):
     params = {}
     citas = session_sql.query(Cita).order_by(desc('created_at')).all()
     params['anchor'] = params_old.get('anchor', 'anchor_top')
-    params['collapse_cita_add'] = params_old.get('collapse_cita_add', False)
     params['current_cita_id'] = params_old.get('current_cita_id', 0)
     params['collapse_cita_edit'] = params_old.get('collapse_cita_edit', False)
     params['cita_delete_link'] = params_old.get('cita_delete_link', False)
+    params['collapse_cita_add'] = params_old.get('collapse_cita_add', False)
+    params['cita_edit_link'] = params_old.get('cita_edit_link', False)
 
     if request.method == 'POST':
+        current_cita_id = current_id_request('current_cita_id')
+        params['current_cita_id'] = current_cita_id
         # XXX cita_add
         if request.form['selector_button'] == 'selector_cita_add':
             params['collapse_cita_add'] = True
@@ -1233,10 +1236,16 @@ def admin_citas_html(params={}):
         if request.form['selector_button'] == 'selector_cita_add_close':
             return redirect(url_for('admin_citas_html'))
 
+        # XXX selector_cita_edit_link
+        if request.form['selector_button'] == 'selector_cita_edit_link':
+            params['cita_edit_link'] = True
+            params['collapse_cita_edit'] = True
+            params['anchor'] = 'anchor_cit_' + str(hashids_encode(current_cita_id))
+            return redirect(url_for('admin_citas_html', params=dic_encode(params)))
+
         # XXX cita_edit
         if request.form['selector_button'] == 'selector_cita_edit':
-            current_cita_id = current_id_request('current_cita_id')
-            params['current_cita_id'] = current_cita_id
+            params['cita_edit_link'] = True
             params['collapse_cita_edit'] = True
             params['anchor'] = 'anchor_cit_' + str(hashids_encode(current_cita_id))
             cita_edit_form = Cita_Add(request.form)
@@ -1267,8 +1276,6 @@ def admin_citas_html(params={}):
 
         # XXX cita_edit_rollback
         if request.form['selector_button'] == 'selector_cita_edit_rollback':
-            current_cita_id = current_id_request('current_cita_id')
-            params['current_cita_id'] = current_cita_id
             params['collapse_cita_edit'] = True
             params['anchor'] = 'anchor_cit_' + str(hashids_encode(current_cita_id))
             session_sql.rollback()
@@ -1276,9 +1283,8 @@ def admin_citas_html(params={}):
 
         # XXX cita_delete_link
         if request.form['selector_button'] == 'selector_cita_delete_link':
-            current_cita_id = current_id_request('current_cita_id')
-            params['current_cita_id'] = current_cita_id
             params['collapse_cita_edit'] = True
+            params['cita_edit_link'] = True
             params['anchor'] = 'anchor_cit_' + str(hashids_encode(current_cita_id))
             params['cita_delete_link'] = True
             flash_toast('Debe confirmar la aliminacion', 'warning')
@@ -1286,7 +1292,6 @@ def admin_citas_html(params={}):
 
         # XXX cita_delete
         if request.form['selector_button'] == 'selector_cita_delete':
-            current_cita_id = current_id_request('current_cita_id')
             cita_delete_form = Cita_Add(request.form)
             cita_sql = session_sql.query(Cita).filter(Cita.id == current_cita_id).first()
             session_sql.delete(cita_sql)
@@ -1296,7 +1301,9 @@ def admin_citas_html(params={}):
 
         # XXX cita_delete_close
         if request.form['selector_button'] == 'selector_cita_delete_close':
-            params['cita_delete_link'] = False
+            params['collapse_cita_edit'] = True
+            params['cita_edit_link'] = True
+            params['anchor'] = 'anchor_cit_' + str(hashids_encode(current_cita_id))
             return redirect(url_for('admin_citas_html', params=dic_encode(params)))
 
     return render_template(

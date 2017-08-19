@@ -4,6 +4,10 @@
 		<div class="media-body">
 			<div class="padding_2">
 				agregar nueva pregunta
+				<span class="badge float-right {% if preguntas %}badge-mutted{% else %}badge-warning text-white{% endif %}" title="activa por defecto">
+					{{preguntas | count}}
+					{{singular_plural('pregunta','preguntas', citas | count)}}
+				</span>
 			</div>
 		</div>
 	</div>
