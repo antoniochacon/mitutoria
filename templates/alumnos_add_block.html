@@ -1,3 +1,4 @@
+<a id="anchor_alu_add"></a>
 <a data-toggle="collapse" data-parent="#parent_alumno" href="#alumno_add" class="collapse_header_1" aria-expanded="false" title="Agregar alumno">
 	<div class="media">
 		&nbsp;<i class="material-icons vertical-center">person</i>&nbsp;
@@ -8,17 +9,15 @@
 		</div>
 	</div>
 </a>
-<div id="alumno_add" class="collapse {% if params['collapse_alumno_add'] %} show {% endif %}">
-	<br>
-	<div class="padding_3">
+<div id="alumno_add" class="collapse  {% if params['collapse_alumno_add'] %} show {% endif %}">
+	<div class="padding_3 pt-3">
 		<form action="/alumnos" method="POST" enctype="multipart/form-data">
 			<div class="row">
 				{% if params['alumno_importar_link'] %}
-					<div class="col-sm-12">
+					<div class="col-sm-12 pb-3">
 						Localiza y selecciona el archivo *.CSV descargado desde Seneca.
-						<br><br>
 					</div>
-					<div class="form-group col-auto mb-3">
+					<div class="form-group col-auto">
 						<label class="btn btn-outline-dark btn-sm" title="seleccionar archivo" for="selector_fichero">
 							<input id="selector_fichero" type="file" name="fichero" style="display:none" onchange="$('#upload_file_info').html(this.files[0].name)">
 							Seleccionar archivo CSV
@@ -27,7 +26,7 @@
 					</div>
 				{% else %}
 					<!-- <div class="row"> -->
-					<div class="form-group col-md-6 col-lg-4 mb-3">
+					<div class="form-group col-md-6 col-lg-4">
 						<div class="input-group">
 							<input
 								type="text"
@@ -38,7 +37,7 @@
 							<span class="input-group-addon {% if request.method=='POST' and params['collapse_alumno_add'] %} {% if alumno_add.nombre.errors %} form_addon-warning {% else %} form_addon-success {% endif %} {% endif %}">nombre</span>
 						</div>
 					</div>
-					<div class="form-group col-md-6 col-lg-4 mb-3">
+					<div class="form-group col-md-6 col-lg-4">
 						<div class="input-group">
 							<input
 								type="text"
@@ -51,7 +50,7 @@
 					</div>
 					<!-- </div> -->
 				{% endif %}
-				<div class="btn-group col-auto mb-3" role="group">
+				<div class="btn-group col-auto mb-4" role="group">
 					{% if params['alumno_importar_link'] %}
 						<button class="btn btn-outline-primary btn-sm" type="submit" name="selector_button" value="selector_alumno_importar" title="guardar alumnos">
 							<i class="material-icons vertical-center">people</i>
@@ -60,7 +59,6 @@
 						<button class="btn btn-outline-dark btn-sm" type="submit" name="selector_button" value="selector_alumno_importar_cerrar" title="cerrar">
 							<i class="material-icons vertical-center">close</i>
 						</button>
-						<br>
 					{% else %}
 						<button class="btn btn-outline-primary btn-sm" type="submit" name="selector_button" value="selector_alumno_add" title="agregar alumno">
 							<i class="material-icons vertical-center">person</i>
@@ -80,6 +78,5 @@
 			</div>
 		</form>
 	</div>
-	<br>
-	<div class="dropdown-divider grueso bg-primary"></div>
+	<div class="divider grueso bg-primary"></div>
 </div>

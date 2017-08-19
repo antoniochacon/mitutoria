@@ -104,15 +104,14 @@ def send_email(alumno, tutoria):
     with mail.connect() as conn:
         for asignatura in alumno_asignaturas(alumno.id):
             print('asignatura.nombre:', asignatura.nombre)
-            token_hash = str(hashids_encode(tutoria.id)) + token_urlsafe(16) + str(hashids_encode(asignatura.id))
             msg = Message('Tutoria | %s | %s' % (grupo_activo().nombre, alumno.nombre), sender='mitutoria | %s' % grupo_activo().tutor, recipients=[asignatura.email])
             # mail texto plano
             msg.body = 'Informe para la tutoria de ' + alumno.nombre + ' ' + alumno.apellidos
             # mail HTML
-            msg.html = render_template('email_tutoria.html', tutoria=tutoria, alumno=alumno, asignatura=asignatura, token=token_hash, tutoria_email_link=tutoria_email_link)
+            msg.html = render_template('email_tutoria.html', tutoria=tutoria, alumno=alumno, asignatura=asignatura, tutoria_email_link=tutoria_email_link)
             time.sleep(email_time_sleep)
             conn.send(msg)
-            tutoria_asignatura_add = Association_Tutoria_Asignatura(tutoria_id=tutoria.id, asignatura_id=asignatura.id, token=token_hash)
+            tutoria_asignatura_add = Association_Tutoria_Asignatura(tutoria_id=tutoria.id, asignatura_id=asignatura.id)
             session_sql.add(tutoria_asignatura_add)
             session_sql.commit()
 
@@ -129,20 +128,18 @@ def send_email_tutoria(alumno, tutoria):
 def re_send_email(alumno, tutoria, asignaturas_id_lista):
     with mail.connect() as conn:
         for asignatura_id in asignaturas_id_lista:
-            asignatura = asignatura_by_id(asignatura_id)
-            informe_check = session_sql.query(Association_Tutoria_Asignatura).filter(Association_Tutoria_Asignatura.tutoria_id == tutoria.id, Association_Tutoria_Asignatura.asignatura_id == asignatura_id).first()
+            asignatura = asignatura_by_id(asignatura_id) #FIXME creo que sera conveniente usar int(asignatura_id) [bastara hacer asignatura_id=int(asignatura_id)]
+            informe_sql = session_sql.query(Association_Tutoria_Asignatura).filter(Association_Tutoria_Asignatura.tutoria_id == tutoria.id, Association_Tutoria_Asignatura.asignatura_id == asignatura_id).first()
             if informe_check:
-                token_hash = informe_check.token
                 informe_check.created_at = datetime.datetime.now()
             else:
-                token_hash = str(hashids_encode(tutoria.id)) + token_urlsafe(16) + str(hashids_encode(asignatura_id))
-                tutoria_asignatura_add = Association_Tutoria_Asignatura(tutoria_id=tutoria.id, asignatura_id=asignatura_id, token=token_hash)
+                tutoria_asignatura_add = Association_Tutoria_Asignatura(tutoria_id=tutoria.id, asignatura_id=asignatura_id)
                 session_sql.add(tutoria_asignatura_add)
             msg = Message('Tutoria | %s | %s' % (grupo_activo().nombre, alumno.nombre), sender='mitutoria | %s' % grupo_activo().tutor, recipients=[asignatura.email])
             # mail texto plano
             msg.body = 'Informe para la tutoria de ' + alumno.nombre + ' ' + alumno.apellidos
             # mail HTML
-            msg.html = render_template('email_tutoria.html', tutoria=tutoria, alumno=alumno, asignatura=asignatura, token=token_hash, tutoria_email_link=tutoria_email_link)
+            msg.html = render_template('email_tutoria.html', tutoria=tutoria, alumno=alumno, asignatura=asignatura, tutoria_email_link=tutoria_email_link)
             time.sleep(email_time_sleep)
             conn.send(msg)
             session_sql.commit()

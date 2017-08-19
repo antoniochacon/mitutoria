@@ -33,7 +33,7 @@
 						</div>
 					</a>
 					<div id="pregunta_{{hashids_encode(pregunta.id)}}" class="collapse {% if equal_str(pregunta.id, params['current_pregunta_id']) and params['collapse_pregunta_edit'] %} show {% endif %}">
-						<div class="dropdown-divider grueso bg-primary"></div>
+						<div class="divider grueso bg-primary"></div>
 						{# XXX: pregunta_edit #}
 						<div class="padding_3">
 							<form action="/settings_admin_cuestionario" method="POST">
@@ -201,7 +201,7 @@
 								{% endif %}
 							</form>
 						</div>
-						<div class="dropdown-divider grueso bg-primary"></div>
+						<div class="divider grueso bg-primary"></div>
 					</div>
 					<!-- *********************************** -->
 				{% endfor %}

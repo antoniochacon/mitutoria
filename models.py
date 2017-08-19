@@ -163,7 +163,6 @@ class Association_Tutoria_Asignatura (Base):
     id = Column(Integer, primary_key=True)
     tutoria_id = Column(Integer, ForeignKey('tutoria.id'))
     asignatura_id = Column(Integer, ForeignKey('asignatura.id'))
-    token = Column(String)
     asignatura = relationship('Asignatura', backref=backref('tutoria_tutoria_asignatura', cascade='delete, delete-orphan'))
     tutoria = relationship('Tutoria', backref=backref('asignautra_tutoria_asignatura', cascade='delete, delete-orphan'))
     created_at = Column(DateTime, default=datetime.datetime.now())

@@ -1,4 +1,4 @@
-<a id="anchor_alu_add"></a>
+
 <a id="anchor_alu_{{hashids_encode(alumno.id)}}"></a>
 <a data-toggle="collapse" data-parent="#parent_alumno" href="#alumno_{{hashids_encode(alumno.id)}}" class="collapse_header_1" aria-expanded="false" title="{{alumno.apellidos}}, {{alumno.nombre}}">
 	<div class="media">
@@ -21,7 +21,7 @@
 	</div>
 </a>
 <div id="alumno_{{hashids_encode(alumno.id)}}" class="collapse {% if equal_str(alumno.id, params['current_alumno_id']) and params['collapse_alumno'] %} show {% endif %}">
-	<div class="dropdown-divider bg-primary grueso"></div>
+	<div class="divider bg-primary grueso"></div>
 	<div class="padding_3" id="alumno_set_{{hashids_encode(alumno.id)}}" aria-multiselectable="true">
 		<div>
 			<a id="anchor_tut_add_{{hashids_encode(alumno.id)}}"></a>
@@ -56,5 +56,5 @@
 			</div>
 		</div>
 	</div>
-	<div class="dropdown-divider bg-primary grueso"></div>
+	<div class="divider bg-primary grueso"></div>
 </div>

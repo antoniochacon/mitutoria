@@ -21,13 +21,15 @@
 							</div>
 						{% endfor %}
 					</div>
+					<button role="button" type="submit" name="selector_button" value="selector_settings_cuestionario" class="btn btn-outline-primary btn-sm" title="guardar cambios">
+						<i class="material-icons vertical-center">save</i>
+						guardar
+					</button>
 				{% else %}
-					<span class="text-mutted">En estos momentos no hay preguntas disponibles.</span>
+					<div class="text-mutted pb-4">
+						En estos momentos no hay preguntas disponibles.
+					</div>
 				{% endif %}
-				<button role="button" type="submit" name="selector_button" value="selector_settings_cuestionario" class="btn btn-outline-primary btn-sm" title="guardar cambios">
-					<i class="material-icons vertical-center">save</i>
-					guardar
-				</button>
 			</form>
 		</div>
 	</div>

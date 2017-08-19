@@ -4,7 +4,6 @@ import functions
 
 # ****************************
 
-
 @app.url_defaults  # Fuerza el reload de los archivos de static
 def hashed_url_for_static_file(endpoint, values):
     if 'static' == endpoint or endpoint.endswith('.static'):
@@ -1317,8 +1316,8 @@ def informe_no_disponible_html():
 # XXX informe
 
 
-@app.route('/informe/<token_hash>', methods=['GET', 'POST'])
-def informe_html(token_hash):
+@app.route('/informe/<params>', methods=['GET', 'POST'])
+def informe_html(params):
     try:
         informe_check = session_sql.query(Association_Tutoria_Asignatura).filter(Association_Tutoria_Asignatura.token == token_hash).first()
     except:

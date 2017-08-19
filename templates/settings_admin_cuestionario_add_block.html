@@ -67,21 +67,24 @@
 					</label>
 				</div>
 			</div>
+			{#
 			{% if preguntas %}
-				<div class="btn-group" role="group" aria-label="...">
-					<button role="button" type="submit" name="selector_button" value="selector_pregunta_add" class="btn btn-outline-primary btn-sm" title="agregar pregunta">
-						<i class="material-icons vertical-center">person</i>
-						agregar
+			#}
+			<div class="btn-group pb-1" role="group" aria-label="...">
+				<button role="button" type="submit" name="selector_button" value="selector_pregunta_add" class="btn btn-outline-primary btn-sm" title="agregar pregunta">
+					<i class="material-icons vertical-center">person</i>
+					agregar
+				</button>
+				{% if params['collapse_pregunta_add']and request.method == 'POST' %}
+					<button role="button" type="submit" name="selector_button" value="selector_pregunta_add_close" class="btn btn-outline-dark btn-sm" title="cerrar">
+						<i class="material-icons vertical-center">close</i>
 					</button>
-					{% if params['collapse_pregunta_add']and request.method == 'POST' %}
-						<button role="button" type="submit" name="selector_button" value="selector_pregunta_add_close" class="btn btn-outline-dark btn-sm" title="cerrar">
-							<i class="material-icons vertical-center">close</i>
-						</button>
-					{% endif %}
-				</div>
+				{% endif %}
+			</div>
+			{#
 			{% endif %}
+			#}
 		</form>
-		<br>
 	</div>
-	<div class="dropdown-divider grueso bg-primary"></div>
+	<div class="divider grueso bg-primary"></div>
 </div>
