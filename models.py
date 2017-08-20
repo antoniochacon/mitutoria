@@ -34,6 +34,7 @@ class Settings (Base):
     id = Column(Integer, primary_key=True)
     user_id = Column(Integer, ForeignKey('user.id'))
     user = relationship('User', back_populates='settings')
+    email_validated = Column(Boolean, default=False)
     role = Column(String(80), default='user')
     ban = Column(Boolean, default=False)
     calendar = Column(Boolean, default=False)

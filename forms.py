@@ -25,6 +25,8 @@ class Usuario_Edit (Form):
     username = StringField('usuario', [validators.Required(message='usuario es obligatorio'),
                                        validators.length(min=4, message='usuario debe tener minimo 4 caracteres'),
                                        validators.length(max=25, message='usuario debe tener maximo 25 caracteres')])
+    password = PasswordField('password',
+                             [validators.length(max=80, message='password debe tener maximo 25 caracteres')])
     email = EmailField('email', [validators.Required(message='email es obligatorio'),
                                  validators.Email(message='Escriba una direccion valida de email'),
                                  validators.length(max=120, message='email debe tener maximo 120 caracteres')])
@@ -44,6 +46,15 @@ class User_Login (Form):
                                           validators.length(min=6, message='password debe tener minimo 7 caracteres'),
                                           validators.length(max=80, message='password debe tener maximo 25 caracteres')])
     remember = BooleanField('recuerdame')
+
+
+class Password_Reset (Form):
+    username = StringField('usuario', [validators.Required(message='usuario es obligatorio'),
+                                       validators.length(min=4, message='usuario debe tener minimo 4 caracteres'),
+                                       validators.length(max=25, message='usuario debe tener maximo 25 caracteres')])
+    email = EmailField('email', [validators.Required(message='email es obligatorio'),
+                                 validators.Email(message='Escriba una direccion valida de email'),
+                                 validators.length(max=120, message='email debe tener maximo 120 caracteres')])
 
 
 class Grupo_Add (Form):
