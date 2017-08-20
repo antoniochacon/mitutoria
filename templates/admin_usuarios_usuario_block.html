@@ -1,68 +1,125 @@
-<div class="card_XXX">
-	<div class="padding_3">
-		<form action="/admin_usuarios" method="POST">
-			<div class="row">
-				{% if equal_str(settings.id, params['current_settings_id']) and request.method=='POST'%}
-					<div class="col-xs-12 col-sm-12 col-md-6 col-lg-4">
-						{{field_form(settings_edit.role, error=True, error_css=True, addon='role')}}
-						{{field_form(settings_edit.current_settings_id, value=hashids_encode(settings.id))}}
-						<div class="funkyradio funkyradio-success">
-							<input type="checkbox" name="settings_edit_ban" id="settings_edit_ban_{{hashids_encode(settings.id)}}" value="True" {% if settings_edit_ban %} checked {% endif %}/>
-							<label for="settings_edit_ban_{{hashids_encode(settings.id)}}">ban</label>
+{% for usuario in usuarios('', '', '') %}
+	<a id="anchor_pre_{{hashids_encode(usuario.id)}}"></a>
+	<a data-toggle="collapse" data-parent="#parent_usuario" href="#usuario_{{hashids_encode(usuario.id)}}" class="collapse_header_1" aria-expanded="false" title="{{usuario.email}}">
+		<div class="media">
+			<span class="capital {% if not settings_by_id(usuario.id).ban.visible %}capital-mutted{% else %}capital-warning active{% endif %}">{{loop.index}}</span>
+			<div class="media-body">
+				<div class="padding_2">
+					{{usuario.username}}
+					{# NOTE badge #}
+					{% if settings_by_id(usuario.id).ban %}
+						<span class="badge badge-warning text-white float-right" title="activa por defecto">
+							default
+						</span>
+					{% endif %}
+					<span class="badge badge-info float-right">{{settings_by_id(usuario.id).visit_number}}
+						visitas
+					</span>
+				</div>
+			</div>
+		</div>
+	</a>
+	<div id="usuario_{{hashids_encode(usuario.id)}}" class="collapse {% if equal_str(usuario.id, params['current_usuario_id']) and params['collapse_usuario_edit'] %} show {% endif %}">
+		<div class="divider grueso bg-primary"></div>
+		{# XXX: usuario_edit #}
+		<div class="padding_3 pt-3 pb-3">
+			<form action="/admin_usuarios" method="POST">
+				<div class="row">
+					<div class="form-group col-md-12">
+						<div class="input-group">
+							<input
+								type="text"
+								{% if not equal_str(usuario.id, params['current_usuario_id']) or not params['usuario_edit_link'] %}
+								readonly
+								{% endif %}
+								class="form-control {% if request.method=='POST' and params['collpase_usuario_edit'] %} {% if usuario_edit.username.errors %} is-invalid {% else %} is-valid {% endif %}{% endif %}"
+								name="{{usuario_edit.username.name}}"
+								value="{% if equal_str(usuario.id,params['current_usuario_id']) and request.method=='POST' and params['collpase_usuario_edit'] %}{{usuario_edit.username.data}}{% else %}{{usuario.username}}{% endif %}"
+								placeholder="{{usuario_edit.username.label.text}}">
+							<span class="input-group-addon {% if request.method=='POST' and params['collpase_usuario_edit'] %} {% if usuario_edit.username.errors %} form_addon-warning {% else %} form_addon-success {% endif %} {% endif %}">{{usuario_edit.username.label.text}}</span>
 						</div>
-						<div class="funkyradio funkyradio-success">
-							<input type="checkbox" name="settings_edit_tutoria_timeout" id="settings_edit_tutoria_timeout{{hashids_encode(settings.id)}}" value="True" {% if settings_edit_tutoria_timeout %} checked {% endif %}/>
-							<label for="settings_edit_tutoria_timeout{{hashids_encode(settings.id)}}">tutoria timeout</label>
-						</div>
-						<div class="funkyradio funkyradio-success">
-							<input type="checkbox" name="settings_edit_calendar" id="settings_edit_calendar{{hashids_encode(settings.id)}}" value="True" {% if settings_edit_calendar %} checked {% endif %}/>
-							<label for="settings_edit_calendar{{hashids_encode(settings.id)}}">agenda</label>
-						</div>
-						<br>
-						{% include 'admin_usuarios_ficha_buttons_block.html' %}
 					</div>
-					{%else%}
-					<div class="col-xs-12 col-sm-12 col-md-4 col-lg-4">
-						{{field_form(settings_edit.role, value=settings.role, addon='role')}}
-						{{field_form(settings_edit.current_settings_id, value=hashids_encode(settings.id))}}
-						<div class="funkyradio funkyradio-success">
-							<input type="checkbox" name="settings_edit_ban" id="settings_edit_ban_{{hashids_encode(settings.id)}}" value="True" {% if settings.ban %} checked {% endif %}/>
-							<label for="settings_edit_ban_{{hashids_encode(settings.id)}}">ban</label>
+					<div class="form-group col-md-12">
+						<div class="input-group">
+							<input
+								type="text"
+								{% if not equal_str(usuario.id, params['current_usuario_id']) or not params['usuario_edit_link'] %}
+								readonly
+								{% endif %}
+								class="form-control {% if request.method=='POST' and params['collpase_usuario_edit'] %} {% if usuario_edit.email.errors %} is-invalid {% else %} is-valid {% endif %}{% endif %}"
+								name="{{usuario_edit.email.name}}"
+								value="{% if equal_str(usuario.id,params['current_usuario_id']) and request.method=='POST' and params['collpase_usuario_edit'] %}{{usuario_edit.email.data}}{% else %}{{usuario.email}}{% endif %}"
+								placeholder="{{usuario_edit.email.label.text}}">
+							<span class="input-group-addon {% if request.method=='POST' and params['collpase_usuario_edit'] %} {% if usuario_edit.email.errors %} form_addon-warning {% else %} form_addon-success {% endif %} {% endif %}">{{usuario_edit.email.label.text}}</span>
 						</div>
-						<div class="funkyradio funkyradio-success">
-							<input type="checkbox" name="settings_edit_tutoria_timeout" id="settings_edit_tutoria_timeout{{hashids_encode(settings.id)}}" value="True" {% if settings.tutoria_timeout %} checked {% endif %}/>
-							<label for="settings_edit_tutoria_timeout{{hashids_encode(settings.id)}}">tutoria timeout</label>
+					</div>
+					<div class="form-group col-md-12">
+						<div class="input-group">
+							<input
+								type="text"
+								{% if not equal_str(usuario.id, params['current_usuario_id']) or not params['usuario_edit_link'] %}
+								readonly
+								{% endif %}
+								class="form-control {% if request.method=='POST' and params['collpase_usuario_edit'] %} {% if usuario_edit.role.errors %} is-invalid {% else %} is-valid {% endif %}{% endif %}"
+								name="{{usuario_edit.role.name}}"
+								value="{% if equal_str(usuario.id,params['current_usuario_id']) and request.method=='POST' and params['collpase_usuario_edit'] %}{{usuario_edit.role.data}}{% else %}{{usuario.role}}{% endif %}"
+								placeholder="{{usuario_edit.role.label.text}}">
+							<span class="input-group-addon {% if request.method=='POST' and params['collpase_usuario_edit'] %} {% if usuario_edit.role.errors %} form_addon-warning {% else %} form_addon-success {% endif %} {% endif %}">{{usuario_edit.role.label.text}}</span>
 						</div>
-						<div class="funkyradio funkyradio-success">
-							<input type="checkbox" name="settings_edit_calendar" id="settings_edit_calendar{{hashids_encode(settings.id)}}" value="True" {% if settings.calendar %} checked {% endif %}/>
-							<label for="settings_edit_calendar{{hashids_encode(settings.id)}}">agenda</label>
+					</div>
+					<div class="form-group col-auto">
+						<label class="custom-control custom-checkbox check_box_1">
+							<input type="checkbox" {% if not equal_str(usuario.id, params['current_usuario_id']) or not params['usuario_edit_link'] %} disabled {% endif %} class="custom-control-input" name="ban" value="True" {% if usuario.ban%} checked {% endif %}>
+							<span class="custom-control-indicator"></span>
+							<span class="custom-control-description">ban</span>
+						</label>
+					</div>
+					<input type="hidden" name="current_usuario_id" value="{{hashids_encode(usuario.id)}}">
+				</div>
+				{% if equal_str(usuario.id, params['current_usuario_id'])and params['usuario_edit_link'] %}
+					{% if params['usuario_delete_link'] %}
+						<div class="btn-group" role="group" aria-label="...">
+							<button role="button" type="submit" name="selector_button" value="selector_usuario_delete" class="btn btn-outline-warning btn-sm" title="confirmar eliminar usuario">
+								<i class="material-icons vertical-center">delete</i>
+								confirmar eliminar
+							</button>
+							<button role="button" type="submit" name="selector_button" value="selector_usuario_delete_close" class="btn btn-outline-dark btn-sm" title="cancelar eliminar">
+								<i class="material-icons vertical-center">close</i>
+							</button>
 						</div>
 						<br>
-						{% include 'admin_usuarios_ficha_buttons_block.html' %}
+						<span class="text-warning small">
+							Una vez elminada no podra ser recuperada.</span>
+					{% else %}
+						<div class="btn-group" role="group" aria-label="...">
+							<button role="button" type="submit" name="selector_button" value="selector_usuario_edit" class="btn btn-outline-primary btn-sm" title="guardar cambios">
+								<i class="material-icons vertical-center">save</i>
+								guardar
+							</button>
+							{# <button role="button" type="submit" name="selector_button" value="selector_usuario_edit_rollback" class="btn btn-outline-dark btn-sm" title="deshacer cambios"> <i class="material-icons vertical-center">settings_backup_restore</i> </button> #}
+							<button role="button" type="submit" name="selector_button" value="selector_usuario_delete_link" class="btn btn-outline-dark btn-sm" title="eliminar usuario">
+								<i class="material-icons vertical-center">delete</i>
+							</button>
+							<button role="button" type="submit" name="selector_button" value="selector_usuario_edit_link_close" class="btn btn-outline-dark btn-sm" title="cerrar edición">
+								<i class="material-icons vertical-center">close</i>
+							</button>
+						</div>
+					{% endif %}
+				{% else %}
+					<div class="btn-group" role="group" aria-label="...">
+						<button role="button" type="submit" name="selector_button" class="btn btn-outline-dark btn-sm" value="selector_usuario_edit_link" title="editar ficha">
+							<i class="material-icons vertical-center">edit</i>
+							editar ficha
+						</button>
+						{% if equal_str(usuario.id,params['current_usuario_id']) and params['collapse_usuario_edit']%}
+							<button role="button" type="submit" name="selector_button" class="btn btn-outline-dark btn-sm" value="selector_usuario_edit_close" title="cerrar ficha">
+								<i class="material-icons vertical-center">close</i>
+							</button>
+						{% endif %}
 					</div>
 				{% endif %}
-				{# TODO: datos de usuario #}
-				<div class="col-xs-12 col-sm-12 col-md-8 col-lg-8">
-					<div class="list-group-item-8 strong">
-						Datos de usuario
-					</div>
-					<span class="text-info">username:</span>
-					{{user_by_id(settings.id).username}}<br>
-					<span class="text-info">email:</span>
-					<a href="mailto:{{user_by_id(settings.id).email}}">{{user_by_id(settings.id).email}}</a><br>
-					<span class="text-info">visitas:</span>
-					{{settings.visit_number}}
-					 |
-					<span class="text-info">utlima visita:</span>
-					{{settings.visit_last.strftime('%Y-%m-%d')}}
-					<br>
-					<h6></h6>
-					<a class="btn btn-outline-dark" href="/user_ficha_grupos/{{dic_encode_args({'current_user_id': settings.id})}}" role="button">Ficha completa</a>
-				</div>
-				{# TODO: fin datos de usuario #}
-			</div>
-			<br>
-		</form>
-		<br>
+			</form>
+		</div>
+		<div class="divider grueso bg-primary"></div>
 	</div>
-</div>
+{% endfor %}

@@ -67,11 +67,11 @@ def index_html():
     return redirect(url_for('alumnos_html'))
 
 
-# XXX admin_user_ficha_grupos
-@app.route('/admin_user_ficha_grupos', methods=['GET', 'POST'])
-@app.route('/admin_user_ficha_grupos/<params>', methods=['GET', 'POST'])
+# XXX admin_usuarios_ficha_grupos
+@app.route('/admin_usuarios_ficha_grupos', methods=['GET', 'POST'])
+@app.route('/admin_usuarios_ficha_grupos/<params>', methods=['GET', 'POST'])
 @login_required
-def admin_user_ficha_grupos_html(params={}):
+def admin_usuarios_ficha_grupos_html(params={}):
     try:
         params_old = dic_decode(params)
     except:
@@ -85,7 +85,7 @@ def admin_user_ficha_grupos_html(params={}):
     user = user_by_id(current_user_id)
 
     return render_template(
-        'admin_user_ficha_grupos.html', user=user, params=params)
+        'admin_usuarios_ficha_grupos.html', user=user, params=params)
 
 
 # XXX user_ficha_alumnos
@@ -943,11 +943,11 @@ def settings_options_html(params={}):
         'settings_options.html', settings_user=settings_user, params=params)
 
 
-# XXX admin_users
-@app.route('/admin_users', methods=['GET', 'POST'])
-@app.route('/admin_users/<params>', methods=['GET', 'POST'])
+# XXX admin_usuarios
+@app.route('/admin_usuarios', methods=['GET', 'POST'])
+@app.route('/admin_usuarios/<params>', methods=['GET', 'POST'])
 @login_required
-def admin_users_html(params={}):
+def admin_usuarios_html(params={}):
     try:
         params_old = dic_decode(params)
     except:
@@ -955,22 +955,32 @@ def admin_users_html(params={}):
         abort(404)
     params = {}
     params['anchor'] = params_old.get('anchor', 'anchor_top')
-    params['current_settings_id'] = params_old.get('current_settings_id', 0)
-    params['collapse_user_edit'] = params_old.get('collapse_user_edit', False)
-    params['user_delete_link'] = params_old.get('user_delete_link', False)
+    params['current_usuario_id'] = params_old.get('current_usuario_id', 0)
+    params['collapse_usuario_edit'] = params_old.get('collapse_usuario_edit', False)
+    params['usuario_delete_link'] = params_old.get('usuario_delete_link', False)
+    params['usuario_edit_link'] = params_old.get('usuario_delete_link', False)
 
-    settings_all = session_sql.query(Settings).order_by(desc('visit_last')).all()
+
     if request.method == 'POST':
-        # XXX settings_edit
-        if request.form['selector_button'] == 'selector_user_edit':
-            settings_edit_form = Settings_Edit(request.form)
-            current_settings_id = current_id_request('current_settings_id')
-            params['current_settings_id'] = current_settings_id
+        settings_edit_form = Usuario_Edit(request.form)
+        current_usuario_id = current_id_request('current_usuario_id')
+        params['current_usuario_id'] = current_usuario_id
+
+        # XXX selector_usuario_edit_link
+        if request.form['selector_button'] == 'selector_usuario_edit_link':
+            params['collapse_usuario_edit'] = True
+            params['usuario_edit_link'] = True
+            params['anchor'] = 'anchor_usu_' + str(hashids_encode(current_usuario_id))
+            return redirect(url_for('admin_usuarios_html', params=dic_encode(params)))
+
+        # XXX usuario_edit
+        if request.form['selector_button'] == 'selector_usuario_edit':
+
             settings_edit_ban = request.form.get('settings_edit_ban')
             settings_edit_tutoria_timeout = request.form.get('settings_edit_tutoria_timeout')
             settings_edit_calendar = request.form.get('settings_edit_calendar')
-            params['collapse_user_edit'] = True
-            params['anchor'] = 'anchor_set_' + str(hashids_encode(current_settings_id))
+            params['collapse_usuario_edit'] = True
+            params['anchor'] = 'anchor_set_' + str(hashids_encode(current_usuario_id))
             if not settings_edit_ban:
                 settings_edit_ban = False
             if not settings_edit_tutoria_timeout:
@@ -979,66 +989,66 @@ def admin_users_html(params={}):
                 settings_edit_calendar = False
 
             if settings_edit_form.validate():
-                settings_sql = session_sql.query(Settings).filter(Settings.id == current_settings_id).first()
+                settings_sql = session_sql.query(Settings).filter(Settings.id == current_usuario_id).first()
                 settings_sql.role = settings_edit_form.role.data
                 settings_sql.ban = settings_edit_ban
                 settings_sql.tutoria_timeout = settings_edit_tutoria_timeout
                 settings_sql.calendar = settings_edit_calendar
-                flash_toast(Markup('Usuario <strong>') + user_by_id(current_settings_id).username + Markup('</strong>') + ' actualizado', 'success')
+                flash_toast(Markup('Usuario <strong>') + usuario_by_id(current_usuario_id).usuarioname + Markup('</strong>') + ' actualizado', 'success')
                 session_sql.commit()
-                return redirect(url_for('admin_users_html', params=dic_encode(params)))
+                return redirect(url_for('admin_usuarios_html', params=dic_encode(params)))
 
             else:
                 flash_wtforms(settings_edit_form, flash_toast, 'warning')
 
             return render_template(
-                'admin_users.html', settings_all=settings_all, settings_edit=settings_edit_form,
+                'admin_usuarios.html', settings_edit=settings_edit_form,
                 settings_edit_ban=settings_edit_ban, settings_edit_tutoria_timeout=settings_edit_tutoria_timeout,
                 settings_edit_calendar=settings_edit_calendar, params=params)
 
-        # XXX selector_user_edit_close
-        if request.form['selector_button'] == 'selector_user_edit_close':
-            return redirect(url_for('admin_users_html'))
+        # XXX selector_usuario_edit_close
+        if request.form['selector_button'] == 'selector_usuario_edit_close':
+            return redirect(url_for('admin_usuarios_html'))
 
-        # XXX user_edit_rollback
-        if request.form['selector_button'] == 'selector_user_edit_rollback':
-            current_settings_id = current_id_request('current_settings_id')
-            params['current_settings_id'] = current_settings_id
-            params['collapse_user_edit'] = True
-            params['anchor'] = 'anchor_set_' + str(hashids_encode(current_settings_id))
+        # XXX usuario_edit_rollback
+        if request.form['selector_button'] == 'selector_usuario_edit_rollback':
+            current_usuario_id = current_id_request('current_usuario_id')
+            params['current_usuario_id'] = current_usuario_id
+            params['collapse_usuario_edit'] = True
+            params['anchor'] = 'anchor_set_' + str(hashids_encode(current_usuario_id))
             session_sql.rollback()
-            return redirect(url_for('admin_users_html', params=dic_encode(params)))
+            return redirect(url_for('admin_usuarios_html', params=dic_encode(params)))
 
-        # XXX user_delete_link
-        if request.form['selector_button'] == 'selector_user_delete_link':
-            current_settings_id = current_id_request('current_settings_id')
-            params['current_settings_id'] = current_settings_id
-            params['collapse_user_edit'] = True
-            params['anchor'] = 'anchor_set_' + str(hashids_encode(current_settings_id))
-            params['user_delete_link'] = True
+        # XXX usuario_delete_link
+        if request.form['selector_button'] == 'selector_usuario_delete_link':
+            current_usuario_id = current_id_request('current_usuario_id')
+            params['current_usuario_id'] = current_usuario_id
+            params['collapse_usuario_edit'] = True
+            params['anchor'] = 'anchor_set_' + str(hashids_encode(current_usuario_id))
+            params['usuario_delete_link'] = True
             flash_toast('Debe confirmar la aliminacion', 'warning')
-            return redirect(url_for('admin_users_html', params=dic_encode(params)))
+            return redirect(url_for('admin_usuarios_html', params=dic_encode(params)))
 
-        # XXX user_delete
-        if request.form['selector_button'] == 'selector_user_delete':
-            if request.form['selector_button'] == 'selector_user_delete':
-                current_settings_id = current_id_request('current_settings_id')
-                user_sql = session_sql.query(User).filter(User.id == current_settings_id).first()
-                session_sql.delete(user_sql)
+        # XXX usuario_delete
+        if request.form['selector_button'] == 'selector_usuario_delete':
+            if request.form['selector_button'] == 'selector_usuario_delete':
+                current_usuario_id = current_id_request('current_usuario_id')
+                usuario_sql = session_sql.query(User).filter(User.id == current_usuario_id).first()
+                session_sql.delete(usuario_sql)
                 session_sql.commit()
-                flash_toast(Markup('Usuario <strong>') + user_sql.username + Markup('</strong>') + ' elminado', 'success')
-                return redirect(url_for('admin_users_html'))
+                flash_toast(Markup('Usuario <strong>') + usuario_sql.usuarioname + Markup('</strong>') + ' elminado', 'success')
+                return redirect(url_for('admin_usuarios_html'))
 
-        # XXX user_delete_close
-        if request.form['selector_button'] == 'selector_user_delete_close':
-            current_settings_id = current_id_request('current_settings_id')
-            params['current_settings_id'] = current_settings_id
-            params['collapse_user_edit'] = True
-            params['anchor'] = 'anchor_set_' + str(hashids_encode(current_settings_id))
-            return redirect(url_for('admin_users_html', params=dic_encode(params)))
+        # XXX usuario_delete_close
+        if request.form['selector_button'] == 'selector_usuario_delete_close':
+            current_usuario_id = current_id_request('current_usuario_id')
+            params['current_usuario_id'] = current_usuario_id
+            params['collapse_usuario_edit'] = True
+            params['anchor'] = 'anchor_set_' + str(hashids_encode(current_usuario_id))
+            return redirect(url_for('admin_usuarios_html', params=dic_encode(params)))
 
     return render_template(
-        'admin_users.html', settings_all=settings_all, settings_edit=Settings_Edit(),
+        'admin_usuarios.html', usuario_edit=Usuario_Edit(),
         params=params)
 
 
@@ -1111,8 +1121,6 @@ def settings_grupos_html(params={}):
             params['collapse_grupo_edit'] = True
             params['grupo_edit_link'] = True
             params['anchor'] = 'anchor_gru_' + str(hashids_encode(current_grupo_id))
-            # current_grupo_id = current_id_request('current_grupo_id')
-            # params['current_grupo_id'] = current_grupo_id
             return redirect(url_for('settings_grupos_html', params=dic_encode(params)))
 
         # XXX selector_grupo_edit

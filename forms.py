@@ -21,10 +21,18 @@ class User_Add (Form):
                                  validators.length(max=120, message='email debe tener maximo 120 caracteres')])
 
 
-class Settings_Edit (Form):
+class Usuario_Edit (Form):
+    username = StringField('usuario', [validators.Required(message='usuario es obligatorio'),
+                                       validators.length(min=4, message='usuario debe tener minimo 4 caracteres'),
+                                       validators.length(max=25, message='usuario debe tener maximo 25 caracteres')])
+    email = EmailField('email', [validators.Required(message='email es obligatorio'),
+                                 validators.Email(message='Escriba una direccion valida de email'),
+                                 validators.length(max=120, message='email debe tener maximo 120 caracteres')])
     role = StringField('role', [validators.length(min=3, message='role debe tener minimo 3 caracteres'),
                                 validators.length(max=80, message='role debe tener maximo 25 caracteres')])
-    current_settings_id = HiddenField('current_asignatura_id')
+    ban = BooleanField('ban')
+
+    current_usuario_id = HiddenField('current_usuario_id')
 
 
 class User_Login (Form):

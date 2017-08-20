@@ -52,6 +52,9 @@
 									{% if tutoria.activa %}
 										Es aconsejable archivar en vez de eliminar.
 										<br>
+										{% else %}
+										Es aconsejable mantenerla archivada.
+										<br>
 									{% endif %}
 									Una vez elminada no podra ser recuperada.
 									<br>
@@ -87,7 +90,7 @@
 						<div class="col">
 							{# NOTE badge #}
 							<span class="badge {% if tutoria.activa %}badge-secondary{% else %}badge-info text-white{% endif %} float-right" title="{{cociente_porcentual(tutoria_informes(tutoria.id) | count, tutoria_asignaturas_count(tutoria.id))}}% de los informes recibidos">
-								<span class="color_secondary_lighten align-middle pr-1">{{tutoria_informes(tutoria.id) | count}} | {{tutoria_asignaturas_count(tutoria.id)}}</span>
+								<span class="align-middle pr-1 {% if tutoria.activa %}color_secondary_lighten{% else %}badge-info text-mutted{% endif %}">{{tutoria_informes(tutoria.id) | count}} | {{tutoria_asignaturas_count(tutoria.id)}}</span>
 								<span class="h4 align-middle">{{cociente_porcentual(tutoria_informes(tutoria.id) | count, tutoria_asignaturas_count(tutoria.id))}}
 									%</span>
 							</span>
