@@ -41,7 +41,7 @@
 					</button>
 				</div>
 			</form>
-			{% if login_fail and not ban %}
+			{% if params['login_fail']and not params['ban'] %}
 				<br>
 				<div class="divider bg-primary grueso"></div>
 				<br>
@@ -51,26 +51,46 @@
 							<i class="material-icons vertical-center">person_add</i>
 							no tengo cuenta
 						</a>
-						<a href="/password_reset" class="btn btn-outline-mutted btn-sm" title="cambiar password">
+						<a href="/password_reset_request" class="btn btn-outline-mutted btn-sm" title="cambiar password">
 							no recuerdo password
 						</a>
 					</div>
 				</div>
 				<br>
 			{% endif %}
-			{% if ban %}
+			{% if params['ban'] %}
 				<br>
-				<div class="divider bg-primary"></div>
+				<div class="divider bg-dark"></div>
 				<br>
-				<div class="text-center text-primary">
+				<div class="text-center text-warning">
 					Su cuenta ha sido suspendida de servicio
 					<br>
 					Por favor pongase en contacto con nosotros
-					<br><br>
-					<a href="mailto:mitutoria.email@gmail.com">mitutoria.email@gmail.com</a><br>
 				</div>
 				<br>
 			{% endif %}
+			{% if params['email_validated_fail'] %}
+				<br>
+				<div class="divider bg-dark"></div>
+				<br>
+				<div class="text-center text-warning">
+					Revise su cuenta de correo.
+					<br>
+					Debe confirmar su registro.
+				</div>
+				<br>
+			{% endif %}
+				{% if params['password_reset'] %}
+					<br>
+					<div class="divider bg-dark"></div>
+					<br>
+					<div class="text-center text-success">
+						Password actualizado con exito.
+						<br>
+						Ya puede iniciar sesión.
+					</div>
+					<br>
+				{% endif %}
 		</div>
 	</div>
 {% endblock %}

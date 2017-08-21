@@ -25,8 +25,9 @@
 							<input
 								type="password"
 								class="form-control {% if request.method=='POST' %} {% if user_add.password.errors %} is-invalid {% else %} is-valid {% endif %} {% endif %}"
-								{% if request.method=='POST' %}
 								name="{{user_add.password.name}}"
+								{% if request.method=='POST' %}
+								value="{{user_add.password.data}}"
 								{% endif %}
 								placeholder="{{user_add.password.label.text}}">
 							<div class="input-group-addon {% if request.method=='POST' %} {% if user_add.password.errors %} form_addon-warning {% else %} form_addon-success {% endif %} {% endif %}">password</div>

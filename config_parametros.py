@@ -54,10 +54,16 @@ hashids = Hashids(salt=salt)
 # ****************************************
 # XXX Local_Host
 # tutoria_email_link = 'http://localhost:5000/informe/'
+# email_validate_link='http://localhost:5000/email_validate/'
+# index_link='http://localhost:5000/'
+# password_reset_link='http://localhost:5000/password_reset/'
 # email_time_sleep = 3
 
 # XXX Heroku_Host
 tutoria_email_link = 'https://mitutoria.herokuapp.com/informe/'
+email_validate_link='https://mitutoria.herokuapp.com/email_validate/'
+index_link='https://mitutoria.herokuapp.com/'
+password_reset_link='https://mitutoria.herokuapp.com/password_reset/'
 email_time_sleep = 10
 # ****************************************
 # FIXME hay que buscar otra forma, estos contadores son compartidos por todos los usuarios.

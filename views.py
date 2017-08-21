@@ -99,16 +99,24 @@ def admin_usuarios_html(params={}):
         # XXX usuario_edit
         if request.form['selector_button'] == 'selector_usuario_edit':
             settings_edit_ban = usuario_edit_form.ban.data
+            settings_email_validated = usuario_edit_form.email_validated.data
+            settings_email_robinson = usuario_edit_form.email_robinson.data
             params['collapse_usuario_edit'] = True
             params['usuario_edit_link'] = True
             params['anchor'] = 'anchor_usu_' + str(hashids_encode(current_usuario_id))
             if not settings_edit_ban:
                 settings_edit_ban = False
+            if not settings_email_validated:
+                settings_email_validated = False
+            if not settings_email_robinson:
+                settings_email_robinson = False
 
             if usuario_edit_form.validate():
                 settings_sql = session_sql.query(Settings).filter(Settings.id == current_usuario_id).first()
                 settings_sql.role = usuario_edit_form.role.data
                 settings_sql.ban = settings_edit_ban
+                settings_sql.email_validated = settings_email_validated
+                settings_sql.email_robinson = settings_email_robinson
                 usuario_sql = session_sql.query(User).filter(User.id == current_usuario_id).first()
                 usuario_sql.username = usuario_edit_form.username.data
                 usuario_sql.email = usuario_edit_form.email.data
@@ -116,8 +124,6 @@ def admin_usuarios_html(params={}):
                 if usuario_password_new:
                     hashed_password = generate_password_hash(usuario_password_new, method='sha256')
                     usuario_sql.password = hashed_password
-                    print('hashed_password:', hashed_password)
-
                 flash_toast(Markup('Usuario <strong>') + usuario_edit_form.username.data + Markup('</strong>') + ' actualizado', 'success')
                 session_sql.commit()
                 return redirect(url_for('admin_usuarios_html', params=dic_encode(params)))
@@ -134,8 +140,6 @@ def admin_usuarios_html(params={}):
 
         # XXX usuario_edit_rollback
         if request.form['selector_button'] == 'selector_usuario_edit_rollback':
-            current_usuario_id = current_id_request('current_usuario_id')
-            params['current_usuario_id'] = current_usuario_id
             params['collapse_usuario_edit'] = True
             params['anchor'] = 'anchor_set_' + str(hashids_encode(current_usuario_id))
             session_sql.rollback()
@@ -143,11 +147,10 @@ def admin_usuarios_html(params={}):
 
         # XXX usuario_delete_link
         if request.form['selector_button'] == 'selector_usuario_delete_link':
-            current_usuario_id = current_id_request('current_usuario_id')
-            params['current_usuario_id'] = current_usuario_id
             params['collapse_usuario_edit'] = True
-            params['anchor'] = 'anchor_set_' + str(hashids_encode(current_usuario_id))
+            params['usuario_edit_link'] = True
             params['usuario_delete_link'] = True
+            params['anchor'] = 'anchor_set_' + str(hashids_encode(current_usuario_id))
             flash_toast('Debe confirmar la aliminacion', 'warning')
             return redirect(url_for('admin_usuarios_html', params=dic_encode(params)))
 
@@ -158,7 +161,7 @@ def admin_usuarios_html(params={}):
                 usuario_sql = session_sql.query(User).filter(User.id == current_usuario_id).first()
                 session_sql.delete(usuario_sql)
                 session_sql.commit()
-                flash_toast(Markup('Usuario <strong>') + usuario_sql.usuarioname + Markup('</strong>') + ' elminado', 'success')
+                flash_toast(Markup('Usuario <strong>') + usuario_sql.username + Markup('</strong>') + ' elminado', 'success')
                 return redirect(url_for('admin_usuarios_html'))
 
         # XXX usuario_delete_close
@@ -221,7 +224,6 @@ def user_ficha_alumnos_html(params={}):
 
 @app.route('/pagina_1/', methods=['GET', 'POST'])
 @app.route('/pagina_1/<params>', methods=['GET', 'POST'])
-@login_required
 def pagina_1_html(params={}):
     par_1 = ''
     par_2 = ''
@@ -239,12 +241,12 @@ def pagina_1_html(params={}):
     # NOTE ejemplo de decorardor
     # params = dic_decode(params)
     # params = 'hola'
+    flash_toast('ejemplo de flash_toast sin sesion', 'success')
 
     return render_template('pagina_1.html', par_1=par_1, par_2=par_2, params=params)
 
 
 @app.route('/pagina_2', methods=['GET', 'POST'])
-@login_required
 def pagina_2_html():
 
     # NOTE ejemplo de args (funcional)
@@ -563,7 +565,7 @@ def alumnos_html(params={}):
                         else:
                             session_sql.add(tutoria_add)
                             session_sql.commit()
-                            send_email_tutoria(alumno, tutoria_add)
+                            send_email_tutoria_asincrono(alumno, tutoria_add)
                             flash_toast('Enviando emails al equipo educativo de ' + Markup('<strong>') + alumno.nombre + Markup('</strong>'), 'info')
                             params['current_alumno_id'] = current_alumno_id
                             params['collapse_alumno'] = True
@@ -903,7 +905,7 @@ def analisis_html(params={}):
             current_alumno_id = alumno.id
             if asignaturas_id_lista:
                 # flash_toast('Reenviando emails al equipo educativo de ' + Markup('<strong>') + alumno.nombre + Markup('</strong>'), 'info')
-                re_send_email_tutoria(alumno, current_tutoria, asignaturas_id_lista)
+                re_send_email_tutoria_asincrono(alumno, current_tutoria, asignaturas_id_lista)
                 flash_toast('Reenviando emails a las asignaturas elegidas', 'info')
                 # params['tutoria_re_enviar_link'] = False
                 return redirect(url_for('analisis_html', params=dic_encode(params)))
@@ -1368,7 +1370,7 @@ def informe_html(current_tutoria_asignatura_id, params={}):
                     session_sql.add(respuesta_add)
                 else:
                     respuesta.resultado = request.form.get('pregunta_' + str(hashids_encode(pregunta.id)))
-        session_sql.commit()  # NOTE (NO BORRAR ESTA NOTA)este era el problema de no generar los graficos, era un problema de identado
+        session_sql.commit()  # NOTE (NO BORRAR ESTA NOTA) este era el problema de no generar los graficos, era un problema de identado
 
         for prueba_evaluable in invitado_pruebas_evaluables(informe.id):
             prueba_evaluable.nota = request.form.get('prueba_evaluable_nota_' + str(hashids_encode(prueba_evaluable.id)))
@@ -1442,9 +1444,6 @@ def informe_success_html(params={}):
     params['docente'] = params_old.get('docente', False)
     return render_template(
         'informe_success.html', params=params)
-
-
-# XXX tutorial_email NOTE solo es para pruebas, esto no se usa en produccion
 
 
 @app.route('/email_tutoria')
@@ -1644,17 +1643,50 @@ def asignaturas_html(params={}):
         asignaturas=asignaturas, params=params)
 
 
+# @app.route('/user_add', methods=['GET', 'POST'])
+# def user_add_html():
+#     user_add_form = User_Add(request.form)
+#     if request.method == 'POST':
+#         if user_add_form.validate():
+#             user_username = session_sql.query(User).filter(func.lower(User.username) == func.lower(user_add_form.username.data)).first()
+#             user_email = session_sql.query(User).filter(func.lower(User.email) == func.lower(user_add_form.email.data)).first()
+#             if user_username:
+#                 flash_toast(Markup('<strong>') + user_add_form.username.data + Markup('</strong>') + ' ya esta registrado', 'warning')
+#             elif user_email:
+#                 flash_toast(Markup('<strong>') + user_add_form.email.data + Markup('</strong>') + ' ya esta registrado', 'warning')
+#             else:
+#                 hashed_password = generate_password_hash(user_add_form.password.data, method='sha256')
+#                 user_add = User(username=user_add_form.username.data, password=hashed_password, email=user_add_form.email.data)
+#                 session_sql.add(user_add)
+#                 session_sql.flush()
+#                 session_sql.refresh(user_add)
+#                 # crea el registro en Settings.
+#                 settings_add = Settings(user_id=user_add.id)
+#                 session_sql.add(settings_add)
+#                 preguntas_active_default(user_add.id)  # inserta las preguntas activas by default
+#                 if user_add.email == 'antonioelmatematico@gmail.com':
+#                     settings_add.role = 'admin'
+#                 session_sql.commit()
+#                 flash_toast('Enhorabuena ' + user_add_form.username.data + ', cuenta creada.', 'success')
+#                 return redirect(url_for('alumnos_html'))
+#         else:
+#             flash_wtforms(user_add_form, flash_toast, 'warning')
+#         return render_template('user_add.html', user_add=user_add_form)
+#     return render_template('user_add.html', user_add=User_Add())
+
+
 @app.route('/user_add', methods=['GET', 'POST'])
 def user_add_html():
+    params = {}
     user_add_form = User_Add(request.form)
     if request.method == 'POST':
         if user_add_form.validate():
             user_username = session_sql.query(User).filter(func.lower(User.username) == func.lower(user_add_form.username.data)).first()
             user_email = session_sql.query(User).filter(func.lower(User.email) == func.lower(user_add_form.email.data)).first()
             if user_username:
-                flash_toast(Markup('<strong>') + user_add_form.username.data + Markup('</strong>') + ' ,ya esta registrado', 'warning')
+                flash_toast(Markup('<strong>') + user_add_form.username.data + Markup('</strong>') + ' ya esta registrado', 'warning')
             elif user_email:
-                flash_toast(Markup('<strong>') + user_add_form.email.data + Markup('</strong>') + ' ,ya esta registrado', 'warning')
+                flash_toast(Markup('<strong>') + user_add_form.email.data + Markup('</strong>') + ' ya esta registrado', 'warning')
             else:
                 hashed_password = generate_password_hash(user_add_form.password.data, method='sha256')
                 user_add = User(username=user_add_form.username.data, password=hashed_password, email=user_add_form.email.data)
@@ -1667,63 +1699,175 @@ def user_add_html():
                 preguntas_active_default(user_add.id)  # inserta las preguntas activas by default
                 if user_add.email == 'antonioelmatematico@gmail.com':
                     settings_add.role = 'admin'
+                    settings_add.email_validated = True
                 session_sql.commit()
-                flash_toast('Enhorabuena ' + user_add_form.username.data + ', cuenta creada.', 'success')
-                return redirect(url_for('alumnos_html'))
+                send_email_validate_asincrono(user_add.id)
+                params['email_validated_fail'] = True
+                return redirect(url_for('login_html', params=dic_encode(params)))
         else:
             flash_wtforms(user_add_form, flash_toast, 'warning')
         return render_template('user_add.html', user_add=user_add_form)
     return render_template('user_add.html', user_add=User_Add())
 
 
+@app.route('/email_validate/<params>')
+def email_validate_html(params={}):
+    try:
+        params_old = dic_decode(params)
+    except:
+        params_old = {}
+        abort(404)
+    params = {}
+    params['user_username'] = params_old.get('user_username', False)
+    params['user_password'] = params_old.get('user_password', False)
+    params['email_robinson'] = params_old.get('email_robinson', False)
+    user_username = params['user_username']
+    user_password = params['user_password']
+    user_sql = session_sql.query(User).filter_by(username=user_username, password=user_password).first()
+    if user_sql:
+        if params['email_robinson']:
+            settings_by_id(user_sql.id).email_robinson = True
+            session_sql.commit()
+            return redirect(url_for('lista_robinson_html'))
+
+        else:
+            settings_by_id(user_sql.id).email_validated = True
+            settings_by_id(user_sql.id).email_robinson = False
+            session_sql.commit()
+            login_user(user_sql, remember=True)
+            flash_toast('Enhorabuena, cuenta activada.', 'success')
+            flash_toast('Bienvenido ' + Markup('<strong>') + user_username + Markup('</strong>'), 'success')
+            return redirect(url_for('alumnos_html', params=dic_encode(params)))
+    else:
+        return redirect(url_for('login_html'))
+
+
+@app.route('/lista_robinson')
+def lista_robinson_html():
+    params = {}
+    return render_template('lista_robinson.html', params=params)
+
+
+@app.route('/password_reset_request', methods=['GET', 'POST'])
+@app.route('/password_reset_request/<params>', methods=['GET', 'POST'])
+def password_reset_request_html(params={}):
+    try:
+        params_old = dic_decode(params)
+    except:
+        params_old = {}
+        abort(404)
+    params = {}
+    params['anchor'] = params_old.get('anchor', 'anchor_top')
+    params['user_check'] = params_old.get('user_check', False)
+    if request.method == 'POST':
+        password_reset_request_form = Password_Reset_Request(request.form)
+        if password_reset_request_form.validate():
+            user_sql = session_sql.query(User).filter_by(username=password_reset_request_form.username.data, email=password_reset_request_form.email.data).first()
+            if user_sql:
+                send_email_password_reset_request_asincrono(user_sql.id)
+                params['user_check'] = True
+                return redirect(url_for('password_reset_request_html', params=dic_encode(params)))
+
+            else:
+                flash_toast('Usurio no registrado con este email.', 'warning')
+        else:
+            flash_wtforms(password_reset_request_form, flash_toast, 'warning')
+        return render_template('password_reset_request.html', password_reset_request=password_reset_request_form, params=params)
+    return render_template('password_reset_request.html', password_reset_request=Password_Reset_Request(), params=params)
+
+
+@app.route('/password_reset', methods=['GET', 'POST'])
+@app.route('/password_reset/<params>', methods=['GET', 'POST'])
+def password_reset_html(params={}):
+    try:
+        params_old = dic_decode(params)
+    except:
+        params_old = {}
+        abort(404)
+    params = {}
+    params['anchor'] = params_old.get('anchor', 'anchor_top')
+    params['current_user_id'] = params_old.get('current_user_id', 0)
+    if request.method == 'POST':
+        password_reset_form = Password_Reset(request.form)
+        if password_reset_form.validate():
+            current_user_id = current_id_request('current_user_id')
+            params['current_user_id'] = current_user_id
+            user_sql = user_by_id(current_user_id)
+            if user_sql:
+                hashed_password = generate_password_hash(password_reset_form.password.data, method='sha256')
+                user_sql.password = hashed_password
+                params['password_reset'] = True
+                session_sql.commit
+                return redirect(url_for('login_html', params=dic_encode(params)))
+            else:
+                flash_toast('Este enlace ha caducado.', 'warning')
+        else:
+            flash_wtforms(password_reset_form, flash_toast, 'warning')
+        return render_template('password_reset.html', password_reset=password_reset_form, params=params)
+    return render_template('password_reset.html', password_reset=Password_Reset(), params=params)
+
+
 # XXX login
 
 
 @app.route('/login', methods=['GET', 'POST'])
-def login_html():
+@app.route('/login/<params>', methods=['GET', 'POST'])
+def login_html(params={}):
+    try:
+        params_old = dic_decode(params)
+    except:
+        params_old = {}
+        abort(404)
     params = {}
+    params['anchor'] = params_old.get('anchor', 'anchor_top')
+    params['ban'] = params_old.get('ban', False)
+    params['email_validated'] = params_old.get('email_validated', False)
+    params['email_validated_fail'] = params_old.get('email_validated_fail', False)
+    params['login_fail'] = params_old.get('login_fail', False)
+    params['password_reset'] = params_old.get('password_reset', False)
     session.clear()
-    login_fail = False
     login_form = User_Login(request.form)
-    ban = request.args.get('ban', False)
-    if request.method == 'POST' and login_form.validate():
-        user_sql = session_sql.query(User).filter_by(username=login_form.username.data).first()
-
-        if ban:
-            return render_template('login.html', user_login=login_form, login_fail=login_fail, params=params, ban=ban)
-        if user_sql:
-            if check_password_hash(user_sql.password, login_form.password.data):
-                login_user(user_sql, remember=login_form.remember.data)
-                settings = session_sql.query(Settings).filter(Settings.user_id == user_sql.id).first()
-                settings.visit_last = datetime.datetime.now()
-                settings.visit_number = settings.visit_number + 1
-                if settings.ban:
-                    ban = True
-                    login_fail = True
-                    flash_toast('Usuario ' + Markup('<strong>') + login_form.username.data + Markup('</strong> se encuentra temporalmente baneado<br>Por favor pongase en contacto con nosotros'), 'warning')
-                    return redirect(url_for('login_html', ban=True))
-                session_sql.commit()
-                flash_toast('Bienvenido ' + Markup('<strong>') + login_form.username.data + Markup('</strong>'), 'success')
-                if not settings.grupo_activo_id:
-                    params['login'] = True  # NOTE Para activar como activo el primer grupo creado y redirect a alumnos (por facilidad para un nuevo usuario)
-                    return redirect(url_for('settings_grupos_html', params=dic_encode(params)))
-                return redirect(url_for('alumnos_html'))
+    if request.method == 'POST':
+        if login_form.validate():
+            user_sql = session_sql.query(User).filter_by(username=login_form.username.data).first()
+            if params['ban']:
+                return render_template('login.html', user_login=login_form, params=params)
+            if user_sql:
+                if check_password_hash(user_sql.password, login_form.password.data):
+                    login_user(user_sql, remember=login_form.remember.data)
+                    settings = settings_by_id(user_sql.id)
+                    settings.visit_last = datetime.datetime.now()
+                    settings.visit_number = settings.visit_number + 1
+                    if settings.ban:
+                        params['ban'] = True
+                        params['login_fail'] = False
+                        # NOTE sin haber iniciado sesion no se pueden usar flash_toast
+                        return redirect(url_for('login_html', params=dic_encode(params)))
+                    if not settings.email_validated:
+                        params['email_validated_fail'] = True
+                        params['login_fail'] = False
+                        return redirect(url_for('login_html', params=dic_encode(params)))
+                    session_sql.commit()
+                    flash_toast('Bienvenido ' + Markup('<strong>') + login_form.username.data + Markup('</strong>'), 'success')
+                    if not settings.grupo_activo_id:
+                        params['login'] = True  # NOTE Para activar como activo el primer grupo creado y redirect a alumnos (por facilidad para un nuevo usuario)
+                        return redirect(url_for('settings_grupos_html', params=dic_encode(params)))
+                    return redirect(url_for('alumnos_html'))
+                else:
+                    login_form.password.errors = ['']
+                    flash_toast('Contraseña incorrecta', 'warning')
+                    params['login_fail'] = True
+                    return render_template('login.html', user_login=login_form, params=params)
             else:
-                flash_toast('Contraseña incorrecta', 'warning')
+                login_form.username.errors = ['']
+                flash_toast('Usuario no registrado', 'warning')
+                params['login_fail'] = True
+                return render_template('login.html', user_login=login_form, params=params)
         else:
-            flash_toast('Usuario no registrado', 'warning')
-            flash_toast(Markup('<strong>') + login_form.username.data + Markup('</strong>') + ' no existe como usuario' + Markup('<br>Debería crear una nueva cuenta.'), 'warning')
-        login_fail = True
-        return render_template('login.html', user_login=login_form, login_fail=login_fail, params=params, ban=ban)
-
-    return render_template('login.html', user_login=User_Login(), login_fail=login_fail, params=params, ban=ban)
-
-
-@app.route('/password_reset')
-def password_reset_html():
-    params = {}
-
-    return render_template('password_reset.html', password_reset=Password_Reset(), params=params)
+            flash_wtforms(login_form, flash_toast, 'warning')
+            params['login_fail'] = True
+            return render_template('login.html', user_login=login_form, params=params)
+    return render_template('login.html', user_login=User_Login(), params=params)
 
 
 @app.route('/logout')

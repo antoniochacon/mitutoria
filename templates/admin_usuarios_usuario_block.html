@@ -67,6 +67,22 @@
 							<span class="input-group-addon {% if request.method=='POST' and params['collpase_usuario_edit'] %} {% if usuario_edit.email.errors %} form_addon-warning {% else %} form_addon-success {% endif %} {% endif %}">{{usuario_edit.email.label.text}}</span>
 						</div>
 					</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 					<div class="form-group col-sm-6 col-md-3">
 						<div class="input-group">
 							<select name="{{usuario_edit.role.name}}" class="form-control" required {% if not equal_str(usuario.id, params['current_usuario_id']) or not params['usuario_edit_link'] %} disabled {% endif %}>
@@ -80,6 +96,64 @@
 							<span class="input-group-addon">role</span>
 						</div>
 					</div>
+						<div class="form-group col-auto">
+							<label class="custom-control custom-checkbox check_box_1">
+								<input
+									type="checkbox"
+									{% if not equal_str(usuario.id, params['current_usuario_id']) or not params['usuario_edit_link'] %}
+									disabled
+									{% endif %}
+									class="custom-control-input"
+									name="email_validated"
+									value="True"
+									{% if settings_by_id(usuario.id).email_validated%}
+									checked
+									{% endif %}>
+								<span class="custom-control-indicator"></span>
+								<span class="custom-control-description">{{usuario_edit.email_validated.label.text}}</span>
+							</label>
+						</div>
+
+
+
+
+
+
+		<div class="form-group col-auto">
+			<label class="custom-control custom-checkbox check_box_1">
+				<input
+					type="checkbox"
+					{% if not equal_str(usuario.id, params['current_usuario_id']) or not params['usuario_edit_link'] %}
+					disabled
+					{% endif %}
+					class="custom-control-input"
+					name="email_robinson"
+					value="True"
+					{% if settings_by_id(usuario.id).email_robinson%}
+					checked
+					{% endif %}>
+				<span class="custom-control-indicator"></span>
+				<span class="custom-control-description">{{usuario_edit.email_robinson.label.text}}</span>
+			</label>
+		</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 					<div class="form-group col-auto">
 						<label class="custom-control custom-checkbox check_box_1">
 							<input
@@ -94,7 +168,7 @@
 								checked
 								{% endif %}>
 							<span class="custom-control-indicator"></span>
-							<span class="custom-control-description">ban</span>
+							<span class="custom-control-description">{{usuario_edit.ban.label.text}}</span>
 						</label>
 					</div>
 					<input type="hidden" name="current_usuario_id" value="{{hashids_encode(usuario.id)}}">

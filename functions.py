@@ -97,10 +97,42 @@ def connenction_check():
 
 # XXX: envio de mails por threading
 # *****************************************************************
+def send_email_password_reset(current_user_id):
+    msg = Message('Cambiar password', sender='mitutoria', recipients=[user_by_id(current_user_id).email])
+    # mail texto plano
+    msg.body = 'Cambiar password'
+    # mail HTML
+    msg.html = render_template('email_password_reset_request.html', current_user_id=current_user_id, password_reset_link=password_reset_link, index_link=index_link)
+    mail.send(msg)
 
 
-def send_email(alumno, tutoria):
+def send_email_password_reset_request_asincrono(current_user_id):
+    @copy_current_request_context
+    def send_email_password_reset_request_process(current_user_id):
+        send_email_password_reset(current_user_id)
+    send_email_password_reset_request_threading = threading.Thread(name='send_email_password_reset_request_thread', target=send_email_password_reset_request_process, args=(current_user_id,))
+    send_email_password_reset_request_threading.start()
 
+
+
+def send_email_validate(user_id):
+    msg = Message('Verificar email', sender='mitutoria', recipients=[user_by_id(user_id).email])
+    # mail texto plano
+    msg.body = 'Verificación de email'
+    # mail HTML
+    msg.html = render_template('email_validate.html', user_id=user_id, email_validate_link=email_validate_link, index_link=index_link)
+    mail.send(msg)
+
+
+def send_email_validate_asincrono(user_id):
+    @copy_current_request_context
+    def send_email_validate_process(user_id):
+        send_email_validate(user_id)
+    send_email_validate_threading = threading.Thread(name='send_email_validate_thread', target=send_email_validate_process, args=(user_id,))
+    send_email_validate_threading.start()
+
+
+def send_email_tutoria(alumno, tutoria):
     with mail.connect() as conn:
         for asignatura in alumno_asignaturas(alumno.id):
             msg = Message('Tutoria | %s | %s' % (grupo_activo().nombre, alumno.nombre), sender='mitutoria | %s' % grupo_activo().tutor, recipients=[asignatura.email])
@@ -116,16 +148,16 @@ def send_email(alumno, tutoria):
             session_sql.commit()
 
 
-def send_email_tutoria(alumno, tutoria):
+def send_email_tutoria_asincrono(alumno, tutoria):
     @copy_current_request_context
-    def send_email_process(alumno, tutoria):
-        send_email(alumno, tutoria)
-    send_email_threading = threading.Thread(name='send_email_thread', target=send_email_process, args=(alumno, tutoria))
-    send_email_threading.start()
+    def send_email_tutoria_process(alumno, tutoria):
+        send_email_tutoria(alumno, tutoria)
+    send_email_tutoria_threading = threading.Thread(name='send_email_tutoria_thread', target=send_email_tutoria_process, args=(alumno, tutoria))
+    send_email_tutoria_threading.start()
     flash_toast('Tutoria generada para ' + Markup('<strong>') + alumno.nombre + Markup('</strong>'), 'success')
 
 
-def re_send_email(alumno, tutoria, asignaturas_id_lista):
+def re_send_email_tutoria(alumno, tutoria, asignaturas_id_lista):
     with mail.connect() as conn:
         for asignatura_id in asignaturas_id_lista:
             asignatura = asignatura_by_id(asignatura_id)  # FIXME creo que sera conveniente usar int(asignatura_id) [bastara hacer asignatura_id=int(asignatura_id)]
@@ -145,12 +177,12 @@ def re_send_email(alumno, tutoria, asignaturas_id_lista):
             session_sql.commit()
 
 
-def re_send_email_tutoria(alumno, tutoria, asignaturas_id_lista):
+def re_send_email_tutoria_asincrono(alumno, tutoria, asignaturas_id_lista):
     @copy_current_request_context
-    def re_send_email_process(alumno, tutoria, asignaturas_id_lista):
-        re_send_email(alumno, tutoria, asignaturas_id_lista)
-    re_send_email_threading = threading.Thread(name='re_send_email_thread', target=re_send_email_process, args=(alumno, tutoria, asignaturas_id_lista))
-    re_send_email_threading.start()
+    def re_send_email_tutoria_process(alumno, tutoria, asignaturas_id_lista):
+        re_send_email_tutoria(alumno, tutoria, asignaturas_id_lista)
+    re_send_email_tutoria_threading = threading.Thread(name='re_send_email_tutoria_thread', target=re_send_email_tutoria_process, args=(alumno, tutoria, asignaturas_id_lista))
+    re_send_email_tutoria_threading.start()
 
 
 # *****************************************************************
@@ -278,7 +310,6 @@ def usuarios(order_by_1, order_by_2, order_by_3):
     # if not order_by_3:
     #     order_by_3 = ''
     return session_sql.query(User).order_by(order_by_1, order_by_2, order_by_3).all()
-
 
 
 def user_by_id(user_id):
@@ -732,18 +763,6 @@ def flash_wtforms(form, flash_type, category_filter):
     for field, errors in form.errors.items():
         for error in errors:
             flash_type(error, category_filter)
-
-
-class Fab:
-
-    def __init__(self, visible, usuario_add, usuario_login, alumnos, asignaturas, configuracion, settings_admin):
-        self.visible = visible
-        self.usuario_add = usuario_add
-        self.usuario_login = usuario_login
-        self.alumnos = alumnos
-        self.asignaturas = asignaturas
-        self.configuracion = configuracion
-        self.settings_admin = settings_admin
 
 
 def truncate_custom(string, length):

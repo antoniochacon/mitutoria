@@ -21,6 +21,21 @@ class User_Add (Form):
                                  validators.length(max=120, message='email debe tener maximo 120 caracteres')])
 
 
+class Password_Reset_Request (Form):
+    username = StringField('usuario', [validators.Required(message='usuario es obligatorio'),
+                                       validators.length(min=4, message='usuario debe tener minimo 4 caracteres'),
+                                       validators.length(max=25, message='usuario debe tener maximo 25 caracteres')])
+
+    email = EmailField('email', [validators.Required(message='email es obligatorio'),
+                                 validators.Email(message='Escriba una direccion valida de email'),
+                                 validators.length(max=120, message='email debe tener maximo 120 caracteres')])
+class Password_Reset (Form):
+    password = PasswordField('password',
+                             [validators.Required(message='password es obligatorio'),
+                              validators.length(min=6, message='password debe tener minimo 7 caracteres'),
+                              validators.length(max=80, message='password debe tener maximo 25 caracteres')])
+
+
 class Usuario_Edit (Form):
     username = StringField('usuario', [validators.Required(message='usuario es obligatorio'),
                                        validators.length(min=4, message='usuario debe tener minimo 4 caracteres'),
@@ -30,6 +45,8 @@ class Usuario_Edit (Form):
     email = EmailField('email', [validators.Required(message='email es obligatorio'),
                                  validators.Email(message='Escriba una direccion valida de email'),
                                  validators.length(max=120, message='email debe tener maximo 120 caracteres')])
+    email_validated = BooleanField('email validado')
+    email_robinson = BooleanField('lista Robinson')
     role = StringField('role', [validators.length(min=3, message='role debe tener minimo 3 caracteres'),
                                 validators.length(max=80, message='role debe tener maximo 25 caracteres')])
     ban = BooleanField('ban')
@@ -46,15 +63,6 @@ class User_Login (Form):
                                           validators.length(min=6, message='password debe tener minimo 7 caracteres'),
                                           validators.length(max=80, message='password debe tener maximo 25 caracteres')])
     remember = BooleanField('recuerdame')
-
-
-class Password_Reset (Form):
-    username = StringField('usuario', [validators.Required(message='usuario es obligatorio'),
-                                       validators.length(min=4, message='usuario debe tener minimo 4 caracteres'),
-                                       validators.length(max=25, message='usuario debe tener maximo 25 caracteres')])
-    email = EmailField('email', [validators.Required(message='email es obligatorio'),
-                                 validators.Email(message='Escriba una direccion valida de email'),
-                                 validators.length(max=120, message='email debe tener maximo 120 caracteres')])
 
 
 class Grupo_Add (Form):
