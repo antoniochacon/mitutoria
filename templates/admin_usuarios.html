@@ -8,7 +8,33 @@
 		<div id="parent_usuario">
 			<div>
 				{# XXX: usuarios_listado #}
-				{% include 'admin_usuarios_usuario_block.html' %}
+				{% for usuario in usuarios('', '', '') %}
+					<a id="anchor_usu_{{hashids_encode(usuario.id)}}"></a>
+					<a href="/admin_usuario_data_grupos/{{dic_encode_args({'current_usuario_id': usuario.id})}}" class="collapse_header_1" title="{{usuario.username}}">
+						<div class="media">
+							<span class="capital {% if not settings_by_id(usuario.id).ban %}capital-mutted{% else %}capital-warning active{% endif %}">{{loop.index}}</span>
+							<div class="media-body">
+								<div class="padding_2">
+									{{usuario.username}}
+									{# NOTE badge #}
+									<span class="badge badge-info float-right" title="total de visitas">{{settings_by_id(usuario.id).visit_number}}
+										visitas
+									</span>
+									{% if settings_by_id(usuario.id).ban %}
+										<span class="badge badge-warning text-white float-right mr-2" title="banned">
+											banned
+										</span>
+									{% endif %}
+									{% if settings_by_id(usuario.id).email_robinson %}
+										<span class="badge  border border-warning bg-white text-warning float-right mr-2" title="robinson">
+											robinson
+										</span>
+									{% endif %}
+								</div>
+							</div>
+						</div>
+					</a>
+				{% endfor %}
 			</div>
 		</div>
 	</div>

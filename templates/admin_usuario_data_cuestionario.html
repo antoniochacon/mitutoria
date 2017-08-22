@@ -1,0 +1,22 @@
+{% extends '_layout.html' %}
+{% block body %}
+	{%from '_macro.html' import nav_bar_top, titulo_1, nav_tabs %}
+	{{ nav_bar_top(link_active='Admin', params=params, current_user=current_user) }}
+	<div class="paper bg-white padding_contenido">
+		{{titulo_1(bg_color='bg-dark', titulo='Admin Settings')}}
+		{% include "admin_usuario_data_block.html" %}
+		{{nav_tabs(tab_active='Cuestionario', params_args=dic_encode_args({'current_usuario_id': usuario.id}), dic={'Grupos':'admin_usuario_data_grupos', 'Cuestionario':'admin_usuario_data_cuestionario', 'Opciones':'admin_usuario_data_opciones'})}}
+		<div class="row">
+			{% for pregunta in invitado_preguntas(params['current_usuario_id']) %}
+				<div class="media col-md-6 col-lg-4 pb-2">
+					<span class="capital capital-mutted">{{pregunta.orden}}</span>
+					<div class="media-body">
+						<div class="padding_2">
+							{{pregunta.enunciado_ticker}}
+						</div>
+					</div>
+				</div>
+			{% endfor %}
+		</div>
+	</div>
+{% endblock %}

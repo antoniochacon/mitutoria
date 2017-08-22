@@ -1,0 +1,38 @@
+{% extends '_layout.html' %}
+{% block body %}
+	{%from '_macro.html' import nav_bar_top, titulo_1, nav_tabs %}
+	{{ nav_bar_top(link_active='Admin', params=params, current_user=current_user) }}
+	<div class="paper bg-white padding_contenido">
+		{{titulo_1(bg_color='bg-dark', titulo='Admin Settings')}}
+		{% include "admin_usuario_data_block.html" %}
+		{{nav_tabs(tab_active='Opciones', params_args=dic_encode_args({'current_usuario_id': usuario.id}), dic={'Grupos':'admin_usuario_data_grupos', 'Cuestionario':'admin_usuario_data_cuestionario', 'Opciones':'admin_usuario_data_opciones'})}}
+		<div class="padding_3">
+			<div class="row">
+				<div class="col-md-6 col-lg-4">
+					{# NOTE elminado el form-group para ajustar mejor #}
+					<label class="custom-control custom-checkbox check_box_1">
+						<input type="checkbox" class="custom-control-input" name="settings_edit_tutoria_timeout" value="True" {% if settings_by_id(params['current_usuario_id']).tutoria_timeout %} checked {% endif %} disabled>
+						<span class="custom-control-indicator"></span>
+						<span class="custom-control-description {% if not settings_by_id(params['current_usuario_id']).tutoria_timeout %}text-mutted{% endif %}">Auto archivar tutorias</span>
+					</label>
+				</div>
+				<div class="col-md-6 col-lg-4">
+					<label class="custom-control custom-checkbox check_box_1">
+						<input type="checkbox" class="custom-control-input" name="settings_edit_show_tutorias_collapse" value="True" {% if settings_by_id(params['current_usuario_id']).show_tutorias_collapse %} checked {% endif %} disabled>
+						<span class="custom-control-indicator"></span>
+						<span class="custom-control-description {% if not settings_by_id(params['current_usuario_id']).show_tutorias_collapse %}text-mutted{% endif %}">Desplegar tutorias solicitadas</span>
+					</label>
+				</div>
+				{% if settings().role=='admin'%}
+					<div class="col-md-6 col-lg-4">
+						<label class="custom-control custom-checkbox check_box_1">
+							<input type="checkbox" class="custom-control-input" name="settings_edit_calendar" value="True" {% if settings_by_id(params['current_usuario_id']).calendar %} checked {% endif %} disabled>
+							<span class="custom-control-indicator"></span>
+							<span class="custom-control-description {% if not settings_by_id(params['current_usuario_id']).calendar %}text-mutted{% endif %}">Agregar eventos a la agenda</span>
+						</label>
+					</div>
+				{% endif %}
+			</div>
+		</div>
+	</div>
+{% endblock %}

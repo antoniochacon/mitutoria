@@ -66,6 +66,47 @@ def page_not_found_html(warning):
 def index_html():
     return redirect(url_for('alumnos_html'))
 
+# XXX admin_usuario_data_opciones
+
+
+@app.route('/admin_usuario_data_opciones', methods=['GET', 'POST'])
+@app.route('/admin_usuario_data_opciones/<params>', methods=['GET', 'POST'])
+@login_required
+def admin_usuario_data_opciones_html(params={}):
+    try:
+        params_old = dic_decode(params)
+    except:
+        params_old = {}
+        abort(404)
+
+    params = {}
+    params['anchor'] = params_old.get('anchor', 'anchor_top')
+    params['current_usuario_id'] = params_old.get('current_usuario_id', 0)
+    current_usuario_id = params['current_usuario_id']
+    usuario = user_by_id(current_usuario_id)
+    return render_template(
+        'admin_usuario_data_opciones.html', usuario_edit=Usuario_Edit(), usuario=usuario, params=params)
+
+
+# XXX admin_usuario_data_cuestionario
+@app.route('/admin_usuario_data_cuestionario', methods=['GET', 'POST'])
+@app.route('/admin_usuario_data_cuestionario/<params>', methods=['GET', 'POST'])
+@login_required
+def admin_usuario_data_cuestionario_html(params={}):
+    try:
+        params_old = dic_decode(params)
+    except:
+        params_old = {}
+        abort(404)
+
+    params = {}
+    params['anchor'] = params_old.get('anchor', 'anchor_top')
+    params['current_usuario_id'] = params_old.get('current_usuario_id', 0)
+    current_usuario_id = params['current_usuario_id']
+    usuario = user_by_id(current_usuario_id)
+    return render_template(
+        'admin_usuario_data_cuestionario.html', usuario_edit=Usuario_Edit(), usuario=usuario, params=params)
+
 
 # XXX admin_usuario_data_grupos
 @app.route('/admin_usuario_data_grupos', methods=['GET', 'POST'])
@@ -83,13 +124,12 @@ def admin_usuario_data_grupos_html(params={}):
     params['current_usuario_id'] = params_old.get('current_usuario_id', 0)
     current_usuario_id = params['current_usuario_id']
     usuario = user_by_id(current_usuario_id)
-    print('usuario_id',usuario.id)
-
     return render_template(
-        'admin_usuario_data_grupos.html', usuario=usuario, params=params)
-
+        'admin_usuario_data_grupos.html', usuario_edit=Usuario_Edit(), usuario=usuario, params=params)
 
 # XXX admin_usuarios
+
+
 @app.route('/admin_usuarios', methods=['GET', 'POST'])
 @app.route('/admin_usuarios/<params>', methods=['GET', 'POST'])
 @login_required
@@ -1011,13 +1051,13 @@ def analisis_html(params={}):
         'analisis.html', grupo=grupo, alumno=alumno, tutoria=tutoria, df_data=df_data,
         tutoria_edit=Tutoria_Add(), params=params)
 
-# XXX settings_options
+# XXX settings_opciones
 
 
-@app.route('/settings_options', methods=['GET', 'POST'])
-@app.route('/settings_options/<params>', methods=['GET', 'POST'])
+@app.route('/settings_opciones', methods=['GET', 'POST'])
+@app.route('/settings_opciones/<params>', methods=['GET', 'POST'])
 @login_required
-def settings_options_html(params={}):
+def settings_opciones_html(params={}):
     try:
         params_old = dic_decode(params)
     except:
@@ -1046,10 +1086,10 @@ def settings_options_html(params={}):
             settings().calendar = settings_edit_calendar
             flash_toast('Configuracion actualizada', 'success')
             session_sql.commit()
-            return redirect(url_for('settings_options_html'))
+            return redirect(url_for('settings_opciones_html'))
 
     return render_template(
-        'settings_options.html', settings_user=settings_user, params=params)
+        'settings_opciones.html', settings_user=settings_user, params=params)
 
 
 # XXX settings_grupos

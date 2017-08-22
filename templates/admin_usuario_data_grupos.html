@@ -4,45 +4,37 @@
 	{{ nav_bar_top(link_active='Admin', params=params, current_user=current_user) }}
 	<div class="paper bg-white padding_contenido">
 		{{titulo_1(bg_color='bg-dark', titulo='Admin Settings')}}
-		{% include "admin_usuario_data_info_block.html" %}
-		{{nav_tabs(tab_active='Grupos', params_args=dic_encode_args({'current_usuario_id': usuario.id}), dic={'Grupos':'admin_usuario_data_grupos', 'Alumnos':'usuario_ficha_alumnos', 'Tutorias':'usuario_ficha_tutorias', 'Cuestionario':'usuario_ficha_cuestionario'})}}
-		<!-- ********************************************* -->
-		{% for grupo in usuario_grupos(usuario.id) %}
-			<a id="anchor_gru_{{hashids_encode(grupo.id)}}"></a>
-			<a href="#grupo_listado{{hashids_encode(grupo.id)}}" class="list-group-item-1" data-toggle="collapse" data-parent="#grupo" aria-expanded="true" aria-controls="collapse{{hashids_encode(grupo.id)}}" title="{{grupo.tutor}}">
-				<span class="btn btn-sm {% if grupo_activo_check(grupo.id) %} btn-outline-primary {% else %} btn-outline-dark{% endif %}" role="button" title="{{grupo.tutor}}" }>
-					<strong>
-						{{grupo.curso_academico}}
+		{% include "admin_usuario_data_block.html" %}
+		{{nav_tabs(tab_active='Grupos', params_args=dic_encode_args({'current_usuario_id': usuario.id}), dic={'Grupos':'admin_usuario_data_grupos', 'Cuestionario':'admin_usuario_data_cuestionario', 'Opciones':'admin_usuario_data_opciones'})}}
+		{% for grupo in usuario_grupos(params['current_usuario_id']) %}
+			<div class="media pb-3">
+				<span class="curso_academico {% if grupo_activo_check(grupo.id) %} curso_academico-primary {% else %} curso_academico-mutted {% endif %}">{{grupo.curso_academico}}
+					|
+					{{grupo.curso_academico+1}}</span>
+				<div class="media-body">
+					<div class="padding_2">
+						{{grupo.centro}}
 						|
-						{{grupo.curso_academico+1}}
-					</strong>
-				</span>
-				<span class="hidden-sm hidden-md hidden-lg">
-					&nbsp;
-					{{grupo.centro | truncate(20,true,'..',0)}}
-					|
-					{{grupo.nombre | truncate(20,true,'..',0)}}
-				</span>
-				<span class="hidden-xs">
-					&nbsp;
-					{{grupo.centro}}
-					|
-					{{grupo.nombre}}
-				</span>
-			</a>
-			<div id="grupo_listado{{hashids_encode(grupo.id)}}" class="collapse {% if equal_str(grupo.id, params['current_grupo_id']) and params['collapse_grupo_edit'] %} show {% endif %}" role="tabcard_XXX" aria-labelledby="heading{{hashids_encode(grupo.id)}}">
-				<div class="divider grueso bg-primary"></div>
-				<div class="card_XXX-group" id="grupo{{hashids_encode(grupo.id)}}" role="tablist" aria-multiselectable="true">
-					<div class="card_XXX">
-						{# XXX: listado alumnos #}
-						<div class="padding_3">
-							asdfasdf asdfasdfasdf
-						</div>
+						{{grupo.nombre}}
+						{# NOTE badge #}
+						<span
+							class="badge float-right {% if grupo_alumnos_count(grupo.id) %}{% if grupo_activo_check(grupo.id) %} badge-dark {% else %} badge-mutted {% endif %}{% else %}badge-warning{% endif %} text-white"
+							title="{{grupo_alumnos_count(grupo.id)}} {{singular_plural('alumno','alumnos', grupo_alumnos_count(grupo.id))}}">
+							{% if grupo_alumnos_count(grupo.id) %}
+								{{grupo_alumnos_count(grupo.id)}}
+								{{singular_plural('alumno', 'alumnos', grupo_alumnos_count(grupo.id))}}
+							{% else %}
+								sin alumnos
+							{% endif %}
+						</span>
+						<span class="badge border border-dark bg-white text-dark float-right mr-2" title="total de tutorias">
+							{{grupo_tutorias(grupo.id, '')|count}}
+							{{singular_plural('tutoria', 'tutorias', grupo_tutorias(grupo.id, '')|count)}}
+						</span>
+						<div class="divider bg-mutted padding_2"></div>
 					</div>
 				</div>
-				<div class="divider grueso bg-primary"></div>
 			</div>
 		{% endfor %}
 	</div>
-	<!-- ********************************************* -->
 {% endblock %}

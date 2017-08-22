@@ -4,11 +4,12 @@
 		<span class="curso_academico {% if grupo_activo_check(grupo.id) %} curso_academico-primary {% else %} curso_academico-mutted {% endif %}">{{grupo.curso_academico}}
 			|
 			{{grupo.curso_academico+1}}</span>
+		
 		<div class="media-body">
 			<div class="padding_2">
 				{{grupo.nombre}}
 				{# NOTE badge #}
-				<span class="badge float-right {% if grupo_alumnos_count(grupo.id) %}badge-mutted{% else %}badge-warning{% endif %} text-white" title="{{grupo_alumnos_count(grupo.id)}} {{singular_plural('alumno','alumnos', grupo_alumnos_count(grupo.id))}}">
+				<span class="badge float-right {% if grupo_alumnos_count(grupo.id) %}{% if grupo_activo_check(grupo.id) %} badge-dark {% else %} badge-mutted {% endif %}{% else %}badge-warning{% endif %} text-white" title="{{grupo_alumnos_count(grupo.id)}} {{singular_plural('alumno','alumnos', grupo_alumnos_count(grupo.id))}}">
 					{% if grupo_alumnos_count(grupo.id) %}
 						{{grupo_alumnos_count(grupo.id)}}
 						{{singular_plural('alumno', 'alumnos', grupo_alumnos_count(grupo.id))}}
