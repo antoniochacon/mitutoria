@@ -1,11 +1,13 @@
 {% extends '_layout.html' %}
 {% block body %}
-	{%from '_macro.html' import field_form, titulo_user_ficha, nav_tabs %}
+	{%from '_macro.html' import nav_bar_top, titulo_1, nav_tabs %}
+	{{ nav_bar_top(link_active='Admin', params=params, current_user=current_user) }}
 	<div class="paper bg-white padding_contenido">
-		{{titulo_user_ficha(bg_color='bg-primary', titulo='Admin Settings', user=user)}}
-		{{nav_tabs(tab_active='Grupos', params_args=dic_encode_args({'current_user_id': user.id}), dic={'Grupos':'user_ficha_grupos', 'Alumnos':'user_ficha_alumnos', 'Tutorias':'user_ficha_tutorias', 'Cuestionario':'user_ficha_cuestionario'})}}
+		{{titulo_1(bg_color='bg-dark', titulo='Admin Settings')}}
+		{% include "admin_usuario_data_info_block.html" %}
+		{{nav_tabs(tab_active='Grupos', params_args=dic_encode_args({'current_usuario_id': usuario.id}), dic={'Grupos':'admin_usuario_data_grupos', 'Alumnos':'usuario_ficha_alumnos', 'Tutorias':'usuario_ficha_tutorias', 'Cuestionario':'usuario_ficha_cuestionario'})}}
 		<!-- ********************************************* -->
-		{% for grupo in user_grupos(user.id) %}
+		{% for grupo in usuario_grupos(usuario.id) %}
 			<a id="anchor_gru_{{hashids_encode(grupo.id)}}"></a>
 			<a href="#grupo_listado{{hashids_encode(grupo.id)}}" class="list-group-item-1" data-toggle="collapse" data-parent="#grupo" aria-expanded="true" aria-controls="collapse{{hashids_encode(grupo.id)}}" title="{{grupo.tutor}}">
 				<span class="btn btn-sm {% if grupo_activo_check(grupo.id) %} btn-outline-primary {% else %} btn-outline-dark{% endif %}" role="button" title="{{grupo.tutor}}" }>

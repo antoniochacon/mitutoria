@@ -111,15 +111,6 @@
 		</ul>
 	</div>
 {% endmacro %}
-{% macro titulo_user_ficha(text_color, bg_color, titulo, user) %}
-	<h3 class="{{text_color}} strong">
-		{{titulo}}
-		<h5 class="{{text_color}}">
-			{% include "user_info_basica_block.html" %}
-			<div class="divider {{bg_color}} grueso"></div>
-		</h5>
-	</h3>
-{% endmacro %}
 {% macro nav_bar_top(link_active, params, current_user) %}
 	{% if current_user.is_authenticated %}
 		{{nav_bar(link_active, params=params, dic={'Alumnos':'alumnos', 'Asignaturas':'asignaturas', 'Opciones':'settings_cuestionario', 'Admin':'admin_cuestionario', 'Logout':'logout'})}}

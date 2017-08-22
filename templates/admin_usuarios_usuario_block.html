@@ -15,6 +15,11 @@
 							banned
 						</span>
 					{% endif %}
+					{% if settings_by_id(usuario.id).email_robinson %}
+						<span class="badge  border border-warning bg-white text-warning float-right mr-2" title="robinson">
+							robinson
+						</span>
+					{% endif %}
 				</div>
 			</div>
 		</div>
@@ -67,22 +72,6 @@
 							<span class="input-group-addon {% if request.method=='POST' and params['collpase_usuario_edit'] %} {% if usuario_edit.email.errors %} form_addon-warning {% else %} form_addon-success {% endif %} {% endif %}">{{usuario_edit.email.label.text}}</span>
 						</div>
 					</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 					<div class="form-group col-sm-6 col-md-3">
 						<div class="input-group">
 							<select name="{{usuario_edit.role.name}}" class="form-control" required {% if not equal_str(usuario.id, params['current_usuario_id']) or not params['usuario_edit_link'] %} disabled {% endif %}>
@@ -96,64 +85,40 @@
 							<span class="input-group-addon">role</span>
 						</div>
 					</div>
-						<div class="form-group col-auto">
-							<label class="custom-control custom-checkbox check_box_1">
-								<input
-									type="checkbox"
-									{% if not equal_str(usuario.id, params['current_usuario_id']) or not params['usuario_edit_link'] %}
-									disabled
-									{% endif %}
-									class="custom-control-input"
-									name="email_validated"
-									value="True"
-									{% if settings_by_id(usuario.id).email_validated%}
-									checked
-									{% endif %}>
-								<span class="custom-control-indicator"></span>
-								<span class="custom-control-description">{{usuario_edit.email_validated.label.text}}</span>
-							</label>
-						</div>
-
-
-
-
-
-
-		<div class="form-group col-auto">
-			<label class="custom-control custom-checkbox check_box_1">
-				<input
-					type="checkbox"
-					{% if not equal_str(usuario.id, params['current_usuario_id']) or not params['usuario_edit_link'] %}
-					disabled
-					{% endif %}
-					class="custom-control-input"
-					name="email_robinson"
-					value="True"
-					{% if settings_by_id(usuario.id).email_robinson%}
-					checked
-					{% endif %}>
-				<span class="custom-control-indicator"></span>
-				<span class="custom-control-description">{{usuario_edit.email_robinson.label.text}}</span>
-			</label>
-		</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+					<div class="form-group col-auto">
+						<label class="custom-control custom-checkbox check_box_1">
+							<input
+								type="checkbox"
+								{% if not equal_str(usuario.id, params['current_usuario_id']) or not params['usuario_edit_link'] %}
+								disabled
+								{% endif %}
+								class="custom-control-input"
+								name="email_validated"
+								value="True"
+								{% if settings_by_id(usuario.id).email_validated%}
+								checked
+								{% endif %}>
+							<span class="custom-control-indicator"></span>
+							<span class="custom-control-description">{{usuario_edit.email_validated.label.text}}</span>
+						</label>
+					</div>
+					<div class="form-group col-auto">
+						<label class="custom-control custom-checkbox check_box_1">
+							<input
+								type="checkbox"
+								{% if not equal_str(usuario.id, params['current_usuario_id']) or not params['usuario_edit_link'] %}
+								disabled
+								{% endif %}
+								class="custom-control-input"
+								name="email_robinson"
+								value="True"
+								{% if settings_by_id(usuario.id).email_robinson%}
+								checked
+								{% endif %}>
+							<span class="custom-control-indicator"></span>
+							<span class="custom-control-description">{{usuario_edit.email_robinson.label.text}}</span>
+						</label>
+					</div>
 					<div class="form-group col-auto">
 						<label class="custom-control custom-checkbox check_box_1">
 							<input
@@ -208,6 +173,9 @@
 							<i class="material-icons vertical-center">edit</i>
 							editar ficha
 						</button>
+
+						<a class="btn btn-outline-dark btn-sm" href="/admin_usuario_data_grupos/{{dic_encode_args({'current_usuario_id': usuario.id})}}" role="button">usuario DATA</a>
+
 						{% if equal_str(usuario.id,params['current_usuario_id']) and params['collapse_usuario_edit']%}
 							<button role="button" type="submit" name="selector_button" class="btn btn-outline-dark btn-sm" value="selector_usuario_edit_close" title="cerrar ficha">
 								<i class="material-icons vertical-center">close</i>

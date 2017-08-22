@@ -67,6 +67,28 @@ def index_html():
     return redirect(url_for('alumnos_html'))
 
 
+# XXX admin_usuario_data_grupos
+@app.route('/admin_usuario_data_grupos', methods=['GET', 'POST'])
+@app.route('/admin_usuario_data_grupos/<params>', methods=['GET', 'POST'])
+@login_required
+def admin_usuario_data_grupos_html(params={}):
+    try:
+        params_old = dic_decode(params)
+    except:
+        params_old = {}
+        abort(404)
+
+    params = {}
+    params['anchor'] = params_old.get('anchor', 'anchor_top')
+    params['current_usuario_id'] = params_old.get('current_usuario_id', 0)
+    current_usuario_id = params['current_usuario_id']
+    usuario = user_by_id(current_usuario_id)
+    print('usuario_id',usuario.id)
+
+    return render_template(
+        'admin_usuario_data_grupos.html', usuario=usuario, params=params)
+
+
 # XXX admin_usuarios
 @app.route('/admin_usuarios', methods=['GET', 'POST'])
 @app.route('/admin_usuarios/<params>', methods=['GET', 'POST'])
@@ -174,28 +196,6 @@ def admin_usuarios_html(params={}):
 
     return render_template(
         'admin_usuarios.html', usuario_edit=Usuario_Edit(), params=params)
-
-# XXX admin_usuarios_ficha_grupos
-
-
-@app.route('/admin_usuarios_ficha_grupos', methods=['GET', 'POST'])
-@app.route('/admin_usuarios_ficha_grupos/<params>', methods=['GET', 'POST'])
-@login_required
-def admin_usuarios_ficha_grupos_html(params={}):
-    try:
-        params_old = dic_decode(params)
-    except:
-        params_old = {}
-        abort(404)
-
-    params = {}
-    params['anchor'] = params_old.get('anchor', 'anchor_top')
-    params['current_user_id'] = params_old.get('current_user_id', 0)
-    current_user_id = params['current_user_id']
-    user = user_by_id(current_user_id)
-
-    return render_template(
-        'admin_usuarios_ficha_grupos.html', user=user, params=params)
 
 
 # XXX user_ficha_alumnos
@@ -1759,15 +1759,19 @@ def password_reset_request_html(params={}):
     params = {}
     params['anchor'] = params_old.get('anchor', 'anchor_top')
     params['user_check'] = params_old.get('user_check', False)
+    params['email_robinson'] = params_old.get('email_robinson', False)
     if request.method == 'POST':
         password_reset_request_form = Password_Reset_Request(request.form)
         if password_reset_request_form.validate():
             user_sql = session_sql.query(User).filter_by(username=password_reset_request_form.username.data, email=password_reset_request_form.email.data).first()
             if user_sql:
+                if settings_by_id(user_sql.id).email_robinson:
+                    params['email_robinson'] = True
+                    flash_toast('Usuario en lista Robinson.', 'warning')
+                    return redirect(url_for('password_reset_request_html', params=dic_encode(params)))
                 send_email_password_reset_request_asincrono(user_sql.id)
                 params['user_check'] = True
                 return redirect(url_for('password_reset_request_html', params=dic_encode(params)))
-
             else:
                 flash_toast('Usurio no registrado con este email.', 'warning')
         else:
@@ -1796,6 +1800,7 @@ def password_reset_html(params={}):
             if user_sql:
                 hashed_password = generate_password_hash(password_reset_form.password.data, method='sha256')
                 user_sql.password = hashed_password
+                settings_by_id(current_user_id).email_robinson = False
                 params['password_reset'] = True
                 session_sql.commit
                 return redirect(url_for('login_html', params=dic_encode(params)))
