@@ -69,28 +69,17 @@
 				</div>
 				<br>
 			{% endif %}
-			{% if params['email_validated_fail'] %}
+			{% if params['email_robinson'] %}
 				<br>
 				<div class="divider bg-dark"></div>
 				<br>
 				<div class="text-center text-warning">
-					Revise su cuenta de correo.
+					Su cuenta se encuentra en nuestra lista Robinson
 					<br>
-					Debe confirmar su registro.
+					Por favor pongase en contacto con nosotros
 				</div>
 				<br>
 			{% endif %}
-				{% if params['password_reset'] %}
-					<br>
-					<div class="divider bg-dark"></div>
-					<br>
-					<div class="text-center text-success">
-						Password actualizado con exito.
-						<br>
-						Ya puede iniciar sesión.
-					</div>
-					<br>
-				{% endif %}
 		</div>
 	</div>
 {% endblock %}

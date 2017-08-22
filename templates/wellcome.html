@@ -1,0 +1,95 @@
+{% extends '_layout.html' %}
+{% block body %}
+	{%from '_macro.html' import nav_bar_top, titulo_1, nav_tabs,%}
+	{{ nav_bar_top(link_active='Wellcome',params=params, current_user=current_user) }}
+	<div class="paper bg-white padding_contenido">
+		{{titulo_1(bg_color='bg-dark',titulo='Ayuda')}}
+		Bienvenido
+		{{current_user.username}}, gracias por registrarte.
+		<br><br>
+		<div class="border border-right-0 border-left-0 border-top-0 border-mutted">
+			Se encuentra a 5 clicks de configurar y usar esta aplicación:
+		</div>
+		<br>
+		<div class="media">
+			<span class="capital capital-dark">
+				1
+			</span>
+			<div class="media-body">
+				<div class="pl-2">
+					Al comenzar, será dirigido a la sección de grupos, en la que podrá crear su primer grupo de alumnos.
+					<br>
+					<span class="small text-mutted">
+						"Tutor" será el nombre con el que usted desee mostrarse a su equipo educativo.
+					</span>
+				</div>
+			</div>
+		</div>
+		<br>
+		<div class="media">
+			<span class="capital capital-dark">
+				2
+			</span>
+			<div class="media-body">
+				<div class="pl-2">
+					Una vez creado el grupo, en el menu principal elija la opción de alumnos. Podrá agregar tantos alumnos como desee.<br>
+					<span class="small text-mutted">Los alumnos pueden ser agreado de uno en uno o bien importados en un solo lote desde Séneca.
+						<br>
+						Para ello primero tendrá que ir a Séneca y exportar sus alumnos en fomato CSV y acontinuacion use la opción de "importar de Séneca".
+					</span>
+				</div>
+			</div>
+		</div>
+		<br>
+		<div class="media">
+			<span class="capital capital-dark">
+				3
+			</span>
+			<div class="media-body">
+				<div class="pl-2">
+					En el menú principal pique sobre "Asignaturas" y agregue el equipo educativo de su grupo.
+				</div>
+			</div>
+		</div>
+		<br>
+		<div class="media">
+			<span class="capital capital-dark">
+				4
+			</span>
+			<div class="media-body">
+				<div class="pl-2">
+					Solamente le queda asignar que alumnos tienen tal o cual asignatura.
+					<br>
+					<span class="small text-mutted">
+						Esto mismo lo puede hacer indicando que profesor tiene que alumnos. Como usted prefiera.
+					</span>
+				</div>
+			</div>
+		</div>
+		<br>
+		<div class="media">
+			<span class="capital capital-dark">
+				5
+			</span>
+			<div class="media-body">
+				<div class="pl-2">
+					Enhorabuena, finalizó la configuración. Seleccione un alumno y pique sobre "Solicitar tutoría", indique fecha y hora.
+					<br>
+					<span class="small text-mutted">
+						Nuestro sistema se encargará de enviar los y recopilar los informes de su equipo educativo.
+					</span>
+				</div>
+			</div>
+		</div>
+		<br>
+		<div class="col-sm-12 pt-3">
+			<div class="float-right">
+				<a href="/alumnos" class="btn btn-outline-primary">
+					Comenzar
+					<i class="material-icons vertical-center">last_page</i>
+				</a>
+			</div>
+		</div>
+		<br><br>
+	</div>
+{% endblock %}

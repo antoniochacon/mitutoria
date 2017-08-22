@@ -66,8 +66,157 @@ def page_not_found_html(warning):
 def index_html():
     return redirect(url_for('alumnos_html'))
 
-# XXX admin_usuario_data_opciones
+# XXX wellcome
 
+
+@app.route('/wellcome')
+@login_required
+def wellcome_html():
+    params = {}
+    params['anchor'] = 'anchor_top'
+    # flash_toast('Bienvenido ' + current_user.username, 'success')
+    return render_template('wellcome.html', params=params)
+
+
+# XXX admin_usuario_edit
+
+
+@app.route('/admin_usuario_edit', methods=['GET', 'POST'])
+@app.route('/admin_usuario_edit/<params>', methods=['GET', 'POST'])
+@login_required
+def admin_usuario_edit_html(params={}):
+    try:
+        params_old = dic_decode(params)
+    except:
+        params_old = {}
+        abort(404)
+    params = {}
+    params['anchor'] = params_old.get('anchor', 'anchor_top')
+    params['current_usuario_id'] = params_old.get('current_usuario_id', 0)
+    params['usuario_delete_link'] = params_old.get('usuario_delete_link', False)
+    params['usuario_edit_link'] = params_old.get('usuario_edit_link', False)
+    params['current_url'] = params_old.get('current_url', 'admin_usuario_data_grupos_html')
+
+    if request.method == 'POST':
+        usuario_edit_form = Usuario_Edit(request.form)
+        current_usuario_id = current_id_request('current_usuario_id')
+        params['current_usuario_id'] = current_usuario_id
+        current_url = request.form.get('current_url')
+        params['current_url'] = current_url
+
+        # XXX selector_usuario_edit_link
+        if request.form['selector_button'] == 'selector_usuario_edit_link':
+            params['usuario_edit_link'] = True
+            return redirect(url_for(current_url, params=dic_encode(params)))
+
+        # XXX usuario_edit
+        if request.form['selector_button'] == 'selector_usuario_edit':
+            settings_edit_ban = usuario_edit_form.ban.data
+            settings_email_validated = usuario_edit_form.email_validated.data
+            settings_email_robinson = usuario_edit_form.email_robinson.data
+            params['usuario_edit_link'] = True
+            if not settings_edit_ban:
+                settings_edit_ban = False
+            if not settings_email_validated:
+                settings_email_validated = False
+            if not settings_email_robinson:
+                settings_email_robinson = False
+
+            if usuario_edit_form.validate():
+                settings_sql = session_sql.query(Settings).filter(Settings.id == current_usuario_id).first()
+                settings_sql.role = usuario_edit_form.role.data
+                settings_sql.ban = settings_edit_ban
+                settings_sql.email_validated = settings_email_validated
+                settings_sql.email_robinson = settings_email_robinson
+                usuario_sql = session_sql.query(User).filter(User.id == current_usuario_id).first()
+                usuario_sql.email = usuario_edit_form.email.data
+                usuario_password_new = usuario_edit_form.password.data
+
+                if usuario_password_new:
+                    hashed_password = generate_password_hash(usuario_password_new, method='sha256')
+                    usuario_sql.password = hashed_password
+
+                session_sql.commit()
+
+                # NOTE usuario_username_unicidad
+                usuario_username_duplicado = session_sql.query(User).filter(User.username == usuario_edit_form.username.data).all()
+                for usuario_duplicado in usuario_username_duplicado:
+                    if usuario_duplicado.id != usuario_sql.id:
+                        flash_toast('Usuario ya registrado', 'warning')
+                        return render_template(
+                            'admin_usuario_data_grupos.html', usuario_edit=usuario_edit_form, usuario=user_by_id(current_usuario_id), params=params)
+                else:
+                    usuario_sql.username = usuario_edit_form.username.data
+                    session_sql.commit()
+                flash_toast(Markup('Usuario <strong>') + usuario_edit_form.username.data + Markup('</strong>') + ' actualizado', 'success')
+                return redirect(url_for('admin_usuario_data_grupos_html', params=dic_encode(params)))
+            else:
+                flash_wtforms(usuario_edit_form, flash_toast, 'warning')
+            return render_template(
+                'admin_usuario_data_grupos.html', usuario_edit=usuario_edit_form, usuario=user_by_id(current_usuario_id), params=params)
+
+        # XXX selector_usuario_edit_close
+        if request.form['selector_button'] == 'selector_usuario_edit_close':
+            return redirect(url_for('admin_usuario_data_grupos_html', params=dic_encode(params)))
+
+        # XXX usuario_edit_rollback
+        if request.form['selector_button'] == 'selector_usuario_edit_rollback':
+            session_sql.rollback()
+            return redirect(url_for('admin_usuario_data_grupos_html', params=dic_encode(params)))
+
+        # XXX usuario_delete_link
+        if request.form['selector_button'] == 'selector_usuario_delete_link':
+            params['usuario_edit_link'] = True
+            params['usuario_delete_link'] = True
+            flash_toast('Debe confirmar la aliminacion', 'warning')
+            return redirect(url_for('admin_usuario_data_grupos_html', params=dic_encode(params)))
+
+        # XXX usuario_delete
+        if request.form['selector_button'] == 'selector_usuario_delete':
+            if request.form['selector_button'] == 'selector_usuario_delete':
+                current_usuario_id = current_id_request('current_usuario_id')
+                usuario_sql = session_sql.query(User).filter(User.id == current_usuario_id).first()
+                session_sql.delete(usuario_sql)
+                session_sql.commit()
+                flash_toast(Markup('Usuario <strong>') + usuario_sql.username + Markup('</strong>') + ' elminado', 'success')
+                return redirect(url_for('admin_usuarios_html'))
+
+        # XXX usuario_delete_close
+        if request.form['selector_button'] == 'selector_usuario_delete_close':
+            current_usuario_id = current_id_request('current_usuario_id')
+            params['current_usuario_id'] = current_usuario_id
+            return redirect(url_for('admin_usuario_data_grupos_html', params=dic_encode(params)))
+
+    return render_template(
+        'admin_usuarios.html', usuario_edit=Usuario_Edit(), params=params)
+
+# XXX admin_usuario_data_grupos
+
+
+@app.route('/admin_usuario_data_grupos', methods=['GET', 'POST'])
+@app.route('/admin_usuario_data_grupos/<params>', methods=['GET', 'POST'])
+@login_required
+def admin_usuario_data_grupos_html(params={}):
+    try:
+        params_old = dic_decode(params)
+    except:
+        params_old = {}
+        abort(404)
+
+    params = {}
+    params['anchor'] = params_old.get('anchor', 'anchor_top')
+    params['current_usuario_id'] = params_old.get('current_usuario_id', 0)
+    params['usuario_delete_link'] = params_old.get('usuario_delete_link', False)
+    params['usuario_edit_link'] = params_old.get('usuario_edit_link', False)
+
+    current_usuario_id = params['current_usuario_id']
+    usuario = user_by_id(current_usuario_id)
+    params['current_url'] = 'admin_usuario_data_grupos_html'
+    return render_template(
+        'admin_usuario_data_grupos.html', usuario_edit=Usuario_Edit(), usuario=usuario, params=params)
+
+
+# XXX admin_usuario_data_opciones
 
 @app.route('/admin_usuario_data_opciones', methods=['GET', 'POST'])
 @app.route('/admin_usuario_data_opciones/<params>', methods=['GET', 'POST'])
@@ -82,8 +231,11 @@ def admin_usuario_data_opciones_html(params={}):
     params = {}
     params['anchor'] = params_old.get('anchor', 'anchor_top')
     params['current_usuario_id'] = params_old.get('current_usuario_id', 0)
+    params['usuario_delete_link'] = params_old.get('usuario_delete_link', False)
+    params['usuario_edit_link'] = params_old.get('usuario_edit_link', False)
     current_usuario_id = params['current_usuario_id']
     usuario = user_by_id(current_usuario_id)
+    params['current_url'] = 'admin_usuario_data_opciones_html'
     return render_template(
         'admin_usuario_data_opciones.html', usuario_edit=Usuario_Edit(), usuario=usuario, params=params)
 
@@ -102,30 +254,14 @@ def admin_usuario_data_cuestionario_html(params={}):
     params = {}
     params['anchor'] = params_old.get('anchor', 'anchor_top')
     params['current_usuario_id'] = params_old.get('current_usuario_id', 0)
+    params['usuario_delete_link'] = params_old.get('usuario_delete_link', False)
+    params['usuario_edit_link'] = params_old.get('usuario_edit_link', False)
     current_usuario_id = params['current_usuario_id']
     usuario = user_by_id(current_usuario_id)
+    params['current_url'] = 'admin_usuario_data_cuestionario_html'
     return render_template(
         'admin_usuario_data_cuestionario.html', usuario_edit=Usuario_Edit(), usuario=usuario, params=params)
 
-
-# XXX admin_usuario_data_grupos
-@app.route('/admin_usuario_data_grupos', methods=['GET', 'POST'])
-@app.route('/admin_usuario_data_grupos/<params>', methods=['GET', 'POST'])
-@login_required
-def admin_usuario_data_grupos_html(params={}):
-    try:
-        params_old = dic_decode(params)
-    except:
-        params_old = {}
-        abort(404)
-
-    params = {}
-    params['anchor'] = params_old.get('anchor', 'anchor_top')
-    params['current_usuario_id'] = params_old.get('current_usuario_id', 0)
-    current_usuario_id = params['current_usuario_id']
-    usuario = user_by_id(current_usuario_id)
-    return render_template(
-        'admin_usuario_data_grupos.html', usuario_edit=Usuario_Edit(), usuario=usuario, params=params)
 
 # XXX admin_usuarios
 
@@ -141,101 +277,9 @@ def admin_usuarios_html(params={}):
         abort(404)
     params = {}
     params['anchor'] = params_old.get('anchor', 'anchor_top')
-    params['current_usuario_id'] = params_old.get('current_usuario_id', 0)
-    params['collapse_usuario_edit'] = params_old.get('collapse_usuario_edit', False)
-    params['usuario_delete_link'] = params_old.get('usuario_delete_link', False)
-    params['usuario_edit_link'] = params_old.get('usuario_edit_link', False)
-
-    if request.method == 'POST':
-        usuario_edit_form = Usuario_Edit(request.form)
-        current_usuario_id = current_id_request('current_usuario_id')
-        params['current_usuario_id'] = current_usuario_id
-
-        # XXX selector_usuario_edit_link
-        if request.form['selector_button'] == 'selector_usuario_edit_link':
-            params['collapse_usuario_edit'] = True
-            params['usuario_edit_link'] = True
-            params['anchor'] = 'anchor_usu_' + str(hashids_encode(current_usuario_id))
-            return redirect(url_for('admin_usuarios_html', params=dic_encode(params)))
-
-        # XXX usuario_edit
-        if request.form['selector_button'] == 'selector_usuario_edit':
-            settings_edit_ban = usuario_edit_form.ban.data
-            settings_email_validated = usuario_edit_form.email_validated.data
-            settings_email_robinson = usuario_edit_form.email_robinson.data
-            params['collapse_usuario_edit'] = True
-            params['usuario_edit_link'] = True
-            params['anchor'] = 'anchor_usu_' + str(hashids_encode(current_usuario_id))
-            if not settings_edit_ban:
-                settings_edit_ban = False
-            if not settings_email_validated:
-                settings_email_validated = False
-            if not settings_email_robinson:
-                settings_email_robinson = False
-
-            if usuario_edit_form.validate():
-                settings_sql = session_sql.query(Settings).filter(Settings.id == current_usuario_id).first()
-                settings_sql.role = usuario_edit_form.role.data
-                settings_sql.ban = settings_edit_ban
-                settings_sql.email_validated = settings_email_validated
-                settings_sql.email_robinson = settings_email_robinson
-                usuario_sql = session_sql.query(User).filter(User.id == current_usuario_id).first()
-                usuario_sql.username = usuario_edit_form.username.data
-                usuario_sql.email = usuario_edit_form.email.data
-                usuario_password_new = usuario_edit_form.password.data
-                if usuario_password_new:
-                    hashed_password = generate_password_hash(usuario_password_new, method='sha256')
-                    usuario_sql.password = hashed_password
-                flash_toast(Markup('Usuario <strong>') + usuario_edit_form.username.data + Markup('</strong>') + ' actualizado', 'success')
-                session_sql.commit()
-                return redirect(url_for('admin_usuarios_html', params=dic_encode(params)))
-
-            else:
-                flash_wtforms(usuario_edit_form, flash_toast, 'warning')
-
-            return render_template(
-                'admin_usuarios.html', usuario_edit=usuario_edit_form, params=params)
-
-        # XXX selector_usuario_edit_close
-        if request.form['selector_button'] == 'selector_usuario_edit_close':
-            return redirect(url_for('admin_usuarios_html'))
-
-        # XXX usuario_edit_rollback
-        if request.form['selector_button'] == 'selector_usuario_edit_rollback':
-            params['collapse_usuario_edit'] = True
-            params['anchor'] = 'anchor_set_' + str(hashids_encode(current_usuario_id))
-            session_sql.rollback()
-            return redirect(url_for('admin_usuarios_html', params=dic_encode(params)))
-
-        # XXX usuario_delete_link
-        if request.form['selector_button'] == 'selector_usuario_delete_link':
-            params['collapse_usuario_edit'] = True
-            params['usuario_edit_link'] = True
-            params['usuario_delete_link'] = True
-            params['anchor'] = 'anchor_set_' + str(hashids_encode(current_usuario_id))
-            flash_toast('Debe confirmar la aliminacion', 'warning')
-            return redirect(url_for('admin_usuarios_html', params=dic_encode(params)))
-
-        # XXX usuario_delete
-        if request.form['selector_button'] == 'selector_usuario_delete':
-            if request.form['selector_button'] == 'selector_usuario_delete':
-                current_usuario_id = current_id_request('current_usuario_id')
-                usuario_sql = session_sql.query(User).filter(User.id == current_usuario_id).first()
-                session_sql.delete(usuario_sql)
-                session_sql.commit()
-                flash_toast(Markup('Usuario <strong>') + usuario_sql.username + Markup('</strong>') + ' elminado', 'success')
-                return redirect(url_for('admin_usuarios_html'))
-
-        # XXX usuario_delete_close
-        if request.form['selector_button'] == 'selector_usuario_delete_close':
-            current_usuario_id = current_id_request('current_usuario_id')
-            params['current_usuario_id'] = current_usuario_id
-            params['collapse_usuario_edit'] = True
-            params['anchor'] = 'anchor_set_' + str(hashids_encode(current_usuario_id))
-            return redirect(url_for('admin_usuarios_html', params=dic_encode(params)))
 
     return render_template(
-        'admin_usuarios.html', usuario_edit=Usuario_Edit(), params=params)
+        'admin_usuarios.html', params=params)
 
 
 # XXX user_ficha_alumnos
@@ -1683,38 +1727,6 @@ def asignaturas_html(params={}):
         asignaturas=asignaturas, params=params)
 
 
-# @app.route('/user_add', methods=['GET', 'POST'])
-# def user_add_html():
-#     user_add_form = User_Add(request.form)
-#     if request.method == 'POST':
-#         if user_add_form.validate():
-#             user_username = session_sql.query(User).filter(func.lower(User.username) == func.lower(user_add_form.username.data)).first()
-#             user_email = session_sql.query(User).filter(func.lower(User.email) == func.lower(user_add_form.email.data)).first()
-#             if user_username:
-#                 flash_toast(Markup('<strong>') + user_add_form.username.data + Markup('</strong>') + ' ya esta registrado', 'warning')
-#             elif user_email:
-#                 flash_toast(Markup('<strong>') + user_add_form.email.data + Markup('</strong>') + ' ya esta registrado', 'warning')
-#             else:
-#                 hashed_password = generate_password_hash(user_add_form.password.data, method='sha256')
-#                 user_add = User(username=user_add_form.username.data, password=hashed_password, email=user_add_form.email.data)
-#                 session_sql.add(user_add)
-#                 session_sql.flush()
-#                 session_sql.refresh(user_add)
-#                 # crea el registro en Settings.
-#                 settings_add = Settings(user_id=user_add.id)
-#                 session_sql.add(settings_add)
-#                 preguntas_active_default(user_add.id)  # inserta las preguntas activas by default
-#                 if user_add.email == 'antonioelmatematico@gmail.com':
-#                     settings_add.role = 'admin'
-#                 session_sql.commit()
-#                 flash_toast('Enhorabuena ' + user_add_form.username.data + ', cuenta creada.', 'success')
-#                 return redirect(url_for('alumnos_html'))
-#         else:
-#             flash_wtforms(user_add_form, flash_toast, 'warning')
-#         return render_template('user_add.html', user_add=user_add_form)
-#     return render_template('user_add.html', user_add=User_Add())
-
-
 @app.route('/user_add', methods=['GET', 'POST'])
 def user_add_html():
     params = {}
@@ -1742,12 +1754,18 @@ def user_add_html():
                     settings_add.email_validated = True
                 session_sql.commit()
                 send_email_validate_asincrono(user_add.id)
-                params['email_validated_fail'] = True
-                return redirect(url_for('login_html', params=dic_encode(params)))
+                return redirect(url_for('validacion_email_html'))
         else:
             flash_wtforms(user_add_form, flash_toast, 'warning')
         return render_template('user_add.html', user_add=user_add_form)
     return render_template('user_add.html', user_add=User_Add())
+
+
+@app.route('/validacion_email')
+def validacion_email_html():
+    params = {}
+    params['anchor'] = 'anchor_top'
+    return render_template('validacion_email.html', params=params)
 
 
 @app.route('/email_validate/<params>')
@@ -1776,8 +1794,8 @@ def email_validate_html(params={}):
             session_sql.commit()
             login_user(user_sql, remember=True)
             flash_toast('Enhorabuena, cuenta activada.', 'success')
-            flash_toast('Bienvenido ' + Markup('<strong>') + user_username + Markup('</strong>'), 'success')
-            return redirect(url_for('alumnos_html', params=dic_encode(params)))
+            flash_toast('Bienvenido ' + current_user.username, 'success')
+            return redirect(url_for('wellcome_html'))
     else:
         return redirect(url_for('login_html'))
 
@@ -1870,6 +1888,7 @@ def login_html(params={}):
     params['email_validated_fail'] = params_old.get('email_validated_fail', False)
     params['login_fail'] = params_old.get('login_fail', False)
     params['password_reset'] = params_old.get('password_reset', False)
+    params['email_robinson'] = params_old.get('email_robinson', False)
     session.clear()
     login_form = User_Login(request.form)
     if request.method == 'POST':
@@ -1877,6 +1896,7 @@ def login_html(params={}):
             user_sql = session_sql.query(User).filter_by(username=login_form.username.data).first()
             if params['ban']:
                 return render_template('login.html', user_login=login_form, params=params)
+
             if user_sql:
                 if check_password_hash(user_sql.password, login_form.password.data):
                     login_user(user_sql, remember=login_form.remember.data)
@@ -1887,6 +1907,10 @@ def login_html(params={}):
                         params['ban'] = True
                         params['login_fail'] = False
                         # NOTE sin haber iniciado sesion no se pueden usar flash_toast
+                        return redirect(url_for('login_html', params=dic_encode(params)))
+                    if settings.email_robinson:
+                        params['email_robinson'] = True
+                        params['login_fail'] = False
                         return redirect(url_for('login_html', params=dic_encode(params)))
                     if not settings.email_validated:
                         params['email_validated_fail'] = True

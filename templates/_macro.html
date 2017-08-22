@@ -113,7 +113,7 @@
 {% endmacro %}
 {% macro nav_bar_top(link_active, params, current_user) %}
 	{% if current_user.is_authenticated %}
-		{{nav_bar(link_active, params=params, dic={'Alumnos':'alumnos', 'Asignaturas':'asignaturas', 'Opciones':'settings_cuestionario', 'Admin':'admin_cuestionario', 'Logout':'logout'})}}
+		{{nav_bar(link_active, params=params, dic={'Ayuda':'wellcome', 'Alumnos':'alumnos', 'Asignaturas':'asignaturas', 'Opciones':'settings_cuestionario', 'Admin':'admin_cuestionario', 'Logout':'logout'})}}
 	{% else %}
 		{{nav_bar(link_active, params=params,  dic = {'Iniciar sesión': 'login','Crear nueva cuenta': 'user_add'})}}
 	{% endif %}
@@ -127,7 +127,7 @@
 		<div class="collapse navbar-collapse" id="navbar">
 			<ul class="navbar-nav mr-auto">
 				{% for link_key in dic.keys() %}
-					{% if link_key != 'Admin' %}
+					{% if link_key != 'Admin' and link_key!='Ayuda' %}
 						<li class="nav-item {% if link_key==link_active %} active strong {% endif %}">
 							<a class="nav-link" href="/{{dic[link_key]}}{% if params_args %}/{{params_args}}{% endif %}">{{link_key}}
 								{% if link_key == 'Logout' %}
@@ -135,6 +135,13 @@
 								{% endif %}
 							</a>
 						</li>
+
+	{% elif link_key == 'Ayuda' and settings().visit_number <= 20 %}
+		<li class="nav-item {% if link_key==link_active %} active strong {% endif %}">
+			<a class="nav-link" href="/{{dic[link_key]}}{% if params_args %}/{{params_args}}{% endif %}">{{link_key}}</a>
+		</li>
+
+
 					{% elif link_key == 'Admin' and settings().role == 'admin' %}
 						<li class="nav-item {% if link_key==link_active %} active strong {% endif %}">
 							<a class="nav-link" href="/{{dic[link_key]}}{% if params_args %}/{{params_args}}{% endif %}">{{link_key}}</a>
