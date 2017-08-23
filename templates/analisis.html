@@ -1,11 +1,11 @@
 {% extends '_layout.html' %}
 {% block body %}
-	{%from '_macro.html' import nav_bar_top, titulo_1, highcharts_asignatura,highcharts_cuestionario,highcharts_asignaturas, highcharts_evalucion, highcharts_tutoria_stats%}
+	{%from '_macro.html' import nav_bar_top, titulo_1, highcharts_asignatura, highcharts_cuestionario, highcharts_asignaturas, highcharts_evalucion, highcharts_tutoria_stats%}
 	{{ nav_bar_top(link_active='Alumnos',params=params, current_user=current_user) }}
 	<div class="paper bg-white padding_contenido">
 		{% if grupo and alumno and tutoria %}
 			{{titulo_1(bg_color='bg-dark', titulo='Análisis gráfico de la tutoría')}}
-			<form action="/analisis" method="POST">
+			<form action="/analisis_tutoria_edit" method="POST">
 				<div class="row align-items-center pb-2">
 					<div class="col-sm-12 col-md-6 col-lg-4">
 						<span class="{% if tutoria.activa %}text-mutted{% else %}text-info{% endif %}">Alumno:
@@ -52,7 +52,7 @@
 									{% if tutoria.activa %}
 										Es aconsejable archivar en vez de eliminar.
 										<br>
-										{% else %}
+									{% else %}
 										Es aconsejable mantenerla archivada.
 										<br>
 									{% endif %}
@@ -90,7 +90,9 @@
 						<div class="col">
 							{# NOTE badge #}
 							<span class="badge {% if tutoria.activa %}badge-secondary{% else %}badge-info text-white{% endif %} float-right" title="{{cociente_porcentual(tutoria_informes(tutoria.id) | count, tutoria_asignaturas_count(tutoria.id))}}% de los informes recibidos">
-								<span class="align-middle pr-1 {% if tutoria.activa %}color_secondary_lighten{% else %}badge-info text-mutted{% endif %}">{{tutoria_informes(tutoria.id) | count}} | {{tutoria_asignaturas_count(tutoria.id)}}</span>
+								<span class="align-middle pr-1 {% if tutoria.activa %}color_secondary_lighten{% else %}badge-info text-mutted{% endif %}">{{tutoria_informes(tutoria.id) | count}}
+									|
+									{{tutoria_asignaturas_count(tutoria.id)}}</span>
 								<span class="h4 align-middle">{{cociente_porcentual(tutoria_informes(tutoria.id) | count, tutoria_asignaturas_count(tutoria.id))}}
 									%</span>
 							</span>
@@ -118,7 +120,7 @@
 			</a>
 			<div class="collapse {% if tutoria.activa %}show{% endif %}" id="analisis_cuestionario">
 				<div class="col pt-4 pb-3">
-					{{highcharts_cuestionario(char_id='cuestionario', titulo='', color='#ffa000', df_data=df_data, grupo=grupo, tutoria_id=tutoria.id)}}
+					{{highcharts_cuestionario(char_id='cuestionario', color='#ffa000', df_data=df_data, grupo=grupo, tutoria_id=tutoria.id, alumno_id=alumno.id)}}
 				</div>
 			</div>
 			<a data-toggle="collapse" href="#analisis_general_asignaturas" class="collapse_header_1" aria-expanded="false" title="Analisis general de las asiginaturas">
@@ -127,7 +129,7 @@
 			</a>
 			<div class="collapse" id="analisis_general_asignaturas">
 				<div class="col pt-4 pb-3">
-					{{highcharts_asignaturas(char_id='asignaturas', titulo='',color_1='#ec407a',color_2='#f48fb1', df_data=df_data, grupo=grupo, tutoria_id=tutoria.id)}}
+					{{highcharts_asignaturas(char_id='asignaturas', color_1='#ec407a',color_2='#f48fb1', df_data=df_data, grupo=grupo, tutoria_id=tutoria.id, alumno_id=alumno.id)}}
 				</div>
 			</div>
 			<a data-toggle="collapse" href="#analisis_detallado_asignaturas" class="collapse_header_1" aria-expanded="false" title="Analisis detallado por asignaturas">
@@ -173,7 +175,7 @@
 			</a>
 			<div class="collapse" id="analisis_evoluacion">
 				<div class="col pt-4 pb-3">
-					{{highcharts_evalucion(char_id='evalucion', titulo='',color_1='#ec407a',color_2='#f48fb1', df_data=df_data, grupo=grupo, alumno=alumno)}}
+					{{highcharts_evalucion(char_id='evalucion', color_1='#ec407a',color_2='#f48fb1', df_data=df_data, grupo=grupo, alumno=alumno)}}
 				</div>
 			</div>
 		{% else %}

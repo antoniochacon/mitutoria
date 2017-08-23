@@ -4,17 +4,18 @@
 	{{ nav_bar_top(link_active='Admin',params=params, current_user=current_user) }}
 	<div class="paper bg-white padding_contenido">
 		{{titulo_1(bg_color='bg-dark',titulo='Admin Settings')}}
-		{{nav_tabs_admin(tab_active='Citas')}}
-		<div id="parent_cita">
-			<a id="anchor_pre_add"></a>
+		{{nav_tabs_admin(tab_active='Estadisticas')}}
+
 			<div>
-				{# XXX: cita_add #}
-				{% include 'admin_citas_add_block.html' %}
+				{% include 'admin_estadisticas_usuarios_block.html' %}
+			</div>
+		
+			<div>
+				Numero medio de tutorias por grupo / numero medio de tutorias por alumno
 			</div>
 			<div>
-				{# XXX: citas_listado #}
-				{% include 'admin_citas_cita_block.html' %}
+				Preguntas mas frecuentes / numero medio de preguntas por usuario
 			</div>
-		</div>
+
 	</div>
 {% endblock %}

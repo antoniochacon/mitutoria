@@ -66,6 +66,23 @@ def page_not_found_html(warning):
 def index_html():
     return redirect(url_for('alumnos_html'))
 
+
+@app.route('/admin_estadisticas', methods=['GET', 'POST'])
+@app.route('/admin_estadisticas/<params>', methods=['GET', 'POST'])
+@login_required
+def admin_estadisticas_html(params={}):
+    try:
+        params_old = dic_decode(params)  # NOTE matiene siempre una copia de entrada original por si se necesita mas adelante
+    except:
+        params_old = {}
+        abort(404)
+    params = {}
+    params['anchor'] = params_old.get('anchor', 'anchor_top')
+    df_data = df_load_admin()
+    print(df_data)
+    return render_template('admin_estadisticas.html', df_data=df_data, params=params)
+
+
 # XXX wellcome
 
 
@@ -617,7 +634,7 @@ def alumnos_html(params={}):
                 params['collapse_alumno_edit'] = True
                 params['alumno_edit_link'] = True
                 params['collapse_alumno_edit_asignaturas'] = True
-                params['anchor'] = 'anchor_alu_asig_' + str(hashids_encode(current_alumno_id))
+                # params['anchor'] = 'anchor_alu_asig_' + str(hashids_encode(current_alumno_id))
                 # params['from_url'] = 'from_tutoria_add'  # FIXME revisar si es necesario
                 flash_toast('Tutoria no solicitada' + Markup('<br>') + 'Debes asignar alguna asignatura', 'warning')
                 return redirect(url_for('alumnos_html', params=dic_encode(params)))
@@ -685,6 +702,7 @@ def admin_cuestionario_html(params={}):
     except:
         params_old = {}
         abort(404)
+
     params = {}
     params['anchor'] = params_old.get('anchor', 'anchor_top')
     params['current_pregunta_id'] = params_old.get('current_pregunta_id', 0)
@@ -905,20 +923,14 @@ def user_grupos_html():
     grupos = user_grupos(current_user_id)
     return render_template('user_grupos.html'(True, False, False, True, True, True, True), user=user, grupos=grupos)
 
+
 # XXX analisis
 
 
-@app.route('/analisis_tutoria_no_disponible', methods=['GET', 'POST'])
-@app.route('/analisis_tutoria_no_disponible/<params>', methods=['GET', 'POST'])
+@app.route('/analisis_tutoria_no_disponible')
 @login_required
-def analisis_tutoria_no_disponible_html(params={}):
-    try:
-        params_old = dic_decode(params)
-    except:
-        params_old = {}
-        abort(404)
-    params = {}
-    return render_template('analisis_tutoria_no_disponible.html', params=params)
+def analisis_tutoria_no_disponible_html():
+    return render_template('analisis_tutoria_no_disponible.html')
 
 
 @app.route('/analisis', methods=['GET', 'POST'])
@@ -938,13 +950,32 @@ def analisis_html(params={}):
     params['tutoria_edit_link'] = params_old.get('tutoria_edit_link', False)
 
     grupo = grupo_activo()
-    tutoria = tutoria_by_id(current_tutoria_id)
-    alumno = invitado_alumno(current_tutoria_id)
-    df_data = df_load()
+    tutoria_sql = tutoria_by_id(current_tutoria_id)
+    alumno_sql = invitado_alumno(current_tutoria_id)
+    if not tutoria_sql or not alumno_sql:
+        return redirect(url_for('analisis_tutoria_no_disponible_html'))
 
+    df_data = df_load()
+    # print(df_data)
+
+    # abort(404)
+    return render_template(
+        'analisis.html', grupo=grupo, alumno=alumno_sql, tutoria=tutoria_sql,
+        df_data=df_data, params=params)
+
+
+# XXX analisis_tutoria_edit
+@app.route('/analisis_tutoria_edit', methods=['GET', 'POST'])
+@login_required
+def analisis_tutoria_edit_html(params={}):
+    params = {}
     if request.method == 'POST':
         current_tutoria_id = current_id_request('current_tutoria_id')
         params['current_tutoria_id'] = current_tutoria_id
+
+        # XXX tutoria_edit_close
+        if request.form['selector_button'] == 'selector_tutoria_edit_close':
+            return redirect(url_for('analisis_html', params=dic_encode(params)))
 
         # XXX tutoria_regresar_alumno
         if request.form['selector_button'] == 'selector_tutoria_regresar_alumno':
@@ -988,15 +1019,13 @@ def analisis_html(params={}):
             alumno = alumno_by_id(current_tutoria.alumno_id)
             current_alumno_id = alumno.id
             if asignaturas_id_lista:
-                # flash_toast('Reenviando emails al equipo educativo de ' + Markup('<strong>') + alumno.nombre + Markup('</strong>'), 'info')
                 re_send_email_tutoria_asincrono(alumno, current_tutoria, asignaturas_id_lista)
                 flash_toast('Reenviando emails a las asignaturas elegidas', 'info')
-                # params['tutoria_re_enviar_link'] = False
                 return redirect(url_for('analisis_html', params=dic_encode(params)))
             else:
                 params['tutoria_re_enviar_link'] = True
                 flash_toast('Emails no reenviados' + Markup('<br>') + 'Hay que asignar al menos una asignatura', 'warning')
-                return render_template('analisis.html', grupo=grupo, alumno=alumno, tutoria=tutoria, df_data=df_data, params=params)
+                return redirect(url_for('analisis_html', params=dic_encode(params)))
             return redirect(url_for('analisis_html', params=dic_encode(params)))
 
         # XXX tutoria_mover_historial
@@ -1051,10 +1080,6 @@ def analisis_html(params={}):
             params['tutoria_edit_link'] = True
             return redirect(url_for('analisis_html', params=dic_encode(params)))
 
-        # XXX tutoria_edit_close
-        if request.form['selector_button'] == 'selector_tutoria_edit_close':
-            return redirect(url_for('analisis_html', params=dic_encode(params)))
-
         # XXX tutoria_edit
         if request.form['selector_button'] == 'selector_tutoria_edit':
             params['tutoria_edit_link'] = True
@@ -1063,37 +1088,23 @@ def analisis_html(params={}):
             if tutoria_edit_form.validate():
                 tutoria_edit_form_fecha = datetime.datetime.strptime(tutoria_edit_form.fecha.data, '%A-%d-%B-%Y').strftime('%Y-%m-%d')
                 if datetime.datetime.strptime(tutoria_edit_form_fecha, '%Y-%m-%d').date() < g.current_date:
-                    tutoria_edit_form.fecha.errors = ['Fecha no actualizada.']
+                    tutoria_edit_form.fecha.errors = ['Tutoría no actualizada.']
                     flash_wtforms(tutoria_edit_form, flash_toast, 'warning')
                     flash_toast('Debe indicar una fecha posterior', 'warning')
-                    return render_template(
-                        'analisis.html', grupo=grupo, alumno=alumno, tutoria=tutoria, df_data=df_data,
-                        tutoria_edit=tutoria_edit_form, params=params)
+                    return redirect(url_for('analisis_html', params=dic_encode(params)))
                 else:
                     tutoria_sql.fecha = tutoria_edit_form_fecha
                     tutoria_sql.hora = string_to_time(tutoria_edit_form.hora.data)
                     tutoria_sql.activa = True
                     session_sql.commit()
                     flash_toast('Tutoria actualizada', 'success')
-                    params['tutoria_edit_link'] = True
                     return redirect(url_for('analisis_html', params=dic_encode(params)))
             else:
                 flash_wtforms(tutoria_edit_form, flash_toast, 'warning')
-                return render_template(
-                    'analisis.html', grupo=grupo, alumno=alumno, tutoria=tutoria, df_data=df_data,
-                    tutoria_edit=tutoria_edit_form, params=params)
+                return redirect(url_for('analisis_html', params=dic_encode(params)))
 
-        # XXX tutoria_edit_rollback
-        if request.form['selector_button'] == 'selector_tutoria_edit_rollback':
-            session_sql.rollback()
-            return redirect(url_for('analisis_html', params=dic_encode(params)))
+    abort(404)
 
-    if current_tutoria_id == 0:
-        return redirect(url_for('analisis_tutoria_no_disponible_html', params=dic_encode(params)))
-
-    return render_template(
-        'analisis.html', grupo=grupo, alumno=alumno, tutoria=tutoria, df_data=df_data,
-        tutoria_edit=Tutoria_Add(), params=params)
 
 # XXX settings_opciones
 

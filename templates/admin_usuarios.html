@@ -1,10 +1,10 @@
 {% extends '_layout.html' %}
 {% block body %}
-	{%from '_macro.html' import nav_bar_top, titulo_1, nav_tabs,%}
+	{%from '_macro.html' import nav_bar_top, titulo_1, nav_tabs_admin%}
 	{{ nav_bar_top(link_active='Admin',params=params, current_user=current_user) }}
 	<div class="paper bg-white padding_contenido">
 		{{titulo_1(bg_color='bg-dark',titulo='Admin Settings')}}
-		{{nav_tabs(tab_active='Usuarios', dic={'Cuestionario':'admin_cuestionario', 'Citas':'admin_citas', 'Usuarios':'admin_usuarios'})}}
+		{{nav_tabs_admin(tab_active='Usuarios')}}
 		<div id="parent_usuario">
 			<div>
 				{# XXX: usuarios_listado #}

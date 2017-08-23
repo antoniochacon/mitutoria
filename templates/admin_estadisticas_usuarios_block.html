@@ -1,0 +1,16 @@
+<a data-toggle="collapse" href="#stats_usuarios" class="collapse_header_1" aria-expanded="true" title="Analisis del cuestionario">
+	<i class="material-icons vertical-center">expand_more</i>
+	Estadisticas de usuarios
+</a>
+<div class="collapse show" id="stats_usuarios">
+	<div class="col pt-4 pb-3">
+		numero de usuarios: {{usuarios_count(df_data[0])}}
+		<br>
+		numero de centros distintos
+		<br>
+		porcentajes de cada opcion( email_validated, email_robinson, role, ban, etc....)
+		{#
+		{{highcharts_cuestionario(char_id='cuestionario', titulo='', color='#ffa000', df_data=df_data, grupo=grupo, tutoria_id=tutoria.id)}}
+		#}
+	</div>
+</div>

@@ -3,41 +3,38 @@
 	<div class="padding_contenido">
 		{#TODO: datepicker and clockpicker #}
 		<div class="row">
-			<div class="form-group col-md-6 mb-3">
+			<div class="form-group col-md-8 col-lg-8 mb-3">
 				<div class="input-group">
 					<input
 						type="text"
-						class="form-control datepicker cursor {% if request.method=='POST' and params['collapse_tutoria_edit'] %} {% if tutoria_edit.fecha.errors %} is-invalid {% else %} is-valid {% endif %} {% endif %}"
-						name="{{tutoria_edit.fecha.name}}"
+						class="form-control datepicker cursor"
+						name="fecha"
 						readonly="true"
 						style="background-color: white"
-						value="{% if request.method=='POST' and params['collapse_tutoria_edit'] %}{{tutoria_edit.fecha.data}}{% else %}{{tutoria.fecha.strftime('%A-%d-%B-%Y')}}{% endif %}"
-						placeholder="{{tutoria_edit.fecha.label.text}}">
-					<span class="input-group-addon {% if request.method=='POST' and params['collapse_tutoria_edit'] %} {% if tutoria_edit.fecha.errors %} form_addon-warning {% else %} form_addon-success {% endif %} {% endif %}">fecha</span>
+						value="{{tutoria.fecha.strftime('%A-%d-%B-%Y')}}"
+						placeholder="{{tutoria.fecha.strftime('%A-%d-%B-%Y')}}">
+					<span class="input-group-addon">fecha</span>
 				</div>
 			</div>
-			<div class="form-group col-md-3 mb-3">
+			<div class="form-group col-md-4 col-lg-4 mb-3">
 				<div class="input-group">
 					<input
 						type="text"
-						class="form-control clockpicker {% if request.method=='POST' and params['collapse_tutoria_edit'] %} {% if tutoria_edit.hora.errors %} is-invalid {% else %} is-valid {% endif %} {% endif %}"
+						class="form-control clockpicker"
 						style="background-color: white"
 						readonly="true"
-						name="{{tutoria_edit.hora.name}}"
-						value="{% if request.method=='POST' and params['collapse_tutoria_edit'] %}{{tutoria_edit.hora.data}}{% else %}{{tutoria.hora.strftime('%H:%M')}}{% endif %}"
-						placeholder="{{tutoria_edit.hora.label.text}}">
-					<span class="input-group-addon {% if request.method=='POST' and params['collapse_tutoria_edit'] %} {% if tutoria_edit.hora.errors %} form_addon-warning {% else %} form_addon-success {% endif %} {% endif %}">hora</span>
+						name="hora"
+						value="{{tutoria.hora.strftime('%H:%M')}}"
+						placeholder="{{tutoria.hora.strftime('%H:%M')}}">
+					<span class="input-group-addon">hora</span>
 				</div>
 			</div>
-			<div class="btn-group col-md-3 mb-3" role="group" aria-label="...">
+			<div class="btn-group col-md-12 mb-3" role="group">
 				<button type="submit" class="btn btn-sm {% if tutoria.activa %} btn-outline-primary {% else %} btn-outline-primary{% endif %}" name="selector_button" value="selector_tutoria_edit" title="guardar cambios">
 					<i class="material-icons vertical-center">save</i>
 					Guardar
 				</button>
-			{#<button type="submit" name="selector_button" value="selector_tutoria_edit_rollback" class="btn btn-sm {% if tutoria.activa %} btn-outline-dark{% else %} btn-outline-mutted{% endif %}" title="deshacer cambios">
-					<i class="material-icons vertical-center">settings_backup_restore</i>
-				</button>#}
-				<button type="submit" name="selector_button" value="selector_tutoria_edit_close" class="btn btn-sm {% if tutoria.activa %} btn-outline-dark{% else %} btn-outline-mutted{% endif %}" title="cerrar">
+				<button type="submit" class="btn btn-sm {% if tutoria.activa %} btn-outline-dark {% else %} btn-outline-mutted {% endif %}" name="selector_button" value="selector_tutoria_edit_close" title="cerrar">
 					<i class="material-icons vertical-center">close</i>
 				</button>
 			</div>
