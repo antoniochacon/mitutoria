@@ -415,45 +415,6 @@ def usuarios_count(df_data):
 # ***********************************************************************
 # XXX: pandas para usuarios
 # -----------------------------------------------------------------------
-
-
-# def df_load():
-#     df_alumno = pd.read_sql_query(session_sql.query(Alumno).join(Grupo).filter(Grupo.id == settings().grupo_activo_id).statement, engine)
-#     df_alumno.drop(['grupo_id', 'created_at'], axis=1, inplace=True)
-#
-#     df_tutoria = pd.read_sql_query(session_sql.query(Tutoria).statement, engine)
-#     df_alumno_tutoria = pd.merge(df_alumno, df_tutoria, how='inner', on=None, left_on='id', right_on='alumno_id', left_index=False, right_index=False, sort=False, suffixes=('_alumno', '_tutoria'), copy=False, indicator=False)
-#     df_alumno_tutoria.drop(['hora', 'created_at', 'deleted'], axis=1, inplace=True)
-#
-#     df_informe = pd.read_sql_query(session_sql.query(Informe).statement, engine)
-#     df_alumno_tutoria_informe = pd.merge(df_alumno_tutoria, df_informe, how='inner', on=None, left_on='tutoria_id', right_on='tutoria_id', left_index=False, right_index=False, sort=False, suffixes=('_tutoria', '_informe'), copy=False, indicator=False)
-#     df_alumno_tutoria_informe.drop(['created_at', 'tutoria_id'], axis=1, inplace=True)
-#     df_alumno_tutoria_informe.rename(columns={'comentario': 'informe_comentario'}, inplace=True)
-#
-#     df_asignatura = pd.read_sql_query(session_sql.query(Asignatura).join(Grupo).filter(Grupo.id == settings().grupo_activo_id).statement, engine)
-#     df_alumno_tutoria_informe_asignatura = pd.merge(df_alumno_tutoria_informe, df_asignatura, how='inner', on=None, left_on='asignatura_id', right_on='id', left_index=False, right_index=False, sort=False, suffixes=('_informe', '_asignatura'), copy=False, indicator=False)
-#     df_alumno_tutoria_informe_asignatura.drop(['asignatura_id', 'grupo_id', 'email', 'created_at'], axis=1, inplace=True)
-#     df_alumno_tutoria_informe_asignatura.rename(columns={'activa': 'tutoria_activa', 'nombre_informe': 'alumno_nombre', 'apellidos_informe': 'alumno_apellidos', 'nombre_asignatura': 'profesor_nombre', 'apellidos_asignatura': 'profesor_apellidos'}, inplace=True)
-#
-#     df_respuesta = pd.read_sql_query(session_sql.query(Respuesta).statement, engine)
-#     df_alumno_tutoria_informe_asignatura_respuesta = pd.merge(df_alumno_tutoria_informe_asignatura, df_respuesta, how='inner', on=None, left_on='id_informe', right_on='informe_id', left_index=False, right_index=False, sort=False, suffixes=('_informe', '_respuesta'), copy=False, indicator=False)
-#     df_alumno_tutoria_informe_asignatura_respuesta.drop(['id', 'informe_id', 'created_at'], axis=1, inplace=True)
-#     df_alumno_tutoria_informe_asignatura_respuesta.rename(columns={'resultado': 'cuestionario_resultado'}, inplace=True)
-#
-#     df_pregunta = pd.read_sql_query(session_sql.query(Pregunta).join(Association_Settings_Pregunta).join(Settings).filter(Settings.user_id == current_user.id).statement, engine)
-#
-#     df_alumno_tutoria_informe_asignatura_respuesta_pregunta = pd.merge(df_alumno_tutoria_informe_asignatura_respuesta, df_pregunta, how='inner', on=None, left_on='pregunta_id', right_on='id', left_index=False, right_index=False, sort=False, suffixes=('_respuesta', '_pregunta'), copy=False, indicator=False)
-#     df_alumno_tutoria_informe_asignatura_respuesta_pregunta.drop(['pregunta_id', 'id', 'enunciado', 'created_at'], axis=1, inplace=True)
-#     df_alumno_tutoria_informe_asignatura_respuesta_pregunta.rename(columns={'enunciado_ticker': 'cuestionario_enunciado', 'orden': 'cuestionario_orden', 'visible': 'cuestionario_visible'}, inplace=True)
-#
-#     df_data = df_alumno_tutoria_informe_asignatura_respuesta_pregunta
-#     df_data.drop(['id_alumno', 'alumno_nombre', 'alumno_apellidos', 'informe_comentario', 'profesor_nombre', 'profesor_apellidos', 'id_asignatura'], axis=1, inplace=True)  # alimina columns que igual hacen falta en algun grafico
-#
-#     df_data.cuestionario_resultado = df_data.cuestionario_resultado.astype(float)  # convierte a FLOAT los resultados que son INTEGER
-#     df_data.sort_values(by=['cuestionario_orden'], inplace=True)  # Para mantener el orden del cuestionario
-#     return df_data
-
-
 def df_load():
 
     df_alumno = pd.read_sql_query(session_sql.query(Alumno).join(Grupo).filter(Grupo.id == settings().grupo_activo_id).statement, engine)
@@ -496,6 +457,7 @@ def df_load():
     # df_data.drop(['id_alumno', 'alumno_nombre', 'alumno_apellidos', 'informe_comentario', 'profesor_nombre', 'profesor_apellidos', 'id_asignatura'], axis=1, inplace=True)  # alimina columns que igual hacen falta en algun grafico
     #
     df_data.cuestionario_resultado = df_data.cuestionario_resultado.astype(float)  # convierte a FLOAT los resultados que son INTEGER
+
     df_data.sort_values(by=['cuestionario_orden'], inplace=True)  # Para mantener el orden del cuestionario
     # print(df_data)
     return df_data
@@ -535,6 +497,8 @@ def df_evolucion(df_data, alumno_id):
 
     return evolucion_grupo, evolucion_alumno
 
+# FIXME problema de float al encontrarse con datos vacios
+
 
 def df_analisis_asignatura(df_data, tutoria_id, asignatura, alumno_id):
     prueba_evaluable_media = ''
@@ -547,10 +511,12 @@ def df_analisis_asignatura(df_data, tutoria_id, asignatura, alumno_id):
 
     # medias del grupo
     df_data_sin_alumno = df_data[df_data.alumno_id != alumno_id]
-    cuestionario_media = df_data_sin_alumno.cuestionario_resultado.mean().round(decimals=2)
+    if not df_data_sin_alumno.cuestionario_resultado.empty:
+        cuestionario_media = df_data_sin_alumno.cuestionario_resultado.mean().round(decimals=2)
 
     df_data_asignatura = df_data_sin_alumno[df_data.asignatura == asignatura]
-    cuestionario_asignatura_media = df_data_asignatura.cuestionario_resultado.mean().round(decimals=2)
+    if not df_data_asignatura.cuestionario_resultado.empty:
+        cuestionario_asignatura_media = df_data_asignatura.cuestionario_resultado.mean().round(decimals=2)
 
     # medias filtradas
     df_data_tutoria = df_data[df_data.tutoria_id == tutoria_id]
