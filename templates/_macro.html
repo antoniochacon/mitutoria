@@ -514,7 +514,7 @@
 {% endmacro %}
 {% macro nav_bar_top(link_active, params, current_user) %}
 	{% if current_user.is_authenticated %}
-		{{nav_bar(link_active, params=params, dic={'Ayuda':'wellcome', 'Alumnos':'alumnos', 'Asignaturas':'asignaturas', 'Opciones':'settings_cuestionario', 'Admin':'admin_cuestionario', 'Logout':'logout'})}}
+		{{nav_bar(link_active, params=params, dic={'ayuda':'wellcome', 'alumnos':'alumnos', 'asignaturas':'asignaturas', 'opciones':'settings_cuestionario', 'admin':'admin_cuestionario', 'logout':'logout'})}}
 	{% else %}
 		{{nav_bar(link_active, params=params,  dic = {'Iniciar sesión': 'login','Crear nueva cuenta': 'user_add'})}}
 	{% endif %}

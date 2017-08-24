@@ -1765,18 +1765,25 @@ def user_add_html():
                     settings_add.email_validated = True
                 session_sql.commit()
                 send_email_validate_asincrono(user_add.id)
-                return redirect(url_for('validacion_email_html'))
+                return redirect(url_for('login_validacion_email_html'))
         else:
             flash_wtforms(user_add_form, flash_toast, 'warning')
         return render_template('user_add.html', user_add=user_add_form)
     return render_template('user_add.html', user_add=User_Add())
 
-
-@app.route('/validacion_email')
-def validacion_email_html():
+@app.route('/login_validacion_email/<params>')
+@app.route('/login_validacion_email')
+def login_validacion_email_html(params={}):
+    try:
+        params_old = dic_decode(params)
+    except:
+        params_old = {}
+        abort(404)
     params = {}
-    params['anchor'] = 'anchor_top'
-    return render_template('validacion_email.html', params=params)
+    params['anchor'] = params_old.get('anchor', 'anchor_top')
+    params['email_validated_fail'] =params_old.get('email_validated_fail', False)
+
+    return render_template('login_validacion_email.html', params=params)
 
 
 @app.route('/email_validate/<params>')
@@ -1926,7 +1933,7 @@ def login_html(params={}):
                     if not settings.email_validated:
                         params['email_validated_fail'] = True
                         params['login_fail'] = False
-                        return redirect(url_for('login_html', params=dic_encode(params)))
+                        return redirect(url_for('login_validacion_email_html', params=dic_encode(params)))
                     session_sql.commit()
                     flash_toast('Bienvenido ' + Markup('<strong>') + login_form.username.data + Markup('</strong>'), 'success')
                     if not settings.grupo_activo_id:
