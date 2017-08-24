@@ -518,7 +518,7 @@ def df_analisis_asignatura(df_data, tutoria_id, asignatura, alumno_id):
     if not df_data_asignatura.cuestionario_resultado.empty:
         cuestionario_asignatura_media = df_data_asignatura.cuestionario_resultado.mean().round(decimals=2)
 
-    # medias filtradas
+    # medias del alumno
     df_data_tutoria = df_data[df_data.tutoria_id == tutoria_id]
     cuestionario_tutoria_media = df_data_tutoria.cuestionario_resultado.mean().round(decimals=2)
 
