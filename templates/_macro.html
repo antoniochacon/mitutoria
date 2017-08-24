@@ -528,15 +528,15 @@
 		<div class="collapse navbar-collapse" id="navbar">
 			<ul class="navbar-nav mr-auto">
 				{% for link_key in dic.keys() %}
-					{% if link_key != 'admin' and link_key != 'Ayuda' %}
+					{% if link_key != 'admin' and link_key != 'ayuda' %}
 						<li class="nav-item {% if link_key==link_active %} active strong {% endif %}">
 							<a class="nav-link" href="/{{dic[link_key]}}{% if params_args %}/{{params_args}}{% endif %}">{{link_key}}
-								{% if link_key == 'Logout' %}
+								{% if link_key == 'logout' %}
 									[{{user_by_id(settings().id).username}}]
 								{% endif %}
 							</a>
 						</li>
-					{% elif link_key == 'Ayuda' and settings().visit_number <= 50 %}
+					{% elif link_key == 'ayuda' and settings().visit_number <= 50 %}
 						<li class="nav-item {% if link_key==link_active %} active strong {% endif %}">
 							<a class="nav-link" href="/{{dic[link_key]}}{% if params_args %}/{{params_args}}{% endif %}">{{link_key}}</a>
 						</li>
