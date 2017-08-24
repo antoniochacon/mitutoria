@@ -1,11 +1,11 @@
 {% extends '_layout.html' %}
 {% block body %}
 	{%from '_macro.html' import nav_bar_top, titulo_1, nav_tabs %}
-	{{ nav_bar_top(link_active='Admin', params=params, current_user=current_user) }}
+	{{ nav_bar_top(link_active='admin', params=params, current_user=current_user) }}
 	<div class="paper bg-white padding_contenido">
 		{{titulo_1(bg_color='bg-dark', titulo='Admin Settings')}}
 		{% include "admin_usuario_data_block.html" %}
-		{{nav_tabs(tab_active='Opciones', params_args=dic_encode_args({'current_usuario_id': usuario.id}), dic={'Grupos':'admin_usuario_data_grupos', 'Cuestionario':'admin_usuario_data_cuestionario', 'Opciones':'admin_usuario_data_opciones'})}}
+		{{nav_tabs(tab_active='opciones', params_args=dic_encode_args({'current_usuario_id': usuario.id}), dic={'Grupos':'admin_usuario_data_grupos', 'Cuestionario':'admin_usuario_data_cuestionario', 'Opciones':'admin_usuario_data_opciones'})}}
 		<div class="padding_3">
 			<div class="row">
 				<div class="col-md-6 col-lg-4">

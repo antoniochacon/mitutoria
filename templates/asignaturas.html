@@ -1,7 +1,7 @@
 {% extends "_layout.html" %}
 {% block body %}
 	{%from "_macro.html" import nav_bar_top, titulo_1, highcharts_tutoria_stats%}
-	{{ nav_bar_top(link_active='Asignaturas',params=params, current_user=current_user) }}
+	{{ nav_bar_top(link_active='asignaturas',params=params, current_user=current_user) }}
 	<div class="paper bg-white padding_contenido">
 		{{titulo_1(url='asignaturas',bg_color='bg-dark',titulo=grupo_activo().nombre, subtitulo=[ grupo_activo().centro, [ grupo_activo().curso_academico, grupo_activo().curso_academico +1 ]|join("-") ]|join(": "))}}
 		<div id="parent_alumno">
