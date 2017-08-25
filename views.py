@@ -79,7 +79,9 @@ def admin_estadisticas_html(params={}):
     params = {}
     params['anchor'] = params_old.get('anchor', 'anchor_top')
     df_data = df_load_admin()
-    print(df_data)
+    # print(df_data)
+    # print(usuarios_count(df_data))
+    # abort(404)
     return render_template('admin_estadisticas.html', df_data=df_data, params=params)
 
 
@@ -146,7 +148,8 @@ def admin_usuario_edit_html(params={}):
                 settings_sql.email_validated = settings_email_validated
                 settings_sql.email_robinson = settings_email_robinson
                 usuario_sql = session_sql.query(User).filter(User.id == current_usuario_id).first()
-                usuario_sql.email = usuario_edit_form.email.data
+
+                # usuario_sql.email = usuario_edit_form.email.data
                 usuario_password_new = usuario_edit_form.password.data
 
                 if usuario_password_new:
@@ -164,8 +167,21 @@ def admin_usuario_edit_html(params={}):
                             'admin_usuario_data_grupos.html', usuario_edit=usuario_edit_form, usuario=user_by_id(current_usuario_id), params=params)
                 else:
                     usuario_sql.username = usuario_edit_form.username.data
+                    # session_sql.commit()
+
+                # NOTE usuario_email_unicidad
+                usuario_email_duplicado = session_sql.query(User).filter(User.email == usuario_edit_form.email.data).all()
+                for usuario_duplicado in usuario_email_duplicado:
+                    if usuario_duplicado.id != usuario_sql.id:
+                        flash_toast('Email ya registrado', 'warning')
+                        return render_template(
+                            'admin_usuario_data_grupos.html', usuario_edit=usuario_edit_form, usuario=user_by_id(current_usuario_id), params=params)
+                else:
+                    usuario_sql.email = usuario_edit_form.email.data
                     session_sql.commit()
+
                 flash_toast(Markup('Usuario <strong>') + usuario_edit_form.username.data + Markup('</strong>') + ' actualizado', 'success')
+                session_sql.commit()
                 return redirect(url_for('admin_usuario_data_grupos_html', params=dic_encode(params)))
             else:
                 flash_wtforms(usuario_edit_form, flash_toast, 'warning')
@@ -1771,8 +1787,9 @@ def user_add_html():
         return render_template('user_add.html', user_add=user_add_form)
     return render_template('user_add.html', user_add=User_Add())
 
-@app.route('/login_validacion_email/<params>')
-@app.route('/login_validacion_email')
+
+@app.route('/login_validacion_email/<params>', methods=['GET', 'POST'])
+@app.route('/login_validacion_email', methods=['GET', 'POST'])
 def login_validacion_email_html(params={}):
     try:
         params_old = dic_decode(params)
@@ -1781,7 +1798,15 @@ def login_validacion_email_html(params={}):
         abort(404)
     params = {}
     params['anchor'] = params_old.get('anchor', 'anchor_top')
-    params['email_validated_fail'] =params_old.get('email_validated_fail', False)
+    params['email_validated_intentos'] = params_old.get('email_validated_intentos', False)
+    params['current_user_id'] = params_old.get('current_user_id', 0)
+
+    if request.method == 'POST':
+        current_user_id = current_id_request('current_user_id')
+        params['current_user_id'] = current_user_id
+        params['email_validated_intentos'] = settings_by_id(current_user_id).email_validated_intentos
+        send_email_validate_asincrono(current_user_id)
+        return redirect(url_for('login_validacion_email_html', params=dic_encode(params)))
 
     return render_template('login_validacion_email.html', params=params)
 
@@ -1809,6 +1834,8 @@ def email_validate_html(params={}):
         else:
             settings_by_id(user_sql.id).email_validated = True
             settings_by_id(user_sql.id).email_robinson = False
+            if settings_by_id(user_sql.id).email_validated_intentos != 1:
+                settings_by_id(user_sql.id).email_validated_intentos = 1
             session_sql.commit()
             login_user(user_sql, remember=True)
             flash_toast('Enhorabuena, cuenta activada.', 'success')
@@ -1903,7 +1930,6 @@ def login_html(params={}):
     params['anchor'] = params_old.get('anchor', 'anchor_top')
     params['ban'] = params_old.get('ban', False)
     params['email_validated'] = params_old.get('email_validated', False)
-    params['email_validated_fail'] = params_old.get('email_validated_fail', False)
     params['login_fail'] = params_old.get('login_fail', False)
     params['password_reset'] = params_old.get('password_reset', False)
     params['email_robinson'] = params_old.get('email_robinson', False)
@@ -1921,20 +1947,28 @@ def login_html(params={}):
                     settings = settings_by_id(user_sql.id)
                     settings.visit_last = datetime.datetime.now()
                     settings.visit_number = settings.visit_number + 1
+                    session_sql.commit()
                     if settings.ban:
                         params['ban'] = True
                         params['login_fail'] = False
-                        # NOTE sin haber iniciado sesion no se pueden usar flash_toast
+                        logout_user()
                         return redirect(url_for('login_html', params=dic_encode(params)))
                     if settings.email_robinson:
                         params['email_robinson'] = True
                         params['login_fail'] = False
+                        logout_user()
                         return redirect(url_for('login_html', params=dic_encode(params)))
                     if not settings.email_validated:
-                        params['email_validated_fail'] = True
+                        params['current_user_id'] = user_sql.id
                         params['login_fail'] = False
+                        params['email_validated_intentos'] = settings.email_validated_intentos
+                        settings.email_validated_intentos = settings.email_validated_intentos + 1
+                        logout_user()
+                        session_sql.commit()
                         return redirect(url_for('login_validacion_email_html', params=dic_encode(params)))
-                    session_sql.commit()
+                    else:
+                        pass
+
                     flash_toast('Bienvenido ' + Markup('<strong>') + login_form.username.data + Markup('</strong>'), 'success')
                     if not settings.grupo_activo_id:
                         params['login'] = True  # NOTE Para activar como activo el primer grupo creado y redirect a alumnos (por facilidad para un nuevo usuario)

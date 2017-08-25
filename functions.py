@@ -330,13 +330,9 @@ def settings_by_id(settings_id):
 
 
 def usuarios(order_by_1, order_by_2, order_by_3):
-    # if not order_by_1:
-    #     order_by_1 = ''
-    # if not order_by_2:
-    #     order_by_2 = ''
-    # if not order_by_3:
-    #     order_by_3 = ''
-    return session_sql.query(User).order_by(order_by_1, order_by_2, order_by_3).all()
+
+    # return session_sql.query(User).order_by(order_by_1, order_by_2, order_by_3).all()
+    return session_sql.query(Settings).order_by(desc(order_by_1), order_by_2, order_by_3).all()
 
 
 def user_by_id(user_id):
@@ -376,40 +372,122 @@ def asignatura_comentario(tutoria_id, asignatura_asignatura):
 
 # XXX: pandas para admin
 # -----------------------------------------------------------------------
+def df_load_admin_usuarios():
+    df_usuario = pd.read_sql_query(session_sql.query(User).statement, engine)
+    df_usuario.drop(['id', 'password', 'email'], axis=1, inplace=True)
+    # df_usuario.rename(columns={'id': 'user_id'}, inplace=True)
+    df_data = df_usuario
+    return df_data
+
+
+def df_load_admin_settings():
+    df_usuario = pd.read_sql_query(session_sql.query(User).statement, engine)
+    df_usuario.drop(['password', 'email'], axis=1, inplace=True)
+    df_usuario.rename(columns={'id': 'user_id'}, inplace=True)
+
+    df_settings = pd.read_sql_query(session_sql.query(Settings).statement, engine)
+    df_data = pd.merge(df_usuario, df_settings, how='inner', on=None, left_on='user_id', right_on='user_id', left_index=False, right_index=False, sort=False, suffixes=('_usuario', '_settings'), copy=False, indicator=False)
+    df_data.drop(['user_id', 'calendar', 'grupo_activo_id', 'created_at', 'edited_at', 'show_tutorias',  'show_tutorias_collapse', 'role', 'email_validated_intentos', 'id'], axis=1, inplace=True)
+    # df_data.rename(columns={'id': 'settings_id'}, inplace=True)
+    print(df_data)
+
+    return df_data
+
+
 def df_load_admin():
     df_usuario = pd.read_sql_query(session_sql.query(User).statement, engine)
     df_usuario.drop(['password', 'email'], axis=1, inplace=True)
+    df_usuario.rename(columns={'id': 'user_id'}, inplace=True)
 
     df_settings = pd.read_sql_query(session_sql.query(Settings).statement, engine)
-    df_usuario_settings = pd.merge(df_usuario, df_settings, how='inner', on=None, left_on='id', right_on='user_id', left_index=False, right_index=False, sort=False, suffixes=('_usuario', '_settings'), copy=False, indicator=False)
-    df_usuario_settings.drop(['id_settings', 'user_id', 'calendar', 'grupo_activo_id', 'created_at', 'edited_at', 'visit_last', 'show_tutorias'], axis=1, inplace=True)
+    df_data = pd.merge(df_usuario, df_settings, how='inner', on=None, left_on='user_id', right_on='user_id', left_index=False, right_index=False, sort=False, suffixes=('_usuario', '_settings'), copy=False, indicator=False)
+    df_data.drop(['user_id', 'calendar', 'grupo_activo_id', 'created_at', 'edited_at', 'visit_last', 'show_tutorias'], axis=1, inplace=True)
+    df_data.rename(columns={'id': 'settings_id'}, inplace=True)
+    # print(df_data)
 
     df_grupo = pd.read_sql_query(session_sql.query(Grupo).statement, engine)
-    df_usuario_settings_grupo = pd.merge(df_usuario_settings, df_grupo, how='inner', on=None, left_on='id_usuario', right_on='settings_id', left_index=False, right_index=False, sort=False, suffixes=('_usuario', '_grupo'), copy=False, indicator=False)
-    df_usuario_settings_grupo.drop(['id_usuario', 'settings_id', 'nombre', 'tutor', 'created_at'], axis=1, inplace=True)
-    df_usuario_settings_grupo.rename(columns={'id': 'id_grupo'}, inplace=True)
+    df_data = pd.concat([df_data, df_grupo], axis=1)
+    df_data.drop(['settings_id', 'tutor', 'grupo_activo_id', 'created_at', 'edited_at', 'visit_last', 'show_tutorias'], axis=1, inplace=True)
+    df_data.rename(columns={'id': 'grupo_id'}, inplace=True)
+    # print(df_data)
 
     df_alumno = pd.read_sql_query(session_sql.query(Alumno).statement, engine)
-    df_usuario_settings_grupo_alumno = pd.merge(df_usuario_settings_grupo, df_alumno, how='inner', on=None, left_on='id_grupo', right_on='grupo_id', left_index=False, right_index=False, sort=False, suffixes=('_grupo', '_alumno'), copy=False, indicator=False)
-    df_usuario_settings_grupo_alumno.drop(['id_grupo', 'grupo_id', 'nombre', 'apellidos', 'created_at'], axis=1, inplace=True)
-    df_usuario_settings_grupo_alumno.rename(columns={'id': 'id_alumno'}, inplace=True)
-    #
-    df_tutoria = pd.read_sql_query(session_sql.query(Tutoria).statement, engine)
-    df_usuario_settings_grupo_alumno_tutoria = pd.merge(df_usuario_settings_grupo_alumno, df_tutoria, how='inner', on=None, left_on='id_alumno', right_on='alumno_id', left_index=False, right_index=False, sort=False, suffixes=('_alumno', '_tutoria'), copy=False, indicator=False)
-    df_usuario_settings_grupo_alumno_tutoria.drop(['id_alumno', 'alumno_id', 'fecha', 'hora', 'activa', 'deleted', 'created_at'], axis=1, inplace=True)
-    # df_usuario_settings_grupo_alumno_tutoria.rename(columns={'id': 'tutoria_id'}, inplace=True)
+    # df_data = pd.concat([df_data, df_alumno], axis=1)
+    # print(df_data)
+
+    df_data = pd.merge(df_data, df_alumno, how='inner', on=None, left_on='grupo_id', right_on='grupo_id', left_index=False, right_index=False, sort=False, suffixes=('_grupo', '_alumno'), copy=False, indicator=False)
+    # df_data.drop(['id_grupo', 'grupo_id', 'nombre', 'apellidos', 'created_at'], axis=1, inplace=True)
+    # df_data.rename(columns={'id': 'id_alumno'}, inplace=True)
+    # print(df_data)
+
+    # df_tutoria = pd.read_sql_query(session_sql.query(Tutoria).statement, engine)
+    # df_usuario_settings_grupo_alumno_tutoria = pd.merge(df_usuario_settings_grupo_alumno, df_tutoria, how='inner', on=None, left_on='id_alumno', right_on='alumno_id', left_index=False, right_index=False, sort=False, suffixes=('_alumno', '_tutoria'), copy=False, indicator=False)
+    # df_usuario_settings_grupo_alumno_tutoria.drop(['id_alumno', 'alumno_id', 'fecha', 'hora', 'activa', 'deleted', 'created_at'], axis=1, inplace=True)
 
     # NOTE hay que darle salida a todos porque cada uno de ellos es usado para una estadistica distinta
     # return df_usuario, df_usuario_settings, df_usuario_settings_grupo, df_usuario_settings_grupo_alumno, df_usuario_settings_grupo_alumno_tutoria,
     # NOTE creo que usando bien panda se puede hacer todo usando un solo data-frame
-    return df_usuario_settings_grupo_alumno_tutoria
+    return df_data
 
 # ***********************************************************************
 
 
-def usuarios_count(df_data):
-    pass
-    # return df_data.[]
+def data_count(df_data, columna):
+    return df_data[columna].count()
+
+
+def data_usuarios_count():
+    return df_load_admin_usuarios().username.count()
+
+
+def data_email_validated():
+    df_data = df_load_admin_settings()
+    columna_true_count = int(df_data[df_data.email_validated == True]['email_validated'].count())
+    columna_true_percent = int((columna_true_count / data_usuarios_count() * 100).round(decimals=0))
+    columna_false_count = int(data_usuarios_count() - columna_true_count)
+    columna_false_percent = int(100 - columna_true_percent)
+    return columna_true_count, columna_true_percent, columna_false_count, columna_false_percent
+
+
+def data_email_robinson():
+    df_data = df_load_admin_settings()
+    columna_true_count = int(df_data[df_data.email_robinson == True]['email_robinson'].count())
+    columna_true_percent = int((columna_true_count / data_usuarios_count() * 100).round(decimals=0))
+    columna_false_count = int(data_usuarios_count() - columna_true_count)
+    columna_false_percent = int(100 - columna_true_percent)
+    return columna_true_count, columna_true_percent, columna_false_count, columna_false_percent
+
+
+def data_tutoria_timeout():
+    df_data = df_load_admin_settings()
+    columna_true_count = int(df_data[df_data.tutoria_timeout == True]['tutoria_timeout'].count())
+    columna_true_percent = int((columna_true_count / data_usuarios_count() * 100).round(decimals=0))
+    columna_false_count = int(data_usuarios_count() - columna_true_count)
+    columna_false_percent = int(100 - columna_true_percent)
+    return columna_true_count, columna_true_percent, columna_false_count, columna_false_percent
+
+
+def data_ban():
+    df_data = df_load_admin_settings()
+    columna_true_count = int(df_data[df_data.ban == True]['ban'].count())
+    columna_true_percent = int((columna_true_count / data_usuarios_count() * 100).round(decimals=0))
+    columna_false_count = int(data_usuarios_count() - columna_true_count)
+    columna_false_percent = int(100 - columna_true_percent)
+    return columna_true_count, columna_true_percent, columna_false_count, columna_false_percent
+
+
+def data_top_10():
+    df_data = df_load_admin_settings()
+    df_data = df_data.sort_values(['visit_number','visit_last','username'])['username']
+    # df_data = df_data.head(1)
+
+    return df_data
+
+
+def data_email_validated_percent_ORG(df_data):
+
+    return (df_data[df_data.email_validated == True]['email_validated'].count() / data_count(df_data, 'username') * 100).round(decimals=2)
+    # return df_data['email_validate' = 'True'].count()
 
 
 # ***********************************************************************
@@ -423,39 +501,37 @@ def df_load():
     # print(df_alumno)
 
     df_tutoria = pd.read_sql_query(session_sql.query(Tutoria).statement, engine)
-    df_alumno_tutoria = pd.merge(df_alumno, df_tutoria, how='inner', on=None, left_on='alumno_id', right_on='alumno_id', left_index=False, right_index=False, sort=False, suffixes=('_alumno', '_tutoria'), copy=False, indicator=False)
-    df_alumno_tutoria.drop(['hora', 'activa', 'created_at', 'deleted'], axis=1, inplace=True)
-    df_alumno_tutoria.rename(columns={'id': 'tutoria_id'}, inplace=True)
-    # print(df_alumno_tutoria)
+    df_data = pd.merge(df_alumno, df_tutoria, how='inner', on=None, left_on='alumno_id', right_on='alumno_id', left_index=False, right_index=False, sort=False, suffixes=('_alumno', '_tutoria'), copy=False, indicator=False)
+    df_data.drop(['hora', 'activa', 'created_at', 'deleted'], axis=1, inplace=True)
+    df_data.rename(columns={'id': 'tutoria_id'}, inplace=True)
+    # print(df_data)
 
     df_informe = pd.read_sql_query(session_sql.query(Informe).statement, engine)
-    df_alumno_tutoria_informe = pd.merge(df_alumno_tutoria, df_informe, how='inner', on=None, left_on='tutoria_id', right_on='tutoria_id', left_index=False, right_index=False, sort=False, suffixes=('_tutoria', '_informe'), copy=False, indicator=False)
-    df_alumno_tutoria_informe.drop(['created_at', 'comentario'], axis=1, inplace=True)
-    df_alumno_tutoria_informe.rename(columns={'id': 'informe_id'}, inplace=True)
-    # print(df_alumno_tutoria_informe)
+    df_data = pd.merge(df_data, df_informe, how='inner', on=None, left_on='tutoria_id', right_on='tutoria_id', left_index=False, right_index=False, sort=False, suffixes=('_tutoria', '_informe'), copy=False, indicator=False)
+    df_data.drop(['created_at', 'comentario'], axis=1, inplace=True)
+    df_data.rename(columns={'id': 'informe_id'}, inplace=True)
+    # print(df_data)
 
     df_asignatura = pd.read_sql_query(session_sql.query(Asignatura).join(Grupo).filter(Grupo.id == settings().grupo_activo_id).statement, engine)
-    df_alumno_tutoria_informe_asignatura = pd.merge(df_alumno_tutoria_informe, df_asignatura, how='inner', on=None, left_on='asignatura_id', right_on='id', left_index=False, right_index=False, sort=False, suffixes=('_informe', '_asignatura'), copy=False, indicator=False)
-    df_alumno_tutoria_informe_asignatura.drop(['id', 'email', 'created_at', 'nombre', 'apellidos'], axis=1, inplace=True)
-    # df_alumno_tutoria_informe_asignatura.rename(columns={'activa': 'tutoria_activa'}, inplace=True)
-    # print(df_alumno_tutoria_informe_asignatura)
+    df_data = pd.merge(df_data, df_asignatura, how='inner', on=None, left_on='asignatura_id', right_on='id', left_index=False, right_index=False, sort=False, suffixes=('_informe', '_asignatura'), copy=False, indicator=False)
+    df_data.drop(['id', 'email', 'created_at', 'nombre', 'apellidos'], axis=1, inplace=True)
+    # df_data.rename(columns={'activa': 'tutoria_activa'}, inplace=True)
+    # print(df_data)
     #
     df_respuesta = pd.read_sql_query(session_sql.query(Respuesta).statement, engine)
-    df_alumno_tutoria_informe_asignatura_respuesta = pd.merge(df_alumno_tutoria_informe_asignatura, df_respuesta, how='inner', on=None, left_on='informe_id', right_on='informe_id', left_index=False, right_index=False, sort=False, suffixes=('_informe', '_respuesta'), copy=False, indicator=False)
-    df_alumno_tutoria_informe_asignatura_respuesta.drop(['id', 'created_at'], axis=1, inplace=True)
-    df_alumno_tutoria_informe_asignatura_respuesta.rename(columns={'id': 'resultado_id', 'resultado': 'cuestionario_resultado'}, inplace=True)
-    # print(df_alumno_tutoria_informe_asignatura_respuesta)
+    df_data = pd.merge(df_data, df_respuesta, how='inner', on=None, left_on='informe_id', right_on='informe_id', left_index=False, right_index=False, sort=False, suffixes=('_informe', '_respuesta'), copy=False, indicator=False)
+    df_data.drop(['id', 'created_at'], axis=1, inplace=True)
+    df_data.rename(columns={'id': 'resultado_id', 'resultado': 'cuestionario_resultado'}, inplace=True)
+    # print(df_data)
     #
     df_pregunta = pd.read_sql_query(session_sql.query(Pregunta).join(Association_Settings_Pregunta).join(Settings).filter(Settings.user_id == current_user.id).statement, engine)
     #
-    df_alumno_tutoria_informe_asignatura_respuesta_pregunta = pd.merge(df_alumno_tutoria_informe_asignatura_respuesta, df_pregunta, how='inner', on=None, left_on='pregunta_id', right_on='id', left_index=False, right_index=False, sort=False, suffixes=('_respuesta', '_pregunta'), copy=False, indicator=False)
-    df_alumno_tutoria_informe_asignatura_respuesta_pregunta.drop(['id', 'enunciado', 'created_at', 'visible', 'active_default'], axis=1, inplace=True)
-    df_alumno_tutoria_informe_asignatura_respuesta_pregunta.rename(columns={'enunciado_ticker': 'cuestionario_enunciado', 'orden': 'cuestionario_orden'}, inplace=True)
-    # print(df_alumno_tutoria_informe_asignatura_respuesta_pregunta)
+    df_data = pd.merge(df_data, df_pregunta, how='inner', on=None, left_on='pregunta_id', right_on='id', left_index=False, right_index=False, sort=False, suffixes=('_respuesta', '_pregunta'), copy=False, indicator=False)
+    df_data.drop(['id', 'enunciado', 'created_at', 'visible', 'active_default'], axis=1, inplace=True)
+    df_data.rename(columns={'enunciado_ticker': 'cuestionario_enunciado', 'orden': 'cuestionario_orden'}, inplace=True)
+    # print(df_data)
 
-    df_data = df_alumno_tutoria_informe_asignatura_respuesta_pregunta
-    # df_data.drop(['id_alumno', 'alumno_nombre', 'alumno_apellidos', 'informe_comentario', 'profesor_nombre', 'profesor_apellidos', 'id_asignatura'], axis=1, inplace=True)  # alimina columns que igual hacen falta en algun grafico
-    #
+    df_data = df_data
     df_data.cuestionario_resultado = df_data.cuestionario_resultado.astype(float)  # convierte a FLOAT los resultados que son INTEGER
 
     df_data.sort_values(by=['cuestionario_orden'], inplace=True)  # Para mantener el orden del cuestionario
@@ -490,7 +566,7 @@ def df_evolucion(df_data, alumno_id):
     for k, grupo in grouped_grupo:
         evolucion_grupo.append([arrow.get(k).timestamp * 1000, grupo.cuestionario_resultado.mean().round(decimals=2)])
 
-    df_data_alumno = df_data.loc[lambda df: df.alumno_id == alumno_id]
+    df_data_alumno = df_data[df_data.alumno_id == alumno_id]
     grouped_alumno = df_data_alumno.groupby('fecha', sort=True)
     for k, grupo in grouped_alumno:
         evolucion_alumno.append([arrow.get(k).timestamp * 1000, grupo.cuestionario_resultado.mean().round(decimals=2)])
@@ -979,4 +1055,4 @@ def cita_random():
 
 
 app.jinja_env.globals.update(settings=settings, cita_random=cita_random,  singular_plural=singular_plural, grupo_activo=grupo_activo, curso=curso, alumnos_not_sorted=alumnos_not_sorted, alumnos=alumnos, alumno_tutorias=alumno_tutorias, equal_str=equal_str, alumno_asignaturas_id=alumno_asignaturas_id, asignaturas=asignaturas, asignatura_alumnos=asignatura_alumnos, association_alumno_asignatura_check=association_alumno_asignatura_check,
-                             tutoria_asignaturas_count=tutoria_asignaturas_count, string_to_date=string_to_date, association_settings_pregunta_check=association_settings_pregunta_check, preguntas=preguntas, informe_preguntas=informe_preguntas, invitado_settings=invitado_settings, invitado_preguntas=invitado_preguntas, invitado_settings_by_id=invitado_settings_by_id, invitado_respuesta=invitado_respuesta, invitado_pruebas_evaluables=invitado_pruebas_evaluables, invitado_informe=invitado_informe, tutoria_informes=tutoria_informes, cociente_porcentual=cociente_porcentual, tutoria_asignaturas=tutoria_asignaturas, df_analisis_asignatura_stacked=df_analisis_asignatura_stacked, df_cuestion_stacked=df_cuestion_stacked, df_asignaturas_lista=df_asignaturas_lista, df_cuestiones_lista=df_cuestiones_lista, df_cuestion_grupo_spline=df_cuestion_grupo_spline, df_asignatura_stacked=df_asignatura_stacked, df_asignatura_grupo_spline=df_asignatura_grupo_spline, df_analisis_asignatura=df_analisis_asignatura, asignatura_comentario=asignatura_comentario, pregunta_active_default_check=pregunta_active_default_check, notas_asignatura=notas_asignatura, notas_asignatura_grupo=notas_asignatura_grupo, pregunta_visible_check=pregunta_visible_check, grupo_activo_check=grupo_activo_check, user_by_id=user_by_id, df_evolucion=df_evolucion, df_evolucion_notas=df_evolucion_notas, tutoria_stats=tutoria_stats, arrow_fecha=arrow_fecha, asignatura_informes_count=asignatura_informes_count, asignatura_informes_respondidos_count=asignatura_informes_respondidos_count, alumno_asignaturas=alumno_asignaturas, asignaturas_not_sorted=asignaturas_not_sorted, grupo_tutorias=grupo_tutorias, alumno_by_id=alumno_by_id, hashids_encode=hashids_encode, hashids_decode=hashids_decode, f_encode=f_encode, f_decode=f_decode, dic_encode_args=dic_encode_args, dic_try=dic_try, settings_by_id=settings_by_id, usuario_grupos=usuario_grupos, grupo_alumnos_count=grupo_alumnos_count, usuarios=usuarios, usuario_cuestionario=usuario_cuestionario, usuarios_count=usuarios_count, df_asignaturas_dic=df_asignaturas_dic)
+                             tutoria_asignaturas_count=tutoria_asignaturas_count, string_to_date=string_to_date, association_settings_pregunta_check=association_settings_pregunta_check, preguntas=preguntas, informe_preguntas=informe_preguntas, invitado_settings=invitado_settings, invitado_preguntas=invitado_preguntas, invitado_settings_by_id=invitado_settings_by_id, invitado_respuesta=invitado_respuesta, invitado_pruebas_evaluables=invitado_pruebas_evaluables, invitado_informe=invitado_informe, tutoria_informes=tutoria_informes, cociente_porcentual=cociente_porcentual, tutoria_asignaturas=tutoria_asignaturas, df_analisis_asignatura_stacked=df_analisis_asignatura_stacked, df_cuestion_stacked=df_cuestion_stacked, df_asignaturas_lista=df_asignaturas_lista, df_cuestiones_lista=df_cuestiones_lista, df_cuestion_grupo_spline=df_cuestion_grupo_spline, df_asignatura_stacked=df_asignatura_stacked, df_asignatura_grupo_spline=df_asignatura_grupo_spline, df_analisis_asignatura=df_analisis_asignatura, asignatura_comentario=asignatura_comentario, pregunta_active_default_check=pregunta_active_default_check, notas_asignatura=notas_asignatura, notas_asignatura_grupo=notas_asignatura_grupo, pregunta_visible_check=pregunta_visible_check, grupo_activo_check=grupo_activo_check, user_by_id=user_by_id, df_evolucion=df_evolucion, df_evolucion_notas=df_evolucion_notas, tutoria_stats=tutoria_stats, arrow_fecha=arrow_fecha, asignatura_informes_count=asignatura_informes_count, asignatura_informes_respondidos_count=asignatura_informes_respondidos_count, alumno_asignaturas=alumno_asignaturas, asignaturas_not_sorted=asignaturas_not_sorted, grupo_tutorias=grupo_tutorias, alumno_by_id=alumno_by_id, hashids_encode=hashids_encode, hashids_decode=hashids_decode, f_encode=f_encode, f_decode=f_decode, dic_encode_args=dic_encode_args, dic_try=dic_try, settings_by_id=settings_by_id, usuario_grupos=usuario_grupos, grupo_alumnos_count=grupo_alumnos_count, usuarios=usuarios, usuario_cuestionario=usuario_cuestionario, data_count=data_count, df_asignaturas_dic=df_asignaturas_dic, data_usuarios_count=data_usuarios_count, data_email_validated=data_email_validated, data_email_robinson=data_email_robinson, data_tutoria_timeout=data_tutoria_timeout, data_ban=data_ban, data_top_10=data_top_10)

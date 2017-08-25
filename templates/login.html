@@ -1,7 +1,7 @@
 {% extends '_layout.html' %}
 {% block body %}
 	{%from '_macro.html' import nav_bar_top,titulo_1%}
-	{{nav_bar_top(link_active='Iniciar sesión', current_user=current_user)}}
+	{{nav_bar_top(link_active='inciar sesión', current_user=current_user)}}
 	<div class="container">
 		<div class="paper bg-white padding_contenido">
 			{{titulo_1(bg_color='bg-dark', titulo='Iniciar sesion')}}
@@ -80,7 +80,7 @@
 				</div>
 				<br>
 			{% endif %}
-	
+
 		</div>
 	</div>
 {% endblock %}

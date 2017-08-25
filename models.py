@@ -35,6 +35,7 @@ class Settings (Base):
     user_id = Column(Integer, ForeignKey('user.id'))
     user = relationship('User', back_populates='settings')
     email_validated = Column(Boolean, default=False)
+    email_validated_intentos = Column(Integer, default=1)
     email_robinson = Column(Boolean, default=False)
     role = Column(String(80), default='user')
     ban = Column(Boolean, default=False)
