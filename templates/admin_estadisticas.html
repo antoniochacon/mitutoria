@@ -5,17 +5,8 @@
 	<div class="paper bg-white padding_contenido">
 		{{titulo_1(bg_color='bg-dark',titulo='Admin Settings')}}
 		{{nav_tabs_admin(tab_active='Estadisticas')}}
-
-			<div>
-				{% include 'admin_estadisticas_usuarios_block.html' %}
-			</div>
-		
-			<div>
-				Numero medio de tutorias por grupo / numero medio de tutorias por alumno
-			</div>
-			<div>
-				Preguntas mas frecuentes / numero medio de preguntas por usuario
-			</div>
-
+		<div>
+			{% include 'admin_estadisticas_usuarios_block.html' %}
+		</div>
 	</div>
 {% endblock %}
