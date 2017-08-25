@@ -5,28 +5,57 @@
 <div class="collapse show" id="stats_usuarios">
 	<div class="col pt-4 pb-3">
 		numero de usuarios:
-		{{data_usuarios_count()}}
+		{{data_usuarios_count(df_data_admin_usuarios)}}
 		<br>
-		email no validados: {{data_email_validated()[2]}} | {{data_email_validated()[3]}}%
+		email no validados:
+		{{data_email_validated(df_data_admin_settings)[2]}}
+		|
+		{{data_email_validated(df_data_admin_settings)[3]}}%
 		<br>
-		lista robinson: {{data_email_robinson()[0]}} | {{data_email_robinson()[1]}}%
+		lista robinson:
+		{{data_email_robinson(df_data_admin_settings)[0]}}
+		|
+		{{data_email_robinson(df_data_admin_settings)[1]}}%
 		<br>
-		tutoria timeout: {{data_tutoria_timeout()[0]}} | {{data_tutoria_timeout()[1]}}%
+		tutoria timeout:
+		{{data_tutoria_timeout(df_data_admin_settings)[0]}}
+		|
+		{{data_tutoria_timeout(df_data_admin_settings)[1]}}%
 		<br>
-		ban: {{data_ban()[0]}} | {{data_ban()[1]}}%
+		ban:
+		{{data_ban(df_data_admin_settings)[0]}}
+		|
+		{{data_ban(df_data_admin_settings)[1]}}%
 		<br>
 		TOP-10 usuarios mas activos:
-		{{data_top_10()}}
 		<br><br>
-
-
-
-		numero de centros distintos.
-		{{data_count(df_data, 'centro')}}
+		<table class="table table-sm table-striped">
+			<thead>
+				<tr>
+					<th>#</th>
+					<th>usuario</th>
+					<th>visitas</th>
+					<th>ultima visita</th>
+				</tr>
+			</thead>
+			<tbody>
+				{% for key, value in data_usuarios_top_10(df_data_admin_settings).iterrows() %}
+					<tr>
+						<th scope="row">{{loop.index}}</th>
+						<td>{{value['username']}}</td>
+						<td>{{value['visit_number']}}</td>
+						<td>{{value['visit_last'].strftime('%d-%B-%Y')}}</td>
+					</tr>
+				{% endfor %}
+			</tbody>
+		</table>
 		<br>
-		porcentajes de cada opcion( email_validated, email_robinson, role, ban, etc....)
-		{#
-		{{highcharts_cuestionario(char_id='cuestionario', titulo='', color='#ffa000', df_data=df_data, grupo=grupo, tutoria_id=tutoria.id)}}
-		#}
+
+		{{data_tutorias_media(df_data_admin_tutorias, 'grupo_id')}}
+		tutorias / grupo
+		<br>
+
+		{{data_tutorias_media(df_data_admin_tutorias, 'alumno_id')}}
+		tutorias / alumno
 	</div>
 </div>

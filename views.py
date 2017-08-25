@@ -78,11 +78,15 @@ def admin_estadisticas_html(params={}):
         abort(404)
     params = {}
     params['anchor'] = params_old.get('anchor', 'anchor_top')
-    df_data = df_load_admin()
+    df_data_admin_usuarios = df_load_admin_usuarios()
+    df_data_admin_settings = df_load_admin_settings()
+    df_data_admin_tutorias = df_load_admin_tutorias()
+    df_data_admin_informes = df_load_admin_informes()
+
     # print(df_data)
     # print(usuarios_count(df_data))
     # abort(404)
-    return render_template('admin_estadisticas.html', df_data=df_data, params=params)
+    return render_template('admin_estadisticas.html', df_data_admin_settings=df_data_admin_settings, df_data_admin_usuarios=df_data_admin_usuarios, df_data_admin_tutorias=df_data_admin_tutorias, df_data_admin_informes=df_data_admin_informes, params=params)
 
 
 # XXX wellcome
