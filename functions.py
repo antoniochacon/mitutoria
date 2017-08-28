@@ -26,34 +26,6 @@ def usuarios_all_count():
     return session_sql.query(User).count()
 
 
-def usuarios_mas_activos(numero):
-    return session_sql.query(Settings).order_by(desc('visit_number'), 'visit_last').all()[0:numero]
-
-
-def emails_no_validados_count():
-    emails_no_validos_count = session_sql.query(Settings).filter(Settings.email_validated == False).count()
-    emails_no_validos_percent = emails_no_validos_count / usuarios_all_count() * 100
-    return emails_no_validos_count, emails_no_validos_percent
-
-
-def emails_robinson_count():
-    emails_robinson_count = session_sql.query(Settings).filter(Settings.email_robinson == True).count()
-    emails_robinson_percent = emails_robinson_count / usuarios_all_count() * 100
-    return emails_robinson_count, emails_robinson_percent
-
-
-def emails_ban_count():
-    emails_ban_count = session_sql.query(Settings).filter(Settings.ban == True).count()
-    emails_ban_percent = emails_ban_count / usuarios_all_count() * 100
-    return emails_ban_count, emails_ban_percent
-
-
-def tutoria_timeout_count():
-    emails_tutoria_timeout_count = session_sql.query(Settings).filter(Settings.tutoria_timeout == False).count()
-    emails_tutoria_timeout_percent = emails_tutoria_timeout_count / usuarios_all_count() * 100
-    return emails_tutoria_timeout_count, emails_tutoria_timeout_percent
-
-
 def tutorias_all_count():
     return session_sql.query(Tutoria).count()
 
@@ -70,110 +42,159 @@ def respuesta_all_count():
     return session_sql.query(Respuesta).count()
 
 
+def usuarios_mas_activos(numero):
+    return session_sql.query(Settings).order_by(desc('visit_number'), 'visit_last').all()[0:numero]
+
+
+def emails_no_validados_count():
+    try:
+        emails_no_validos_count = session_sql.query(Settings).filter(Settings.email_validated == False).count()
+        emails_no_validos_percent = emails_no_validos_count / usuarios_all_count() * 100
+        return emails_no_validos_count, emails_no_validos_percent
+    except:
+        return 1,1
+
+
+def emails_robinson_count():
+    try:
+        emails_robinson_count = session_sql.query(Settings).filter(Settings.email_robinson == True).count()
+        emails_robinson_percent = emails_robinson_count / usuarios_all_count() * 100
+        return emails_robinson_count, emails_robinson_percent
+    except:
+        return 1,1
+
+
+def emails_ban_count():
+    try:
+        emails_ban_count = session_sql.query(Settings).filter(Settings.ban == True).count()
+        emails_ban_percent = emails_ban_count / usuarios_all_count() * 100
+        return emails_ban_count, emails_ban_percent
+    except:
+        return 1,1
+
+
+def tutoria_timeout_count():
+    try:
+        emails_tutoria_timeout_count = session_sql.query(Settings).filter(Settings.tutoria_timeout == False).count()
+        emails_tutoria_timeout_percent = emails_tutoria_timeout_count / usuarios_all_count() * 100
+        return emails_tutoria_timeout_count, emails_tutoria_timeout_percent
+    except:
+        return 1,1
+
+
 def tutorias_sin_respuesta_count():
-    # NOTE todos los informes tienen repuesta pues son generados al responder
-    tutorias_sin_respuesta_count = 0
-    tutorias = session_sql.query(Tutoria).all()
-    for tutoria in tutorias:
-        tutoria_respuesta = session_sql.query(Informe).filter(Informe.tutoria_id == tutoria.id).first()
-        if not tutoria_respuesta:
-            tutorias_sin_respuesta_count = tutorias_sin_respuesta_count + 1
-    tutorias_sin_respuesta_percent = tutorias_sin_respuesta_count / tutorias_all_count() * 100
-    return tutorias_sin_respuesta_count, tutorias_sin_respuesta_percent
+    try:
+        # NOTE todos los informes tienen repuesta pues son generados al responder
+        tutorias_sin_respuesta_count = 0
+        tutorias = session_sql.query(Tutoria).all()
+        for tutoria in tutorias:
+            tutoria_respuesta = session_sql.query(Informe).filter(Informe.tutoria_id == tutoria.id).first()
+            if not tutoria_respuesta:
+                tutorias_sin_respuesta_count = tutorias_sin_respuesta_count + 1
+        tutorias_sin_respuesta_percent = tutorias_sin_respuesta_count / tutorias_all_count() * 100
+        return tutorias_sin_respuesta_count, tutorias_sin_respuesta_percent
+    except:
+        return 1,1
 
 
 def preguntas_por_cuestionario():
-    preguntas_por_cuestionario = []
-    settings_all = session_sql.query(Settings).filter(Settings.grupo_activo_id != None).all()
-    for settings in settings_all:
-        preguntas_numero = session_sql.query(Association_Settings_Pregunta).filter(Association_Settings_Pregunta.settings_id == settings.id).count()
-        preguntas_por_cuestionario.append(preguntas_numero)
-    preguntas_por_cuestionario_max = preguntas_all_count() - min(preguntas_por_cuestionario)
-    preguntas_por_cuestionario_media = preguntas_all_count() - mean(preguntas_por_cuestionario)
-    preguntas_por_cuestionario_min = preguntas_all_count() - max(preguntas_por_cuestionario)
-    preguntas_por_cuestionario_no_usadas_count = int(preguntas_por_cuestionario_media)
-    preguntas_por_cuestionario_no_usadas_percent = preguntas_por_cuestionario_no_usadas_count / preguntas_all_count() * 100
-    return preguntas_por_cuestionario_min, preguntas_por_cuestionario_media, preguntas_por_cuestionario_max, preguntas_por_cuestionario_no_usadas_count, preguntas_por_cuestionario_no_usadas_percent
+    try:
+        preguntas_por_cuestionario = []
+        settings_all = session_sql.query(Settings).filter(Settings.grupo_activo_id != None).all()
+        for settings in settings_all:
+            preguntas_numero = session_sql.query(Association_Settings_Pregunta).filter(Association_Settings_Pregunta.settings_id == settings.id).count()
+            preguntas_por_cuestionario.append(preguntas_numero)
+        preguntas_por_cuestionario_max = preguntas_all_count() - min(preguntas_por_cuestionario)
+        preguntas_por_cuestionario_media = preguntas_all_count() - mean(preguntas_por_cuestionario)
+        preguntas_por_cuestionario_min = preguntas_all_count() - max(preguntas_por_cuestionario)
+        preguntas_por_cuestionario_no_usadas_count = int(preguntas_por_cuestionario_media)
+        preguntas_por_cuestionario_no_usadas_percent = preguntas_por_cuestionario_no_usadas_count / preguntas_all_count() * 100
+        return preguntas_por_cuestionario_min, preguntas_por_cuestionario_media, preguntas_por_cuestionario_max, preguntas_por_cuestionario_no_usadas_count, preguntas_por_cuestionario_no_usadas_percent
+    except:
+        return 1,1,1,1,1
 
 
 def tutorias_por_usuario_count():
-    tutorias_por_usuario_list = []
-    settings_all = session_sql.query(Settings).filter(Settings.grupo_activo_id != None).all()  # NOTE con esto aseguro que el usuario al menos ha creado un grupo_activo_id
-    for settings in settings_all:
-        tutorias_por_usuario = session_sql.query(Tutoria).join(Alumno).join(Grupo).filter(Grupo.id == settings.grupo_activo_id).count()
-        tutorias_por_usuario_list.append(tutorias_por_usuario)
-
-    tutorias_por_usuario_min = min(tutorias_por_usuario_list)
-    tutorias_por_usuario_media = mean(tutorias_por_usuario_list)
-    tutorias_por_usuario_max = max(tutorias_por_usuario_list)
-
-    return tutorias_por_usuario_min, tutorias_por_usuario_media, tutorias_por_usuario_max,
+    try:
+        tutorias_por_usuario_list = []
+        settings_all = session_sql.query(Settings).filter(Settings.grupo_activo_id != None).all()  # NOTE con esto aseguro que el usuario al menos ha creado un grupo_activo_id
+        for settings in settings_all:
+            tutorias_por_usuario = session_sql.query(Tutoria).join(Alumno).join(Grupo).filter(Grupo.id == settings.grupo_activo_id).count()
+            tutorias_por_usuario_list.append(tutorias_por_usuario)
+        tutorias_por_usuario_min = min(tutorias_por_usuario_list)
+        tutorias_por_usuario_media = mean(tutorias_por_usuario_list)
+        tutorias_por_usuario_max = max(tutorias_por_usuario_list)
+        return tutorias_por_usuario_min, tutorias_por_usuario_media, tutorias_por_usuario_max,
+    except:
+        return 1,1,1
 
 
 def cuestionario_actividad():
-    preguntas_id_lista = []
-    preguntas_frecuencias_lista = []
-    settings_all = session_sql.query(Settings).filter(Settings.grupo_activo_id != None).all()  # NOTE con esto aseguro que el usuario al menos ha creado un grupo_activo_id
-    for settings in settings_all:
-        settings_cuestionario_id = session_sql.query(Association_Settings_Pregunta).filter(Association_Settings_Pregunta.settings_id == settings.id).all()
-        for pregunta in settings_cuestionario_id:
-            preguntas_id_lista.append(pregunta.pregunta_id)
-
-    preguntas = session_sql.query(Pregunta).order_by('orden').all()
-    for pregunta in preguntas:
-        frecuencia = preguntas_id_lista.count(pregunta.id)
-        preguntas_frecuencias_lista.append([pregunta.enunciado_ticker, frecuencia])
-    return preguntas_frecuencias_lista
+    try:
+        preguntas_id_lista = []
+        preguntas_frecuencias_lista = []
+        settings_all = session_sql.query(Settings).filter(Settings.grupo_activo_id != None).all()  # NOTE con esto aseguro que el usuario al menos ha creado un grupo_activo_id
+        for settings in settings_all:
+            settings_cuestionario_id = session_sql.query(Association_Settings_Pregunta).filter(Association_Settings_Pregunta.settings_id == settings.id).all()
+            for pregunta in settings_cuestionario_id:
+                preguntas_id_lista.append(pregunta.pregunta_id)
+        preguntas = session_sql.query(Pregunta).order_by('orden').all()
+        for pregunta in preguntas:
+            frecuencia = preguntas_id_lista.count(pregunta.id)
+            preguntas_frecuencias_lista.append([pregunta.enunciado_ticker, frecuencia])
+        return preguntas_frecuencias_lista
+    except:
+        return 1
 
 
 def evolucion_tutorias_exito_grupo(current_grupo_id):
-    informes_posibles_count = 0
-    tutoria_profesores_responden_evolucion = []
-    media_lista = []
-    tutorias = session_sql.query(Tutoria).join(Alumno).join(Grupo).filter(Grupo.id == current_grupo_id).order_by('fecha').all()
-    for tutoria in tutorias:
-        asignaturas_tutoria_count = session_sql.query(Association_Tutoria_Asignatura).filter(Association_Tutoria_Asignatura.tutoria_id == tutoria.id).count()
-        informes_posibles_count = informes_posibles_count + asignaturas_tutoria_count
-        profesores_respoden = session_sql.query(Informe).filter(Informe.tutoria_id == tutoria.id).count()
-        profesores_respoden_percent = int(profesores_respoden / asignaturas_tutoria_count * 100)
-        tutoria_profesores_responden_evolucion.append([arrow.get(tutoria.fecha).timestamp * 1000, profesores_respoden_percent])
-        media_lista.append(profesores_respoden_percent)
-    tutoria_profesores_responden_evolucion_media = int(mean(media_lista))
-
-    return tutoria_profesores_responden_evolucion, tutoria_profesores_responden_evolucion_media
+    try:
+        informes_posibles_count = 0
+        tutoria_profesores_responden_evolucion = []
+        media_lista = []
+        tutorias = session_sql.query(Tutoria).join(Alumno).join(Grupo).filter(Grupo.id == current_grupo_id).order_by('fecha').all()
+        for tutoria in tutorias:
+            asignaturas_tutoria_count = session_sql.query(Association_Tutoria_Asignatura).filter(Association_Tutoria_Asignatura.tutoria_id == tutoria.id).count()
+            informes_posibles_count = informes_posibles_count + asignaturas_tutoria_count
+            profesores_respoden = session_sql.query(Informe).filter(Informe.tutoria_id == tutoria.id).count()
+            profesores_respoden_percent = int(profesores_respoden / asignaturas_tutoria_count * 100)
+            tutoria_profesores_responden_evolucion.append([arrow.get(tutoria.fecha).timestamp * 1000, profesores_respoden_percent])
+            media_lista.append(profesores_respoden_percent)
+        tutoria_profesores_responden_evolucion_media = int(mean(media_lista))
+        return tutoria_profesores_responden_evolucion, tutoria_profesores_responden_evolucion_media
+    except:
+        return 1,1
 
 
 def profesores_sin_responder_count():
-    informes_posibles_count = 0
-    tutoria_profesores_responden_valor_frecuencia_add = 0
-    tutoria_profesores_responden_evolucion = []
-    tutoria_profesores_responden_valor = []
-    tutoria_profesores_responden_valor_frecuencia = []
-    tutoria_profesores_responden_valor_frecuencia_absoluta = []
-    media_lista = []
-
-    tutorias = session_sql.query(Tutoria).order_by('fecha').all()
-    for tutoria in tutorias:
-        asignaturas_tutoria_count = session_sql.query(Association_Tutoria_Asignatura).filter(Association_Tutoria_Asignatura.tutoria_id == tutoria.id).count()
-        informes_posibles_count = informes_posibles_count + asignaturas_tutoria_count
-        profesores_respoden = session_sql.query(Informe).filter(Informe.tutoria_id == tutoria.id).count()
-        profesores_respoden_percent = int(profesores_respoden / asignaturas_tutoria_count * 100)
-        tutoria_profesores_responden_valor.append(int(profesores_respoden_percent / 10) * 10)
-        tutoria_profesores_responden_evolucion.append([arrow.get(tutoria.fecha).timestamp * 1000, profesores_respoden_percent])
-        media_lista.append(profesores_respoden_percent)
-
-    tutoria_profesores_responden_evolucion_media = int(mean(media_lista))
-
-    for percent in [0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100]:
-        frecuencia = tutoria_profesores_responden_valor.count(percent) / tutorias_all_count() * 100
-        tutoria_profesores_responden_valor_frecuencia.append([percent, frecuencia])
-
-        tutoria_profesores_responden_valor_frecuencia_add = tutoria_profesores_responden_valor_frecuencia_add + frecuencia
-        tutoria_profesores_responden_valor_frecuencia_absoluta.append([percent, tutoria_profesores_responden_valor_frecuencia_add])
-
-    profesores_sin_responder_count = informes_posibles_count - informes_all_count()
-    profesores_sin_responder_percent = profesores_sin_responder_count / informes_posibles_count * 100
-    return profesores_sin_responder_count, profesores_sin_responder_percent, tutoria_profesores_responden_evolucion, tutoria_profesores_responden_valor_frecuencia, tutoria_profesores_responden_valor_frecuencia_absoluta, tutoria_profesores_responden_evolucion_media
+    try:
+        informes_posibles_count = 0
+        tutoria_profesores_responden_valor_frecuencia_add = 0
+        tutoria_profesores_responden_evolucion = []
+        tutoria_profesores_responden_valor = []
+        tutoria_profesores_responden_valor_frecuencia = []
+        tutoria_profesores_responden_valor_frecuencia_absoluta = []
+        media_lista = []
+        tutorias = session_sql.query(Tutoria).order_by('fecha').all()
+        for tutoria in tutorias:
+            asignaturas_tutoria_count = session_sql.query(Association_Tutoria_Asignatura).filter(Association_Tutoria_Asignatura.tutoria_id == tutoria.id).count()
+            informes_posibles_count = informes_posibles_count + asignaturas_tutoria_count
+            profesores_respoden = session_sql.query(Informe).filter(Informe.tutoria_id == tutoria.id).count()
+            profesores_respoden_percent = int(profesores_respoden / asignaturas_tutoria_count * 100)
+            tutoria_profesores_responden_valor.append(int(profesores_respoden_percent / 10) * 10)
+            tutoria_profesores_responden_evolucion.append([arrow.get(tutoria.fecha).timestamp * 1000, profesores_respoden_percent])
+            media_lista.append(profesores_respoden_percent)
+        tutoria_profesores_responden_evolucion_media = int(mean(media_lista))
+        for percent in [0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100]:
+            frecuencia = tutoria_profesores_responden_valor.count(percent) / tutorias_all_count() * 100
+            tutoria_profesores_responden_valor_frecuencia.append([percent, frecuencia])
+            tutoria_profesores_responden_valor_frecuencia_add = tutoria_profesores_responden_valor_frecuencia_add + frecuencia
+            tutoria_profesores_responden_valor_frecuencia_absoluta.append([percent, tutoria_profesores_responden_valor_frecuencia_add])
+        profesores_sin_responder_count = informes_posibles_count - informes_all_count()
+        profesores_sin_responder_percent = profesores_sin_responder_count / informes_posibles_count * 100
+        return profesores_sin_responder_count, profesores_sin_responder_percent, tutoria_profesores_responden_evolucion, tutoria_profesores_responden_valor_frecuencia, tutoria_profesores_responden_valor_frecuencia_absoluta, tutoria_profesores_responden_evolucion_media
+    except:
+        return 1,1,1,1,1,1
 
 
 # XXX FIN admin_estadisticas
@@ -185,7 +206,6 @@ def round_custom(numero):
 
 
 def usuario_cuestionario(usuario_id):
-
     return session_sql.query(Pregunta).join(Settings).filter(Settings.id == usuario_id).all()
 
 

@@ -29,6 +29,8 @@ class Password_Reset_Request (Form):
     email = EmailField('email', [validators.Required(message='email es obligatorio'),
                                  validators.Email(message='Escriba una direccion valida de email'),
                                  validators.length(max=120, message='email debe tener maximo 120 caracteres')])
+
+
 class Password_Reset (Form):
     password = PasswordField('password',
                              [validators.Required(message='password es obligatorio'),
@@ -47,6 +49,9 @@ class Usuario_Edit (Form):
                                  validators.length(max=120, message='email debe tener maximo 120 caracteres')])
     email_validated = BooleanField('email validado')
     email_robinson = BooleanField('lista Robinson')
+    show_asignaturas_analisis = BooleanField('lista Robinson')
+    diferencial = IntegerField('Diferencial advertencias', [validators.Required(message='diferencial es obligatorio'),
+                                                            validators.NumberRange(min=0, max=100, message='debe estar entre 0 y 100')])
     role = StringField('role', [validators.length(min=3, message='role debe tener minimo 3 caracteres'),
                                 validators.length(max=80, message='role debe tener maximo 25 caracteres')])
     ban = BooleanField('ban')

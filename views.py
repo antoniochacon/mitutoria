@@ -1171,13 +1171,14 @@ def settings_opciones_html(params={}):
     params = {}
     params['anchor'] = params_old.get('anchor', 'anchor_top')
 
-    settings_user = settings()
     if request.method == 'POST':
         # XXX settings_edit
-        if request.form['selector_button'] == 'selector_user_edit':
+        if request.form['selector_button'] == 'selector_settings_edit':
             settings_edit_tutoria_timeout = request.form.get('settings_edit_tutoria_timeout')
             settings_show_asignaturas_analisis = request.form.get('settings_show_asignaturas_analisis')
             settings_edit_calendar = request.form.get('settings_edit_calendar')
+            settings_diferencial = request.form.get('settings_diferencial')
+
             if not settings_edit_tutoria_timeout:
                 settings_edit_tutoria_timeout = False
             if not settings_show_asignaturas_analisis:
@@ -1187,13 +1188,13 @@ def settings_opciones_html(params={}):
 
             settings().tutoria_timeout = settings_edit_tutoria_timeout
             settings().show_asignaturas_analisis = settings_show_asignaturas_analisis
+            settings().diferencial = settings_diferencial
             settings().calendar = settings_edit_calendar
             flash_toast('Configuracion actualizada', 'success')
             session_sql.commit()
             return redirect(url_for('settings_opciones_html'))
 
-    return render_template(
-        'settings_opciones.html', settings_user=settings_user, params=params)
+    return render_template('settings_opciones.html', params=params)
 
 
 # XXX settings_grupos
