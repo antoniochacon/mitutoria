@@ -8,6 +8,143 @@ import config_parametros
 # {} Valor
 # *****************************************************************
 
+# XXX admin_estadisticas sin pandas solo python
+# *****************************************************************
+
+
+def usuarios_all_count():
+    return session_sql.query(User).count()
+
+
+def usuarios_mas_activos(numero):
+    return session_sql.query(Settings).order_by(desc('visit_number'), 'visit_last').all()[0:numero]
+
+
+def emails_no_validados_count():
+    emails_no_validos_count = session_sql.query(Settings).filter(Settings.email_validated == False).count()
+    emails_no_validos_percent = emails_no_validos_count / usuarios_all_count() * 100
+    return emails_no_validos_count, emails_no_validos_percent
+
+
+def emails_robinson_count():
+    emails_robinson_count = session_sql.query(Settings).filter(Settings.email_robinson == True).count()
+    emails_robinson_percent = emails_robinson_count / usuarios_all_count() * 100
+    return emails_robinson_count, emails_robinson_percent
+
+
+def emails_ban_count():
+    emails_ban_count = session_sql.query(Settings).filter(Settings.ban == True).count()
+    emails_ban_percent = emails_ban_count / usuarios_all_count() * 100
+    return emails_ban_count, emails_ban_percent
+
+
+def tutoria_timeout_count():
+    emails_tutoria_timeout_count = session_sql.query(Settings).filter(Settings.tutoria_timeout == False).count()
+    emails_tutoria_timeout_percent = emails_tutoria_timeout_count / usuarios_all_count() * 100
+    return emails_tutoria_timeout_count, emails_tutoria_timeout_percent
+
+
+def tutorias_all_count():
+    return session_sql.query(Tutoria).count()
+
+
+def informes_all_count():
+    return session_sql.query(Informe).count()
+
+
+def preguntas_all_count():
+    return session_sql.query(Pregunta).count()
+
+
+def respuesta_all_count():
+    return session_sql.query(Respuesta).count()
+
+
+def tutorias_sin_respuesta_count():
+    # NOTE todos los informes tienen repuesta pues son generados al responder
+    tutorias_sin_respuesta_count = 0
+    tutorias = session_sql.query(Tutoria).all()
+    for tutoria in tutorias:
+        tutoria_respuesta = session_sql.query(Informe).filter(Informe.tutoria_id == tutoria.id).first()
+        if not tutoria_respuesta:
+            tutorias_sin_respuesta_count = tutorias_sin_respuesta_count + 1
+    tutorias_sin_respuesta_percent = tutorias_sin_respuesta_count / tutorias_all_count() * 100
+    return tutorias_sin_respuesta_count, tutorias_sin_respuesta_percent
+
+
+def preguntas_por_cuestionario():
+    preguntas_por_cuestionario = []
+    settings_all = session_sql.query(Settings).filter(Settings.grupo_activo_id != None).all()
+    for settings in settings_all:
+        preguntas_numero = session_sql.query(Association_Settings_Pregunta).filter(Association_Settings_Pregunta.settings_id == settings.id).count()
+        preguntas_por_cuestionario.append(preguntas_numero)
+    preguntas_por_cuestionario_max = preguntas_all_count() - min(preguntas_por_cuestionario)
+    preguntas_por_cuestionario_media = preguntas_all_count() - mean(preguntas_por_cuestionario)
+    preguntas_por_cuestionario_min = preguntas_all_count() - max(preguntas_por_cuestionario)
+    preguntas_por_cuestionario_no_usadas_count = int(preguntas_por_cuestionario_media)
+    preguntas_por_cuestionario_no_usadas_percent = preguntas_por_cuestionario_no_usadas_count / preguntas_all_count() * 100
+    return preguntas_por_cuestionario_min, preguntas_por_cuestionario_media, preguntas_por_cuestionario_max, preguntas_por_cuestionario_no_usadas_count, preguntas_por_cuestionario_no_usadas_percent
+
+
+def tutorias_por_usuario_count():
+    tutorias_por_usuario_list = []
+    settings_all = session_sql.query(Settings).filter(Settings.grupo_activo_id != None).all()  # NOTE con este aseguro que el usuario al menos ha creado un grupo_activo_id
+    for settings in settings_all:
+        tutorias_por_usuario = session_sql.query(Tutoria).join(Alumno).join(Grupo).filter(Grupo.id == settings.grupo_activo_id).count()
+        tutorias_por_usuario_list.append(tutorias_por_usuario)
+
+    tutorias_por_usuario_min = min(tutorias_por_usuario_list)
+    tutorias_por_usuario_media = mean(tutorias_por_usuario_list)
+    tutorias_por_usuario_max = max(tutorias_por_usuario_list)
+
+    return tutorias_por_usuario_min, tutorias_por_usuario_media, tutorias_por_usuario_max,
+
+
+def evolucion_tutorias_exito_grupo(current_grupo_id):
+    informes_posibles_count = 0
+    tutoria_profesores_responden_evolucion = []
+    tutorias = session_sql.query(Tutoria).join(Alumno).join(Grupo).filter(Grupo.id == current_grupo_id).order_by('fecha').all()
+    for tutoria in tutorias:
+        asignaturas_tutoria_count = session_sql.query(Association_Tutoria_Asignatura).filter(Association_Tutoria_Asignatura.tutoria_id == tutoria.id).count()
+        informes_posibles_count = informes_posibles_count + asignaturas_tutoria_count
+        profesores_respoden = session_sql.query(Informe).filter(Informe.tutoria_id == tutoria.id).count()
+        profesores_respoden_percent = int(profesores_respoden / asignaturas_tutoria_count * 100)
+        tutoria_profesores_responden_evolucion.append([arrow.get(tutoria.fecha).timestamp * 1000, profesores_respoden_percent])
+
+    return tutoria_profesores_responden_evolucion
+
+
+def profesores_sin_responder_count():
+    informes_posibles_count = 0
+    tutoria_profesores_responden_valor_frecuencia_add = 0
+    tutoria_profesores_responden_evolucion = []
+    tutoria_profesores_responden_valor = []
+    tutoria_profesores_responden_valor_frecuencia = []
+    tutoria_profesores_responden_valor_frecuencia_absoluta = []
+
+    tutorias = session_sql.query(Tutoria).order_by('fecha').all()
+    for tutoria in tutorias:
+        asignaturas_tutoria_count = session_sql.query(Association_Tutoria_Asignatura).filter(Association_Tutoria_Asignatura.tutoria_id == tutoria.id).count()
+        informes_posibles_count = informes_posibles_count + asignaturas_tutoria_count
+        profesores_respoden = session_sql.query(Informe).filter(Informe.tutoria_id == tutoria.id).count()
+        profesores_respoden_percent = int(profesores_respoden / asignaturas_tutoria_count * 100)
+        tutoria_profesores_responden_valor.append(int(profesores_respoden_percent / 10) * 10)
+        tutoria_profesores_responden_evolucion.append([arrow.get(tutoria.fecha).timestamp * 1000, profesores_respoden_percent])
+    for percent in [0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100]:
+        frecuencia = tutoria_profesores_responden_valor.count(percent) / tutorias_all_count() * 100
+        tutoria_profesores_responden_valor_frecuencia.append([percent, frecuencia])
+
+        tutoria_profesores_responden_valor_frecuencia_add = tutoria_profesores_responden_valor_frecuencia_add + frecuencia
+        tutoria_profesores_responden_valor_frecuencia_absoluta.append([percent, tutoria_profesores_responden_valor_frecuencia_add])
+
+    profesores_sin_responder_count = informes_posibles_count - informes_all_count()
+    profesores_sin_responder_percent = profesores_sin_responder_count / informes_posibles_count * 100
+    return profesores_sin_responder_count, profesores_sin_responder_percent, tutoria_profesores_responden_evolucion, tutoria_profesores_responden_valor_frecuencia, tutoria_profesores_responden_valor_frecuencia_absoluta
+
+
+# XXX FIN admin_estadisticas
+# *****************************************************************
+
 
 def round_custom(numero):
     return format(round(numero, 2), '5.2f')
@@ -374,214 +511,6 @@ def asignatura_comentario(tutoria_id, asignatura_asignatura):
     return asignatura_comentario
 
 
-# XXX: pandas para admin
-# -----------------------------------------------------------------------
-def df_load_admin_usuarios():
-    df_usuario = pd.read_sql_query(session_sql.query(User).statement, engine)
-    df_usuario.drop(['id', 'password', 'email'], axis=1, inplace=True)
-    df_data = df_usuario
-    return df_data
-
-
-def df_load_admin_settings():
-    df_usuario = pd.read_sql_query(session_sql.query(User).statement, engine)
-    df_data = df_usuario
-    df_data.drop(['password', 'email'], axis=1, inplace=True)
-    df_data.rename(columns={'id': 'user_id'}, inplace=True)
-
-    df_settings = pd.read_sql_query(session_sql.query(Settings).statement, engine)
-    df_data = pd.merge(df_data, df_settings, how='inner', on=None, left_on='user_id', right_on='user_id', left_index=False, right_index=False, sort=False, suffixes=('_usuario', '_settings'), copy=False, indicator=False)
-    df_data.drop(['calendar', 'grupo_activo_id', 'created_at', 'edited_at', 'show_tutorias',  'show_tutorias_collapse', 'role', 'email_validated_intentos', 'id'], axis=1, inplace=True)
-    return df_data
-
-
-def df_load_admin_cuestionario():
-    df_data = df_load_admin_settings()
-    # print(df_data)
-
-    df_association_settings_pregunta = pd.read_sql_query(session_sql.query(Association_Settings_Pregunta).statement, engine)
-    df_data = pd.merge(df_data, df_association_settings_pregunta, how='inner', on=None, left_on='user_id', right_on='settings_id', left_index=False, right_index=False, sort=False, suffixes=('_usuario', '_association'), copy=False, indicator=False)
-    df_data.drop(['settings_id', 'edited_at', 'id'], axis=1, inplace=True)
-    # print(df_data)
-    return df_data
-
-# def df_load_admin_tutorias_ORG():
-#     df_usuario = pd.read_sql_query(session_sql.query(User).statement, engine)
-#     df_data = df_usuario
-#     df_data.rename(columns={'id': 'user_id'}, inplace=True)
-#     df_data.drop(['password', 'email'], axis=1, inplace=True)
-#     # print(df_data)
-#
-#     df_settings = pd.read_sql_query(session_sql.query(Settings).statement, engine)
-#     df_data = pd.merge(df_data, df_settings, how='inner', on=None, left_on='user_id', right_on='user_id', left_index=False, right_index=False, sort=False, suffixes=('_usuario', '_settings'), copy=False, indicator=False)
-#     df_data.drop(['id', 'username', 'calendar', 'grupo_activo_id', 'created_at', 'edited_at', 'visit_last', 'show_tutorias', 'email_validated', 'email_validated_intentos', 'email_robinson', 'role', 'ban', 'tutoria_timeout', 'show_tutorias_collapse', 'visit_number'], axis=1, inplace=True)
-#     # print(df_data)
-#
-#     df_grupo = pd.read_sql_query(session_sql.query(Grupo).statement, engine)
-#     df_data = pd.merge(df_data, df_grupo, how='inner', on=None, left_on='user_id', right_on='settings_id', left_index=False, right_index=False, sort=False, suffixes=('_usuario', '_grupo'), copy=False, indicator=False)
-#     df_data.rename(columns={'id': 'grupo_id'}, inplace=True)
-#     df_data.drop(['settings_id', 'nombre', 'tutor', 'centro', 'created_at'], axis=1, inplace=True)
-#     # print(df_data)
-#
-#     df_alumno = pd.read_sql_query(session_sql.query(Alumno).statement, engine)
-#     df_data = pd.merge(df_data, df_alumno, how='inner', on=None, left_on='grupo_id', right_on='grupo_id', left_index=False, right_index=False, sort=False, suffixes=('_grupo', '_alumno'), copy=False, indicator=False)
-#     df_data.rename(columns={'id': 'alumno_id'}, inplace=True)
-#     df_data.drop(['nombre', 'apellidos', 'created_at'], axis=1, inplace=True)
-#     # print(df_data)
-#
-#     df_tutoria = pd.read_sql_query(session_sql.query(Tutoria).statement, engine)
-#     df_data = pd.merge(df_data, df_tutoria, how='inner', on=None, left_on='alumno_id', right_on='alumno_id', left_index=False, right_index=False, sort=False, suffixes=('_alumno', '_tutoria'), copy=False, indicator=False)
-#     df_data.rename(columns={'id': 'tutoria_id'}, inplace=True)
-#     df_data.drop(['fecha', 'hora', 'activa', 'deleted', 'created_at'], axis=1, inplace=True)
-#     print(df_data)
-#     return df_data
-
-
-def df_load_admin_tutorias():
-    df_usuario = pd.read_sql_query(session_sql.query(User).statement, engine)
-    df_data = df_usuario
-    df_data.rename(columns={'id': 'user_id'}, inplace=True)
-    df_data.drop(['password', 'email'], axis=1, inplace=True)
-    # print(df_data)
-
-    df_settings = pd.read_sql_query(session_sql.query(Settings).statement, engine)
-    df_data = pd.merge(df_data, df_settings, how='inner', on=None, left_on='user_id', right_on='user_id', left_index=False, right_index=False, sort=False, suffixes=('_usuario', '_settings'), copy=False, indicator=False)
-    df_data.drop(['id', 'username', 'calendar', 'grupo_activo_id', 'created_at', 'edited_at', 'visit_last', 'show_tutorias', 'email_validated', 'email_validated_intentos', 'email_robinson', 'role', 'ban', 'tutoria_timeout', 'show_tutorias_collapse', 'visit_number'], axis=1, inplace=True)
-    # print(df_data)
-
-    df_grupo = pd.read_sql_query(session_sql.query(Grupo).statement, engine)
-    df_data = pd.merge(df_data, df_grupo, how='inner', on=None, left_on='user_id', right_on='settings_id', left_index=False, right_index=False, sort=False, suffixes=('_usuario', '_grupo'), copy=False, indicator=False)
-    df_data.rename(columns={'id': 'grupo_id'}, inplace=True)
-    df_data.drop(['settings_id', 'nombre', 'tutor', 'centro', 'created_at'], axis=1, inplace=True)
-    # print(df_data)
-
-    df_alumno = pd.read_sql_query(session_sql.query(Alumno).statement, engine)
-    df_data = pd.merge(df_data, df_alumno, how='inner', on=None, left_on='grupo_id', right_on='grupo_id', left_index=False, right_index=False, sort=False, suffixes=('_grupo', '_alumno'), copy=False, indicator=False)
-    df_data.rename(columns={'id': 'alumno_id'}, inplace=True)
-    df_data.drop(['nombre', 'apellidos', 'created_at'], axis=1, inplace=True)
-    # print(df_data)
-
-    df_tutoria = pd.read_sql_query(session_sql.query(Tutoria).statement, engine)
-    df_data = pd.merge(df_data, df_tutoria, how='inner', on=None, left_on='alumno_id', right_on='alumno_id', left_index=False, right_index=False, sort=False, suffixes=('_alumno', '_tutoria'), copy=False, indicator=False)
-    df_data.rename(columns={'id': 'tutoria_id'}, inplace=True)
-    df_data.drop(['fecha', 'hora', 'activa', 'deleted', 'created_at'], axis=1, inplace=True)
-    # print(df_data)
-
-    return df_data
-
-
-def data_informes_con_respuesta():
-    df_data = df_load_admin_tutorias()
-    df_association_settings_pregunta = pd.read_sql_query(session_sql.query(Association_Settings_Pregunta).statement, engine)
-    df_data = pd.merge(df_data, df_association_settings_pregunta, how='inner', on=None, left_on='user_id', right_on='settings_id', left_index=False, right_index=False, sort=False, suffixes=('_user', '_preguntas'), copy=False, indicator=False)
-    # df_data.rename(columns={'id': 'association_id'}, inplace=True)
-    df_data.drop(['id','alumno_id','grupo_id','curso_academico', 'settings_id', 'edited_at'], axis=1, inplace=True)
-    # print(df_data)
-
-    grouped_1 = df_data.groupby(['user_id', 'tutoria_id'], sort=True)
-    print(grouped_1.size().count(),'tutorias')
-    grouped_2 = df_data.groupby(['user_id', 'pregunta_id'], sort=True)
-    print(grouped_2.size().count(),'tutorias')
-
-
-    pass
-
-# Association_Settings_Pregunta
-
-
-def df_load_admin_informes():
-    # NOTE tutorias con respuesta
-    df_informe = pd.read_sql_query(session_sql.query(Informe).statement, engine)
-    df_informe.rename(columns={'id': 'informe_id'}, inplace=True)
-    # print(df_informe)
-    return df_informe
-
-
-# ***********************************************************************
-
-def data_count(df_data, columna):
-    return df_data[columna].count()
-
-
-def data_usuarios_count(df_data):
-    return df_data.username.count()
-
-
-def data_email_validated(df_data):
-    usuarios_count = data_usuarios_count(df_load_admin_usuarios())
-    columna_true_count = int(df_data[df_data.email_validated == True]['email_validated'].count())
-    columna_true_percent = int((columna_true_count / usuarios_count * 100).round(decimals=0))
-    columna_false_count = int(usuarios_count - columna_true_count)
-    columna_false_percent = int(100 - columna_true_percent)
-    return columna_true_count, columna_true_percent, columna_false_count, columna_false_percent
-
-
-def data_email_robinson(df_data):
-    usuarios_count = data_usuarios_count(df_load_admin_usuarios())
-    columna_true_count = int(df_data[df_data.email_robinson == True]['email_robinson'].count())
-    columna_true_percent = int((columna_true_count / usuarios_count * 100).round(decimals=0))
-    columna_false_count = int(usuarios_count - columna_true_count)
-    columna_false_percent = int(100 - columna_true_percent)
-    return columna_true_count, columna_true_percent, columna_false_count, columna_false_percent
-
-
-def data_tutoria_timeout(df_data):
-    usuarios_count = data_usuarios_count(df_load_admin_usuarios())
-    columna_true_count = int(df_data[df_data.tutoria_timeout == True]['tutoria_timeout'].count())
-    columna_true_percent = int((columna_true_count / usuarios_count * 100).round(decimals=0))
-    columna_false_count = int(usuarios_count - columna_true_count)
-    columna_false_percent = int(100 - columna_true_percent)
-    return columna_true_count, columna_true_percent, columna_false_count, columna_false_percent
-
-
-def data_ban(df_data):
-    usuarios_count = data_usuarios_count(df_load_admin_usuarios())
-    columna_true_count = int(df_data[df_data.ban == True]['ban'].count())
-    columna_true_percent = int((columna_true_count / usuarios_count * 100).round(decimals=0))
-    columna_false_count = int(usuarios_count - columna_true_count)
-    columna_false_percent = int(100 - columna_true_percent)
-    return columna_true_count, columna_true_percent, columna_false_count, columna_false_percent
-
-
-def data_usuarios_top_10(df_data):
-    df_data = df_data.sort_values(['visit_number', 'visit_last', 'username'], ascending=False)[['username', 'visit_number', 'visit_last']]
-    df_data = df_data.head(10)
-    return df_data
-
-
-def data_tutorias_media(df_data, columna):
-    tutorias_media = 0
-    tutorias_string = []
-    grouped = df_data.groupby(columna, sort=True)
-    for user, grupo in grouped:
-        tutorias_string.append(grupo.tutoria_id.count())
-        tutorias_number = map(int, tutorias_string)
-    tutorias_media = round(mean(tutorias_number), 2)
-    return tutorias_media
-
-
-def data_cuestionario_media(df_data, columna):
-    settings_media = 0
-    settings_string = []
-    grouped = df_data.groupby(columna, sort=True)
-    for user, grupo in grouped:
-        settings_string.append(grupo.user_id.count())
-        settings_number = map(int, settings_string)
-    settings_media = round(mean(settings_number), 2)
-    return settings_media
-
-
-def data_informe_count(df_data, columna):
-    return df_data[columna].count()
-
-#
-# def data_informe_respondido(): #NOTE de momento sin usarlo
-#
-#     informe_count = data_informe_count(df_load_admin_informes()[0], 'informe_id')
-#     informes_con_respuesta_percent = 100 - (informe_count - df_load_admin_informes()[1]) * 100 / informe_count
-#     return round_custom(informes_con_respuesta_percent)
-
-
 # ***********************************************************************
 # XXX: pandas para usuarios
 # -----------------------------------------------------------------------
@@ -608,8 +537,8 @@ def df_load():
 
     df_asignatura = pd.read_sql_query(session_sql.query(Asignatura).join(Grupo).filter(Grupo.id == settings().grupo_activo_id).statement, engine)
     df_data = pd.merge(df_data, df_asignatura, how='inner', on=None, left_on='asignatura_id', right_on='id', left_index=False, right_index=False, sort=False, suffixes=('_informe', '_asignatura'), copy=False, indicator=False)
-    df_data.drop(['id', 'email', 'created_at', 'nombre', 'apellidos'], axis=1, inplace=True)
-    # df_data.rename(columns={'activa': 'tutoria_activa'}, inplace=True)
+    df_data.drop(['id', 'email', 'created_at', 'apellidos'], axis=1, inplace=True)
+    df_data.rename(columns={'nombre': 'profesor_nombre'}, inplace=True)
     # print(df_data)
     #
     df_respuesta = pd.read_sql_query(session_sql.query(Respuesta).statement, engine)
@@ -703,9 +632,18 @@ def df_asignaturas_lista(df_data, tutoria_id):
     grouped_tutoria = df_data_tutoria.groupby('asignatura', sort=False)
     for k, grupo in grouped_tutoria:
         asignaturas_lista.append(k)
+    # print(df_data)
     return asignaturas_lista
 
-# NOTE updated [OK] pero de momento esta sin usar
+
+def df_asignatura_profesor(df_data, tutoria_id, asignatura):
+    df_profesor_nombre = df_data[(df_data.tutoria_id == tutoria_id) & (df_data.asignatura == str(asignatura))][['profesor_nombre']]
+    grouped = df_profesor_nombre.groupby('profesor_nombre', sort=False)
+    for nombre, grupo in grouped:
+        profesor_nombre = nombre
+    return profesor_nombre
+
+    # NOTE updated [OK] pero de momento esta sin usar
 
 
 def df_asignaturas_dic(df_data, tutoria_id):
@@ -1149,4 +1087,4 @@ def cita_random():
 
 
 app.jinja_env.globals.update(settings=settings, cita_random=cita_random,  singular_plural=singular_plural, grupo_activo=grupo_activo, curso=curso, alumnos_not_sorted=alumnos_not_sorted, alumnos=alumnos, alumno_tutorias=alumno_tutorias, equal_str=equal_str, alumno_asignaturas_id=alumno_asignaturas_id, asignaturas=asignaturas, asignatura_alumnos=asignatura_alumnos, association_alumno_asignatura_check=association_alumno_asignatura_check,
-                             tutoria_asignaturas_count=tutoria_asignaturas_count, string_to_date=string_to_date, association_settings_pregunta_check=association_settings_pregunta_check, preguntas=preguntas, informe_preguntas=informe_preguntas, invitado_settings=invitado_settings, invitado_preguntas=invitado_preguntas, invitado_settings_by_id=invitado_settings_by_id, invitado_respuesta=invitado_respuesta, invitado_pruebas_evaluables=invitado_pruebas_evaluables, invitado_informe=invitado_informe, tutoria_informes=tutoria_informes, cociente_porcentual=cociente_porcentual, tutoria_asignaturas=tutoria_asignaturas, df_analisis_asignatura_stacked=df_analisis_asignatura_stacked, df_cuestion_stacked=df_cuestion_stacked, df_asignaturas_lista=df_asignaturas_lista, df_cuestiones_lista=df_cuestiones_lista, df_cuestion_grupo_spline=df_cuestion_grupo_spline, df_asignatura_stacked=df_asignatura_stacked, df_asignatura_grupo_spline=df_asignatura_grupo_spline, df_analisis_asignatura=df_analisis_asignatura, asignatura_comentario=asignatura_comentario, pregunta_active_default_check=pregunta_active_default_check, notas_asignatura=notas_asignatura, notas_asignatura_grupo=notas_asignatura_grupo, pregunta_visible_check=pregunta_visible_check, grupo_activo_check=grupo_activo_check, user_by_id=user_by_id, df_evolucion=df_evolucion, df_evolucion_notas=df_evolucion_notas, tutoria_stats=tutoria_stats, arrow_fecha=arrow_fecha, asignatura_informes_count=asignatura_informes_count, asignatura_informes_respondidos_count=asignatura_informes_respondidos_count, alumno_asignaturas=alumno_asignaturas, asignaturas_not_sorted=asignaturas_not_sorted, grupo_tutorias=grupo_tutorias, alumno_by_id=alumno_by_id, hashids_encode=hashids_encode, hashids_decode=hashids_decode, f_encode=f_encode, f_decode=f_decode, dic_encode_args=dic_encode_args, dic_try=dic_try, settings_by_id=settings_by_id, usuario_grupos=usuario_grupos, grupo_alumnos_count=grupo_alumnos_count, usuarios=usuarios, usuario_cuestionario=usuario_cuestionario, data_count=data_count, df_asignaturas_dic=df_asignaturas_dic, data_usuarios_count=data_usuarios_count, data_email_validated=data_email_validated, data_email_robinson=data_email_robinson, data_tutoria_timeout=data_tutoria_timeout, data_ban=data_ban, data_usuarios_top_10=data_usuarios_top_10, data_tutorias_media=data_tutorias_media, data_cuestionario_media=data_cuestionario_media, round_custom=round_custom, data_informes_con_respuesta=data_informes_con_respuesta)
+                             tutoria_asignaturas_count=tutoria_asignaturas_count, string_to_date=string_to_date, association_settings_pregunta_check=association_settings_pregunta_check, preguntas=preguntas, informe_preguntas=informe_preguntas, invitado_settings=invitado_settings, invitado_preguntas=invitado_preguntas, invitado_settings_by_id=invitado_settings_by_id, invitado_respuesta=invitado_respuesta, invitado_pruebas_evaluables=invitado_pruebas_evaluables, invitado_informe=invitado_informe, tutoria_informes=tutoria_informes, cociente_porcentual=cociente_porcentual, tutoria_asignaturas=tutoria_asignaturas, df_analisis_asignatura_stacked=df_analisis_asignatura_stacked, df_cuestion_stacked=df_cuestion_stacked, df_asignaturas_lista=df_asignaturas_lista, df_cuestiones_lista=df_cuestiones_lista, df_cuestion_grupo_spline=df_cuestion_grupo_spline, df_asignatura_stacked=df_asignatura_stacked, df_asignatura_grupo_spline=df_asignatura_grupo_spline, df_analisis_asignatura=df_analisis_asignatura, asignatura_comentario=asignatura_comentario, pregunta_active_default_check=pregunta_active_default_check, notas_asignatura=notas_asignatura, notas_asignatura_grupo=notas_asignatura_grupo, pregunta_visible_check=pregunta_visible_check, grupo_activo_check=grupo_activo_check, user_by_id=user_by_id, df_evolucion=df_evolucion, df_evolucion_notas=df_evolucion_notas, tutoria_stats=tutoria_stats, arrow_fecha=arrow_fecha, asignatura_informes_count=asignatura_informes_count, asignatura_informes_respondidos_count=asignatura_informes_respondidos_count, alumno_asignaturas=alumno_asignaturas, asignaturas_not_sorted=asignaturas_not_sorted, grupo_tutorias=grupo_tutorias, alumno_by_id=alumno_by_id, hashids_encode=hashids_encode, hashids_decode=hashids_decode, f_encode=f_encode, f_decode=f_decode, dic_encode_args=dic_encode_args, dic_try=dic_try, settings_by_id=settings_by_id, usuario_grupos=usuario_grupos, usuarios=usuarios, round_custom=round_custom, usuarios_mas_activos=usuarios_mas_activos, df_asignatura_profesor=df_asignatura_profesor, grupo_alumnos_count=grupo_alumnos_count)

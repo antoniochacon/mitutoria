@@ -1,18 +1,17 @@
 {% extends '_layout.html' %}
 {% block body %}
-informe no disponible basico(hay que revisar que falla aqui)
-{#
 	{%from '_macro.html' import nav_bar_top, titulo_1%}
-{% macro nav_bar_top(current_user=current_user) %}
+	{{nav_bar_top(current_user=current_user)}}
 	<div class="container">
 		<div class="paper bg-white padding_contenido">
-			{{titulo_1(url='informe', bg_color='bg-primary', titulo='Informe no disponible')}}
-			<div class="padding_3 text-warning text-center">
-				Este informe no esta disponible.
+			{{titulo_1(bg_color='bg-dark', titulo='Informe no disponible')}}
+			<div class="text-center">
+				Este informe de tutoría no esta disponible.
 				<br>
-				Consulte con el tutor/a correspodiente.
+				<span class="small">
+					Pongase en contacto con el tutor, seguramente ha sido eliminado.
+				</span>
 			</div>
 		</div>
 	</div>
-	#}
 {% endblock %}

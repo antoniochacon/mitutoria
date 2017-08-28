@@ -78,20 +78,41 @@ def admin_estadisticas_html(params={}):
         abort(404)
     params = {}
     params['anchor'] = params_old.get('anchor', 'anchor_top')
-    df_data_admin_usuarios = df_load_admin_usuarios()
-    df_data_admin_settings = df_load_admin_settings()
-    df_data_admin_tutorias = df_load_admin_tutorias()
-    df_data_admin_cuestionario = df_load_admin_cuestionario()
-    df_data_admin_informes = df_load_admin_informes()
+
+    stats = {}
+    stats['usuarios_all'] = usuarios_all_count()
+    stats['emails_no_validados'] = emails_no_validados_count()[0]
+    stats['emails_no_validados_percent'] = emails_no_validados_count()[1]
+    stats['emails_robinson'] = emails_robinson_count()[0]
+    stats['emails_robinson_percent'] = emails_robinson_count()[1]
+    stats['emails_ban'] = emails_ban_count()[0]
+    stats['emails_ban_percent'] = emails_ban_count()[1]
+    stats['emails_tutoria_timeout'] = tutoria_timeout_count()[0]
+    stats['emails_tutoria_timeout_percent'] = tutoria_timeout_count()[1]
+    stats['tutorias_all'] = tutorias_all_count()
+    stats['tutorias_sin_respuesta'] = tutorias_sin_respuesta_count()[0]
+    stats['tutorias_sin_respuesta_percent'] = tutorias_sin_respuesta_count()[1]
+    stats['preguntas_por_cuestionario_min'] = preguntas_por_cuestionario()[0]
+    stats['preguntas_por_cuestionario_media'] = preguntas_por_cuestionario()[1]
+    stats['preguntas_por_cuestionario_max'] = preguntas_por_cuestionario()[2]
+    stats['preguntas_por_cuestionario_no_usadas'] = preguntas_por_cuestionario()[3]
+    stats['preguntas_por_cuestionario_no_usadas_percent'] = preguntas_por_cuestionario()[4]
+    stats['profesores_sin_responder'] = profesores_sin_responder_count()[0]
+    stats['profesores_sin_responder_percent'] = profesores_sin_responder_count()[1]
+    stats['tutorias_por_usuario_min'] = tutorias_por_usuario_count()[0]
+    stats['tutorias_por_usuario_media'] = tutorias_por_usuario_count()[1]
+    stats['tutorias_por_usuario_max'] = tutorias_por_usuario_count()[2]
+    stats['tutorias_exito_evolucion'] = profesores_sin_responder_count()[2]
+    stats['tutorias_exito_frecuencia'] = profesores_sin_responder_count()[3]
+    stats['tutorias_exito_frecuencia_absoluta'] = profesores_sin_responder_count()[4]
+    stats['tutores_over_all'] = mean([stats['emails_no_validados_percent'], stats['emails_robinson_percent'], stats['preguntas_por_cuestionario_no_usadas_percent']])
+    # --------------------------------
 
     # print(df_data)
     # print(usuarios_count(df_data))
     # abort(404)
     return render_template(
-        'admin_estadisticas.html', df_data_admin_settings=df_data_admin_settings,
-        df_data_admin_usuarios=df_data_admin_usuarios, df_data_admin_tutorias=df_data_admin_tutorias,
-        df_data_admin_cuestionario=df_data_admin_cuestionario,df_data_admin_informes=df_data_admin_informes,
-        params=params)
+        'admin_estadisticas.html', params=params, stats=stats)
 
 
 # XXX wellcome
@@ -1152,17 +1173,13 @@ def settings_opciones_html(params={}):
         # XXX settings_edit
         if request.form['selector_button'] == 'selector_user_edit':
             settings_edit_tutoria_timeout = request.form.get('settings_edit_tutoria_timeout')
-            settings_edit_show_tutorias_collapse = request.form.get('settings_edit_show_tutorias_collapse')
             settings_edit_calendar = request.form.get('settings_edit_calendar')
             if not settings_edit_tutoria_timeout:
                 settings_edit_tutoria_timeout = False
             if not settings_edit_calendar:
                 settings_edit_calendar = False
-            if not settings_edit_show_tutorias_collapse:
-                settings_edit_show_tutorias_collapse = False
 
             settings().tutoria_timeout = settings_edit_tutoria_timeout
-            settings().show_tutorias_collapse = settings_edit_show_tutorias_collapse
             settings().calendar = settings_edit_calendar
             flash_toast('Configuracion actualizada', 'success')
             session_sql.commit()
@@ -1217,7 +1234,7 @@ def settings_grupos_html(params={}):
                     # session_sql.refresh(grupo_add)
                     if grupo_add_grupo_activo:
                         settings().grupo_activo_id = grupo_add.id
-                        flash_toast(Markup('Grupo <strong>') + grupo_add_form.nombre.data + Markup('</strong>') + ' agregado' + Markup('<br>Ahora este es el nuevo actual grupo activo'), 'success')
+                        flash_toast(Markup('Grupo <strong>') + grupo_add_form.nombre.data + Markup('</strong>') + ' agregado' + Markup('<br>Ahora este tu grupo activo'), 'success')
                     else:
                         if settings().grupo_activo_id:
                             flash_toast(Markup('Grupo <strong>') + grupo_add_form.nombre.data + Markup('</strong>') + ' agregado' + Markup('<br>Si deseas usar este grupo debes activarlo'), 'success')
@@ -1453,6 +1470,7 @@ def informe_html(current_tutoria_asignatura_id, params={}):
     try:
         current_tutoria_asignatura_id = hashids_decode(current_tutoria_asignatura_id)
         current_tutoria_asignatura = session_sql.query(Association_Tutoria_Asignatura).filter(Association_Tutoria_Asignatura.id == current_tutoria_asignatura_id).first()
+        current_tutoria_asignatura.tutoria_id
     except:
         return redirect(url_for('informe_no_disponible_html'))
 
@@ -1589,6 +1607,9 @@ def asignaturas_html(params={}):
     params['asignatura_delete_link'] = params_old.get('asignatura_delete_link', False)
     params['asignatura_edit_link'] = params_old.get('asignatura_edit_link', False)
 
+    stats = {}
+    stats['evolucion_tutorias_exito_grupo'] = evolucion_tutorias_exito_grupo(settings().grupo_activo_id)
+
     if not settings().grupo_activo_id:
         params['collapse_grupo_add'] = True
         return redirect(url_for('settings_grupos_html', params=dic_encode(params)))
@@ -1620,7 +1641,7 @@ def asignaturas_html(params={}):
                 flash_wtforms(asignatura_add_form, flash_toast, 'warning')
             return render_template(
                 'asignaturas.html', asignatura_add=asignatura_add_form, asignatura_edit=Asignatura_Add(),
-                params=params)
+                params=params, stats=stats)
 
         # XXX selector_asignatura_add_cerrar
         if request.form['selector_button'] == 'selector_asignatura_add_cerrar':
@@ -1728,7 +1749,7 @@ def asignaturas_html(params={}):
                 flash_wtforms(asignatura_edit_form, flash_toast, 'warning')
             return render_template(
                 'asignaturas.html', asignatura_add=Asignatura_Add(), asignatura_edit=asignatura_edit_form,
-                params=params)
+                params=params, stats=stats)
 
         # XXX asignatura_edit_rollback
         if request.form['selector_button'] == 'selector_asignatura_edit_rollback':
@@ -1760,7 +1781,7 @@ def asignaturas_html(params={}):
 
     return render_template(
         'asignaturas.html', asignatura_add=Asignatura_Add(), asignatura_edit=Asignatura_Add(),
-        asignaturas=asignaturas, params=params)
+        asignaturas=asignaturas, params=params, stats=stats)
 
 
 @app.route('/user_add', methods=['GET', 'POST'])

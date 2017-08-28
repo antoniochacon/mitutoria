@@ -150,8 +150,12 @@
 					{% for asignatura in df_asignaturas_lista(df_data, tutoria.id) %}
 						<div class="col-sm-12 col-md-6 col-lg-4 pb-4">
 							<div class="card border-mutted">
-								<div class="card-header text-center strong bg-info text-dark">
-									{{asignatura}}
+								<div class="card-header text-center strong bg-info text-dark ">
+									<div class="text-truncate">
+										{{asignatura}}
+										<span class="small">
+											 | {{df_asignatura_profesor(df_data, tutoria.id,asignatura)}}</span>
+									</div>
 								</div>
 								<div class="card-body">
 									{{highcharts_asignatura(char_id=asignatura, asignatura=asignatura, alumno=alumno, grupo=grupo, df_data=df_data, tutoria_id=tutoria.id)}}

@@ -5,11 +5,9 @@
 	highcharts_tutoria_stats %}
 	{{ nav_bar_top(link_active='alumnos',params=params, current_user=current_user) }}
 	{% if alumnos_not_sorted() %}
-		{% if settings().show_tutorias %}
-			<div class="paper bg-white">
-				{% include 'alumnos_tutorias_incoming_block.html' %}
-			</div>
-		{% endif %}
+		<div class="paper bg-white">
+			{% include 'alumnos_tutorias_incoming_block.html' %}
+		</div>
 		<br>
 	{% endif %}
 	{# XXX alumnos #}

@@ -1,12 +1,12 @@
 {% extends '_layout.html' %}
 {% block body %}
-	{%from '_macro.html' import nav_bar_top, titulo_1, nav_tabs_admin%}
+	{%from '_macro.html' import nav_bar_top, titulo_1, nav_tabs_admin, highcharts_admin_tutorias_exito_evolucion, highcharts_admin_tutorias_exito_frecuencia%}
 	{{ nav_bar_top(link_active='admin',params=params, current_user=current_user) }}
 	<div class="paper bg-white padding_contenido">
 		{{titulo_1(bg_color='bg-dark',titulo='Admin Settings')}}
 		{{nav_tabs_admin(tab_active='Estadisticas')}}
 		<div>
-			{% include 'admin_estadisticas_usuarios_block.html' %}
+			{% include 'admin_estadisticas_block.html' %}
 		</div>
 	</div>
 {% endblock %}

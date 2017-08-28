@@ -1,5 +1,385 @@
+{% macro highcharts_admin_tutorias_exito_evolucion(char_id, color, df_data) %}
+	<div id="{{char_id | safe}}" class="chart" style="height: 300px"></div>
+	<script>
+		Highcharts.stockChart("{{char_id | safe }}", {
+			title: {
+				text: null
+			},
+			scrollbar: {
+				barBackgroundColor: "#212529",
+				barBorderRadius: 7,
+				barBorderWidth: 0,
+				buttonBackgroundColor: "#212529",
+				buttonBorderWidth: 0,
+				buttonBorderRadius: 7,
+				trackBackgroundColor: "#212529", //"none",
+				trackBorderWidth: 1,
+				trackBorderRadius: 8,
+				trackBorderColor: "#212529",
+				enabled: false,
+				showFull: true
+			},
+			navigator: {
+				enabled: true
+			},
+			rangeSelector: {
+				allButtonsEnabled: false,
+				buttons: [
+					{
+						type: "all",
+						text: "todo"
+					}
+				],
+				selected: 1,
+				inputEnabled: false
+			},
+			tooltip: {
+				shared: false
+			},
+			xAxis: {
+				crosshair: {
+					width: 1,
+					color: "#bdbdbd"
+				},
+				type: "datetime",
+				startOfWeek: 2,
+				dateTimeLabelFormats: {
+					second: "%Y-%m-%d<br/>%H:%M:%S",
+					minute: "%Y-%m-%d<br/>%H:%M",
+					hour: "%Y-%m-%d<br/>%H:%M",
+					day: "%d-%m",
+					week: "%d-%m",
+					month: "%m-%Y",
+					year: "%Y"
+				}
+			},
+			yAxis: {
+				gridLineColor: Highcharts.getOptions().colors_gray["gray-500"],
+				labels: {
+					format: '{value} %'
+				},
+				floor: 0,
+
+				title: {
+					text: "% participacion"
+				},
+				opposite: false
+			},
+			series: [
+				{
+					type: "line",
+					color: "{{color}}",
+					name: "tutorias",
+					tooltip: {
+						pointFormat: "participiacion: {point.y}%"
+					},
+					data: {{df_data | safe}}
+				}
+			]
+		});
+	</script>
+{% endmacro %}
+{% macro highcharts_evalucion(char_id, color_1, color_2, df_data, grupo, alumno) %}
+	<div id="{{char_id | safe}}" class="chart" style="height: 300px"></div>
+	<script>
+		Highcharts.stockChart("{{char_id | safe }}", {
+			title: {
+				text: null
+			},
+			scrollbar: {
+				barBackgroundColor: "#212529",
+				barBorderRadius: 7,
+				barBorderWidth: 0,
+				buttonBackgroundColor: "#212529",
+				buttonBorderWidth: 0,
+				buttonBorderRadius: 7,
+				trackBackgroundColor: "#212529", //"none",
+				trackBorderWidth: 1,
+				trackBorderRadius: 8,
+				trackBorderColor: "#212529",
+				enabled: false,
+				showFull: true
+			},
+			navigator: {
+				enabled: false
+			},
+			rangeSelector: {
+				allButtonsEnabled: false,
+				buttons: [
+					{
+						type: "all",
+						text: "todo"
+					}
+				],
+				selected: 1,
+				inputEnabled: false
+			},
+			tooltip: {
+				shared: false
+			},
+			xAxis: {
+				type: "datetime",
+				startOfWeek: 2,
+				dateTimeLabelFormats: {
+					second: "%Y-%m-%d<br/>%H:%M:%S",
+					minute: "%Y-%m-%d<br/>%H:%M",
+					hour: "%Y-%m-%d<br/>%H:%M",
+					day: "%d-%m",
+					week: "%d-%m",
+					month: "%m-%Y",
+					year: "%Y"
+				}
+			},
+			yAxis: {
+				gridLineColor: Highcharts.getOptions().colors_gray["gray-500"],
+				plotBands: [
+					{
+						color: Highcharts.getOptions().colors_gray["gray-200"],
+						from: 0,
+						to: 5
+					}
+				],
+				floor: 0,
+				ceiling: 10,
+				title: {
+					text: "Media"
+				},
+				opposite: false
+			},
+			legend: {
+				enabled: true
+			},
+			plotOptions: {
+				series: {
+					pointIntervalUnit: "week"
+				},
+				column: {
+					grouping: false
+				}
+			},
+			series: [
+				{
+					type: "column",
+					name: "{{alumno.nombre}} | Cuestionario",
+					color: "{{color_1}}",
+					maxPointWidth: 50,
+					showInLegend: false,
+					borderWidth: 1,
+					animation: {
+						duration: 2000
+					},
+					data: {{df_evolucion(df_data,alumno.id)[1]}},
+					tooltip: {
+						valueDecimals: 2
+					},
+					fillOpacity: 0.25,
+					marker: {
+						fillColor: "#fff",
+						lineWidth: 2,
+						lineColor: null // inherit from series
+					}
+				}, {
+					type: "column",
+					name: "{{alumno.nombre}} | Notas",
+					color: "{{color_2}}",
+					maxPointWidth: 20,
+					showInLegend: false,
+					borderWidth: 1,
+					animation: {
+						duration: 2000
+					},
+					data: {{df_evolucion_notas(alumno.id)|safe}},
+					tooltip: {
+						valueDecimals: 2
+					},
+					fillOpacity: 0.25,
+					marker: {
+						fillColor: "#fff",
+						lineWidth: 2,
+						lineColor: null // inherit from series
+					}
+				}, {
+					type: "areaspline",
+					name: "{{grupo.nombre}} | Cuestionario",
+					animation: {
+						duration: 2000
+					},
+					color: "#424242",
+					data: {{df_evolucion(df_data,alumno.id)[0]}},
+					tooltip: {
+						valueDecimals: 2
+					},
+					fillOpacity: 0.25,
+					visible: false,
+					marker: {
+						fillColor: "#dee2e6",
+						lineWidth: 2,
+						lineColor: null // inherit from series
+					}
+				}
+			]
+		});
+	</script>
+{% endmacro %}
+{% macro highcharts_admin_tutorias_exito_frecuencia(char_id, color, df_data) %}
+	<div id="{{char_id | safe}}" class="chart" style="height: 300px"></div>
+	<script>
+		Highcharts.chart("{{char_id | safe }}", {
+			chart: {
+				zoomType: "x",
+				panning: true,
+				panKey: "shift"
+			},
+			title: {
+				text: null
+			},
+			xAxis: {
+				labels: {
+					format: '{value} %'
+				},
+				title: {
+					text: "% participacion"
+				},
+				crosshair: {
+					width: 1,
+					color: "#bdbdbd"
+				}
+			},
+			yAxis: {
+				labels: {
+					format: '{value} %'
+				},
+				gridLineColor: Highcharts.getOptions().colors_gray["gray-500"],
+				min: 0,
+				title: {
+					text: "% tutorias"
+				}
+			},
+			plotOptions: {
+				series: {
+					allowPointSelect: true
+				}
+			},
+			series: [
+				{
+					type: "line",
+					color: "{{color}}",
+					name: "tutorias",
+					showInLegend: false,
+					tooltip: {
+						headerFormat: "participacion: {point.x}% <br>",
+						pointFormat: "tutorias: {point.y}%"
+					},
+					data: {{df_data | safe}}
+				}
+			]
+		});
+	</script>
+{% endmacro %}
+{% macro highcharts_cuestionario(char_id, color, df_data, grupo, alumno_id, tutoria_id) %}
+	<div id="{{char_id | safe}}" class="chart" style="height: 300px"></div>
+	<script>
+		Highcharts.chart("{{char_id | safe }}", {
+			chart: {
+				zoomType: "x",
+				panning: true,
+				panKey: "shift"
+			},
+			title: {
+				text: null
+			},
+			tooltip: {
+				shared: false,
+				formatter: function () {
+					var text = "";
+					if (this.series.type == "column") {
+						text = this.x + " | Media: " + Highcharts.numberFormat(this.total, 1) + "<br>" + this.series.name + ": " + Highcharts.numberFormat(this.y * {{df_asignaturas_lista(df_data, tutoria_id) | count }}, 1);
+					} else {
+						text = this.x + "<br>" + this.series.name + ": " + Highcharts.numberFormat(this.y, 1);
+					}
+					return text;
+				}
+			},
+			xAxis: {
+				crosshair: {
+					width: 1,
+					color: "#bdbdbd"
+				},
+				categories: {{df_cuestiones_lista(df_data, tutoria_id) | safe}}
+			},
+			yAxis: {
+				gridLineColor: Highcharts.getOptions().colors_gray["gray-500"],
+				plotBands: [
+					{
+						color: Highcharts.getOptions().colors_gray["gray-200"],
+						from: 0,
+						to: 5
+					}
+				],
+				max: 10,
+				min: 1,
+				title: {
+					text: "Media"
+				}
+			},
+			series: [
+				{% for asignatura in df_asignaturas_lista(df_data, tutoria_id) %}
+					{
+						type: "column",
+						stacking: "normal",
+						showInLegend: false,
+						maxPointWidth: 50,
+						animation: {
+							duration: 2000
+						},
+						tooltip: {
+							pointFormat: "{{asignatura}}"
+						},
+						color: "{{color}}",
+						name: "{{asignatura}}",
+						data: {{df_cuestion_stacked(df_data, tutoria_id, asignatura)[0]}}
+					},
+				{% endfor %}
+				{
+					type: "areaspline",
+					name: "{{grupo.nombre}} | Media",
+					data: {{df_cuestion_grupo_spline(df_data, tutoria_id, alumno_id)}},
+					color: "#424242",
+					fillOpacity: 0.25,
+					// lineWidth: 2,
+					visible: false,
+					marker: {
+						fillColor: "#e0e0e0", //"{{color}}",
+						// radius: 4,
+						lineWidth: 2,
+						lineColor: null // inherit from series
+					}
+					// ,shadow: { 	color: "#616161", 	width: 3, 	offsetX: 2, 	offsetY: 2 }
+				}{% for asignatura in df_asignaturas_lista(df_data, tutoria_id) %}, {
+						type: "spline",
+						name: "{{asignatura}}",
+						data: {{df_cuestion_stacked(df_data, tutoria_id, asignatura)[1]}},
+						// color: "#26c6da",
+						visible: false,
+						marker: {
+							fillColor: "#fff",
+							lineWidth: 2,
+							lineColor: null // inherit from series
+						},
+						shadow: {
+							color: "#616161",
+							width: 3,
+							offsetX: 2,
+							offsetY: 2
+						}
+					}
+				{% endfor %}
+			]
+		});
+	</script>
+{% endmacro %}
 {% macro highcharts_asignatura(char_id, asignatura, alumno, grupo, df_data, tutoria_id) %}
-{% set alumno_id=alumno.id %}
+	{% set alumno_id = alumno.id %}
 	<div id="{{char_id | safe}}" class="chart" style="height: 200px"></div>
 	<script>
 		Highcharts.chart("{{char_id | safe }}", {
@@ -145,8 +525,9 @@
 						]
 					},
 				{% endif %}
-
-				{# media del grupo #}
+				{
+					# media del grupo #
+				}
 				{% if df_analisis_asignatura(df_data,tutoria_id, asignatura, alumno_id)[2] %}
 					{
 						type: "pie",
@@ -396,108 +777,6 @@
 		});
 	</script>
 {% endmacro %}
-{% macro highcharts_cuestionario(char_id, color, df_data, grupo, alumno_id, tutoria_id) %}
-	<div id="{{char_id | safe}}" class="chart" style="height: 300px"></div>
-	<script>
-		Highcharts.chart("{{char_id | safe }}", {
-			chart: {
-				zoomType: "x",
-				panning: true,
-				panKey: "shift"
-			},
-			title: {
-				text: null
-			},
-			tooltip: {
-				shared: false,
-				formatter: function () {
-					var text = "";
-					if (this.series.type == "column") {
-						text = this.x + " | Media: " + Highcharts.numberFormat(this.total, 1) + "<br>" + this.series.name + ": " + Highcharts.numberFormat(this.y * {{df_asignaturas_lista(df_data, tutoria_id) | count }}, 1);
-					} else {
-						text = this.x + "<br>" + this.series.name + ": " + Highcharts.numberFormat(this.y, 1);
-					}
-					return text;
-				}
-			},
-			xAxis: {
-				crosshair: {
-					width: 1,
-					color: "#bdbdbd"
-				},
-				categories: {{df_cuestiones_lista(df_data, tutoria_id) | safe}}
-			},
-			yAxis: {
-				gridLineColor: Highcharts.getOptions().colors_gray["gray-500"],
-				plotBands: [
-					{
-						color: Highcharts.getOptions().colors_gray["gray-200"],
-						from: 0,
-						to: 5
-					}
-				],
-				max: 10,
-				min: 1,
-				title: {
-					text: "Media"
-				}
-			},
-			series: [
-				{% for asignatura in df_asignaturas_lista(df_data, tutoria_id) %}
-					{
-						type: "column",
-						stacking: "normal",
-						showInLegend: false,
-						maxPointWidth: 50,
-						animation: {
-							duration: 2000
-						},
-						tooltip: {
-							pointFormat: "{{asignatura}}"
-						},
-						color: "{{color}}",
-						name: "{{asignatura}}",
-						data: {{df_cuestion_stacked(df_data, tutoria_id, asignatura)[0]}}
-					},
-				{% endfor %}
-				{
-					type: "areaspline",
-					name: "{{grupo.nombre}} | Media",
-					data: {{df_cuestion_grupo_spline(df_data, tutoria_id, alumno_id)}},
-					color: "#424242",
-					fillOpacity: 0.25,
-					// lineWidth: 2,
-					visible: false,
-					marker: {
-						fillColor: "#e0e0e0", //"{{color}}",
-						// radius: 4,
-						lineWidth: 2,
-						lineColor: null // inherit from series
-					}
-					// ,shadow: { 	color: "#616161", 	width: 3, 	offsetX: 2, 	offsetY: 2 }
-				}{% for asignatura in df_asignaturas_lista(df_data, tutoria_id) %}, {
-						type: "spline",
-						name: "{{asignatura}}",
-						data: {{df_cuestion_stacked(df_data, tutoria_id, asignatura)[1]}},
-						// color: "#26c6da",
-						visible: false,
-						marker: {
-							fillColor: "#fff",
-							lineWidth: 2,
-							lineColor: null // inherit from series
-						},
-						shadow: {
-							color: "#616161",
-							width: 3,
-							offsetX: 2,
-							offsetY: 2
-						}
-					}
-				{% endfor %}
-			]
-		});
-	</script>
-{% endmacro %}
 {% macro nav_tabs_admin(tab_active, params_args) %}
 	{{nav_tabs(link_active, params_args=params_args, dic={'Cuestionario':'admin_cuestionario', 'Citas':'admin_citas', 'Usuarios':'admin_usuarios', 'Estadisticas':'admin_estadisticas'})}}
 {% endmacro %}
@@ -647,148 +926,6 @@
 						valueDecimals: 0
 					},
 					fillOpacity: 0.25
-				}
-			]
-		});
-	</script>
-{% endmacro %}
-{% macro highcharts_evalucion(char_id, color_1, color_2, df_data, grupo, alumno) %}
-	<div id="{{char_id | safe}}" class="chart" style="height: 300px"></div>
-	<script>
-		Highcharts.stockChart("{{char_id | safe }}", {
-			title: {
-				text: "{{titulo | safe}}"
-			},
-			scrollbar: {
-				barBackgroundColor: "#212529",
-				barBorderRadius: 7,
-				barBorderWidth: 0,
-				buttonBackgroundColor: "#212529",
-				buttonBorderWidth: 0,
-				buttonBorderRadius: 7,
-				trackBackgroundColor: "#212529", //"none",
-				trackBorderWidth: 1,
-				trackBorderRadius: 8,
-				trackBorderColor: "#212529",
-				enabled: false,
-				showFull: true
-			},
-			navigator: {
-				enabled: false
-			},
-			rangeSelector: {
-				allButtonsEnabled: false,
-				buttons: [
-					{
-						type: "all",
-						text: "todo"
-					}
-				],
-				selected: 1,
-				inputEnabled: false
-			},
-			tooltip: {
-				shared: false
-			},
-			xAxis: {
-				type: "datetime",
-				startOfWeek: 2,
-				dateTimeLabelFormats: {
-					second: "%Y-%m-%d<br/>%H:%M:%S",
-					minute: "%Y-%m-%d<br/>%H:%M",
-					hour: "%Y-%m-%d<br/>%H:%M",
-					day: "%d-%m",
-					week: "%d-%m",
-					month: "%m-%Y",
-					year: "%Y"
-				}
-			},
-			yAxis: {
-				gridLineColor: Highcharts.getOptions().colors_gray["gray-500"],
-				plotBands: [
-					{
-						color: Highcharts.getOptions().colors_gray["gray-200"],
-						from: 0,
-						to: 5
-					}
-				],
-				floor: 0,
-				ceiling: 10,
-				title: {
-					text: "Media"
-				},
-				opposite: false
-			},
-			legend: {
-				enabled: true
-			},
-			plotOptions: {
-				series: {
-					pointIntervalUnit: "week"
-				},
-				column: {
-					grouping: false
-				}
-			},
-			series: [
-				{
-					type: "column",
-					name: "{{alumno.nombre}} | Cuestionario",
-					color: "{{color_1}}",
-					maxPointWidth: 50,
-					showInLegend: false,
-					borderWidth: 1,
-					animation: {
-						duration: 2000
-					},
-					data: {{df_evolucion(df_data,alumno.id)[1]}},
-					tooltip: {
-						valueDecimals: 2
-					},
-					fillOpacity: 0.25,
-					marker: {
-						fillColor: "#fff",
-						lineWidth: 2,
-						lineColor: null // inherit from series
-					}
-				}, {
-					type: "column",
-					name: "{{alumno.nombre}} | Notas",
-					color: "{{color_2}}",
-					maxPointWidth: 20,
-					showInLegend: false,
-					borderWidth: 1,
-					animation: {
-						duration: 2000
-					},
-					data: {{df_evolucion_notas(alumno.id)|safe}},
-					tooltip: {
-						valueDecimals: 2
-					},
-					fillOpacity: 0.25,
-					marker: {
-						fillColor: "#fff",
-						lineWidth: 2,
-						lineColor: null // inherit from series
-					}
-				}, {
-					type: "areaspline",
-					name: "{{grupo.nombre}} | Cuestionario",
-					animation: {
-						duration: 2000
-					},
-					color: "#424242",
-					data: {{df_evolucion(df_data,alumno.id)[0]}},
-					tooltip: {
-						valueDecimals: 2
-					},
-					fillOpacity: 0.25,
-					visible: false,
-					marker: {
-						fillColor: "#dee2e6",
-						lineWidth: 2,
-						lineColor: null // inherit from series
-					}
 				}
 			]
 		});
