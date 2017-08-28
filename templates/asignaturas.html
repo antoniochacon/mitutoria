@@ -2,22 +2,12 @@
 {% block body %}
 	{%from "_macro.html" import nav_bar_top, titulo_1, highcharts_tutoria_stats, highcharts_admin_tutorias_exito_evolucion%}
 	{{ nav_bar_top(link_active='asignaturas',params=params, current_user=current_user) }}
-
-	<div class="paper bg-white padding_contenido">
-		<a data-toggle="collapse" href="#tutorias_evolucion" class="collapse_header_1" aria-expanded="true" title="Evolucion participacion del profesorado">
-			<i class="material-icons vertical-center">expand_more</i>
-			Evolucion participacion del profesorado
-		</a>
-		<div class="collapse show" id="tutorias_evolucion">
-			<div class="pt-3 pb-3">
-				{{highcharts_admin_tutorias_exito_evolucion(char_id='tutorias_exito_evolucion', color='#BA5FD3', df_data=stats['evolucion_tutorias_exito_grupo'])}}
-			</div>
+	{% if settings().show_asignaturas_analisis %}
+		<div class="paper bg-white">
+			{% include 'asignaturas_analisis_block.html' %}
 		</div>
-	</div>
-
-
-<br> agregar variable para que se muetre o no la evolucion (similar las tutorias de alumnos en cuento a diseño)
-
+		<br>
+	{% endif %}
 	<div class="paper bg-white padding_contenido">
 		{{titulo_1(url='asignaturas',bg_color='bg-dark',titulo=grupo_activo().nombre, subtitulo=[ grupo_activo().centro, [ grupo_activo().curso_academico, grupo_activo().curso_academico +1 ]|join("-") ]|join(": "))}}
 		<div id="parent_alumno">
@@ -46,6 +36,4 @@
 			</div>
 		</div>
 	</div>
-
-
 {% endblock %}

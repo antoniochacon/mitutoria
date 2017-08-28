@@ -1,4 +1,325 @@
-{% macro highcharts_admin_tutorias_exito_evolucion(char_id, color, df_data) %}
+{% macro highcharts_asignatura(char_id, asignatura, alumno, grupo, df_data, tutoria_id) %}
+	{% set alumno_id = alumno.id %}
+	<div id="{{char_id | safe}}" class="chart" style="height: 200px"></div>
+	<script>
+		Highcharts.chart("{{char_id | safe }}", {
+			chart: {
+				plotBackgroundColor: null,
+				plotBorderWidth: 0,
+				plotShadow: false,
+				marginBottom: -130,
+				spacingBottom: 20
+			},
+			title: null,
+			plotOptions: {
+				pie: {
+					dataLabels: {
+						enabled: null
+					}
+				},
+				series: {
+					states: {
+						hover: {
+							halo: {
+								size: 0
+							}
+						}
+					}
+				}
+			},
+			series: [
+				{% if notas_asignatura_grupo(df_data, asignatura, alumno_id) != "sin_notas" %}
+					{
+						type: "pie",
+						size: "32%",
+						innerSize: "55%",
+						tooltip: {
+							pointFormat: "Media: {point.y:.1f}"
+						},
+						startAngle: -90,
+						endAngle: 90,
+						data: [
+							{
+								name: "{{grupo.nombre}} | {{asignatura}} | Notas",
+								y:{% if notas_asignatura_grupo(df_data, asignatura, alumno_id) !=0 %}
+									{{notas_asignatura_grupo(df_data, asignatura, alumno_id)}}
+								{% else %}
+									1
+								{% endif %},
+								{% if notas_asignatura_grupo(df_data, asignatura, alumno_id) !=0 %}
+									color: "#e1bee7"
+								{% else %}
+									color: "#80deea"
+								{% endif %}
+							}, {
+								name: "{{grupo.nombre}} | {{asignatura}} | Notas | Sin alcanzar",
+								y: 10 -{% if notas_asignatura_grupo(df_data, asignatura, alumno_id) !=0 %}
+									{{notas_asignatura_grupo(df_data, asignatura, alumno_id)}}
+								{% else %}
+									1
+								{% endif %},
+								color: "#f5f5f5",
+								states: {
+									hover: {
+										brightness: -0.3
+									}
+								}
+							}
+						]
+					},
+				{% else %}
+					{
+						type: "pie",
+						size: "32%",
+						innerSize: "55%",
+						tooltip: {
+							pointFormat: "Sin pruebas evaluables"
+						},
+						startAngle: -90,
+						endAngle: 90,
+						data: [
+							{
+								name: "{{grupo.nombre}} | {{asignatura}}",
+								y: 100,
+								color: "#f5f5f5"
+							}
+						]
+					},
+				{% endif %}
+				{% if notas_asignatura(df_data, tutoria_id, asignatura)[1] != "sin_notas" %}
+					{
+						type: "pie",
+						size: "25%",
+						innerSize: "55%",
+						tooltip: {
+							pointFormat: "Media: {point.y:.1f}<br>Notas({{notas_asignatura(df_data, tutoria_id, asignatura)[0] | count}}): {{notas_asignatura(df_data, tutoria_id, asignatura)[0] | safe}}"
+						},
+						startAngle: -90,
+						endAngle: 90,
+						data: [
+							{
+								name: "{{alumno.nombre}} | {{asignatura}} | Notas",
+								y:{% if notas_asignatura(df_data, tutoria_id, asignatura)[0]|sum !=0 %}
+									{{notas_asignatura(df_data, tutoria_id, asignatura)[1] | safe}}
+								{% else %}
+									1
+								{% endif %},
+								{% if notas_asignatura(df_data, tutoria_id, asignatura)[0]|sum !=0 %}
+									color: "#ba68c8"
+								{% else %}
+									color: "#26c6da"
+								{% endif %}
+							}, {
+								name: "{{alumno.nombre}} | {{asignatura}} | Notas | Sin alcanzar",
+								y: 10 -{% if notas_asignatura(df_data, tutoria_id, asignatura)[0]|sum !=0 %}
+									{{notas_asignatura(df_data, tutoria_id, asignatura)[1] | safe}}
+								{% else %}
+									1
+								{% endif %},
+								color: "#f5f5f5",
+								states: {
+									hover: {
+										brightness: -0.3
+									}
+								}
+							}
+						]
+					},
+				{% else %}
+					{
+						type: "pie",
+						size: "25%",
+						innerSize: "55%",
+						tooltip: {
+							pointFormat: "Sin pruebas evaluables"
+						},
+						startAngle: -90,
+						endAngle: 90,
+						data: [
+							{
+								name: "{{alumno.nombre}} | {{asignatura}}",
+								y: 100,
+								color: "#f5f5f5"
+							}
+						]
+					},
+				{% endif %}
+				{% if df_analisis_asignatura(df_data,tutoria_id, asignatura, alumno_id)[2] %}
+					{
+						type: "pie",
+						size: "65%",
+						innerSize: "75%",
+						tooltip: {
+							pointFormat: "Media: {point.y:.1f}"
+						},
+						startAngle: -90,
+						endAngle: 90,
+						data: [
+							{
+								name: "{{grupo.nombre}} | Cuestionario | {{asignatura}}",
+								y: {{df_analisis_asignatura(df_data,tutoria_id, asignatura, alumno_id)[2]}},
+								color: "#f48fb1"
+							}, {
+								name: "{{grupo.nombre}} | Cuestionario | {{asignatura}} | Sin alcanzar",
+								y: {{10-df_analisis_asignatura(df_data, tutoria_id, asignatura, alumno_id)[2]}},
+								color: "#f5f5f5",
+								states: {
+									hover: {
+										brightness: -0.3
+									}
+								}
+							}
+						]
+					},
+				{% endif %}
+				{% if df_analisis_asignatura(df_data, tutoria_id, asignatura, alumno_id)[3] %}
+					{
+						type: "pie",
+						size: "58%",
+						innerSize: "65%",
+						tooltip: {
+							pointFormat: "Media: {point.y:.1f}"
+						},
+						startAngle: -90,
+						endAngle: 90,
+						data: [
+							{
+								name: "{{alumno.nombre}} | Cuestionario | {{asignatura}}",
+								y: {{df_analisis_asignatura(df_data, tutoria_id, asignatura,alumno_id)[3]}},
+								color: "#ec407a"
+							}, {
+								name: "{{alumno.nombre}} | Cuestionario | {{asignatura}} | Sin alcanzar",
+								y: {{10-df_analisis_asignatura(df_data, tutoria_id, asignatura,alumno_id)[3]}},
+								color: "#f5f5f5",
+								states: {
+									hover: {
+										brightness: -0.3
+									}
+								}
+							}
+						]
+					},
+				{% endif %}
+				{% if df_analisis_asignatura(df_data, tutoria_id, asignatura, alumno_id)[0] %}
+					{
+						type: "pie",
+						size: "100%",
+						innerSize: "75%",
+						tooltip: {
+							pointFormat: "Media: {point.y:.1f}"
+						},
+						startAngle: -90,
+						endAngle: 90,
+						data: [
+							{
+								name: "{{grupo.nombre}} | Cuestionario",
+								y: {{df_analisis_asignatura(df_data, tutoria_id, asignatura,alumno_id)[0]}},
+								color: "#ffd54f"
+							}, {
+								name: "{{grupo.nombre}} | Cuestionario Sin alcanzar",
+								y: {{10-df_analisis_asignatura(df_data, tutoria_id, asignatura,alumno_id)[0]}},
+								color: "#f5f5f5",
+								states: {
+									hover: {
+										brightness: -0.3
+									}
+								}
+							}
+						]
+					},
+				{% endif %}
+				{% if df_analisis_asignatura(df_data, tutoria_id, asignatura,alumno_id)[1] %}
+					{
+						type: "pie",
+						size: "93%",
+						innerSize: "75%",
+						tooltip: {
+							pointFormat: "Media: {point.y:.1f}"
+						},
+						startAngle: -90,
+						endAngle: 90,
+						data: [
+							{
+								name: "{{alumno.nombre}} | Cuestionario",
+								y: {{df_analisis_asignatura(df_data, tutoria_id, asignatura, alumno_id)[1]}},
+								color: "#ffa000"
+							}, {
+								name: "{{alumno.nombre}} | Cuestionario Sin alcanzar",
+								y: {{10-df_analisis_asignatura(df_data, tutoria_id, asignatura, alumno_id)[1]}},
+								color: "#f5f5f5",
+								states: {
+									hover: {
+										brightness: -0.3
+									}
+								}
+							}
+						]
+					}
+				{% endif %}
+			]
+		});
+	</script>
+{% endmacro %}
+{% macro highcharts_admin_cuestionario_actividad(char_id, color, df_data) %}
+	<div id="{{char_id | safe}}" class="chart" style="height: 300px"></div>
+	<script>
+		Highcharts.chart("{{char_id | safe }}", {
+			chart: {
+				zoomType: "x",
+				panning: true,
+				panKey: "shift"
+			},
+			title: {
+				text: null
+			},
+			xAxis: {
+				// labels: { 	format: "{value}" },
+				type: "category",
+				title: {
+					text: "cuestionario"
+				},
+				crosshair: {
+					width: 1,
+					color: "#bdbdbd"
+				}
+			},
+			yAxis: {
+				// labels: { 	format: "{value} %" },
+				gridLineColor: Highcharts.getOptions().colors_gray["gray-500"],
+				min: 0,
+				title: {
+					text: "frecuencia"
+				}
+			},
+			plotOptions: {
+				series: {
+					allowPointSelect: false
+				}
+			},
+			series: [
+				{
+					type: "column",
+					color: "{{color}}",
+					name: "frecuencia",
+					showInLegend: false,
+					maxPointWidth: 50,
+					tooltip: {
+						headerFormat: null
+					},
+					data: [
+						{% for data in df_data %}
+							{
+								name: "{{data[0]}}",
+								y: {{data[1]}}
+							},
+						{% endfor %}
+					]
+				}
+			]
+		});
+	</script>
+{% endmacro %}
+{% macro highcharts_admin_tutorias_exito_evolucion(char_id, color, df_data, df_media) %}
 	<div id="{{char_id | safe}}" class="chart" style="height: 300px"></div>
 	<script>
 		Highcharts.stockChart("{{char_id | safe }}", {
@@ -56,14 +377,30 @@
 			yAxis: {
 				gridLineColor: Highcharts.getOptions().colors_gray["gray-500"],
 				labels: {
-					format: '{value} %'
+					format: "{value} %"
 				},
 				floor: 0,
-
 				title: {
 					text: "% participacion"
 				},
-				opposite: false
+				opposite: false,
+				plotLines: [
+					{
+						value: {{df_media | safe}},
+						width: 4,
+						color: "#26c6da",
+						dashStyle: "ShortDot",
+						// useHTML: true,
+						zIndex: 100,
+						label: {
+							color: "#26c6da",
+							text: "<strong>media: {{df_media | safe}}%</strong>",
+							align: "right",
+							y: -5,
+							x: -10
+						}
+					}
+				]
 			},
 			series: [
 				{
@@ -235,7 +572,7 @@
 			},
 			xAxis: {
 				labels: {
-					format: '{value} %'
+					format: "{value} %"
 				},
 				title: {
 					text: "% participacion"
@@ -247,7 +584,7 @@
 			},
 			yAxis: {
 				labels: {
-					format: '{value} %'
+					format: "{value} %"
 				},
 				gridLineColor: Highcharts.getOptions().colors_gray["gray-500"],
 				min: 0,
@@ -257,7 +594,7 @@
 			},
 			plotOptions: {
 				series: {
-					allowPointSelect: true
+					allowPointSelect: false
 				}
 			},
 			series: [
@@ -378,272 +715,6 @@
 		});
 	</script>
 {% endmacro %}
-{% macro highcharts_asignatura(char_id, asignatura, alumno, grupo, df_data, tutoria_id) %}
-	{% set alumno_id = alumno.id %}
-	<div id="{{char_id | safe}}" class="chart" style="height: 200px"></div>
-	<script>
-		Highcharts.chart("{{char_id | safe }}", {
-			chart: {
-				plotBackgroundColor: null,
-				plotBorderWidth: 0,
-				plotShadow: false,
-				marginBottom: -130,
-				spacingBottom: 20
-			},
-			// title: { 	text: "{{asignatura}}", 	align: "center", 	verticalAlign: "bottom" },
-			title: null,
-			plotOptions: {
-				pie: {
-					dataLabels: {
-						enabled: null
-					}
-				},
-				series: {
-					states: {
-						hover: {
-							halo: {
-								size: 0
-							}
-						}
-					}
-				}
-			},
-			series: [
-				{% if notas_asignatura_grupo(df_data, asignatura, alumno_id) != "sin_notas" %}
-					{
-						type: "pie",
-						size: "32%",
-						innerSize: "55%",
-						tooltip: {
-							pointFormat: "Media: {point.y:.1f}"
-						},
-						startAngle: -90,
-						endAngle: 90,
-						data: [
-							{
-								name: "{{grupo.nombre}} | {{asignatura}} | Notas",
-								y:{% if notas_asignatura_grupo(df_data, asignatura, alumno_id) !=0 %}
-									{{notas_asignatura_grupo(df_data, asignatura, alumno_id)}}
-								{% else %}
-									1
-								{% endif %},
-								{% if notas_asignatura_grupo(df_data, asignatura, alumno_id) !=0 %}
-									color: "#e1bee7"
-								{% else %}
-									color: "#80deea"
-								{% endif %}
-							}, {
-								name: "{{grupo.nombre}} | {{asignatura}} | Notas | Sin alcanzar",
-								y: 10 -{% if notas_asignatura_grupo(df_data, asignatura, alumno_id) !=0 %}
-									{{notas_asignatura_grupo(df_data, asignatura, alumno_id)}}
-								{% else %}
-									1
-								{% endif %},
-								color: "#f5f5f5",
-								states: {
-									hover: {
-										brightness: -0.3
-									}
-								}
-							}
-						]
-					},
-				{% else %}
-					{
-						type: "pie",
-						size: "32%",
-						innerSize: "55%",
-						tooltip: {
-							pointFormat: "Sin pruebas evaluables"
-						},
-						startAngle: -90,
-						endAngle: 90,
-						data: [
-							{
-								name: "{{grupo.nombre}} | {{asignatura}}",
-								y: 100,
-								color: "#f5f5f5"
-							}
-						]
-					},
-				{% endif %}
-				{% if notas_asignatura(df_data, tutoria_id, asignatura)[1] != "sin_notas" %}
-					{
-						type: "pie",
-						size: "25%",
-						innerSize: "55%",
-						tooltip: {
-							pointFormat: "Media: {point.y:.1f}<br>Notas({{notas_asignatura(df_data, tutoria_id, asignatura)[0] | count}}): {{notas_asignatura(df_data, tutoria_id, asignatura)[0] | safe}}"
-						},
-						startAngle: -90,
-						endAngle: 90,
-						data: [
-							{
-								name: "{{alumno.nombre}} | {{asignatura}} | Notas",
-								y:{% if notas_asignatura(df_data, tutoria_id, asignatura)[0]|sum !=0 %}
-									{{notas_asignatura(df_data, tutoria_id, asignatura)[1] | safe}}
-								{% else %}
-									1
-								{% endif %},
-								{% if notas_asignatura(df_data, tutoria_id, asignatura)[0]|sum !=0 %}
-									color: "#ba68c8"
-								{% else %}
-									color: "#26c6da"
-								{% endif %}
-							}, {
-								name: "{{alumno.nombre}} | {{asignatura}} | Notas | Sin alcanzar",
-								y: 10 -{% if notas_asignatura(df_data, tutoria_id, asignatura)[0]|sum !=0 %}
-									{{notas_asignatura(df_data, tutoria_id, asignatura)[1] | safe}}
-								{% else %}
-									1
-								{% endif %},
-								color: "#f5f5f5",
-								states: {
-									hover: {
-										brightness: -0.3
-									}
-								}
-							}
-						]
-					},
-				{% else %}
-					{
-						type: "pie",
-						size: "25%",
-						innerSize: "55%",
-						tooltip: {
-							pointFormat: "Sin pruebas evaluables"
-						},
-						startAngle: -90,
-						endAngle: 90,
-						data: [
-							{
-								name: "{{alumno.nombre}} | {{asignatura}}",
-								y: 100,
-								color: "#f5f5f5"
-							}
-						]
-					},
-				{% endif %}
-				{
-					# media del grupo #
-				}
-				{% if df_analisis_asignatura(df_data,tutoria_id, asignatura, alumno_id)[2] %}
-					{
-						type: "pie",
-						size: "65%",
-						innerSize: "75%",
-						tooltip: {
-							pointFormat: "Media: {point.y:.1f}"
-						},
-						startAngle: -90,
-						endAngle: 90,
-						data: [
-							{
-								name: "{{grupo.nombre}} | Cuestionario | {{asignatura}}",
-								y: {{df_analisis_asignatura(df_data,tutoria_id, asignatura, alumno_id)[2]}},
-								color: "#f48fb1"
-							}, {
-								name: "{{grupo.nombre}} | Cuestionario | {{asignatura}} | Sin alcanzar",
-								y: {{10-df_analisis_asignatura(df_data, tutoria_id, asignatura, alumno_id)[2]}},
-								color: "#f5f5f5",
-								states: {
-									hover: {
-										brightness: -0.3
-									}
-								}
-							}
-						]
-					},
-				{% endif %}
-				{% if df_analisis_asignatura(df_data, tutoria_id, asignatura, alumno_id)[3] %}
-					{
-						type: "pie",
-						size: "58%",
-						innerSize: "65%",
-						tooltip: {
-							pointFormat: "Media: {point.y:.1f}"
-						},
-						startAngle: -90,
-						endAngle: 90,
-						data: [
-							{
-								name: "{{alumno.nombre}} | Cuestionario | {{asignatura}}",
-								y: {{df_analisis_asignatura(df_data, tutoria_id, asignatura,alumno_id)[3]}},
-								color: "#ec407a"
-							}, {
-								name: "{{alumno.nombre}} | Cuestionario | {{asignatura}} | Sin alcanzar",
-								y: {{10-df_analisis_asignatura(df_data, tutoria_id, asignatura,alumno_id)[3]}},
-								color: "#f5f5f5",
-								states: {
-									hover: {
-										brightness: -0.3
-									}
-								}
-							}
-						]
-					},
-				{% endif %}
-				{% if df_analisis_asignatura(df_data, tutoria_id, asignatura, alumno_id)[0] %}
-					{
-						type: "pie",
-						size: "100%",
-						innerSize: "75%",
-						tooltip: {
-							pointFormat: "Media: {point.y:.1f}"
-						},
-						startAngle: -90,
-						endAngle: 90,
-						data: [
-							{
-								name: "{{grupo.nombre}} | Cuestionario",
-								y: {{df_analisis_asignatura(df_data, tutoria_id, asignatura,alumno_id)[0]}},
-								color: "#ffd54f"
-							}, {
-								name: "{{grupo.nombre}} | Cuestionario Sin alcanzar",
-								y: {{10-df_analisis_asignatura(df_data, tutoria_id, asignatura,alumno_id)[0]}},
-								color: "#f5f5f5",
-								states: {
-									hover: {
-										brightness: -0.3
-									}
-								}
-							}
-						]
-					},
-				{% endif %}
-				{% if df_analisis_asignatura(df_data, tutoria_id, asignatura,alumno_id)[1] %}
-					{
-						type: "pie",
-						size: "93%",
-						innerSize: "75%",
-						tooltip: {
-							pointFormat: "Media: {point.y:.1f}"
-						},
-						startAngle: -90,
-						endAngle: 90,
-						data: [
-							{
-								name: "{{alumno.nombre}} | Cuestionario",
-								y: {{df_analisis_asignatura(df_data, tutoria_id, asignatura, alumno_id)[1]}},
-								color: "#ffa000"
-							}, {
-								name: "{{alumno.nombre}} | Cuestionario Sin alcanzar",
-								y: {{10-df_analisis_asignatura(df_data, tutoria_id, asignatura, alumno_id)[1]}},
-								color: "#f5f5f5",
-								states: {
-									hover: {
-										brightness: -0.3
-									}
-								}
-							}
-						]
-					}
-				{% endif %}
-			]
-		});
-	</script>
-{% endmacro %}
 {% macro highcharts_asignaturas(char_id, color_1, color_2, df_data, grupo, tutoria_id, alumno_id) %}
 	<div id="{{char_id | safe}}" class="chart" style="height: 300px"></div>
 	<script>
@@ -717,7 +788,7 @@
 						type: "column",
 						maxPointWidth: 20,
 						// FIXME posible problema con las comillas en la siguiente linea
-						name: "Notas({{notas_asignatura(df_data, tutoria_id, asignatura)[0] | count}}): {{notas_asignatura(df_data, tutoria_id, asignatura)[0] |replace(',', ' |') | safe}}",
+						name: "Notas({{notas_asignatura(df_data, tutoria_id, asignatura)[0] | count}}): {{notas_asignatura(df_data, tutoria_id, asignatura)[0] |replace(",", " |") | safe}}",
 						data: [
 							{
 								x: {{loop.index}}-1,
@@ -778,7 +849,7 @@
 	</script>
 {% endmacro %}
 {% macro nav_tabs_admin(tab_active, params_args) %}
-	{{nav_tabs(link_active, params_args=params_args, dic={'Cuestionario':'admin_cuestionario', 'Citas':'admin_citas', 'Usuarios':'admin_usuarios', 'Estadisticas':'admin_estadisticas'})}}
+	{{nav_tabs(link_active, params_args=params_args, dic={"Cuestionario":"admin_cuestionario", "Citas":"admin_citas", "Usuarios":"admin_usuarios", "Estadisticas":"admin_estadisticas"})}}
 {% endmacro %}
 {% macro nav_tabs(tab_active, params_args, dic) %}
 	<div class="pb-2">
@@ -793,9 +864,9 @@
 {% endmacro %}
 {% macro nav_bar_top(link_active, params, current_user) %}
 	{% if current_user.is_authenticated %}
-		{{nav_bar(link_active, params=params, dic={'ayuda':'wellcome', 'alumnos':'alumnos', 'asignaturas':'asignaturas', 'opciones':'settings_cuestionario', 'admin':'admin_cuestionario', 'logout':'logout'})}}
+		{{nav_bar(link_active, params=params, dic={"ayuda":"wellcome", "alumnos":"alumnos", "asignaturas":"asignaturas", "opciones":"settings_cuestionario", "admin":"admin_cuestionario", "logout":"logout"})}}
 	{% else %}
-		{{nav_bar(link_active, params=params,  dic = {'inciar sesión': 'login','nueva cuenta': 'user_add'})}}
+		{{nav_bar(link_active, params=params,  dic = {"inciar sesión": "login","nueva cuenta": "user_add"})}}
 	{% endif %}
 {% endmacro %}
 {% macro nav_bar(link_active, params, params_args, dic, current_user) %}
@@ -807,19 +878,19 @@
 		<div class="collapse navbar-collapse" id="navbar">
 			<ul class="navbar-nav mr-auto">
 				{% for link_key in dic.keys() %}
-					{% if link_key != 'admin' and link_key != 'ayuda' %}
+					{% if link_key != "admin" and link_key != "ayuda" %}
 						<li class="nav-item {% if link_key==link_active %} active strong {% endif %}">
 							<a class="nav-link" href="/{{dic[link_key]}}{% if params_args %}/{{params_args}}{% endif %}">{{link_key}}
-								{% if link_key == 'logout' %}
+								{% if link_key == "logout" %}
 									[{{user_by_id(settings().id).username}}]
 								{% endif %}
 							</a>
 						</li>
-					{% elif link_key == 'ayuda' and settings().visit_number <= 50 %}
+					{% elif link_key == "ayuda" and settings().visit_number <= 50 %}
 						<li class="nav-item {% if link_key==link_active %} active strong {% endif %}">
 							<a class="nav-link" href="/{{dic[link_key]}}{% if params_args %}/{{params_args}}{% endif %}">{{link_key}}</a>
 						</li>
-					{% elif link_key == 'admin' and settings().role == 'admin' %}
+					{% elif link_key == "admin" and settings().role == "admin" %}
 						<li class="nav-item {% if link_key==link_active %} active strong {% endif %}">
 							<a class="nav-link" href="/{{dic[link_key]}}{% if params_args %}/{{params_args}}{% endif %}">{{link_key}}</a>
 						</li>
@@ -836,12 +907,14 @@
 {% macro titulo_1(url, text_color, bg_color, titulo, subtitulo) %}
 	<h5 class="{{text_color}} strong">
 		{{titulo}}
-		{% if url == 'alumnos' %}
+		{% if url == "alumnos" %}
 			<span class="badge badge-dark float-right">{{alumnos_not_sorted()|count}}
-				{{singular_plural('alumno', 'alumnos',alumnos_not_sorted()|count)}}</span>
-		{% elif url == 'asignaturas' %}
-			<span class="badge badge-dark float-right">{{asignaturas('apellidos', 'nombre', 'asignatura') | count}}
-				{{singular_plural('asignatura', 'asignaturas', asignaturas('apellidos', 'nombre', 'asignatura') | count)}}</span>
+				{{singular_plural("alumno", "alumnos",alumnos_not_sorted()|count)}}
+			</span>
+		{% elif url == "asignaturas" %}
+			<span class="badge badge-dark float-right">{{asignaturas("apellidos", "nombre", "asignatura") | count}}
+				{{singular_plural("asignatura", "asignaturas", asignaturas("apellidos", "nombre", "asignatura") | count)}}
+			</span>
 		{% endif %}
 		{% if subtitulo %}
 			<h6 class="{{text_color}}">
@@ -889,7 +962,13 @@
 				shadow: false,
 				formatter: function () {
 					var text = "";
-					text = "<span style='font-size: {{font_size}}em; font-weight: bold; color:{{color_1}}'>" + {{tutoria_stats[0]}} + "<span style='font-size:1.5em; font-weight: bold; color:#999999'> | <span style='font-size: {{font_size}}em; font-weight: bold; color:#616161'>" + {{tutoria_stats[1]}} + "</span>";
+					text = "<span style=" font - size : {{font_size}}em;
+					font - weight : bold;
+					color : {{color_1}}">" + {{tutoria_stats[0]}} + "<span style=" font - size : 1.5e m;
+					font - weight : bold;
+					color : #999999 "> | <span style=" font - size : {{font_size}}em;
+					font - weight : bold;
+					color : #616161 ">" + {{tutoria_stats[1]}} + "</span>";
 					return text;
 				},
 				positioner: function () {

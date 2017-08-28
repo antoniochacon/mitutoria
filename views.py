@@ -105,6 +105,9 @@ def admin_estadisticas_html(params={}):
     stats['tutorias_exito_evolucion'] = profesores_sin_responder_count()[2]
     stats['tutorias_exito_frecuencia'] = profesores_sin_responder_count()[3]
     stats['tutorias_exito_frecuencia_absoluta'] = profesores_sin_responder_count()[4]
+    stats['tutorias_exito_evolucion_media'] = profesores_sin_responder_count()[5]
+    stats['cuestionario_actividad'] = cuestionario_actividad()
+
     stats['tutores_over_all'] = mean([stats['emails_no_validados_percent'], stats['emails_robinson_percent'], stats['preguntas_por_cuestionario_no_usadas_percent']])
     # --------------------------------
 
@@ -1173,13 +1176,17 @@ def settings_opciones_html(params={}):
         # XXX settings_edit
         if request.form['selector_button'] == 'selector_user_edit':
             settings_edit_tutoria_timeout = request.form.get('settings_edit_tutoria_timeout')
+            settings_show_asignaturas_analisis = request.form.get('settings_show_asignaturas_analisis')
             settings_edit_calendar = request.form.get('settings_edit_calendar')
             if not settings_edit_tutoria_timeout:
                 settings_edit_tutoria_timeout = False
+            if not settings_show_asignaturas_analisis:
+                settings_show_asignaturas_analisis = False
             if not settings_edit_calendar:
                 settings_edit_calendar = False
 
             settings().tutoria_timeout = settings_edit_tutoria_timeout
+            settings().show_asignaturas_analisis = settings_show_asignaturas_analisis
             settings().calendar = settings_edit_calendar
             flash_toast('Configuracion actualizada', 'success')
             session_sql.commit()
@@ -1608,7 +1615,8 @@ def asignaturas_html(params={}):
     params['asignatura_edit_link'] = params_old.get('asignatura_edit_link', False)
 
     stats = {}
-    stats['evolucion_tutorias_exito_grupo'] = evolucion_tutorias_exito_grupo(settings().grupo_activo_id)
+    stats['evolucion_tutorias_exito_grupo'] = evolucion_tutorias_exito_grupo(settings().grupo_activo_id)[0]
+    stats['evolucion_tutorias_exito_grupo_media'] = evolucion_tutorias_exito_grupo(settings().grupo_activo_id)[1]
 
     if not settings().grupo_activo_id:
         params['collapse_grupo_add'] = True

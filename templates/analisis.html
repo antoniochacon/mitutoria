@@ -154,10 +154,23 @@
 									<div class="text-truncate">
 										{{asignatura}}
 										<span class="small">
-											 | {{df_asignatura_profesor(df_data, tutoria.id,asignatura)}}</span>
+											|
+											{{df_asignatura_profesor(df_data, tutoria.id,asignatura)}}</span>
 									</div>
 								</div>
 								<div class="card-body">
+
+										{% if diferencial_check(settings().diferencial, df_analisis_asignatura(df_data, tutoria.id, asignatura, alumno.id)[3],notas_asignatura(df_data, tutoria.id, asignatura)[1]) %}
+												<span class="badge text-white badge-secondary float-right">
+													resultados !
+												</span>
+										{% endif %}
+									{% if diferencial_check(settings().diferencial,df_analisis_asignatura(df_data, tutoria.id, asignatura, alumno.id)[1], df_analisis_asignatura(df_data, tutoria.id, asignatura, alumno.id)[3]) %}
+											<span class="badge badge-primary float-right mr-1">
+												actitud !
+											</span>
+									{% endif %}
+
 									{{highcharts_asignatura(char_id=asignatura, asignatura=asignatura, alumno=alumno, grupo=grupo, df_data=df_data, tutoria_id=tutoria.id)}}
 								</div>
 								{% if asignatura_comentario(tutoria.id, asignatura) %}

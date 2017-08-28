@@ -36,7 +36,6 @@
 				{% endfor %}
 			</div>
 		</div>
-		<br>
 	{% else %}
 		<div class="padding_contenido text-mutted">
 			{% if cita_random() %}
@@ -44,7 +43,7 @@
 			<span class="text-info">
 				-
 				{{cita_random().autor}}</span>
-		{% endif %}
-	</div>
+		</div>
+	{% endif %}
 {% endif %}
 </div>

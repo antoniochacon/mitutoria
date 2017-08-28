@@ -8,6 +8,16 @@ import config_parametros
 # {} Valor
 # *****************************************************************
 
+
+def diferencial_check(percent, resultado_1, resultado_2):
+    if resultado_1 == 'sin_notas' or resultado_2 == 'sin_notas':
+        return False
+
+    if (float(resultado_1) - float(resultado_2)) > resultado_1 * percent / 100:
+        return True
+    return False
+
+
 # XXX admin_estadisticas sin pandas solo python
 # *****************************************************************
 
@@ -88,7 +98,7 @@ def preguntas_por_cuestionario():
 
 def tutorias_por_usuario_count():
     tutorias_por_usuario_list = []
-    settings_all = session_sql.query(Settings).filter(Settings.grupo_activo_id != None).all()  # NOTE con este aseguro que el usuario al menos ha creado un grupo_activo_id
+    settings_all = session_sql.query(Settings).filter(Settings.grupo_activo_id != None).all()  # NOTE con esto aseguro que el usuario al menos ha creado un grupo_activo_id
     for settings in settings_all:
         tutorias_por_usuario = session_sql.query(Tutoria).join(Alumno).join(Grupo).filter(Grupo.id == settings.grupo_activo_id).count()
         tutorias_por_usuario_list.append(tutorias_por_usuario)
@@ -100,9 +110,26 @@ def tutorias_por_usuario_count():
     return tutorias_por_usuario_min, tutorias_por_usuario_media, tutorias_por_usuario_max,
 
 
+def cuestionario_actividad():
+    preguntas_id_lista = []
+    preguntas_frecuencias_lista = []
+    settings_all = session_sql.query(Settings).filter(Settings.grupo_activo_id != None).all()  # NOTE con esto aseguro que el usuario al menos ha creado un grupo_activo_id
+    for settings in settings_all:
+        settings_cuestionario_id = session_sql.query(Association_Settings_Pregunta).filter(Association_Settings_Pregunta.settings_id == settings.id).all()
+        for pregunta in settings_cuestionario_id:
+            preguntas_id_lista.append(pregunta.pregunta_id)
+
+    preguntas = session_sql.query(Pregunta).order_by('orden').all()
+    for pregunta in preguntas:
+        frecuencia = preguntas_id_lista.count(pregunta.id)
+        preguntas_frecuencias_lista.append([pregunta.enunciado_ticker, frecuencia])
+    return preguntas_frecuencias_lista
+
+
 def evolucion_tutorias_exito_grupo(current_grupo_id):
     informes_posibles_count = 0
     tutoria_profesores_responden_evolucion = []
+    media_lista = []
     tutorias = session_sql.query(Tutoria).join(Alumno).join(Grupo).filter(Grupo.id == current_grupo_id).order_by('fecha').all()
     for tutoria in tutorias:
         asignaturas_tutoria_count = session_sql.query(Association_Tutoria_Asignatura).filter(Association_Tutoria_Asignatura.tutoria_id == tutoria.id).count()
@@ -110,8 +137,10 @@ def evolucion_tutorias_exito_grupo(current_grupo_id):
         profesores_respoden = session_sql.query(Informe).filter(Informe.tutoria_id == tutoria.id).count()
         profesores_respoden_percent = int(profesores_respoden / asignaturas_tutoria_count * 100)
         tutoria_profesores_responden_evolucion.append([arrow.get(tutoria.fecha).timestamp * 1000, profesores_respoden_percent])
+        media_lista.append(profesores_respoden_percent)
+    tutoria_profesores_responden_evolucion_media = int(mean(media_lista))
 
-    return tutoria_profesores_responden_evolucion
+    return tutoria_profesores_responden_evolucion, tutoria_profesores_responden_evolucion_media
 
 
 def profesores_sin_responder_count():
@@ -121,6 +150,7 @@ def profesores_sin_responder_count():
     tutoria_profesores_responden_valor = []
     tutoria_profesores_responden_valor_frecuencia = []
     tutoria_profesores_responden_valor_frecuencia_absoluta = []
+    media_lista = []
 
     tutorias = session_sql.query(Tutoria).order_by('fecha').all()
     for tutoria in tutorias:
@@ -130,6 +160,10 @@ def profesores_sin_responder_count():
         profesores_respoden_percent = int(profesores_respoden / asignaturas_tutoria_count * 100)
         tutoria_profesores_responden_valor.append(int(profesores_respoden_percent / 10) * 10)
         tutoria_profesores_responden_evolucion.append([arrow.get(tutoria.fecha).timestamp * 1000, profesores_respoden_percent])
+        media_lista.append(profesores_respoden_percent)
+
+    tutoria_profesores_responden_evolucion_media = int(mean(media_lista))
+
     for percent in [0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100]:
         frecuencia = tutoria_profesores_responden_valor.count(percent) / tutorias_all_count() * 100
         tutoria_profesores_responden_valor_frecuencia.append([percent, frecuencia])
@@ -139,7 +173,7 @@ def profesores_sin_responder_count():
 
     profesores_sin_responder_count = informes_posibles_count - informes_all_count()
     profesores_sin_responder_percent = profesores_sin_responder_count / informes_posibles_count * 100
-    return profesores_sin_responder_count, profesores_sin_responder_percent, tutoria_profesores_responden_evolucion, tutoria_profesores_responden_valor_frecuencia, tutoria_profesores_responden_valor_frecuencia_absoluta
+    return profesores_sin_responder_count, profesores_sin_responder_percent, tutoria_profesores_responden_evolucion, tutoria_profesores_responden_valor_frecuencia, tutoria_profesores_responden_valor_frecuencia_absoluta, tutoria_profesores_responden_evolucion_media
 
 
 # XXX FIN admin_estadisticas
@@ -286,7 +320,7 @@ def send_email_tutoria(alumno, tutoria):
             session_sql.add(tutoria_asignatura_add)
             session_sql.flush()
             # mail HTML
-            msg.html = render_template('email_tutoria.html', tutoria=tutoria, alumno=alumno, asignatura=asignatura, tutoria_email_link=tutoria_email_link, tutoria_asignatura_id=tutoria_asignatura_add.id)
+            msg.html = render_template('email_tutoria.html', tutoria=tutoria, alumno=alumno, asignatura=asignatura, tutoria_email_link=tutoria_email_link, tutoria_asignatura_id=tutoria_asignatura_add.id, index_link=index_link)
             time.sleep(email_time_sleep)
             conn.send(msg)
             session_sql.commit()
@@ -315,7 +349,7 @@ def re_send_email_tutoria(alumno, tutoria, asignaturas_id_lista):
             # mail texto plano
             msg.body = 'Informe para la tutoria de ' + alumno.nombre + ' ' + alumno.apellidos
             # mail HTML
-            msg.html = render_template('email_tutoria.html', tutoria=tutoria, alumno=alumno, asignatura=asignatura, tutoria_email_link=tutoria_email_link, tutoria_asignatura_id=tutoria_asignatura_add.id)
+            msg.html = render_template('email_tutoria.html', tutoria=tutoria, alumno=alumno, asignatura=asignatura, tutoria_email_link=tutoria_email_link, tutoria_asignatura_id=tutoria_asignatura_add.id, index_link=index_link)
             time.sleep(email_time_sleep)
             conn.send(msg)
             session_sql.commit()
@@ -1087,4 +1121,4 @@ def cita_random():
 
 
 app.jinja_env.globals.update(settings=settings, cita_random=cita_random,  singular_plural=singular_plural, grupo_activo=grupo_activo, curso=curso, alumnos_not_sorted=alumnos_not_sorted, alumnos=alumnos, alumno_tutorias=alumno_tutorias, equal_str=equal_str, alumno_asignaturas_id=alumno_asignaturas_id, asignaturas=asignaturas, asignatura_alumnos=asignatura_alumnos, association_alumno_asignatura_check=association_alumno_asignatura_check,
-                             tutoria_asignaturas_count=tutoria_asignaturas_count, string_to_date=string_to_date, association_settings_pregunta_check=association_settings_pregunta_check, preguntas=preguntas, informe_preguntas=informe_preguntas, invitado_settings=invitado_settings, invitado_preguntas=invitado_preguntas, invitado_settings_by_id=invitado_settings_by_id, invitado_respuesta=invitado_respuesta, invitado_pruebas_evaluables=invitado_pruebas_evaluables, invitado_informe=invitado_informe, tutoria_informes=tutoria_informes, cociente_porcentual=cociente_porcentual, tutoria_asignaturas=tutoria_asignaturas, df_analisis_asignatura_stacked=df_analisis_asignatura_stacked, df_cuestion_stacked=df_cuestion_stacked, df_asignaturas_lista=df_asignaturas_lista, df_cuestiones_lista=df_cuestiones_lista, df_cuestion_grupo_spline=df_cuestion_grupo_spline, df_asignatura_stacked=df_asignatura_stacked, df_asignatura_grupo_spline=df_asignatura_grupo_spline, df_analisis_asignatura=df_analisis_asignatura, asignatura_comentario=asignatura_comentario, pregunta_active_default_check=pregunta_active_default_check, notas_asignatura=notas_asignatura, notas_asignatura_grupo=notas_asignatura_grupo, pregunta_visible_check=pregunta_visible_check, grupo_activo_check=grupo_activo_check, user_by_id=user_by_id, df_evolucion=df_evolucion, df_evolucion_notas=df_evolucion_notas, tutoria_stats=tutoria_stats, arrow_fecha=arrow_fecha, asignatura_informes_count=asignatura_informes_count, asignatura_informes_respondidos_count=asignatura_informes_respondidos_count, alumno_asignaturas=alumno_asignaturas, asignaturas_not_sorted=asignaturas_not_sorted, grupo_tutorias=grupo_tutorias, alumno_by_id=alumno_by_id, hashids_encode=hashids_encode, hashids_decode=hashids_decode, f_encode=f_encode, f_decode=f_decode, dic_encode_args=dic_encode_args, dic_try=dic_try, settings_by_id=settings_by_id, usuario_grupos=usuario_grupos, usuarios=usuarios, round_custom=round_custom, usuarios_mas_activos=usuarios_mas_activos, df_asignatura_profesor=df_asignatura_profesor, grupo_alumnos_count=grupo_alumnos_count)
+                             tutoria_asignaturas_count=tutoria_asignaturas_count, string_to_date=string_to_date, association_settings_pregunta_check=association_settings_pregunta_check, preguntas=preguntas, informe_preguntas=informe_preguntas, invitado_settings=invitado_settings, invitado_preguntas=invitado_preguntas, invitado_settings_by_id=invitado_settings_by_id, invitado_respuesta=invitado_respuesta, invitado_pruebas_evaluables=invitado_pruebas_evaluables, invitado_informe=invitado_informe, tutoria_informes=tutoria_informes, cociente_porcentual=cociente_porcentual, tutoria_asignaturas=tutoria_asignaturas, df_analisis_asignatura_stacked=df_analisis_asignatura_stacked, df_cuestion_stacked=df_cuestion_stacked, df_asignaturas_lista=df_asignaturas_lista, df_cuestiones_lista=df_cuestiones_lista, df_cuestion_grupo_spline=df_cuestion_grupo_spline, df_asignatura_stacked=df_asignatura_stacked, df_asignatura_grupo_spline=df_asignatura_grupo_spline, df_analisis_asignatura=df_analisis_asignatura, asignatura_comentario=asignatura_comentario, pregunta_active_default_check=pregunta_active_default_check, notas_asignatura=notas_asignatura, notas_asignatura_grupo=notas_asignatura_grupo, pregunta_visible_check=pregunta_visible_check, grupo_activo_check=grupo_activo_check, user_by_id=user_by_id, df_evolucion=df_evolucion, df_evolucion_notas=df_evolucion_notas, tutoria_stats=tutoria_stats, arrow_fecha=arrow_fecha, asignatura_informes_count=asignatura_informes_count, asignatura_informes_respondidos_count=asignatura_informes_respondidos_count, alumno_asignaturas=alumno_asignaturas, asignaturas_not_sorted=asignaturas_not_sorted, grupo_tutorias=grupo_tutorias, alumno_by_id=alumno_by_id, hashids_encode=hashids_encode, hashids_decode=hashids_decode, f_encode=f_encode, f_decode=f_decode, dic_encode_args=dic_encode_args, dic_try=dic_try, settings_by_id=settings_by_id, usuario_grupos=usuario_grupos, usuarios=usuarios, round_custom=round_custom, usuarios_mas_activos=usuarios_mas_activos, df_asignatura_profesor=df_asignatura_profesor, grupo_alumnos_count=grupo_alumnos_count, diferencial_check=diferencial_check)
