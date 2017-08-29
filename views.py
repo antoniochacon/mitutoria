@@ -81,39 +81,62 @@ def admin_estadisticas_html(params={}):
 
     stats = {}
     stats['usuarios_all'] = usuarios_all_count()
-    stats['emails_no_validados'] = emails_no_validados_count()[0]
-    stats['emails_no_validados_percent'] = emails_no_validados_count()[1]
-    stats['emails_robinson'] = emails_robinson_count()[0]
-    stats['emails_robinson_percent'] = emails_robinson_count()[1]
-    stats['emails_ban'] = emails_ban_count()[0]
-    stats['emails_ban_percent'] = emails_ban_count()[1]
-    stats['emails_tutoria_timeout'] = tutoria_timeout_count()[0]
-    stats['emails_tutoria_timeout_percent'] = tutoria_timeout_count()[1]
-    stats['tutorias_all'] = tutorias_all_count()
-    stats['tutorias_sin_respuesta'] = tutorias_sin_respuesta_count()[0]
-    stats['tutorias_sin_respuesta_percent'] = tutorias_sin_respuesta_count()[1]
+
+    stats['emails_validados'] = emails_validados_count()[0]
+    stats['emails_validados_percent'] = emails_validados_count()[1]
+
+    stats['emails_no_robinson'] = emails_no_robinson_count()[0]
+    stats['emails_no_robinson_percent'] = emails_no_robinson_count()[1]
+
+    stats['emails_no_ban'] = emails_no_ban_count()[0]
+    stats['emails_no_ban_percent'] = emails_no_ban_count()[1]
+
+    stats['tutoria_timeout'] = tutoria_timeout_count()[0]
+    stats['tutoria_timeout_percent'] = tutoria_timeout_count()[1]
+    stats['evolucion_equipo_educativo'] = evolucion_equipo_educativo_count()[0]
+    stats['evolucion_equipo_educativo_percent'] = evolucion_equipo_educativo_count()[1]
+
+    stats['tutorias_all_count'] = tutorias_all_count()
+    stats['tutorias_con_respuesta'] = tutorias_con_respuesta_count()[0]
+    stats['tutorias_con_respuesta_percent'] = tutorias_con_respuesta_count()[1]
+
     stats['preguntas_por_cuestionario_min'] = preguntas_por_cuestionario()[0]
     stats['preguntas_por_cuestionario_media'] = preguntas_por_cuestionario()[1]
     stats['preguntas_por_cuestionario_max'] = preguntas_por_cuestionario()[2]
-    stats['preguntas_por_cuestionario_no_usadas'] = preguntas_por_cuestionario()[3]
-    stats['preguntas_por_cuestionario_no_usadas_percent'] = preguntas_por_cuestionario()[4]
-    stats['profesores_sin_responder'] = profesores_sin_responder_count()[0]
-    stats['profesores_sin_responder_percent'] = profesores_sin_responder_count()[1]
+    stats['preguntas_por_cuestionario_percent'] = preguntas_por_cuestionario()[3]
+
+    stats['profesores_all_count'] = profesores_all_cunt()
+    stats['profesores_por_usuario_min'] = profesores_por_usuario()[0]
+    stats['profesores_por_usuario_media'] = profesores_por_usuario()[1]
+    stats['profesores_por_usuario_max'] = profesores_por_usuario()[2]
+
+    stats['profesores_actividad'] = profesores_actividad_count()[0]
+    stats['profesores_actividad_percent'] = profesores_actividad_count()[1]
+    stats['profesores_activos_evolucion'] = profesores_actividad_count()[2]
+    stats['profesores_activos_evolucion_frecuencia'] = profesores_actividad_count()[3]
+    stats['profesores_activos_evolucion_frecuencia_absoluta'] = profesores_actividad_count()[4]
+    stats['profesores_activos_evolucion_media'] = profesores_actividad_count()[5]
+
     stats['tutorias_por_usuario_min'] = tutorias_por_usuario_count()[0]
     stats['tutorias_por_usuario_media'] = tutorias_por_usuario_count()[1]
     stats['tutorias_por_usuario_max'] = tutorias_por_usuario_count()[2]
-    stats['tutorias_exito_evolucion'] = profesores_sin_responder_count()[2]
-    stats['tutorias_exito_frecuencia'] = profesores_sin_responder_count()[3]
-    stats['tutorias_exito_frecuencia_absoluta'] = profesores_sin_responder_count()[4]
-    stats['tutorias_exito_evolucion_media'] = profesores_sin_responder_count()[5]
+
     stats['cuestionario_actividad'] = cuestionario_actividad()
 
-    stats['tutores_over_all'] = mean([stats['emails_no_validados_percent'], stats['emails_robinson_percent'], stats['preguntas_por_cuestionario_no_usadas_percent']])
-    # --------------------------------
+    stats['informes_con_comentario'] = informes_con_comentario_count()[0]
+    stats['informes_con_comentario_percent'] = informes_con_comentario_count()[1]
 
-    # print(df_data)
-    # print(usuarios_count(df_data))
-    # abort(404)
+    stats['informes_con_pruebas_evalubles'] = informes_con_pruebas_evalubles_count()[0]
+    stats['informes_con_pruebas_evalubles_percent'] = informes_con_pruebas_evalubles_count()[1]
+
+    stats['diferencial_media'] = diferencial_media()
+
+
+
+
+    stats['tutores_over_all'] = (20 * stats['emails_validados_percent'] + 20 * stats['emails_no_ban_percent'] + 10 * stats['emails_no_robinson_percent'] + 40 * stats['preguntas_por_cuestionario_percent'] + 10 * stats['evolucion_equipo_educativo_percent']) / 100
+    stats['profesores_over_all'] = (50 * stats['tutorias_con_respuesta_percent'] + 30 * stats['profesores_actividad_percent'] + 10 * stats['informes_con_pruebas_evalubles_percent'] + 10 * stats['informes_con_comentario_percent']) / 100
+    # --------------------------------
     return render_template(
         'admin_estadisticas.html', params=params, stats=stats)
 
@@ -166,7 +189,6 @@ def admin_usuario_edit_html(params={}):
             settings_edit_ban = usuario_edit_form.ban.data
             settings_email_validated = usuario_edit_form.email_validated.data
             settings_email_robinson = usuario_edit_form.email_robinson.data
-
 
             params['usuario_edit_link'] = True
             if not settings_edit_ban:

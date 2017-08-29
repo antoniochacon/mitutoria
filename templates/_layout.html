@@ -48,14 +48,14 @@
 	</head>
 	<body>
 		{#
-	<script>
-		// NOTE Controla el offset de anchor SIN ANIMACION
-		$(function () {
-			var offset = -45;
-			$(document).scrollTop($("#{{dic_try(params, 'anchor', 'anchor_top')}}").offset().top + offset);
-		});
-	</script>
-	#}
+		<script>
+				// NOTE Controla el offset de anchor SIN ANIMACION
+				$(function () {
+					var offset = -45;
+					$(document).scrollTop($("#{{dic_try(params, 'anchor', 'anchor_top')}}").offset().top + offset);
+				});
+			</script>
+		#}
 		{% if params_anchor_off %}
 			<script>
 				// NOTE Controla el offset de anchor CON ANIMACION

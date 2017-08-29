@@ -1,6 +1,6 @@
 {% extends '_layout.html' %}
 {% block body %}
-	{%from '_macro.html' import nav_bar_top, titulo_1, nav_tabs_admin, highcharts_admin_tutorias_exito_evolucion, highcharts_admin_tutorias_exito_frecuencia, highcharts_admin_cuestionario_actividad, highcharts_salud_tutores_equipo_educativo%}
+	{%from '_macro.html' import nav_bar_top, titulo_1, nav_tabs_admin, highcharts_admin_profesores_activos_evolucion, highcharts_admin_profesores_activos_evolucion_frecuencia, highcharts_admin_cuestionario_actividad, highcharts_salud_tutores_equipo_educativo%}
 	{{ nav_bar_top(link_active='admin',params=params, current_user=current_user) }}
 	<div class="paper bg-white padding_contenido">
 		{{titulo_1(bg_color='bg-dark',titulo='Admin Settings')}}

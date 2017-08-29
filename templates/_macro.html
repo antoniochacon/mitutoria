@@ -40,11 +40,11 @@
 					data: [
 						{
 							name: "Tutores | Salud",
-							y: {{100-stats['tutores_over_all']|int}},
+							y: {{stats['tutores_over_all']|int}},
 							color: "#BA5FD3"
 						}, {
 							name: "Tutores | Sobrecarga",
-							y: {{stats['tutores_over_all']|int}},
+							y: {{100-stats['tutores_over_all']|int}},
 							color: "#f5f5f5",
 							states: {
 								hover: {
@@ -65,11 +65,11 @@
 					data: [
 						{
 							name: "Equipo educativo | Salud",
-							y: {{100-30}},
+							y: {{stats['profesores_over_all']|int}},
 							color: "#ec407a"
 						}, {
 							name: "Equipo educativo | Sobrecarga",
-							y: {{30}},
+							y: {{100-stats['profesores_over_all']|int}},
 							color: "#f5f5f5",
 							states: {
 								hover: {
@@ -83,7 +83,7 @@
 		});
 	</script>
 {% endmacro %}
-{% macro highcharts_admin_tutorias_exito_evolucion(char_id, color, df_data, df_media) %}
+{% macro highcharts_admin_profesores_activos_evolucion(char_id, color, df_data, df_media) %}
 	<div id="{{char_id | safe}}" class="chart" style="height: 300px"></div>
 	<script>
 		Highcharts.stockChart("{{char_id | safe }}", {
@@ -145,7 +145,7 @@
 				},
 				floor: 0,
 				title: {
-					text: "% participacion"
+					text: "% profesores"
 				},
 				opposite: false,
 				plotLines: [
@@ -173,7 +173,18 @@
 					tooltip: {
 						pointFormat: "participiacion: {point.y}%"
 					},
-					data: {{df_data | safe}}
+					data: {{df_data | safe}},
+					marker: {
+						fillColor: "#fff",
+						lineWidth: 2,
+						lineColor: null
+					},
+					shadow: {
+						color: "#616161",
+						width: 3,
+						offsetX: 2,
+						offsetY: 2
+					}
 				}
 			]
 		});
@@ -465,7 +476,6 @@
 				}
 			},
 			yAxis: {
-				// labels: { 	format: "{value} %" },
 				gridLineColor: Highcharts.getOptions().colors_gray["gray-500"],
 				min: 0,
 				title: {
@@ -597,7 +607,7 @@
 					marker: {
 						fillColor: "#fff",
 						lineWidth: 2,
-						lineColor: null // inherit from series
+						lineColor: null
 					}
 				}, {
 					type: "column",
@@ -642,7 +652,7 @@
 		});
 	</script>
 {% endmacro %}
-{% macro highcharts_admin_tutorias_exito_frecuencia(char_id, color, df_data) %}
+{% macro highcharts_admin_profesores_activos_evolucion_frecuencia(char_id, color, df_data) %}
 	<div id="{{char_id | safe}}" class="chart" style="height: 300px"></div>
 	<script>
 		Highcharts.chart("{{char_id | safe }}", {
@@ -659,7 +669,7 @@
 					format: "{value} %"
 				},
 				title: {
-					text: "% participacion"
+					text: "% de éxito de una tutoría"
 				},
 				crosshair: {
 					width: 1,
@@ -673,7 +683,7 @@
 				gridLineColor: Highcharts.getOptions().colors_gray["gray-500"],
 				min: 0,
 				title: {
-					text: "% tutorias"
+					text: "% de cantidad total de tutorías"
 				}
 			},
 			plotOptions: {
@@ -685,13 +695,25 @@
 				{
 					type: "line",
 					color: "{{color}}",
-					name: "tutorias",
+					name: "tutoria",
 					showInLegend: false,
 					tooltip: {
-						headerFormat: "participacion: {point.x}% <br>",
-						pointFormat: "tutorias: {point.y}%"
+						// headerFormat: "docentes que resonden: {point.x:.0f}% <br>",
+						headerFormat: null,
+						pointFormat: "{point.y:.0f}% de las tutorias contestadas al {point.x:.0f}% "
 					},
-					data: {{df_data | safe}}
+					data: {{df_data | safe}},
+					marker: {
+						fillColor: "#fff",
+						lineWidth: 2,
+						lineColor: null
+					},
+					shadow: {
+						color: "#616161",
+						width: 3,
+						offsetX: 2,
+						offsetY: 2
+					}
 				}
 			]
 		});
@@ -785,7 +807,7 @@
 						marker: {
 							fillColor: "#fff",
 							lineWidth: 2,
-							lineColor: null // inherit from series
+							lineColor: null
 						},
 						shadow: {
 							color: "#616161",
