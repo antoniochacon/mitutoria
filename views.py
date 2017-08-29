@@ -166,6 +166,8 @@ def admin_usuario_edit_html(params={}):
             settings_edit_ban = usuario_edit_form.ban.data
             settings_email_validated = usuario_edit_form.email_validated.data
             settings_email_robinson = usuario_edit_form.email_robinson.data
+
+
             params['usuario_edit_link'] = True
             if not settings_edit_ban:
                 settings_edit_ban = False
@@ -180,9 +182,8 @@ def admin_usuario_edit_html(params={}):
                 settings_sql.ban = settings_edit_ban
                 settings_sql.email_validated = settings_email_validated
                 settings_sql.email_robinson = settings_email_robinson
-                usuario_sql = session_sql.query(User).filter(User.id == current_usuario_id).first()
 
-                # usuario_sql.email = usuario_edit_form.email.data
+                usuario_sql = session_sql.query(User).filter(User.id == current_usuario_id).first()
                 usuario_password_new = usuario_edit_form.password.data
 
                 if usuario_password_new:

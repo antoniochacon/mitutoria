@@ -50,8 +50,6 @@ class Usuario_Edit (Form):
     email_validated = BooleanField('email validado')
     email_robinson = BooleanField('lista Robinson')
     show_asignaturas_analisis = BooleanField('lista Robinson')
-    diferencial = IntegerField('Diferencial advertencias', [validators.Required(message='diferencial es obligatorio'),
-                                                            validators.NumberRange(min=0, max=100, message='debe estar entre 0 y 100')])
     role = StringField('role', [validators.length(min=3, message='role debe tener minimo 3 caracteres'),
                                 validators.length(max=80, message='role debe tener maximo 25 caracteres')])
     ban = BooleanField('ban')

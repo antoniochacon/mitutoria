@@ -1,16 +1,113 @@
-<a data-toggle="collapse" href="#vista_general" class="collapse_header_1" aria-expanded="true" title="Analisis del cuestionario">
+<a data-toggle="collapse" href="#vista_general" class="collapse_header_1" aria-expanded="false" title="Analisis del cuestionario">
 	<i class="material-icons vertical-center">expand_more</i>
 	Vista general
 </a>
 <div class="collapse show" id="vista_general">
 	<div class="row pt-2">
+		<!-- ********************************************************* -->
+		<div class="col-sm-12 col-md-6 pb-3">
+			<div class="card border-mutted">
+				<div class="card-header text-center strong bg-info text-dark ">
+					<div class="text-truncate">
+						Estado de salud
+						<span class="small">
+							| tutores y equipo educativo</span>
+					</div>
+				</div>
+				<div class="card-body">
+					{% if diferencial_check(settings().diferencial, 10, 10,) %}
+						<span class="badge text-white badge-secondary float-right">
+							resultados !
+						</span>
+					{% endif %}
+					{% if diferencial_check(settings().diferencial, 10, 10) %}
+						<span class="badge badge-primary float-right mr-1">
+							actitud !
+						</span>
+					{% endif %}
+					{{highcharts_salud_tutores_equipo_educativo(char_id='salud_tutores_equipo_educativo', color='#BA5FD3', stats=stats)}}
+				</div>
+			</div>
+		</div>
+		<!-- ****************************************** -->
+		<div class="col-sm-12 col-md-6 pb-3">
+			<div class="card border-mutted">
+				<div class="card-header text-center strong bg-info text-dark ">
+					<div class="text-truncate">
+						Detalles de usuarios
+						<span class="small">
+							| tutores y equipo educativo</span>
+					</div>
+				</div>
+				<div class="card-body">
+					<div class="pl-2">
+						<div class="pt-2">
+							email no validados
+							<span class="badge badge-secondary float-right" title="{{stats['emails_no_validados_percent']|int}}% de los emails no validados">
+								{{stats['emails_no_validados']}}
+								|
+								{{stats['emails_no_validados_percent']|int}}%
+							</span>
+							<div class="progress rounded-0">
+								<div class="progress-bar bg-secondary" role="progressbar" aria-valuemin="0" aria-valuemax="100" style="height: 5px; width:{{stats['emails_no_validados_percent']|int}}%;"></div>
+							</div>
+						</div>
+						<div class="pt-2">
+							lista Robinson
+							<span class="badge badge-secondary float-right" title="{{stats['emails_robinson_percent']|int}}% de usuarios en lista Robinson">
+								{{stats['emails_robinson']}}
+								|
+								{{stats['emails_robinson_percent']|int}}%
+							</span>
+							<div class="progress rounded-0">
+								<div class="progress-bar bg-secondary" role="progressbar" aria-valuemin="0" aria-valuemax="100" style="height: 5px; width:{{stats['emails_robinson_percent']|int}}%;"></div>
+							</div>
+						</div>
+						<div class="pt-2">
+							usuarios baneados
+							<span class="badge badge-secondary float-right" title="{{stats['emails_ban']|int}}% usuarios baneados">
+								{{stats['emails_ban']}}
+								|
+								{{stats['emails_ban_percent']|int}}%
+							</span>
+							<div class="progress rounded-0">
+								<div class="progress-bar bg-secondary" role="progressbar" aria-valuemin="0" aria-valuemax="100" style="height: 5px; width: {{stats['emails_ban_percent']|int}}%;"></div>
+							</div>
+						</div>
+						<div class="pt-2">
+							preguntas no usadas [min:{{stats['preguntas_por_cuestionario_min']|int}}
+							| media:
+							{{stats['preguntas_por_cuestionario_media']|int}}
+							| max:
+							{{stats['preguntas_por_cuestionario_max']|int}}]
+							<span class="badge badge-secondary float-right" title="{{stats['preguntas_por_cuestionario_no_usadas_percent']|int}}% preguntas sin usar">
+								{{stats['preguntas_por_cuestionario_no_usadas']}}
+								|
+								{{stats['preguntas_por_cuestionario_no_usadas_percent']|int}}%
+							</span>
+							<div class="progress rounded-0">
+								<div class="progress-bar bg-secondary" role="progressbar" aria-valuemin="0" aria-valuemax="100" style="height: 5px; width:{{stats['preguntas_por_cuestionario_no_usadas_percent']|int}}%;"></div>
+							</div>
+						</div>
+						<div class="pt-2">
+							timeout tutorias desactivado
+							<span class="badge badge-secondary float-right" title="{{stats['emails_tutoria_timeout_percent']|int}}% timeout tutorias desactivado">
+								{{stats['emails_tutoria_timeout']}}
+								|
+								{{stats['emails_tutoria_timeout_percent']|int}}%
+							</span>
+							<div class="progress rounded-0">
+								<div class="progress-bar bg-secondary" role="progressbar" aria-valuemin="0" aria-valuemax="100" style="height: 5px; width:{{stats['emails_tutoria_timeout_percent']|int}}%;"></div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<!-- *************************************************** -->
 		<div class="col-md-6 pb-4">
 			<div class="bg-gray text-white pl-2 pt-1 pb-1">
 				tutores
-				<span class="badge float-right badge-info mr-2 mt-1" title="total de usuarios">
-					{{stats['usuarios_all']}}
-					{{singular_plural('usuario','usuarios',stats['usuarios_all'])}}
-				</span>
 			</div>
 			<div class="progress rounded-0" title="media parametros">
 				<div class="progress-bar bg-primary" role="progressbar" aria-valuemin="0" aria-valuemax="100" style="height: 7px; width:{{stats['tutores_over_all']|int}}%;"></div>
@@ -77,9 +174,10 @@
 				</div>
 			</div>
 		</div>
-		<div class="col-md-6 pb-4">
+		<!-- ********************************************** -->
+		<!-- <div class="col-md-6 pb-4">
 			<div class="bg-gray text-white pl-2 pt-1 pb-1">
-				tutorias
+				tutorias [poner 2 graficas circulares que indiquen la salud de tutores y profesores, cada una de ellas con sus parametros propios de media. Seria interesante poner este cuadro a la izquierda y asi estar arriba como resumen general ]
 				<span class="badge float-right badge-info mr-2 mt-1" title="total de tutorias">
 					min:
 					{{stats['tutorias_por_usuario_min']}}
@@ -119,10 +217,11 @@
 					</div>
 				</div>
 			</div>
-		</div>
+		</div> -->
+		<!-- **************************************************** -->
 	</div>
 </div>
-<a data-toggle="collapse" href="#tutorias_cuestionario" class="collapse_header_1" aria-expanded="true" title="Actividad cuestionario">
+<a data-toggle="collapse" href="#tutorias_cuestionario" class="collapse_header_1" aria-expanded="false" title="Actividad cuestionario">
 	<i class="material-icons vertical-center">expand_more</i>
 	Actividad cuestionario
 </a>
@@ -131,7 +230,7 @@
 		{{highcharts_admin_cuestionario_actividad(char_id='cuestionario_actividad', color='#BA5FD3', df_data=stats['cuestionario_actividad'])}}
 	</div>
 </div>
-<a data-toggle="collapse" href="#tutorias_evolucion" class="collapse_header_1" aria-expanded="true" title="Evolucion participacion del profesorado">
+<a data-toggle="collapse" href="#tutorias_evolucion" class="collapse_header_1" aria-expanded="false" title="Evolucion participacion del profesorado">
 	<i class="material-icons vertical-center">expand_more</i>
 	Evolucion participacion
 </a>
@@ -140,7 +239,7 @@
 		{{highcharts_admin_tutorias_exito_evolucion(char_id='tutorias_exito_evolucion', color='#BA5FD3', df_data=stats['tutorias_exito_evolucion'], df_media=stats['tutorias_exito_evolucion_media'])}}
 	</div>
 </div>
-<a data-toggle="collapse" href="#tutorias_frecuencias_relativas" class="collapse_header_1" aria-expanded="true" title="frecuencias relativas">
+<a data-toggle="collapse" href="#tutorias_frecuencias_relativas" class="collapse_header_1" aria-expanded="false" title="frecuencias relativas">
 	<i class="material-icons vertical-center">expand_more</i>
 	Participacion frecuencias relativas
 </a>
@@ -149,7 +248,7 @@
 		{{highcharts_admin_tutorias_exito_frecuencia(char_id='tutorias_exito_frecuencia', color='#BA5FD3', df_data=stats['tutorias_exito_frecuencia'])}}
 	</div>
 </div>
-<a data-toggle="collapse" href="#tutorias_frecuencias_absolutas" class="collapse_header_1" aria-expanded="true" title="frecuencias absolutas">
+<a data-toggle="collapse" href="#tutorias_frecuencias_absolutas" class="collapse_header_1" aria-expanded="false" title="frecuencias absolutas">
 	<i class="material-icons vertical-center">expand_more</i>
 	Participacion frecuencias absolutas
 </a>
@@ -158,9 +257,13 @@
 		{{highcharts_admin_tutorias_exito_frecuencia(char_id='tutorias_exito_frecuencia_absoluta', color='#BA5FD3', df_data=stats['tutorias_exito_frecuencia_absoluta'])}}
 	</div>
 </div>
-<a data-toggle="collapse" href="#usuarios_mas_activos" class="collapse_header_1" aria-expanded="true" title="Analisis del cuestionario">
+<a data-toggle="collapse" href="#usuarios_mas_activos" class="collapse_header_1" aria-expanded="false" title="Analisis del cuestionario">
 	<i class="material-icons vertical-center">expand_more</i>
 	TOP-20 usuarios activos
+	<span class="badge float-right badge-info mr-2 mt-1" title="total de usuarios">
+		{{stats['usuarios_all']}}
+		{{singular_plural('usuario','usuarios',stats['usuarios_all'])}}
+	</span>
 </a>
 <div class="collapse" id="usuarios_mas_activos">
 	<div class="pt-2">

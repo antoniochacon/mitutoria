@@ -52,7 +52,7 @@ def emails_no_validados_count():
         emails_no_validos_percent = emails_no_validos_count / usuarios_all_count() * 100
         return emails_no_validos_count, emails_no_validos_percent
     except:
-        return 1,1
+        return 1, 1
 
 
 def emails_robinson_count():
@@ -61,7 +61,7 @@ def emails_robinson_count():
         emails_robinson_percent = emails_robinson_count / usuarios_all_count() * 100
         return emails_robinson_count, emails_robinson_percent
     except:
-        return 1,1
+        return 1, 1
 
 
 def emails_ban_count():
@@ -70,7 +70,7 @@ def emails_ban_count():
         emails_ban_percent = emails_ban_count / usuarios_all_count() * 100
         return emails_ban_count, emails_ban_percent
     except:
-        return 1,1
+        return 1, 1
 
 
 def tutoria_timeout_count():
@@ -79,7 +79,7 @@ def tutoria_timeout_count():
         emails_tutoria_timeout_percent = emails_tutoria_timeout_count / usuarios_all_count() * 100
         return emails_tutoria_timeout_count, emails_tutoria_timeout_percent
     except:
-        return 1,1
+        return 1, 1
 
 
 def tutorias_sin_respuesta_count():
@@ -94,7 +94,7 @@ def tutorias_sin_respuesta_count():
         tutorias_sin_respuesta_percent = tutorias_sin_respuesta_count / tutorias_all_count() * 100
         return tutorias_sin_respuesta_count, tutorias_sin_respuesta_percent
     except:
-        return 1,1
+        return 1, 1
 
 
 def preguntas_por_cuestionario():
@@ -111,7 +111,7 @@ def preguntas_por_cuestionario():
         preguntas_por_cuestionario_no_usadas_percent = preguntas_por_cuestionario_no_usadas_count / preguntas_all_count() * 100
         return preguntas_por_cuestionario_min, preguntas_por_cuestionario_media, preguntas_por_cuestionario_max, preguntas_por_cuestionario_no_usadas_count, preguntas_por_cuestionario_no_usadas_percent
     except:
-        return 1,1,1,1,1
+        return 1, 1, 1, 1, 1
 
 
 def tutorias_por_usuario_count():
@@ -126,7 +126,7 @@ def tutorias_por_usuario_count():
         tutorias_por_usuario_max = max(tutorias_por_usuario_list)
         return tutorias_por_usuario_min, tutorias_por_usuario_media, tutorias_por_usuario_max,
     except:
-        return 1,1,1
+        return 1, 1, 1
 
 
 def cuestionario_actividad():
@@ -163,7 +163,7 @@ def evolucion_tutorias_exito_grupo(current_grupo_id):
         tutoria_profesores_responden_evolucion_media = int(mean(media_lista))
         return tutoria_profesores_responden_evolucion, tutoria_profesores_responden_evolucion_media
     except:
-        return 1,1
+        return 1, 1
 
 
 def profesores_sin_responder_count():
@@ -194,7 +194,7 @@ def profesores_sin_responder_count():
         profesores_sin_responder_percent = profesores_sin_responder_count / informes_posibles_count * 100
         return profesores_sin_responder_count, profesores_sin_responder_percent, tutoria_profesores_responden_evolucion, tutoria_profesores_responden_valor_frecuencia, tutoria_profesores_responden_valor_frecuencia_absoluta, tutoria_profesores_responden_evolucion_media
     except:
-        return 1,1,1,1,1,1
+        return 1, 1, 1, 1, 1, 1
 
 
 # XXX FIN admin_estadisticas
