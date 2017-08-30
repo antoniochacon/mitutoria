@@ -43,7 +43,6 @@ class Settings (Base):
     tutoria_timeout = Column(Boolean, default=True)
     show_asignaturas_analisis = Column(Boolean, default=True)
     diferencial = Column(Integer, default=25)
-    gmail_api = Column(JSON)
     grupo_activo_id = Column(Integer)
     grupos = relationship('Grupo', backref='settings', lazy='dynamic', cascade='delete')
     preguntas = relationship('Association_Settings_Pregunta', cascade='delete')
