@@ -26,32 +26,20 @@ APPLICATION_NAME = 'mi tutoria'
 
 
 def get_credentials():
-    """Gets valid user credentials from storage.
 
-    If nothing has been stored, or if the stored credentials are invalid,
-    the OAuth2 flow is completed to obtain the new credentials.
+    # NOTE si no existe el archivo 'gmail_credentials.json' lo crea. Hay que hacerlo en modo local y luego subirlo al servidor (NO es capaz de hacerlo directamente en Heroku)
+    # credential_path = 'static/credentials/gmail_credentials.json'
+    # store = Storage(credential_path)
+    # credentials = store.get()
+    # if not credentials or credentials.invalid:
+    #     flow = client.flow_from_clientsecrets(CLIENT_SECRET_FILE, SCOPES)
+    #     flow.user_agent = APPLICATION_NAME
+    #     if flags:
+    #         credentials = tools.run_flow(flow, store, flags)
 
-    Returns:
-        Credentials, the obtained credential.
-    """
-    home_dir = os.path.expanduser('~')
-    credential_dir = os.path.join(home_dir, '.credentials')
-    if not os.path.exists(credential_dir):
-        os.makedirs(credential_dir)
-    # credential_path = os.path.join(credential_dir,'gmail_credentials.json')
-    credential_path = 'static/credentials/gmail_credentials.json'
-    store = Storage(credential_path)
-    credentials = store.get()
-
-# NOTE toma la credentials del servidor (local o heroku)
+    # NOTE suponiendo que tengo el archivo 'gmail_credentials.json' me limito a leerlo.
     store = Storage('static/credentials/gmail_credentials.json')
     credentials = store.get()
-
-    if not credentials or credentials.invalid:
-        flow = client.flow_from_clientsecrets(CLIENT_SECRET_FILE, SCOPES)
-        flow.user_agent = APPLICATION_NAME
-        if flags:
-            credentials = tools.run_flow(flow, store, flags)
     return credentials
 
 
