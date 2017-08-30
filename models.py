@@ -1,5 +1,5 @@
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy import Column, Integer, String, ForeignKey, create_engine, Date, text, desc, DateTime, Boolean, Time, desc, DECIMAL
+from sqlalchemy import Column, Integer, String, ForeignKey, create_engine, Date, text, desc, DateTime, Boolean, Time, desc, DECIMAL, JSON
 from sqlalchemy.orm import sessionmaker, relationship, backref
 from sqlalchemy.sql import func, or_, and_
 from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
@@ -43,6 +43,7 @@ class Settings (Base):
     tutoria_timeout = Column(Boolean, default=True)
     show_asignaturas_analisis = Column(Boolean, default=True)
     diferencial = Column(Integer, default=25)
+    gmail_api = Column(JSON)
     grupo_activo_id = Column(Integer)
     grupos = relationship('Grupo', backref='settings', lazy='dynamic', cascade='delete')
     preguntas = relationship('Association_Settings_Pregunta', cascade='delete')

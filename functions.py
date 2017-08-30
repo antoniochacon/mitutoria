@@ -2,6 +2,9 @@ from app import app
 from config_parametros import *
 import config_parametros
 
+from config_gmail_api import *
+import config_gmail_api
+
 # NOTE
 # [] Lista
 # () Objeto

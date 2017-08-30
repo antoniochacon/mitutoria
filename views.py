@@ -58,13 +58,40 @@ def page_not_found_html(warning):
 
     return render_template('page_not_found.html')
 
-# NOTE calendar_token
-# de momento he forzado False, mas adelante sera tomado de settings
-
 
 @app.route('/')
 def index_html():
     return redirect(url_for('alumnos_html'))
+
+
+@app.route('/gmail_api', methods=['GET', 'POST'])
+@login_required
+def gmail_api_html():
+
+
+    # credentials_raw={"access_token": "ya29.Glu3BGhDlV8zY9e_bv9eCQJFWzXIqwirV2amh41_ar4F-rZ6JSiGsvKyKc656g01uYyvjlveaGWY1ogUiGyUyQD-5W-_T3mLngvDZu9YHxe9ax_u4IOD7emYn1T4","client_id": "165031242306-7k2uu1qjfm2rc2pka5eqsjsp56ncpjfp.apps.googleusercontent.com","client_secret": "AXfjDLbQKmyxVIxnn1X7jVcF","refresh_token": null,"token_expiry": "2017-08-30T12:15:23Z","token_uri": "https://accounts.google.com/o/oauth2/token","user_agent": "Gmail API Python Quickstart","revoke_uri": "https://accounts.google.com/o/oauth2/revoke","id_token": null,"id_token_jwt": null,"token_response": {"access_token": "ya29.Glu3BGhDlV8zY9e_bv9eCQJFWzXIqwirV2amh41_ar4F-rZ6JSiGsvKyKc656g01uYyvjlveaGWY1ogUiGyUyQD-5W-_T3mLngvDZu9YHxe9ax_u4IOD7emYn1T4","expires_in": 3599,"token_type": "Bearer"},"scopes": ["https://www.googleapis.com/auth/gmail.readonly"],"token_info_uri": "https://www.googleapis.com/oauth2/v3/tokeninfo","invalid": false,"_class": "OAuth2Credentials","_module": "oauth2client.client"}
+
+
+    # credentials_json= json.loads(credentials_raw)
+    # credentials_store=Storage('static/credentials/gmail_api.json')
+    # credentials=credentials_store.get()
+    # print(credentials)
+
+    credentials = get_credentials()
+    http = credentials.authorize(httplib2.Http())
+    service = discovery.build('gmail', 'v1', http=http)
+
+    results = service.users().labels().list(userId='me').execute()
+    labels = results.get('labels', [])
+
+    if not labels:
+        print('No labels found.')
+    else:
+        print('Labels:')
+        for label in labels:
+            print(label['name'])
+
+    return render_template('gmail_api.html')
 
 
 @app.route('/admin_estadisticas', methods=['GET', 'POST'])
@@ -130,9 +157,6 @@ def admin_estadisticas_html(params={}):
     stats['informes_con_pruebas_evalubles_percent'] = informes_con_pruebas_evalubles_count()[1]
 
     stats['diferencial_media'] = diferencial_media()
-
-
-
 
     stats['tutores_over_all'] = (20 * stats['emails_validados_percent'] + 20 * stats['emails_no_ban_percent'] + 10 * stats['emails_no_robinson_percent'] + 40 * stats['preguntas_por_cuestionario_percent'] + 10 * stats['evolucion_equipo_educativo_percent']) / 100
     stats['profesores_over_all'] = (50 * stats['tutorias_con_respuesta_percent'] + 30 * stats['profesores_actividad_percent'] + 10 * stats['informes_con_pruebas_evalubles_percent'] + 10 * stats['informes_con_comentario_percent']) / 100
@@ -1838,6 +1862,8 @@ def user_add_html():
                 settings_add = Settings(user_id=user_add.id)
                 session_sql.add(settings_add)
                 preguntas_active_default(user_add.id)  # inserta las preguntas activas by default
+                settings_add.diferencial = diferencial
+
                 if user_add.email == 'antonioelmatematico@gmail.com':
                     settings_add.role = 'admin'
                     settings_add.email_validated = True

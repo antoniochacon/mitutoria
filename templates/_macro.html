@@ -1,3 +1,55 @@
+{% macro nav_tabs_admin(tab_active, params_args) %}
+	{{nav_tabs(link_active, params_args=params_args, dic={'Cuestionario':'admin_cuestionario', 'Citas':'admin_citas', 'Usuarios':'admin_usuarios', 'Estadisticas':'admin_estadisticas'})}}
+{% endmacro %}
+{% macro nav_tabs(tab_active, params_args, dic) %}
+	<div class="pb-2">
+		<ul class="nav nav-tabs">
+			{% for tab_key in dic.keys() %}
+				<li class="nav-items">
+					<a class="nav-link {% if tab_key==tab_active %} active {% endif %}" href="/{{dic[tab_key]}}{% if params_args %}/{{params_args}}{% endif %}">{{tab_key}}</a>
+				</li>
+			{% endfor %}
+		</ul>
+	</div>
+{% endmacro %}
+{% macro nav_bar_top(link_active, params, current_user) %}
+	{% if current_user.is_authenticated %}
+		{{nav_bar(link_active, params=params, dic={'ayuda':'wellcome', 'alumnos':'alumnos', 'asignaturas':'asignaturas', 'opciones':'settings_cuestionario', 'admin':'admin_cuestionario', 'gmail_api':'gmail_api', 'logout':'logout'})}}
+	{% else %}
+		{{nav_bar(link_active, params=params,  dic = {'inciar sesión': 'login','nueva cuenta': 'user_add'})}}
+	{% endif %}
+{% endmacro %}
+{% macro nav_bar(link_active, params, params_args, dic, current_user) %}
+	<nav class="navbar fixed-top navbar-expand-md navbar-dark bg-primary z-depth-1-less">
+		<button class="navbar-toggler" role="button" type="button" data-toggle="collapse" data-target="#navbar" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+			<span class="navbar-toggler-icon"></span>
+		</button>
+		<a class="navbar-brand strong" href="/">mi tutoria</a>
+		<div class="collapse navbar-collapse" id="navbar">
+			<ul class="navbar-nav mr-auto">
+				{% for link_key in dic.keys() %}
+					{% if link_key != "admin" and link_key != "ayuda" %}
+						<li class="nav-item {% if link_key==link_active %} active strong {% endif %}">
+							<a class="nav-link" href="/{{dic[link_key]}}{% if params_args %}/{{params_args}}{% endif %}">{{link_key}}
+								{% if link_key == 'logout' %}
+									[{{user_by_id(settings().id).username}}]
+								{% endif %}
+							</a>
+						</li>
+					{% elif link_key == 'ayuda' and settings().visit_number <= 50 %}
+						<li class="nav-item {% if link_key==link_active %} active strong {% endif %}">
+							<a class="nav-link" href="/{{dic[link_key]}}{% if params_args %}/{{params_args}}{% endif %}">{{link_key}}</a>
+						</li>
+					{% elif link_key == 'admin' and settings().role == 'admin' %}
+						<li class="nav-item {% if link_key==link_active %} active strong {% endif %}">
+							<a class="nav-link" href="/{{dic[link_key]}}{% if params_args %}/{{params_args}}{% endif %}">{{link_key}}</a>
+						</li>
+					{% endif %}
+				{% endfor %}
+			</ul>
+		</div>
+	</nav>
+{% endmacro %}
 {% macro highcharts_salud_tutores_equipo_educativo(char_id, color, df_data_1, df_data_2, stats) %}
 	{% set alumno_id = 5 %}
 	<div id="{{char_id | safe}}" class="chart" style="height: 200px"></div>
@@ -953,58 +1005,6 @@
 			]
 		});
 	</script>
-{% endmacro %}
-{% macro nav_tabs_admin(tab_active, params_args) %}
-	{{nav_tabs(link_active, params_args=params_args, dic={"Cuestionario":"admin_cuestionario", "Citas":"admin_citas", "Usuarios":"admin_usuarios", "Estadisticas":"admin_estadisticas"})}}
-{% endmacro %}
-{% macro nav_tabs(tab_active, params_args, dic) %}
-	<div class="pb-2">
-		<ul class="nav nav-tabs">
-			{% for tab_key in dic.keys() %}
-				<li class="nav-items">
-					<a class="nav-link {% if tab_key==tab_active %} active {% endif %}" href="/{{dic[tab_key]}}{% if params_args %}/{{params_args}}{% endif %}">{{tab_key}}</a>
-				</li>
-			{% endfor %}
-		</ul>
-	</div>
-{% endmacro %}
-{% macro nav_bar_top(link_active, params, current_user) %}
-	{% if current_user.is_authenticated %}
-		{{nav_bar(link_active, params=params, dic={"ayuda":"wellcome", "alumnos":"alumnos", "asignaturas":"asignaturas", "opciones":"settings_cuestionario", "admin":"admin_cuestionario", "logout":"logout"})}}
-	{% else %}
-		{{nav_bar(link_active, params=params,  dic = {"inciar sesión": "login","nueva cuenta": "user_add"})}}
-	{% endif %}
-{% endmacro %}
-{% macro nav_bar(link_active, params, params_args, dic, current_user) %}
-	<nav class="navbar fixed-top navbar-expand-md navbar-dark bg-primary z-depth-1-less">
-		<button class="navbar-toggler" role="button" type="button" data-toggle="collapse" data-target="#navbar" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-			<span class="navbar-toggler-icon"></span>
-		</button>
-		<a class="navbar-brand strong" href="/">mi tutoria</a>
-		<div class="collapse navbar-collapse" id="navbar">
-			<ul class="navbar-nav mr-auto">
-				{% for link_key in dic.keys() %}
-					{% if link_key != "admin" and link_key != "ayuda" %}
-						<li class="nav-item {% if link_key==link_active %} active strong {% endif %}">
-							<a class="nav-link" href="/{{dic[link_key]}}{% if params_args %}/{{params_args}}{% endif %}">{{link_key}}
-								{% if link_key == "logout" %}
-									[{{user_by_id(settings().id).username}}]
-								{% endif %}
-							</a>
-						</li>
-					{% elif link_key == "ayuda" and settings().visit_number <= 50 %}
-						<li class="nav-item {% if link_key==link_active %} active strong {% endif %}">
-							<a class="nav-link" href="/{{dic[link_key]}}{% if params_args %}/{{params_args}}{% endif %}">{{link_key}}</a>
-						</li>
-					{% elif link_key == "admin" and settings().role == "admin" %}
-						<li class="nav-item {% if link_key==link_active %} active strong {% endif %}">
-							<a class="nav-link" href="/{{dic[link_key]}}{% if params_args %}/{{params_args}}{% endif %}">{{link_key}}</a>
-						</li>
-					{% endif %}
-				{% endfor %}
-			</ul>
-		</div>
-	</nav>
 {% endmacro %}
 {% macro checkbox_funky(tipo_a, tipo_b, tipo, prefix) %}
 	<span class="text-danger">macro checkbox_funky a reemplazar</span>
