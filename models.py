@@ -1,5 +1,5 @@
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy import Column, Integer, String, ForeignKey, create_engine, Date, text, desc, DateTime, Boolean, Time, desc, DECIMAL, JSON
+from sqlalchemy import Column, Integer, String, ForeignKey, create_engine, Date, text, desc, DateTime, Boolean, Time, desc, DECIMAL
 from sqlalchemy.orm import sessionmaker, relationship, backref
 from sqlalchemy.sql import func, or_, and_
 from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
