@@ -63,28 +63,6 @@ def page_not_found_html(warning):
 def index_html():
     return redirect(url_for('alumnos_html'))
 
-
-@app.route('/gmail_api', methods=['GET', 'POST'])
-@login_required
-def gmail_api_html():
-
-    credentials = get_credentials()
-    http = credentials.authorize(httplib2.Http())
-    service = discovery.build('gmail', 'v1', http=http)
-
-    results = service.users().labels().list(userId='me').execute()
-    labels = results.get('labels', [])
-
-    if not labels:
-        print('No labels found.')
-    else:
-        print('Labels:')
-        for label in labels:
-            print(label['name'])
-
-    return render_template('gmail_api.html')
-
-
 @app.route('/admin_estadisticas', methods=['GET', 'POST'])
 @app.route('/admin_estadisticas/<params>', methods=['GET', 'POST'])
 @login_required

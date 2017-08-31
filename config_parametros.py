@@ -13,8 +13,6 @@ import json #NOTE necesarior para google API
 # ****************************************
 # XXX: mail threading
 import threading
-from flask_mail import Mail, Message
-from config_mail import *
 # ****************************************
 import arrow
 utc = arrow.utcnow()
@@ -70,8 +68,3 @@ index_link = 'https://mitutoria.herokuapp.com/'
 password_reset_link = 'https://mitutoria.herokuapp.com/password_reset/'
 diferencial=25
 email_time_sleep = 10
-# ****************************************
-# FIXME hay que buscar otra forma, estos contadores son compartidos por todos los usuarios.
-# collapse_asignatura_edit_alumnos_contador = 0
-# collapse_alumno_edit_asignaturas_contador = 0
-# ****************************************

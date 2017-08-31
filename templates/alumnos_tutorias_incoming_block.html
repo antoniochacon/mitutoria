@@ -39,11 +39,12 @@
 	{% else %}
 		<div class="padding_contenido text-mutted">
 			{% if cita_random() %}
-				"{{cita_random().frase}}" .</span>
-			<span class="text-info">
-				-
-				{{cita_random().autor}}</span>
+				"{{cita_random().frase}}".
+				<span class="text-info">
+					-
+					{{cita_random().autor}}
+				</span>
+			{% endif %}
 		</div>
 	{% endif %}
-{% endif %}
 </div>

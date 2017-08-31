@@ -168,6 +168,8 @@ def tutorias_con_respuesta_count():
         return 1, 1
 
 # FIXME try falla
+
+
 def preguntas_por_cuestionario():
     try:
         preguntas_por_cuestionario = []
@@ -365,56 +367,29 @@ def connenction_check():
         print('xxx ERROR xxx')
 
 
-# XXX: envio de mails por threading
 # *****************************************************************
-def send_email_password_reset(current_user_id):
-    msg = Message('Cambiar password', sender='mitutoria', recipients=[user_by_id(current_user_id).email])
-    # mail texto plano
-    msg.body = 'Cambiar password'
-    # mail HTML
-    msg.html = render_template('email_password_reset_request.html', current_user_id=current_user_id, password_reset_link=password_reset_link, index_link=index_link)
-    mail.send(msg)
-
-
-def send_email_password_reset_request_asincrono(current_user_id):
-    @copy_current_request_context
-    def send_email_password_reset_request_process(current_user_id):
-        send_email_password_reset(current_user_id)
-    send_email_password_reset_request_threading = threading.Thread(name='send_email_password_reset_request_thread', target=send_email_password_reset_request_process, args=(current_user_id,))
-    send_email_password_reset_request_threading.start()
-
-
-def send_email_validate(user_id):
-    msg = Message('Verificar email', sender='mitutoria', recipients=[user_by_id(user_id).email])
-    # mail texto plano
-    msg.body = 'Verificación de email'
-    # mail HTML
-    msg.html = render_template('email_validate.html', user_id=user_id, email_validate_link=email_validate_link, index_link=index_link)
-    mail.send(msg)
-
-
-def send_email_validate_asincrono(user_id):
-    @copy_current_request_context
-    def send_email_validate_process(user_id):
-        send_email_validate(user_id)
-    send_email_validate_threading = threading.Thread(name='send_email_validate_thread', target=send_email_validate_process, args=(user_id,))
-    send_email_validate_threading.start()
-
+# XXX: envio de mails por threading (gmail API)
+# *****************************************************************
 
 def send_email_tutoria(alumno, tutoria):
-    with mail.connect() as conn:
-        for asignatura in alumno_asignaturas(alumno.id):
-            msg = Message('Tutoria | %s | %s' % (grupo_activo().nombre, alumno.nombre), sender='mitutoria | %s' % grupo_activo().tutor, recipients=[asignatura.email])
-            # mail texto plano
-            msg.body = 'Informe para la tutoria de ' + alumno.nombre + ' ' + alumno.apellidos
-            tutoria_asignatura_add = Association_Tutoria_Asignatura(tutoria_id=tutoria.id, asignatura_id=asignatura.id)
-            session_sql.add(tutoria_asignatura_add)
-            session_sql.flush()
-            # mail HTML
-            msg.html = render_template('email_tutoria.html', tutoria=tutoria, alumno=alumno, asignatura=asignatura, tutoria_email_link=tutoria_email_link, tutoria_asignatura_id=tutoria_asignatura_add.id, index_link=index_link)
-            time.sleep(email_time_sleep)
-            conn.send(msg)
-            session_sql.commit()
+    credentials = get_credentials()
+    http = credentials.authorize(httplib2.Http())
+    service = discovery.build('gmail', 'v1', http=http)
+    sender = 'mitutoria.email@gmail.com'
+
+    for asignatura in alumno_asignaturas(alumno.id):
+        tutoria_asignatura_add = Association_Tutoria_Asignatura(tutoria_id=tutoria.id, asignatura_id=asignatura.id)
+        session_sql.add(tutoria_asignatura_add)
+        session_sql.flush()
+        # XXX envio de mail
+        # ****************************************
+        to = asignatura.email
+        subject = 'Tutoria | %s | %s' % (grupo_activo().nombre, alumno.nombre)
+        message_text = render_template('email_tutoria.html', tutoria=tutoria, alumno=alumno, asignatura=asignatura, tutoria_email_link=tutoria_email_link, tutoria_asignatura_id=tutoria_asignatura_add.id, index_link=index_link)
+        create_message_and_send(service, sender, to, subject, message_text)
+        # --------------------------------------
+        time.sleep(email_time_sleep)
+        session_sql.commit()
 
 
 def send_email_tutoria_asincrono(alumno, tutoria):
@@ -426,24 +401,73 @@ def send_email_tutoria_asincrono(alumno, tutoria):
     flash_toast('Tutoria generada para ' + Markup('<strong>') + alumno.nombre + Markup('</strong>'), 'success')
 
 
+def send_email_password_reset(current_user_id):
+    credentials = get_credentials()
+    http = credentials.authorize(httplib2.Http())
+    service = discovery.build('gmail', 'v1', http=http)
+    sender = 'mitutoria.email@gmail.com'
+    # XXX envio de mail
+    # ****************************************
+    to = user_by_id(current_user_id).email
+    subject = 'Cambiar password'
+    message_text = render_template('email_password_reset_request.html', current_user_id=current_user_id, password_reset_link=password_reset_link, index_link=index_link)
+    create_message_and_send(service, sender, to, subject, message_text)
+    # --------------------------------------
+
+
+def send_email_password_reset_request_asincrono(current_user_id):
+    @copy_current_request_context
+    def send_email_password_reset_request_process(current_user_id):
+        send_email_password_reset(current_user_id)
+    send_email_password_reset_request_threading = threading.Thread(name='send_email_password_reset_request_thread', target=send_email_password_reset_request_process, args=(current_user_id,))
+    send_email_password_reset_request_threading.start()
+
+
+def send_email_validate(user_id):
+    credentials = get_credentials()
+    http = credentials.authorize(httplib2.Http())
+    service = discovery.build('gmail', 'v1', http=http)
+    sender = 'mitutoria.email@gmail.com'
+    # XXX envio de mail
+    # ****************************************
+    to = user_by_id(user_id).email
+    subject = 'Verificación de email'
+    message_text = render_template('email_validate.html', user_id=user_id, email_validate_link=email_validate_link, index_link=index_link)
+    create_message_and_send(service, sender, to, subject, message_text)
+    # --------------------------------------
+
+
+def send_email_validate_asincrono(user_id):
+    @copy_current_request_context
+    def send_email_validate_process(user_id):
+        send_email_validate(user_id)
+    send_email_validate_threading = threading.Thread(name='send_email_validate_thread', target=send_email_validate_process, args=(user_id,))
+    send_email_validate_threading.start()
+
+
 def re_send_email_tutoria(alumno, tutoria, asignaturas_id_lista):
-    with mail.connect() as conn:
-        for asignatura_id in asignaturas_id_lista:
-            asignatura = asignatura_by_id(asignatura_id)  # FIXME creo que sera conveniente usar int(asignatura_id) [bastara hacer asignatura_id=int(asignatura_id)]
-            tutoria_asignatura_add = session_sql.query(Association_Tutoria_Asignatura).filter(Association_Tutoria_Asignatura.tutoria_id == tutoria.id, Association_Tutoria_Asignatura.asignatura_id == asignatura_id).first()
-            if tutoria_asignatura_add:
-                tutoria_asignatura_add.created_at = datetime.datetime.now()
-            else:
-                tutoria_asignatura_add = Association_Tutoria_Asignatura(tutoria_id=tutoria.id, asignatura_id=asignatura_id)
-                session_sql.add(tutoria_asignatura_add)
-            msg = Message('Tutoria | %s | %s' % (grupo_activo().nombre, alumno.nombre), sender='mitutoria | %s' % grupo_activo().tutor, recipients=[asignatura.email])
-            # mail texto plano
-            msg.body = 'Informe para la tutoria de ' + alumno.nombre + ' ' + alumno.apellidos
-            # mail HTML
-            msg.html = render_template('email_tutoria.html', tutoria=tutoria, alumno=alumno, asignatura=asignatura, tutoria_email_link=tutoria_email_link, tutoria_asignatura_id=tutoria_asignatura_add.id, index_link=index_link)
-            time.sleep(email_time_sleep)
-            conn.send(msg)
-            session_sql.commit()
+    credentials = get_credentials()
+    http = credentials.authorize(httplib2.Http())
+    service = discovery.build('gmail', 'v1', http=http)
+    sender = 'mitutoria.email@gmail.com'
+
+    for asignatura_id in asignaturas_id_lista:
+        asignatura = asignatura_by_id(asignatura_id)
+        tutoria_asignatura_add = session_sql.query(Association_Tutoria_Asignatura).filter(Association_Tutoria_Asignatura.tutoria_id == tutoria.id, Association_Tutoria_Asignatura.asignatura_id == asignatura_id).first()
+        if tutoria_asignatura_add:
+            tutoria_asignatura_add.created_at = datetime.datetime.now()
+        else:
+            tutoria_asignatura_add = Association_Tutoria_Asignatura(tutoria_id=tutoria.id, asignatura_id=asignatura_id)
+            session_sql.add(tutoria_asignatura_add)
+        # XXX envio de mail
+        # ****************************************
+        to = asignatura.email
+        subject = 'Tutoria | %s | %s' % (grupo_activo().nombre, alumno.nombre)
+        message_text = render_template('email_tutoria.html', tutoria=tutoria, alumno=alumno, asignatura=asignatura, tutoria_email_link=tutoria_email_link, tutoria_asignatura_id=tutoria_asignatura_add.id, index_link=index_link)
+        create_message_and_send(service, sender, to, subject, message_text)
+        # --------------------------------------
+        time.sleep(email_time_sleep)
+        session_sql.commit()
 
 
 def re_send_email_tutoria_asincrono(alumno, tutoria, asignaturas_id_lista):

@@ -4,13 +4,16 @@ import config_parametros
 
 import httplib2
 import os
-
-from apiclient import discovery
-from oauth2client import client
-from oauth2client import tools
+import oauth2client
+from oauth2client import client, tools
 from oauth2client.file import Storage
-# ********************
-from oauth2client.client import flow_from_clientsecrets
+import base64
+from email import encoders
+from email.message import Message
+from email.mime.text import MIMEText
+# *************************************************
+from apiclient import errors, discovery  # needed for gmail service
+from apiclient.http import BatchHttpRequest
 
 try:
     import argparse
@@ -19,15 +22,22 @@ except ImportError:
     flags = None
 
 # If modifying these scopes, delete your previously saved credentials
-# at ~/.credentials/gmail-python-quickstart.json
-SCOPES = 'https://www.googleapis.com/auth/gmail.readonly'
+SCOPES = 'https://www.googleapis.com/auth/gmail.send'
 CLIENT_SECRET_FILE = 'static/credentials/client_secret.json'
 APPLICATION_NAME = 'mi tutoria'
+
+# ****************************************
+
+
+def create_message_and_send(service, sender, to, subject, message_text):
+    message = create_message(sender, to, subject, message_text)
+    send_message(service, "me", message, message_text)
 
 
 def get_credentials():
 
-    # NOTE si no existe el archivo 'gmail_credentials.json' lo crea. Hay que hacerlo en modo local y luego subirlo al servidor (NO es capaz de hacerlo directamente en Heroku)
+    # NOTE [NO BORRAR] si no existe el archivo 'gmail_credentials.json' lo crea. Hay que hacerlo en modo local y luego subirlo al servidor (NO es capaz de hacerlo directamente en Heroku)
+    # NOTE activarlo en caso de necesitar una nueva credential por haber modificado algo como por ejemplo el SCOPE
     # credential_path = 'static/credentials/gmail_credentials.json'
     # store = Storage(credential_path)
     # credentials = store.get()
@@ -43,22 +53,24 @@ def get_credentials():
     return credentials
 
 
-def main_test():
-    """Shows basic usage of the Gmail API.
+def create_message(sender, to, subject, message_text):
+    # Create message container
+    message = MIMEText(message_text, 'html')
+    message['To'] = to
+    message['From'] = sender
+    message['Subject'] = subject
 
-    Creates a Gmail API service object and outputs a list of label names
-    of the user's Gmail account.
-    """
-    credentials = get_credentials()
-    http = credentials.authorize(httplib2.Http())
-    service = discovery.build('gmail', 'v1', http=http)
+    # NOTE variable duplicada, no se si la reutiliza o que
+    raw_message = base64.urlsafe_b64encode(message.as_bytes())
+    raw_message = raw_message.decode()
+    body = {'raw': raw_message}
+    return body
 
-    results = service.users().labels().list(userId='me').execute()
-    labels = results.get('labels', [])
 
-    if not labels:
-        print('No labels found.')
-    else:
-        print('Labels:')
-        for label in labels:
-            print(label['name'])
+def send_message(service, user_id, body, message_text):
+    try:
+        message_sent = (service.users().messages().send(userId=user_id, body=body).execute())
+        # message_id = message_sent['id']
+        # print('email enviado_id:', message_id)
+    except errors.HttpError as error:
+        print(f'An error occurred: {error}')
