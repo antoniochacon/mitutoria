@@ -12,6 +12,10 @@ import config_gmail_api
 # *****************************************************************
 
 
+def settings_admin():
+    return session_sql.query(Settings_Admin).first()
+
+
 def diferencial_check(percent, resultado_1, resultado_2):
     if resultado_1 == 'sin_notas' or resultado_2 == 'sin_notas':
         return False
@@ -166,8 +170,6 @@ def tutorias_con_respuesta_count():
         return tutorias_con_respuesta_count, tutorias_con_respuesta_percent
     except:
         return 1, 1
-
-# FIXME try falla
 
 
 def preguntas_por_cuestionario():
@@ -410,7 +412,12 @@ def send_email_password_reset(current_user_id):
     # ****************************************
     to = user_by_id(current_user_id).email
     subject = 'Cambiar password'
-    message_text = render_template('email_password_reset_request.html', current_user_id=current_user_id, password_reset_link=password_reset_link, index_link=index_link)
+    params = {}
+    params['current_user_id'] = current_user_id
+    params['password_reset_link'] = password_reset_link
+    params['email_validate_link'] = email_validate_link
+    params['index_link'] = index_link
+    message_text = render_template('email_password_reset_request.html', params=params)
     create_message_and_send(service, sender, to, subject, message_text)
     # --------------------------------------
 
@@ -423,25 +430,30 @@ def send_email_password_reset_request_asincrono(current_user_id):
     send_email_password_reset_request_threading.start()
 
 
-def send_email_validate(user_id):
+def send_email_validate(current_user_id):
     credentials = get_credentials()
     http = credentials.authorize(httplib2.Http())
     service = discovery.build('gmail', 'v1', http=http)
     sender = 'mitutoria.email@gmail.com'
     # XXX envio de mail
     # ****************************************
-    to = user_by_id(user_id).email
+    to = user_by_id(current_user_id).email
     subject = 'Verificación de email'
-    message_text = render_template('email_validate.html', user_id=user_id, email_validate_link=email_validate_link, index_link=index_link)
+    params = {}
+    params['current_user_id'] = current_user_id
+    params['email_validate_link'] = email_validate_link
+    params['index_link'] = index_link
+
+    message_text = render_template('email_validate.html', params=params)
     create_message_and_send(service, sender, to, subject, message_text)
     # --------------------------------------
 
 
-def send_email_validate_asincrono(user_id):
+def send_email_validate_asincrono(current_user_id):
     @copy_current_request_context
-    def send_email_validate_process(user_id):
-        send_email_validate(user_id)
-    send_email_validate_threading = threading.Thread(name='send_email_validate_thread', target=send_email_validate_process, args=(user_id,))
+    def send_email_validate_process(current_user_id):
+        send_email_validate(current_user_id)
+    send_email_validate_threading = threading.Thread(name='send_email_validate_thread', target=send_email_validate_process, args=(current_user_id,))
     send_email_validate_threading.start()
 
 

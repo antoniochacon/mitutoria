@@ -52,6 +52,12 @@ class Settings (Base):
     visit_number = Column(Integer, default=1)
 
 
+class Settings_Admin (Base):
+    __tablename__ = 'settings_admin'
+    id = Column(Integer, primary_key=True)
+    diferencial = Column(Integer, default=25)
+
+
 class Grupo (Base):
     __tablename__ = 'grupo'
     id = Column(Integer, primary_key=True)

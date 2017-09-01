@@ -23,9 +23,7 @@
 							type="text"
 							class="form-control {% if request.method=='POST' and params['collapse_cita_add'] %}{% if cita_add.frase.errors %} is-invalid {% else %} is-valid {% endif %}{% endif %}"
 							name="{{cita_add.frase.name}}"
-							{% if request.method=='POST' %}
 							value="{% if request.method=='POST' and params['collapse_cita_add'] %}{{cita_add.frase.data}}{% endif %}"
-							{% endif %}
 							placeholder="{{cita_add.frase.label.text}}">
 						<span class="input-group-addon {% if request.method=='POST' and params['collapse_cita_add'] %} {% if cita_add.frase.errors %} form_addon-warning {% else %} form_addon-success {% endif %} {% endif %}">{{cita_add.frase.label.text}}</span>
 					</div>

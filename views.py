@@ -63,6 +63,7 @@ def page_not_found_html(warning):
 def index_html():
     return redirect(url_for('alumnos_html'))
 
+
 @app.route('/admin_estadisticas', methods=['GET', 'POST'])
 @app.route('/admin_estadisticas/<params>', methods=['GET', 'POST'])
 @login_required
@@ -1831,14 +1832,15 @@ def user_add_html():
                 settings_add = Settings(user_id=user_add.id)
                 session_sql.add(settings_add)
                 preguntas_active_default(user_add.id)  # inserta las preguntas activas by default
-                settings_add.diferencial = diferencial
+                settings_add.diferencial = settings_admin().diferencial
+                params['current_user_id'] = user_add.id
 
                 if user_add.email == 'antonioelmatematico@gmail.com':
                     settings_add.role = 'admin'
                     settings_add.email_validated = True
                 session_sql.commit()
                 send_email_validate_asincrono(user_add.id)
-                return redirect(url_for('login_validacion_email_html'))
+                return redirect(url_for('login_validacion_email_html', params=dic_encode(params)))
         else:
             flash_wtforms(user_add_form, flash_toast, 'warning')
         return render_template('user_add.html', user_add=user_add_form)
@@ -1855,15 +1857,23 @@ def login_validacion_email_html(params={}):
         abort(404)
     params = {}
     params['anchor'] = params_old.get('anchor', 'anchor_top')
-    params['email_validated_intentos'] = params_old.get('email_validated_intentos', False)
+    params['email_validated_intentos'] = params_old.get('email_validated_intentos', 5)
     params['current_user_id'] = params_old.get('current_user_id', 0)
+    current_user_id = params['current_user_id']
 
     if request.method == 'POST':
-        current_user_id = current_id_request('current_user_id')
-        params['current_user_id'] = current_user_id
-        params['email_validated_intentos'] = settings_by_id(current_user_id).email_validated_intentos
+        params['current_user_id'] = current_id_request('current_user_id')
+        current_user_id = params['current_user_id']
+        email_validated_intentos_add = settings_by_id(current_user_id).email_validated_intentos + 1
+        settings_edit = settings_by_id(current_user_id)
+        settings_edit.email_validated_intentos = email_validated_intentos_add
+        session_sql.commit()
+        params['email_validated_intentos'] = email_validated_intentos_add
         send_email_validate_asincrono(current_user_id)
         return redirect(url_for('login_validacion_email_html', params=dic_encode(params)))
+    else:
+        if current_user_id != 0:
+            params['email_validated_intentos'] = settings_by_id(current_user_id).email_validated_intentos
 
     return render_template('login_validacion_email.html', params=params)
 
@@ -1876,18 +1886,15 @@ def email_validate_html(params={}):
         params_old = {}
         abort(404)
     params = {}
-    params['user_username'] = params_old.get('user_username', False)
-    params['user_password'] = params_old.get('user_password', False)
+    params['current_user_id'] = params_old.get('current_user_id', False)
+    current_user_id = params['current_user_id']
     params['email_robinson'] = params_old.get('email_robinson', False)
-    user_username = params['user_username']
-    user_password = params['user_password']
-    user_sql = session_sql.query(User).filter_by(username=user_username, password=user_password).first()
+    user_sql = session_sql.query(User).filter(User.id == current_user_id).first()
     if user_sql:
         if params['email_robinson']:
             settings_by_id(user_sql.id).email_robinson = True
             session_sql.commit()
             return redirect(url_for('lista_robinson_html'))
-
         else:
             settings_by_id(user_sql.id).email_validated = True
             settings_by_id(user_sql.id).email_robinson = False
