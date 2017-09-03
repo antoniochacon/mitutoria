@@ -9,6 +9,14 @@
 			<form action="/settings_opciones" method="POST">
 				<div class="row">
 					<div class="col-md-6 col-lg-4">
+						<label class="custom-control custom-checkbox check_box_1">
+							{# NOTE elminado el form-group para ajustar mejor #}
+							<input type="checkbox" class="custom-control-input" name="settings_edit_calendar" value="True" {% if settings().calendar %} checked {% endif %}>
+							<span class="custom-control-indicator"></span>
+							<span class="custom-control-description {% if not settings().calendar %}text-mutted{% endif %}">Agregar eventos a la agenda</span>
+						</label>
+					</div>
+					<div class="col-md-6 col-lg-4">
 						{# NOTE elminado el form-group para ajustar mejor #}
 						<label class="custom-control custom-checkbox check_box_1">
 							<input type="checkbox" class="custom-control-input" name="settings_edit_tutoria_timeout" value="True" {% if settings().tutoria_timeout %} checked {% endif %}>
@@ -24,15 +32,6 @@
 							<span class="custom-control-description {% if not settings().show_asignaturas_analisis %}text-mutted{% endif %}">Mostrar evolución equipo educativo</span>
 						</label>
 					</div>
-					{% if settings().role=='admin'%}
-						<div class="col-md-6 col-lg-4">
-							<label class="custom-control custom-checkbox check_box_1">
-								<input type="checkbox" class="custom-control-input" name="settings_edit_calendar" value="True" {% if settings().calendar %} checked {% endif %}>
-								<span class="custom-control-indicator"></span>
-								<span class="custom-control-description {% if not settings().calendar %}text-mutted{% endif %}">Agregar eventos a la agenda</span>
-							</label>
-						</div>
-					{% endif %}
 					<div class="form-group col-md-12">
 						<div class="range-slider text-center">
 							<div class="range-slider-value">0</div>

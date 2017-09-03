@@ -1,8 +1,7 @@
 from app import app
 from functions import *
 import functions
-
-# ****************************
+# *************************************
 
 
 @app.url_defaults  # Fuerza el reload de los archivos de static
@@ -62,6 +61,59 @@ def page_not_found_html(warning):
 @app.route('/')
 def index_html():
     return redirect(url_for('alumnos_html'))
+
+
+@app.route('/oauth2callback')
+def oauth2callback():
+    flow = client.flow_from_clientsecrets('static/credentials/client_secret.json', scope='https://www.googleapis.com/auth/calendar', redirect_uri=index_link + 'oauth2callback')
+    flow.params['access_type'] = 'offline'
+    # flow.params['include_granted_scopes'] = True
+    if 'code' not in request.args:
+        auth_uri = flow.step1_get_authorize_url()
+        return redirect(auth_uri)
+    else:
+        auth_code = request.args.get('code')
+        credentials = flow.step2_exchange(auth_code)
+        settings().oauth2_credentials = credentials.to_json()
+        session_sql.commit()
+    return redirect(url_for('settings_opciones_html'))
+
+
+@app.route('/calendar_api')
+@login_required
+def calendar_api_html():
+
+    # NOTE voy a escribirlo todo aqui y luego vere si lo puedo sacar o no
+    if settings().oauth2_credentials:
+        credentials = oauth2client.client.Credentials.new_from_json(settings().oauth2_credentials)
+        http = credentials.authorize(httplib2.Http())
+        service = discovery.build('calendar', 'v3', http=http)
+    else:
+        return redirect(url_for('oauth2callback'))
+
+    # fecha = '2017-10-28T09:00:00-07:00'
+    # event = {
+    #     'summary': 'Google I/O 2015',
+    #     'location': '800 Howard St., San Francisco, CA 94103',
+    #     'description': 'A chance to hear more about Google\'s developer products.',
+    #     'start': {
+    #         'dateTime': fecha,
+    #         'timeZone': 'America/Los_Angeles',
+    #     },
+    #     'end': {
+    #         'dateTime': '2017-10-28T17:00:00-07:00',
+    #         'timeZone': 'America/Los_Angeles',
+    #     },
+    #     'recurrence': [
+    #         'RRULE:FREQ=DAILY;COUNT=2'
+    #     ]}
+    #
+    # event = service.events().insert(calendarId='primary', body=event).execute()
+
+    # authorization_code = get_authorization_url(current_user.id)
+    # get_credentials(authorization_code)
+
+    return render_template('calendar_api.html')
 
 
 @app.route('/admin_estadisticas', methods=['GET', 'POST'])
@@ -732,12 +784,59 @@ def alumnos_html(params={}):
                         else:
                             session_sql.add(tutoria_add)
                             session_sql.commit()
-                            send_email_tutoria_asincrono(alumno, tutoria_add)
+                            # NOTE anulado temporalemente para pruebas el envio de mails.
+                            # send_email_tutoria_asincrono(alumno, tutoria_add)
                             flash_toast('Enviando emails al equipo educativo de ' + Markup('<strong>') + alumno.nombre + Markup('</strong>'), 'info')
                             params['current_alumno_id'] = current_alumno_id
                             params['collapse_alumno'] = True
                             params['collapse_tutorias'] = True
                             params['anchor'] = 'anchor_top'
+                            # NOTE comprobar permisos de oauth2
+                            if settings().calendar:
+                                if settings().oauth2_credentials:
+                                    credentials = oauth2client.client.OAuth2Credentials.new_from_json(settings().oauth2_credentials)
+                                    http = httplib2.Http()
+                                    if credentials.access_token_expired:
+                                        http = credentials.refresh(http)
+                                    else:
+                                        http = credentials.authorize(http)
+                                    service = discovery.build('calendar', 'v3', http=http)
+                                else:
+                                    return redirect(url_for('oauth2callback'))
+
+                                # NOTE agregar eventos a la agenda
+                                tutoria_add_form_hora = datetime.datetime.strptime(tutoria_add_form.hora.data, '%H:%M')
+                                calendar_datetime_utc_start = (datetime.datetime.strptime(tutoria_add_form.fecha.data, '%A-%d-%B-%Y') + datetime.timedelta(hours=tutoria_add_form_hora.hour) + datetime.timedelta(minutes=tutoria_add_form_hora.minute)).timestamp()
+                                calendar_datetime_utc_start_arrow = str(arrow.get(calendar_datetime_utc_start))
+
+                                calendar_datetime_utc_end = (datetime.datetime.strptime(tutoria_add_form.fecha.data, '%A-%d-%B-%Y') + datetime.timedelta(hours=tutoria_add_form_hora.hour) + datetime.timedelta(minutes=(tutoria_add_form_hora.minute + settings().tutoria_duracion))).timestamp()
+                                calendar_datetime_utc_end_arrow = str(arrow.get(calendar_datetime_utc_end))
+
+                                event = {
+                                    'summary': 'Tutoria ' + grupo_activo().nombre + ': ' + alumno.nombre,
+                                    'location': grupo_activo().centro,
+                                    'description': 'Evento creado por https://mitutoria.herokuapp.com/',
+                                    'colorId': '3',
+                                    'start': {
+                                        'dateTime': calendar_datetime_utc_start_arrow,
+                                        'timeZone': 'Europe/Madrid',
+                                    },
+                                    'end': {
+                                        'dateTime': calendar_datetime_utc_end_arrow,
+                                        'timeZone': 'Europe/Madrid',
+                                    }
+                                }
+                                event = service.events().insert(calendarId='primary', body=event).execute()
+
+                                session_sql.flush()
+                                session_sql.refresh(tutoria_add)
+                                tutoria_add_id = tutoria_add.id
+                                tutoria_sql = tutoria_by_id(tutoria_add_id)
+                                tutoria_sql.calendar_event_id = event['id']
+                                session_sql.commit()
+
+                                # service.events().delete(calendarId='primary', eventId='eventId').execute()
+
                             return redirect(url_for('alumnos_html', params=dic_encode(params)))
                 else:
                     flash_wtforms(tutoria_add_form, flash_toast, 'warning')
@@ -1124,6 +1223,24 @@ def analisis_tutoria_edit_html(params={}):
             tutoria_delete = tutoria_by_id(current_tutoria_id)
             alumno = alumno_by_id(tutoria_delete.alumno_id)
             flash_toast('Tutoria de ' + Markup('<strong>') + alumno.nombre + Markup('</strong>') + ' eliminada', 'success')
+
+            if settings().calendar:
+                if settings().oauth2_credentials:
+                    credentials = oauth2client.client.OAuth2Credentials.new_from_json(settings().oauth2_credentials)
+                    http = httplib2.Http()
+                    if credentials.access_token_expired:
+                        http = credentials.refresh(http)
+                    else:
+                        http = credentials.authorize(http)
+                    service = discovery.build('calendar', 'v3', http=http)
+                    if tutoria_delete.calendar_event_id:
+                        try:
+                            service.events().delete(calendarId='primary', eventId=tutoria_delete.calendar_event_id).execute()
+                        except:
+                            pass
+                else:
+                    return redirect(url_for('oauth2callback'))
+
             session_sql.delete(tutoria_delete)
             session_sql.commit()
             return redirect(url_for('alumnos_html'))
@@ -1159,6 +1276,53 @@ def analisis_tutoria_edit_html(params={}):
                     flash_toast('Debe indicar una fecha posterior', 'warning')
                     return redirect(url_for('analisis_html', params=dic_encode(params)))
                 else:
+
+                    if settings().calendar:
+                        if settings().oauth2_credentials:
+                            credentials = oauth2client.client.OAuth2Credentials.new_from_json(settings().oauth2_credentials)
+                            http = httplib2.Http()
+                            if credentials.access_token_expired:
+                                http = credentials.refresh(http)
+                            else:
+                                http = credentials.authorize(http)
+                            service = discovery.build('calendar', 'v3', http=http)
+
+                            tutoria_edit_form_hora = datetime.datetime.strptime(tutoria_edit_form.hora.data, '%H:%M')
+                            calendar_datetime_utc_start = (datetime.datetime.strptime(tutoria_edit_form.fecha.data, '%A-%d-%B-%Y') + datetime.timedelta(hours=tutoria_edit_form_hora.hour) + datetime.timedelta(minutes=tutoria_edit_form_hora.minute)).timestamp()
+                            calendar_datetime_utc_start_arrow = str(arrow.get(calendar_datetime_utc_start))
+
+                            calendar_datetime_utc_end = (datetime.datetime.strptime(tutoria_edit_form.fecha.data, '%A-%d-%B-%Y') + datetime.timedelta(hours=tutoria_edit_form_hora.hour) + datetime.timedelta(minutes=(tutoria_edit_form_hora.minute + settings().tutoria_duracion))).timestamp()
+                            calendar_datetime_utc_end_arrow = str(arrow.get(calendar_datetime_utc_end))
+
+                            if tutoria_sql.calendar_event_id:
+                                eventId = str(tutoria_sql.calendar_event_id)
+                                event = service.events().get(calendarId='primary', eventId=eventId).execute()
+                                event['start']['dateTime'] = calendar_datetime_utc_start_arrow
+                                event['end']['dateTime'] = calendar_datetime_utc_end_arrow
+                                event['status'] = 'confirmed'
+                                updated_event = service.events().update(calendarId='primary', eventId=eventId, body=event).execute()
+                            else:
+                                alumno=alumno_by_id(tutoria_sql.alumno_id)
+                                event = {
+                                    'summary': 'Tutoria ' + grupo_activo().nombre + ': ' + alumno.nombre,
+                                    'location': grupo_activo().centro,
+                                    'description': 'Evento creado por https://mitutoria.herokuapp.com/',
+                                    'colorId': '3',
+                                    'start': {
+                                        'dateTime': calendar_datetime_utc_start_arrow,
+                                        'timeZone': 'Europe/Madrid',
+                                    },
+                                    'end': {
+                                        'dateTime': calendar_datetime_utc_end_arrow,
+                                        'timeZone': 'Europe/Madrid',
+                                    }
+                                }
+                                event = service.events().insert(calendarId='primary', body=event).execute()
+
+
+                        else:
+                            return redirect(url_for('oauth2callback'))
+
                     tutoria_sql.fecha = tutoria_edit_form_fecha
                     tutoria_sql.hora = string_to_time(tutoria_edit_form.hora.data)
                     tutoria_sql.activa = True
@@ -1209,8 +1373,18 @@ def settings_opciones_html(params={}):
             settings().calendar = settings_edit_calendar
             flash_toast('Configuracion actualizada', 'success')
             session_sql.commit()
-            return redirect(url_for('settings_opciones_html'))
 
+            if settings().calendar:
+                if settings().oauth2_credentials:
+                    credentials = oauth2client.client.Credentials.new_from_json(settings().oauth2_credentials)
+                    settings().oauth2_credentials = credentials.to_json()
+                    session_sql.commit()
+                    http = credentials.authorize(httplib2.Http())
+                    service = discovery.build('calendar', 'v3', http=http)
+                else:
+                    return redirect(url_for('oauth2callback'))
+
+            return redirect(url_for('settings_opciones_html'))
     return render_template('settings_opciones.html', params=params)
 
 

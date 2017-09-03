@@ -1,7 +1,7 @@
 from app import app
 from config_parametros import *
 import config_parametros
-
+# *************************************************
 import httplib2
 import os
 import oauth2client
@@ -13,7 +13,7 @@ from email.message import Message
 from email.mime.text import MIMEText
 # *************************************************
 from apiclient import errors, discovery  # needed for gmail service
-from apiclient.http import BatchHttpRequest
+# *************************************************
 
 try:
     import argparse
@@ -21,10 +21,6 @@ try:
 except ImportError:
     flags = None
 
-# If modifying these scopes, delete your previously saved credentials
-SCOPES = 'https://www.googleapis.com/auth/gmail.send'
-CLIENT_SECRET_FILE = 'static/credentials/client_secret.json'
-APPLICATION_NAME = 'mi tutoria'
 
 # ****************************************
 
@@ -34,10 +30,15 @@ def create_message_and_send(service, sender, to, subject, message_text):
     send_message(service, "me", message, message_text)
 
 
-def get_credentials():
+def get_credentials_gmail():
+    # If modifying these scopes, delete your previously saved credentials
+    SCOPES = 'https://www.googleapis.com/auth/gmail.send'
+    CLIENT_SECRET_FILE = 'static/credentials/client_secret.json'
+    APPLICATION_NAME = 'mi tutoria'
 
     # NOTE [NO BORRAR] si no existe el archivo 'gmail_credentials.json' lo crea. Hay que hacerlo en modo local y luego subirlo al servidor (NO es capaz de hacerlo directamente en Heroku)
     # NOTE activarlo en caso de necesitar una nueva credential por haber modificado algo como por ejemplo el SCOPE
+    #
     # credential_path = 'static/credentials/gmail_credentials.json'
     # store = Storage(credential_path)
     # credentials = store.get()
@@ -70,7 +71,5 @@ def create_message(sender, to, subject, message_text):
 def send_message(service, user_id, body, message_text):
     try:
         message_sent = (service.users().messages().send(userId=user_id, body=body).execute())
-        # message_id = message_sent['id']
-        # print('email enviado_id:', message_id)
     except errors.HttpError as error:
         print(f'An error occurred: {error}')
