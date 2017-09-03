@@ -14,6 +14,9 @@ from email.mime.text import MIMEText
 # *************************************************
 from apiclient import errors, discovery  # needed for gmail service
 # *************************************************
+from oauth2client.client import OAuth2WebServerFlow, AccessTokenCredentials  # FIXME intento para probar el refresh_token
+# *************************************************
+
 
 try:
     import argparse

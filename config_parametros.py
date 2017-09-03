@@ -9,7 +9,14 @@ import locale
 from models import *
 from forms import *
 import csv
-import json #NOTE necesarior para google API
+# ****************************************
+# XXX: google api
+# import httplib2
+import httplib2
+from apiclient import errors, discovery
+from oauth2client import client
+from oauth2client import tools
+import json  # NOTE necesario para google API
 # ****************************************
 # XXX: mail threading
 import threading
@@ -56,9 +63,7 @@ hashids = Hashids(salt=salt)
 # email_validate_link = 'http://localhost:5000/email_validate/'
 # index_link = 'http://localhost:5000/'
 # password_reset_link = 'http://localhost:5000/password_reset/'
-# diferencial = 25
 # email_time_sleep = 3
-
 
 
 # XXX Heroku_Host
@@ -66,5 +71,4 @@ tutoria_email_link = 'https://mitutoria.herokuapp.com/informe/'
 email_validate_link = 'https://mitutoria.herokuapp.com/email_validate/'
 index_link = 'https://mitutoria.herokuapp.com/'
 password_reset_link = 'https://mitutoria.herokuapp.com/password_reset/'
-diferencial=25
 email_time_sleep = 10
