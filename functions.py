@@ -10,6 +10,41 @@ import config_gmail_api
 # () Objeto
 # {} Valor
 # *****************************************************************
+def tutoria_calendar_undelete(event_id):
+    if settings().calendar:
+        if settings().oauth2_credentials:
+            try:
+                credentials = oauth2client.client.Credentials.new_from_json(settings().oauth2_credentials)
+                http = httplib2.Http()
+                http = credentials.authorize(http)
+                service = discovery.build('calendar', 'v3', http=http)
+            except:
+                return redirect(url_for('oauth2callback'))
+        else:
+            return redirect(url_for('oauth2callback'))
+        try:
+            event = service.events().get(calendarId='primary', eventId=event_id).execute()
+            event['status'] = 'confirmed'
+            updated_event = service.events().update(calendarId='primary', eventId=event_id, body=event).execute()
+        except:
+            pass
+
+def tutoria_calendar_delete(event_id):
+    if settings().calendar:
+        if settings().oauth2_credentials:
+            try:
+                credentials = oauth2client.client.Credentials.new_from_json(settings().oauth2_credentials)
+                http = httplib2.Http()
+                http = credentials.authorize(http)
+                service = discovery.build('calendar', 'v3', http=http)
+            except:
+                return redirect(url_for('oauth2callback'))
+        else:
+            return redirect(url_for('oauth2callback'))
+        try:
+            service.events().delete(calendarId='primary', eventId=event_id).execute()
+        except:
+            pass
 
 
 def tutoria_calendar_sync():
@@ -33,12 +68,14 @@ def tutoria_calendar_sync():
                     event_status = True
                 else:
                     event_status = False
-                if event_status != tutoria.activa:
-                    tutoria.activa = event_status
-                if event['start']['dateTime'] != calendar_datetime_utc_start_arrow:
-                    tutoria.fecha = arrow.get(event['start']['dateTime']).date()
-                    tutoria.hora = arrow.get(event['start']['dateTime']).time()
-                session_sql.commit()
+                if event_status != tutoria.activa or event['start']['dateTime'] != calendar_datetime_utc_start_arrow:
+                    if event_status != tutoria.activa:
+                        tutoria.activa = event_status
+                    if event['start']['dateTime'] != calendar_datetime_utc_start_arrow:
+                        tutoria.fecha = arrow.get(event['start']['dateTime']).date()
+                        tutoria.hora = arrow.get(event['start']['dateTime']).time()
+                    # flash_toast('Tutorias sincronizadas con la agenda', 'success')
+                    session_sql.commit()
             except:
                 pass
 

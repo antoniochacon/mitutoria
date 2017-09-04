@@ -1206,6 +1206,7 @@ def analisis_tutoria_edit_html(params={}):
             else:
                 tutoria_to_move.activa = True
                 session_sql.commit()
+                tutoria_calendar_undelete(event_id=tutoria_to_move.calendar_event_id)
                 flash_toast('Tutoria activada', 'success')
             return redirect(url_for('analisis_html', params=dic_encode(params)))
 
@@ -1220,25 +1221,7 @@ def analisis_tutoria_edit_html(params={}):
             tutoria_delete = tutoria_by_id(current_tutoria_id)
             alumno = alumno_by_id(tutoria_delete.alumno_id)
             flash_toast('Tutoria de ' + Markup('<strong>') + alumno.nombre + Markup('</strong>') + ' eliminada', 'success')
-
-            if settings().calendar:
-                if settings().oauth2_credentials:
-                    try:
-                        credentials = oauth2client.client.Credentials.new_from_json(settings().oauth2_credentials)
-                        http = httplib2.Http()
-                        http = credentials.authorize(http)
-                        service = discovery.build('calendar', 'v3', http=http)
-                    except:
-                        return redirect(url_for('oauth2callback'))
-                else:
-                    return redirect(url_for('oauth2callback'))
-
-                if tutoria_delete.calendar_event_id:
-                    try:
-                        service.events().delete(calendarId='primary', eventId=tutoria_delete.calendar_event_id).execute()
-                    except:
-                        pass
-
+            tutoria_calendar_delete(event_id=tutoria_delete.calendar_event_id)
             session_sql.delete(tutoria_delete)
             session_sql.commit()
             return redirect(url_for('alumnos_html'))
@@ -1294,28 +1277,15 @@ def analisis_tutoria_edit_html(params={}):
                     calendar_datetime_utc_end = (datetime.datetime.strptime(tutoria_edit_form.fecha.data, '%A-%d-%B-%Y') + datetime.timedelta(hours=tutoria_edit_form_hora.hour) + datetime.timedelta(minutes=(tutoria_edit_form_hora.minute + settings().tutoria_duracion))).timestamp()
                     calendar_datetime_utc_end_arrow = str(arrow.get(calendar_datetime_utc_end))
 
-                    if tutoria_sql.calendar_event_id:
+                    try:
                         eventId = str(tutoria_sql.calendar_event_id)
                         event = service.events().get(calendarId='primary', eventId=eventId).execute()
                         event['start']['dateTime'] = calendar_datetime_utc_start_arrow
                         event['end']['dateTime'] = calendar_datetime_utc_end_arrow
                         event['status'] = 'confirmed'
                         updated_event = service.events().update(calendarId='primary', eventId=eventId, body=event).execute()
-                    else:
-                        alumno = alumno_by_id(tutoria_sql.alumno_id)
-                        event = {
-                            'summary': 'Tutoria ' + grupo_activo().nombre + ': ' + alumno.nombre,
-                            'location': grupo_activo().centro,
-                            'description': 'Evento creado por https://mitutoria.herokuapp.com/',
-                            'colorId': '3',
-                            'start': {
-                                'dateTime': calendar_datetime_utc_start_arrow,
-                            },
-                            'end': {
-                                'dateTime': calendar_datetime_utc_end_arrow,
-                            }
-                        }
-                        event = service.events().insert(calendarId='primary', body=event).execute()
+                    except:
+                        pass
 
                     tutoria_sql.fecha = tutoria_edit_form_fecha
                     tutoria_sql.hora = string_to_time(tutoria_edit_form.hora.data)
