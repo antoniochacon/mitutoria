@@ -107,11 +107,9 @@ def calendar_api_html():
         'colorId': '3',
         'start': {
             'dateTime': '2017-09-10T09:00:00-07:00',
-            'timeZone': 'Europe/Madrid',
         },
         'end': {
             'dateTime': '2017-09-11T09:00:00-07:00',
-            'timeZone': 'Europe/Madrid',
         }
     }
     event = service.events().insert(calendarId='primary', body=event).execute()
@@ -805,7 +803,7 @@ def alumnos_html(params={}):
                                         return redirect(url_for('oauth2callback'))
                                 else:
                                     return redirect(url_for('oauth2callback'))
-                                # NOTE agregar eventos a la agenda
+                            #     # NOTE agregar eventos a la agenda
                                 tutoria_add_form_hora = datetime.datetime.strptime(tutoria_add_form.hora.data, '%H:%M')
                                 calendar_datetime_utc_start = (datetime.datetime.strptime(tutoria_add_form.fecha.data, '%A-%d-%B-%Y') + datetime.timedelta(hours=tutoria_add_form_hora.hour) + datetime.timedelta(minutes=tutoria_add_form_hora.minute)).timestamp()
                                 calendar_datetime_utc_start_arrow = str(arrow.get(calendar_datetime_utc_start))
@@ -814,30 +812,24 @@ def alumnos_html(params={}):
                                 calendar_datetime_utc_end_arrow = str(arrow.get(calendar_datetime_utc_end))
 
                                 event = {
-                                    'summary': 'Tutoria ' + grupo_activo().nombre + ': ' + alumno.nombre,
+                                    'summary': 'Tutoria de ' + alumno.nombre,
                                     'location': grupo_activo().centro,
                                     'description': 'Evento creado por https://mitutoria.herokuapp.com/',
                                     'colorId': '3',
                                     'start': {
                                         'dateTime': calendar_datetime_utc_start_arrow,
-                                        # 'timeZone': 'Europe/Madrid',
                                     },
                                     'end': {
                                         'dateTime': calendar_datetime_utc_end_arrow,
-                                        # 'timeZone': 'Europe/Madrid',
                                     }
                                 }
                                 event = service.events().insert(calendarId='primary', body=event).execute()
-
                                 session_sql.flush()
                                 session_sql.refresh(tutoria_add)
                                 tutoria_add_id = tutoria_add.id
                                 tutoria_sql = tutoria_by_id(tutoria_add_id)
                                 tutoria_sql.calendar_event_id = event['id']
                                 session_sql.commit()
-
-                                # service.events().delete(calendarId='primary', eventId='eventId').execute()
-
                             return redirect(url_for('alumnos_html', params=dic_encode(params)))
                 else:
                     flash_wtforms(tutoria_add_form, flash_toast, 'warning')
@@ -851,6 +843,10 @@ def alumnos_html(params={}):
 
     # XXX tutorias_timeout
     tutorias_timeout()
+
+    # XXX sincronizar con google calendar
+    tutoria_calendar_sync()
+
     return render_template(
         'alumnos.html', alumno_add=Alumno_Add(), alumno_edit=Alumno_Add(),
         tutoria_add=Tutoria_Add(), tutoria_edit=Tutoria_Add(), asignatura_add=Asignatura_Add(),
@@ -1314,11 +1310,9 @@ def analisis_tutoria_edit_html(params={}):
                             'colorId': '3',
                             'start': {
                                 'dateTime': calendar_datetime_utc_start_arrow,
-                                'timeZone': 'Europe/Madrid',
                             },
                             'end': {
                                 'dateTime': calendar_datetime_utc_end_arrow,
-                                'timeZone': 'Europe/Madrid',
                             }
                         }
                         event = service.events().insert(calendarId='primary', body=event).execute()

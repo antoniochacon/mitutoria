@@ -12,6 +12,37 @@ import config_gmail_api
 # *****************************************************************
 
 
+def tutoria_calendar_sync():
+    if settings().calendar:
+        if settings().oauth2_credentials:
+            try:
+                credentials = oauth2client.client.Credentials.new_from_json(settings().oauth2_credentials)
+                http = httplib2.Http()
+                http = credentials.authorize(http)
+                service = discovery.build('calendar', 'v3', http=http)
+            except:
+                return redirect(url_for('oauth2callback'))
+        else:
+            return redirect(url_for('oauth2callback'))
+        for tutoria in grupo_tutorias(settings().grupo_activo_id, ''):
+            try:
+                event = service.events().get(calendarId='primary', eventId=tutoria.calendar_event_id).execute()
+                calendar_datetime_utc_start_arrow = str(arrow.get(tutoria.fecha).shift(hours=tutoria.hora.hour, minutes=tutoria.hora.minute))
+                # XXX checkea cambios a sincronizar
+                if event['status'] == 'confirmed':
+                    event_status = True
+                else:
+                    event_status = False
+                if event_status != tutoria.activa:
+                    tutoria.activa = event_status
+                if event['start']['dateTime'] != calendar_datetime_utc_start_arrow:
+                    tutoria.fecha = arrow.get(event['start']['dateTime']).date()
+                    tutoria.hora = arrow.get(event['start']['dateTime']).time()
+                session_sql.commit()
+            except:
+                pass
+
+
 def settings_admin():
     return session_sql.query(Settings_Admin).first()
 
