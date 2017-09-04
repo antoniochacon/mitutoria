@@ -1195,6 +1195,7 @@ def analisis_tutoria_edit_html(params={}):
             tutoria_to_move = tutoria_by_id(current_tutoria_id)
             tutoria_to_move.activa = False
             session_sql.commit()
+            tutoria_calendar_delete(event_id=tutoria_to_move.calendar_event_id)
             flash_toast('Tutoria archivada', 'success')
             return redirect(url_for('analisis_html', params=dic_encode(params)))
 
