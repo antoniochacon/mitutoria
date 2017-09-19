@@ -6,32 +6,30 @@
 		<div class="paper bg-white padding_contenido">
 			{{titulo_1(bg_color='bg-dark', titulo='Iniciar sesion')}}
 			<form action="/login" method="POST">
-				<div class="row">
-					<div class="form-group col-md-6">
-						<div class="input-group">
-							<input
-								type="text"
-								class="form-control {% if request.method=='POST' %} {% if user_login.username.errors %} is-invalid {% else %} is-valid {% endif %} {% endif %}"
-								name="{{user_login.username.name}}"
-								{% if request.method=='POST' %}
-								value="{{user_login.username.data}}"
-								{% endif %}
-								placeholder="{{user_login.username.label.text}}">
-							<span class="input-group-addon {% if request.method=='POST' %} {% if user_login.username.errors %} form_addon-warning {% else %} form_addon-success {% endif %} {% endif %}">usuario</span>
-						</div>
+				<div class="form-group">
+					<div class="input-group">
+						<input
+							type="text"
+							class="form-control {% if request.method=='POST' %} {% if user_login.username.errors %} is-invalid {% else %} is-valid {% endif %} {% endif %}"
+							name="{{user_login.username.name}}"
+							{% if request.method=='POST' %}
+							value="{{user_login.username.data}}"
+							{% endif %}
+							placeholder="{{user_login.username.label.text}}">
+						<span class="input-group-addon {% if request.method=='POST' %} {% if user_login.username.errors %} form_addon-warning {% else %} form_addon-success {% endif %} {% endif %}">usuario</span>
 					</div>
-					<div class="form-group col-md-6">
-						<div class="input-group">
-							<input
-								type="password"
-								class="form-control {% if request.method=='POST' %} {% if user_login.password.errors %} is-invalid {% else %} is-valid {% endif %} {% endif %}"
-								name="{{user_login.password.name}}"
-								{% if request.method=='POST' %}
-								value="{{user_login.password.data}}"
-								{% endif %}
-								placeholder="{{user_login.password.label.text}}">
-							<div class="input-group-addon {% if request.method=='POST' %} {% if user_login.password.errors %} form_addon-warning {% else %} form_addon-success {% endif %} {% endif %}">password</div>
-						</div>
+				</div>
+				<div class="form-group">
+					<div class="input-group">
+						<input
+							type="password"
+							class="form-control {% if request.method=='POST' %} {% if user_login.password.errors %} is-invalid {% else %} is-valid {% endif %} {% endif %}"
+							name="{{user_login.password.name}}"
+							{% if request.method=='POST' %}
+							value="{{user_login.password.data}}"
+							{% endif %}
+							placeholder="{{user_login.password.label.text}}">
+						<div class="input-group-addon {% if request.method=='POST' %} {% if user_login.password.errors %} form_addon-warning {% else %} form_addon-success {% endif %} {% endif %}">password</div>
 					</div>
 				</div>
 				<div class="text-center">
@@ -41,7 +39,7 @@
 					</button>
 				</div>
 			</form>
-			{% if params['login_fail'] and not params['ban'] %}
+			{% if params['login_fail']and not params['ban'] %}
 				<br>
 				<div class="divider bg-primary grueso"></div>
 				<br>
@@ -80,7 +78,6 @@
 				</div>
 				<br>
 			{% endif %}
-
 		</div>
 	</div>
 {% endblock %}

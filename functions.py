@@ -10,6 +10,8 @@ import config_gmail_api
 # () Objeto
 # {} Valor
 # *****************************************************************
+
+
 def tutoria_calendar_undelete(event_id):
     if settings().calendar:
         if settings().oauth2_credentials:
@@ -28,6 +30,7 @@ def tutoria_calendar_undelete(event_id):
             updated_event = service.events().update(calendarId='primary', eventId=event_id, body=event).execute()
         except:
             pass
+
 
 def tutoria_calendar_delete(event_id):
     if settings().calendar:

@@ -82,11 +82,6 @@ def oauth2callback():
 @app.route('/calendar_api')
 @login_required
 def calendar_api_html():
-
-    # NOTE voy a escribirlo todo aqui y luego vere si lo puedo sacar o no
-    # flow = client.flow_from_clientsecrets('static/credentials/client_secret.json', scope='https://www.googleapis.com/auth/calendar', redirect_uri=index_link + 'oauth2callback')
-    # flow.params['access_type'] = 'offline'
-    # flow.params['approval_prompt'] = 'force'
     if settings().oauth2_credentials:
         try:
             credentials = oauth2client.client.Credentials.new_from_json(settings().oauth2_credentials)
@@ -101,7 +96,7 @@ def calendar_api_html():
         return redirect(url_for('oauth2callback'))
 
     event = {
-        'summary': 'Tutoria ',
+        'summary': 'Tutoria',
         'location': grupo_activo().centro,
         'description': 'Evento creado por https://mitutoria.herokuapp.com/',
         'colorId': '3',
@@ -803,7 +798,7 @@ def alumnos_html(params={}):
                                         return redirect(url_for('oauth2callback'))
                                 else:
                                     return redirect(url_for('oauth2callback'))
-                            #     # NOTE agregar eventos a la agenda
+                               # NOTE agregar eventos a la agenda
                                 tutoria_add_form_hora = datetime.datetime.strptime(tutoria_add_form.hora.data, '%H:%M')
                                 calendar_datetime_utc_start = (datetime.datetime.strptime(tutoria_add_form.fecha.data, '%A-%d-%B-%Y') + datetime.timedelta(hours=tutoria_add_form_hora.hour) + datetime.timedelta(minutes=tutoria_add_form_hora.minute)).timestamp()
                                 calendar_datetime_utc_start_arrow = str(arrow.get(calendar_datetime_utc_start))
@@ -845,7 +840,7 @@ def alumnos_html(params={}):
     tutorias_timeout()
 
     # XXX sincronizar con google calendar
-    tutoria_calendar_sync()
+    # tutoria_calendar_sync()
 
     return render_template(
         'alumnos.html', alumno_add=Alumno_Add(), alumno_edit=Alumno_Add(),
@@ -1258,7 +1253,6 @@ def analisis_tutoria_edit_html(params={}):
                     flash_toast('Debe indicar una fecha posterior', 'warning')
                     return redirect(url_for('analisis_html', params=dic_encode(params)))
                 else:
-
                     if settings().calendar:
                         if settings().oauth2_credentials:
                             try:
@@ -1794,16 +1788,21 @@ def asignaturas_html(params={}):
             if asignatura_add_form.validate():
                 asignatura_asignatura = session_sql.query(Asignatura).filter(Asignatura.grupo_id == settings().grupo_activo_id, unaccent(func.lower(Asignatura.asignatura)) == unaccent(func.lower(asignatura_add_form.asignatura.data))).first()
                 asignatura_email = session_sql.query(Asignatura).filter(Asignatura.grupo_id == settings().grupo_activo_id, func.lower(Asignatura.email) == func.lower(asignatura_add_form.email.data)).first()
-                if asignatura_asignatura:
-                    flash_toast('Esta asignatura ya existe', 'warning')
-                elif asignatura_email:
-                    flash_toast('Este email ya esta asignado a otra asignatura', 'warning')
-                else:
-                    asignatura_add = Asignatura(grupo_id=settings().grupo_activo_id, nombre=asignatura_add_form.nombre.data.title(), apellidos=asignatura_add_form.apellidos.data.title(), asignatura=asignatura_add_form.asignatura.data.title(), email=asignatura_add_form.email.data.lower())
-                    session_sql.add(asignatura_add)
-                    session_sql.commit()
-                    flash_toast('Asignatura agregada', 'success')
-                    return redirect(url_for('asignaturas_html'))
+                # if asignatura_asignatura:
+                #     flash_toast('Esta asignatura ya existe', 'warning')
+                # elif asignatura_email:
+                #     flash_toast('Este email ya esta asignado a otra asignatura', 'warning')
+                # else:
+                #     asignatura_add = Asignatura(grupo_id=settings().grupo_activo_id, nombre=asignatura_add_form.nombre.data.title(), apellidos=asignatura_add_form.apellidos.data.title(), asignatura=asignatura_add_form.asignatura.data.title(), email=asignatura_add_form.email.data.lower())
+                #     session_sql.add(asignatura_add)
+                #     session_sql.commit()
+                #     flash_toast('Asignatura agregada', 'success')
+                #     return redirect(url_for('asignaturas_html'))
+                asignatura_add = Asignatura(grupo_id=settings().grupo_activo_id, nombre=asignatura_add_form.nombre.data.title(), apellidos=asignatura_add_form.apellidos.data.title(), asignatura=asignatura_add_form.asignatura.data.title(), email=asignatura_add_form.email.data.lower())
+                session_sql.add(asignatura_add)
+                session_sql.commit()
+                flash_toast('Asignatura agregada', 'success')
+                return redirect(url_for('asignaturas_html'))
             else:
                 flash_wtforms(asignatura_add_form, flash_toast, 'warning')
             return render_template(
@@ -1874,25 +1873,25 @@ def asignaturas_html(params={}):
                 params['anchor'] = 'anchor_asi_' + str(hashids_encode(current_asignatura_id))
 
                 # # NOTE unicidad del nombre de asignatura
-                asignatura_asignatura_unicidad = session_sql.query(Asignatura).filter(Asignatura.grupo_id == settings().grupo_activo_id, unaccent(func.lower(Asignatura.asignatura)) == unaccent(func.lower(asignatura_edit_form.asignatura.data))).all()
-                asignatura_asignatura_unicidad_lista = []
-                for asignatura in asignatura_asignatura_unicidad:
-                    if asignatura.id != current_asignatura_id:
-                        asignatura_asignatura_unicidad_lista.append(asignatura.id)
-                if len(asignatura_asignatura_unicidad_lista) != 0:
-                    asignatura_edit_form.asignatura.errors = ['ya existe como asignatura.']
-                    flash_toast(Markup('<strong>') + asignatura_edit_form.asignatura.data + Markup('</strong>') + ' ya existe como asignatura.', 'warning')
+                # asignatura_asignatura_unicidad = session_sql.query(Asignatura).filter(Asignatura.grupo_id == settings().grupo_activo_id, unaccent(func.lower(Asignatura.asignatura)) == unaccent(func.lower(asignatura_edit_form.asignatura.data))).all()
+                # asignatura_asignatura_unicidad_lista = []
+                # for asignatura in asignatura_asignatura_unicidad:
+                #     if asignatura.id != current_asignatura_id:
+                #         asignatura_asignatura_unicidad_lista.append(asignatura.id)
+                # if len(asignatura_asignatura_unicidad_lista) != 0:
+                #     asignatura_edit_form.asignatura.errors = ['ya existe como asignatura.']
+                #     flash_toast(Markup('<strong>') + asignatura_edit_form.asignatura.data + Markup('</strong>') + ' ya existe como asignatura.', 'warning')
 
                 # NOTE unicidad del email
-                asignatura_email_unicidad = session_sql.query(Asignatura).filter(Asignatura.grupo_id == settings().grupo_activo_id, unaccent(func.lower(Asignatura.email)) == unaccent(func.lower(asignatura_edit_form.email.data))).all()
-                if asignatura_email_unicidad:
-                    asignatura_email_unicidad_lista = []
-                    for asignatura in asignatura_email_unicidad:
-                        if asignatura.id != current_asignatura_id:
-                            asignatura_email_unicidad_lista.append(asignatura.id)
-                    if len(asignatura_email_unicidad_lista) != 0:
-                        asignatura_edit_form.email.errors = ['email asignado a otra asignatura.']
-                        flash_toast('Este email ya esta asignado a otra asignatura.', 'warning')
+                # asignatura_email_unicidad = session_sql.query(Asignatura).filter(Asignatura.grupo_id == settings().grupo_activo_id, unaccent(func.lower(Asignatura.email)) == unaccent(func.lower(asignatura_edit_form.email.data))).all()
+                # if asignatura_email_unicidad:
+                #     asignatura_email_unicidad_lista = []
+                #     for asignatura in asignatura_email_unicidad:
+                #         if asignatura.id != current_asignatura_id:
+                #             asignatura_email_unicidad_lista.append(asignatura.id)
+                #     if len(asignatura_email_unicidad_lista) != 0:
+                #         asignatura_edit_form.email.errors = ['email asignado a otra asignatura.']
+                #         flash_toast('Este email ya esta asignado a otra asignatura.', 'warning')
 
                 asignatura_edit = Asignatura(grupo_id=settings().grupo_activo_id, nombre=asignatura_edit_form.nombre.data.title(), apellidos=asignatura_edit_form.apellidos.data.title(), asignatura=asignatura_edit_form.asignatura.data.title(), email=asignatura_edit_form.email.data)
                 asignatura_sql = session_sql.query(Asignatura).filter(Asignatura.id == current_asignatura_id).first()
@@ -2173,7 +2172,8 @@ def login_html(params={}):
                         return redirect(url_for('login_validacion_email_html', params=dic_encode(params)))
                     else:
                         pass
-
+                    # NOTE sincronizar con google calendar
+                    tutoria_calendar_sync()
                     flash_toast('Bienvenido ' + Markup('<strong>') + login_form.username.data + Markup('</strong>'), 'success')
                     if not settings.grupo_activo_id:
                         params['login'] = True  # NOTE Para activar como activo el primer grupo creado y redirect a alumnos (por facilidad para un nuevo usuario)
