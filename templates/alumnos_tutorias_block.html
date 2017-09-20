@@ -8,17 +8,14 @@
 			<a id="anchor_tut_{{hashids_encode(tutoria.id)}}"></a>
 			<a href="/analisis/{{dic_encode_args({'current_tutoria_id': tutoria.id})}}" class="collapse_header_2" title="ver informe">
 				<span class="{% if tutoria.activa %} h5 strong {% else %} text-mutted {% endif %}">
-					{{tutoria.fecha.strftime('%B') | capitalize}}:
+					{{tutoria.fecha.strftime('%b') | capitalize}}
 					{{tutoria.fecha.strftime('%A') | capitalize}}
 					{{tutoria.fecha.strftime('%d')}}
-					a las
-					{{tutoria.hora.strftime('%H:%M')}}
+					[{{tutoria.hora.strftime('%H:%M')}}]
 				</span>
-
-					<span class="badge float-right {% if tutoria.activa %} badge-secondary {% else %} badge-info{% endif %}" title="{{cociente_porcentual(tutoria_informes(tutoria.id) | count, tutoria_asignaturas_count(tutoria.id))}}% de los informes recibidos">
-						{{cociente_porcentual(tutoria_informes(tutoria.id) | count, tutoria_asignaturas_count(tutoria.id))}}%
-					</span>
-			
+				<span class="badge float-right {% if tutoria.activa %} badge-secondary {% else %} badge-info{% endif %}" title="{{cociente_porcentual(tutoria_informes(tutoria.id) | count, tutoria_asignaturas_count(tutoria.id))}}% de los informes recibidos">
+					{{cociente_porcentual(tutoria_informes(tutoria.id) | count, tutoria_asignaturas_count(tutoria.id))}}%
+				</span>
 			</a>
 			<div class="progress rounded-0">
 				<div

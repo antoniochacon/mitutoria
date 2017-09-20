@@ -12,6 +12,6 @@
 			checked
 			{% endif %}>
 		<span class="custom-control-indicator"></span>
-		<span class="custom-control-description {% if not association_alumno_asignatura_check(alumno.id,asignatura.id) %}text-muted{% endif %}">{{asignatura.asignatura}}</span>
+		<span class="custom-control-description {% if not association_alumno_asignatura_check(alumno.id,asignatura.id) %}text-muted{% endif %}">{{asignatura.asignatura}} | {{asignatura.nombre}}</span>
 	</label>
 </div>
