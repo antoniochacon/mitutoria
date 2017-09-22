@@ -267,7 +267,7 @@ def tutorias_por_usuario_count():
             tutorias_por_usuario = session_sql.query(Tutoria).join(Alumno).join(Grupo).filter(Grupo.id == settings.grupo_activo_id).count()
             tutorias_por_usuario_list.append(tutorias_por_usuario)
         tutorias_por_usuario_min = min(tutorias_por_usuario_list)
-        tutorias_por_usuario_media = mean(tutorias_por_usuario_list)
+        tutorias_por_usuario_media = int(mean(tutorias_por_usuario_list))
         tutorias_por_usuario_max = max(tutorias_por_usuario_list)
         return tutorias_por_usuario_min, tutorias_por_usuario_media, tutorias_por_usuario_max,
     except:
