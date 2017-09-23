@@ -574,8 +574,8 @@ def alumnos_html(params={}):
                     fichero_data = fichero.stream.read().decode('iso-8859-1')
                     alumnos_reader = csv.DictReader(fichero_data)
                     for alumno in alumnos_reader:
-                        alumno_apellidos = alumno['Alumno/a'].split(', ')[0]
-                        alumno_nombre = alumno['Alumno/a'].split(', ')[1]
+                        alumno_apellidos = alumno['Alumno'].split(', ')[0]
+                        alumno_nombre = alumno['Alumno'].split(', ')[1]
                         alumno_sql = session_sql.query(Alumno).filter(Alumno.grupo_id == settings().grupo_activo_id, unaccent(func.lower(Alumno.apellidos)) == unaccent(func.lower(alumno_apellidos)), unaccent(func.lower(Alumno.nombre)) == unaccent(func.lower(alumno_nombre))).first()
                         if alumno_sql:
                             alumno_repetido_contador = alumno_repetido_contador + 1
