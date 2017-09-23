@@ -840,7 +840,7 @@ def alumnos_html(params={}):
     tutorias_timeout()
 
     # XXX sincronizar con google calendar
-    # tutoria_calendar_sync()
+    tutoria_calendar_sync()
 
     return render_template(
         'alumnos.html', alumno_add=Alumno_Add(), alumno_edit=Alumno_Add(),
@@ -2172,8 +2172,8 @@ def login_html(params={}):
                         return redirect(url_for('login_validacion_email_html', params=dic_encode(params)))
                     else:
                         pass
-                    # NOTE sincronizar con google calendar
-                    tutoria_calendar_sync()
+                    # NOTE sincronizar con google calendar (ahora esta en /alumnos)
+                    # tutoria_calendar_sync()
                     flash_toast('Bienvenido ' + Markup('<strong>') + login_form.username.data + Markup('</strong>'), 'success')
                     if not settings.grupo_activo_id:
                         params['login'] = True  # NOTE Para activar como activo el primer grupo creado y redirect a alumnos (por facilidad para un nuevo usuario)
