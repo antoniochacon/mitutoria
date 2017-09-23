@@ -802,7 +802,7 @@ def alumnos_html(params={}):
                                 tutoria_add_form_hora = datetime.datetime.strptime(tutoria_add_form.hora.data, '%H:%M')
                                 calendar_datetime_utc_start = (datetime.datetime.strptime(tutoria_add_form.fecha.data, '%A-%d-%B-%Y') + datetime.timedelta(hours=tutoria_add_form_hora.hour) + datetime.timedelta(minutes=tutoria_add_form_hora.minute)).timestamp()
                                 # calendar_datetime_utc_start_arrow = str(arrow.get(calendar_datetime_utc_start))
-                                calendar_datetime_utc_start_arrow = str(arrow.get(calendar_datetime_utc_start).to('ES'))
+                                calendar_datetime_utc_start_arrow = str(arrow.get(calendar_datetime_utc_start).to('es_ES.utf8'))
 
                                 calendar_datetime_utc_end = (datetime.datetime.strptime(tutoria_add_form.fecha.data, '%A-%d-%B-%Y') + datetime.timedelta(hours=tutoria_add_form_hora.hour) + datetime.timedelta(minutes=(tutoria_add_form_hora.minute + settings().tutoria_duracion))).timestamp()
                                 calendar_datetime_utc_end_arrow = str(arrow.get(calendar_datetime_utc_end))
