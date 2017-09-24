@@ -65,7 +65,7 @@ def tutoria_calendar_sync():
         for tutoria in grupo_tutorias(settings().grupo_activo_id, ''):
             try:
                 event = service.events().get(calendarId='primary', eventId=tutoria.calendar_event_id).execute()
-                calendar_datetime_utc_start_arrow = str(arrow.get(tutoria.fecha).to('en_EN.utf8').shift(hours=tutoria.hora.hour, minutes=tutoria.hora.minute))
+                calendar_datetime_utc_start_arrow = str(arrow.get(tutoria.fecha).to('es_ES.utf8').shift(hours=tutoria.hora.hour, minutes=tutoria.hora.minute))
                 # XXX checkea cambios a sincronizar
                 if event['status'] == 'confirmed':
                     event_status = True
