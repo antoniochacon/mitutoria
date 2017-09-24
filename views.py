@@ -818,12 +818,12 @@ def alumnos_html(params={}):
                                     'colorId': '3',
                                     'start': {
                                         'dateTime': calendar_datetime_utc_start_arrow,
-                                        # 'timeZone': 'Europe/London',
+                                        'timeZone': 'Europe/Madrid',
                                         # 'timeZone': 'local',
                                     },
                                     'end': {
                                         'dateTime': calendar_datetime_utc_end_arrow,
-                                        # 'timeZone': 'Europe/London',
+                                        'timeZone': 'Europe/Madrid',
                                         # 'timeZone': 'local',
                                     }
                                 }
