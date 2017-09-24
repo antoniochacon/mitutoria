@@ -817,9 +817,11 @@ def alumnos_html(params={}):
                                     'colorId': '3',
                                     'start': {
                                         'dateTime': calendar_datetime_utc_start_arrow,
+                                        'timeZone': 'Europe/Madrid',
                                     },
                                     'end': {
                                         'dateTime': calendar_datetime_utc_end_arrow,
+                                        'timeZone': 'Europe/Madrid',
                                     }
                                 }
                                 event = service.events().insert(calendarId='primary', body=event).execute()
