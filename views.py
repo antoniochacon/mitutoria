@@ -1274,15 +1274,13 @@ def analisis_tutoria_edit_html(params={}):
                         else:
                             return redirect(url_for('oauth2callback'))
 
-                    local_tz = pytz.timezone ('Europe/London')
-                    tutoria_edit_form_hora_without_tz = datetime.datetime.strptime(tutoria_edit_form.hora.data, '%H:%M')
-                    tutoria_edit_form_hora_with_tz = local_tz.localize(tutoria_edit_form_hora_without_tz, is_dst=None)
-                    calendar_datetime_utc_start = (datetime.datetime.strptime(tutoria_edit_form.fecha.data, '%A-%d-%B-%Y') + datetime.timedelta(hours=(tutoria_edit_form_hora_with_tz.hour)) + datetime.timedelta(minutes=tutoria_edit_form_hora_with_tz.minute)).timestamp()
-                    calendar_datetime_utc_end = (datetime.datetime.strptime(tutoria_edit_form.fecha.data, '%A-%d-%B-%Y') + datetime.timedelta(hours=(tutoria_edit_form_hora_with_tz.hour)) + datetime.timedelta(minutes=(tutoria_edit_form_hora_with_tz.minute + settings().tutoria_duracion))).timestamp()
+                    # local_tz = pytz.timezone ('Europe/London')
+                    tutoria_edit_form_hora = datetime.datetime.strptime(tutoria_edit_form.hora.data, '%H:%M')
+                    calendar_datetime_utc_start = (datetime.datetime.strptime(tutoria_edit_form.fecha.data, '%A-%d-%B-%Y') + datetime.timedelta(hours=(tutoria_edit_form_hora.hour)) + datetime.timedelta(minutes=tutoria_edit_form_hora.minute)).timestamp()
+                    calendar_datetime_utc_end = (datetime.datetime.strptime(tutoria_edit_form.fecha.data, '%A-%d-%B-%Y') + datetime.timedelta(hours=(tutoria_edit_form_hora.hour)) + datetime.timedelta(minutes=(tutoria_edit_form_hora.minute + settings().tutoria_duracion))).timestamp()
+
                     # Convert to Europe/Berlin time zone
                     # now_berlin = now_pacific.astimezone(timezone('Europe/Berlin'))
-
-
 
                     # tutoria_edit_form_hora = datetime.datetime.strptime(tutoria_edit_form.hora.data, '%H:%M')
                     # calendar_datetime_utc_start = (datetime.datetime.strptime(tutoria_edit_form.fecha.data, '%A-%d-%B-%Y') + datetime.timedelta(hours=(tutoria_edit_form_hora.hour-2)) + datetime.timedelta(minutes=tutoria_edit_form_hora.minute)).timestamp()
