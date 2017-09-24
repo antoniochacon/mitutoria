@@ -1274,11 +1274,12 @@ def analisis_tutoria_edit_html(params={}):
                         else:
                             return redirect(url_for('oauth2callback'))
 
-                    # YYYYYYYYYYYYYYY tutoria_edit
+                    # YYYYYYYYYYYYYYYYYYYYY tutoria_edit
                     tutoria_edit_form_hora = datetime.datetime.strptime(tutoria_edit_form.hora.data, '%H:%M')
                     calendar_datetime_utc_start = (datetime.datetime.strptime(tutoria_edit_form.fecha.data, '%A-%d-%B-%Y') + datetime.timedelta(hours=(tutoria_edit_form_hora.hour)) + datetime.timedelta(minutes=tutoria_edit_form_hora.minute)).timestamp()
-                    calendar_datetime_utc_end = (datetime.datetime.strptime(tutoria_edit_form.fecha.data, '%A-%d-%B-%Y') + datetime.timedelta(hours=(tutoria_edit_form_hora.hour)) + datetime.timedelta(minutes=(tutoria_edit_form_hora.minute + settings().tutoria_duracion))).timestamp()
                     calendar_datetime_utc_start_arrow = str(arrow.get(calendar_datetime_utc_start).replace(tzinfo='Europe/Madrid'))
+
+                    calendar_datetime_utc_end = (datetime.datetime.strptime(tutoria_edit_form.fecha.data, '%A-%d-%B-%Y') + datetime.timedelta(hours=(tutoria_edit_form_hora.hour)) + datetime.timedelta(minutes=(tutoria_edit_form_hora.minute + settings().tutoria_duracion))).timestamp()
                     calendar_datetime_utc_end_arrow = str(arrow.get(calendar_datetime_utc_end).replace(tzinfo='Europe/Madrid'))
 
                     try:
