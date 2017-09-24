@@ -849,7 +849,7 @@ def alumnos_html(params={}):
     tutorias_timeout()
 
     # XXX sincronizar con google calendar
-    tutoria_calendar_sync()
+    # tutoria_calendar_sync()
 
     return render_template(
         'alumnos.html', alumno_add=Alumno_Add(), alumno_edit=Alumno_Add(),
@@ -1282,7 +1282,8 @@ def analisis_tutoria_edit_html(params={}):
                     # calendar_datetime_utc_start_arrow = str(arrow.get(calendar_datetime_utc_start).to('Europe/Madrid'))
 
                     calendar_datetime_utc_end = (datetime.datetime.strptime(tutoria_edit_form.fecha.data, '%A-%d-%B-%Y') + datetime.timedelta(hours=tutoria_edit_form_hora.hour) + datetime.timedelta(minutes=(tutoria_edit_form_hora.minute + settings().tutoria_duracion))).timestamp()
-                    calendar_datetime_utc_end_arrow = str(arrow.get(calendar_datetime_utc_end))
+                    # calendar_datetime_utc_end_arrow = str(arrow.get(calendar_datetime_utc_end))
+                    calendar_datetime_utc_end_arrow = str(arrow.get(calendar_datetime_utc_end).to('local'))
 
                     try:
                         eventId = str(tutoria_sql.calendar_event_id)
