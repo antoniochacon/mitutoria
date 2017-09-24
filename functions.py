@@ -77,8 +77,8 @@ def tutoria_calendar_sync():
                     if event['start']['dateTime'] != calendar_datetime_utc_start_arrow:
                         tutoria.fecha = arrow.get(event['start']['dateTime']).date()
                         # tutoria.hora = arrow.get(event['start']['dateTime']).time()
-                        tutoria.hora = arrow.get(event['start']['dateTime']).to('Europe/Madrid').time()
-                        # tutoria.hora = arrow.get(event['start']['dateTime']).to('local').time()
+                        # tutoria.hora = arrow.get(event['start']['dateTime']).to('Europe/Madrid').time()
+                        tutoria.hora = arrow.get(event['start']['dateTime']).to('local').time()
 
                     # flash_toast('Tutorias sincronizadas con la agenda', 'success')
                     session_sql.commit()
