@@ -102,9 +102,11 @@ def calendar_api_html():
         'colorId': '3',
         'start': {
             'dateTime': '2017-09-10T09:00:00-07:00',
+            'timeZone': 'Europe/Madrid',
         },
         'end': {
             'dateTime': '2017-09-11T09:00:00-07:00',
+            'timeZone': 'Europe/Madrid',
         }
     }
     event = service.events().insert(calendarId='primary', body=event).execute()
@@ -817,11 +819,11 @@ def alumnos_html(params={}):
                                     'colorId': '3',
                                     'start': {
                                         'dateTime': calendar_datetime_utc_start_arrow,
-                                        'timeZone': 'Europe/Madrid',
+                                        'timeZone': 'Europe/London',
                                     },
                                     'end': {
                                         'dateTime': calendar_datetime_utc_end_arrow,
-                                        'timeZone': 'Europe/Madrid',
+                                        'timeZone': 'Europe/London',
                                     }
                                 }
                                 event = service.events().insert(calendarId='primary', body=event).execute()
