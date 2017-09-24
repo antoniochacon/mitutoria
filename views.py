@@ -817,12 +817,10 @@ def alumnos_html(params={}):
                                     'start': {
                                         'dateTime': calendar_datetime_utc_start_arrow,
                                         'timeZone': 'Europe/London',
-                                        # 'timeZone': 'local',
                                     },
                                     'end': {
                                         'dateTime': calendar_datetime_utc_end_arrow,
                                         'timeZone': 'Europe/London',
-                                        # 'timeZone': 'local',
                                     }
                                 }
                                 event = service.events().insert(calendarId='primary', body=event).execute()
