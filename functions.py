@@ -65,7 +65,7 @@ def tutoria_calendar_sync():
         for tutoria in grupo_tutorias(settings().grupo_activo_id, ''):
             try:
                 event = service.events().get(calendarId='primary', eventId=tutoria.calendar_event_id).execute()
-                calendar_datetime_utc_start_arrow = str(arrow.get(tutoria.fecha).shift(hours=tutoria.hora.hour-2, minutes=tutoria.hora.minute).to('es_ES.utf8'))
+                calendar_datetime_utc_start_arrow = str(arrow.get(tutoria.fecha).shift(hours=tutoria.hora.hour, minutes=tutoria.hora.minute))
                 # XXX checkea cambios a sincronizar
                 if event['status'] == 'confirmed':
                     event_status = True
@@ -76,7 +76,7 @@ def tutoria_calendar_sync():
                         tutoria.activa = event_status
                     if event['start']['dateTime'] != calendar_datetime_utc_start_arrow:
                         tutoria.fecha = arrow.get(event['start']['dateTime']).date()
-                        tutoria.hora = arrow.get(event['start']['dateTime']).time()
+                        tutoria.hora = arrow.get(event['start']['dateTime']).to('es_ES.utf8').time()
                     # flash_toast('Tutorias sincronizadas con la agenda', 'success')
                     session_sql.commit()
             except:
