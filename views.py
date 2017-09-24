@@ -849,7 +849,7 @@ def alumnos_html(params={}):
     tutorias_timeout()
 
     # XXX sincronizar con google calendar
-    # tutoria_calendar_sync()
+    tutoria_calendar_sync()
 
     return render_template(
         'alumnos.html', alumno_add=Alumno_Add(), alumno_edit=Alumno_Add(),
