@@ -78,7 +78,8 @@ def tutoria_calendar_sync():
                         tutoria.fecha = arrow.get(event['start']['dateTime']).date()
                         # tutoria.hora = arrow.get(event['start']['dateTime']).time()
                         # tutoria.hora = arrow.get(event['start']['dateTime']).to('es_ES.utf8').time()
-                        tutoria.hora = arrow.get(event['start']['dateTime']).to('Europe/Madrid').time()
+                        # tutoria.hora = arrow.get(event['start']['dateTime']).to('Europe/Madrid').time()
+                        tutoria.hora = arrow.get(event['start']['dateTime']).to('local').time()
 
                     # flash_toast('Tutorias sincronizadas con la agenda', 'success')
                     session_sql.commit()
