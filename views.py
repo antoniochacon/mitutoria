@@ -1135,6 +1135,14 @@ def analisis_tutoria_edit_html(params={}):
         current_tutoria_id = current_id_request('current_tutoria_id')
         params['current_tutoria_id'] = current_tutoria_id
 
+        # XXX tutoria_acuerdos_save
+        if request.form['selector_button'] == 'selector_acuerdos_save':
+            acuerdos = request.form.get('acuerdos')
+            tutoria_sql = tutoria_by_id(current_tutoria_id)
+            tutoria_sql.acuerdos = acuerdos
+            session_sql.commit()
+            return redirect(url_for('analisis_html', params=dic_encode(params)))
+
         # XXX tutoria_edit_close
         if request.form['selector_button'] == 'selector_tutoria_edit_close':
             return redirect(url_for('analisis_html', params=dic_encode(params)))

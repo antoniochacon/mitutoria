@@ -166,6 +166,7 @@ class Tutoria (Base):
     activa = Column(Boolean, default=True)
     deleted = Column(Boolean, default=False)
     calendar_event_id = Column(String)
+    acuerdos = Column(String)
     informes = relationship('Informe', backref='tutoria', lazy='dynamic', cascade='delete')
     created_at = Column(DateTime, default=datetime.datetime.now())
 
