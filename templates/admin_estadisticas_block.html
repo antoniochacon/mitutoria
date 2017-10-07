@@ -51,58 +51,48 @@
 				<div class="card-body">
 					<div class="pl-2">
 						<div class="pt-0">
-							email validados
+							email NO validados
 							<span class="badge badge-secondary float-right" title="{{stats['emails_validados_percent']|int}}% emails validados">
-								{{stats['emails_validados']}}
-								|
-								{{stats['emails_validados_percent']|int}}%
+								{{100 - stats['emails_validados_percent']|int}}%
 							</span>
 							<div class="progress rounded-0">
-								<div class="progress-bar bg-secondary" role="progressbar" aria-valuemin="0" aria-valuemax="100" style="height: 5px; width:{{stats['emails_validados_percent']|int}}%;"></div>
+								<div class="progress-bar bg-secondary" role="progressbar" aria-valuemin="0" aria-valuemax="100" style="height: 5px; width:{{100 - stats['emails_validados_percent']|int}}%;"></div>
 							</div>
 						</div>
 						<div class="pt-2">
-							Robinson OFF
+							Robinson ON
 							<span class="badge badge-secondary float-right" title="{{stats['emails_no_robinson_percent']|int}}% Robinson OFF">
-								{{stats['emails_no_robinson']}}
-								|
-								{{stats['emails_no_robinson_percent']|int}}%
+								{{100 - stats['emails_no_robinson_percent']|int}}%
 							</span>
 							<div class="progress rounded-0">
-								<div class="progress-bar bg-secondary" role="progressbar" aria-valuemin="0" aria-valuemax="100" style="height: 5px; width:{{stats['emails_no_robinson_percent']|int}}%;"></div>
+								<div class="progress-bar bg-secondary" role="progressbar" aria-valuemin="0" aria-valuemax="100" style="height: 5px; width:{{100 - stats['emails_no_robinson_percent']|int}}%;"></div>
 							</div>
 						</div>
 						<div class="pt-2">
-							baneados OFF
+							baneados
 							<span class="badge badge-secondary float-right" title="{{stats['emails_no_ban_percent']|int}}%  ban OFF">
-								{{stats['emails_no_ban']}}
-								|
-								{{stats['emails_no_ban_percent']|int}}%
+								{{100 - stats['emails_no_ban_percent']|int}}%
 							</span>
 							<div class="progress rounded-0">
-								<div class="progress-bar bg-secondary" role="progressbar" aria-valuemin="0" aria-valuemax="100" style="height: 5px; width: {{stats['emails_no_ban_percent']|int}}%;"></div>
+								<div class="progress-bar bg-secondary" role="progressbar" aria-valuemin="0" aria-valuemax="100" style="height: 5px; width: {{100 - stats['emails_no_ban_percent']|int}}%;"></div>
 							</div>
 						</div>
 						<div class="pt-2">
-							archivar tutorias ON
+							archivar tutorias OFF
 							<span class="badge badge-secondary float-right" title="{{stats['tutoria_timeout_percent']|int}}% archivar tutorias ON">
-								{{stats['tutoria_timeout']}}
-								|
-								{{stats['tutoria_timeout_percent']|int}}%
+								{{100 - stats['tutoria_timeout_percent']|int}}%
 							</span>
 							<div class="progress rounded-0">
-								<div class="progress-bar bg-secondary" role="progressbar" aria-valuemin="0" aria-valuemax="100" style="height: 5px; width:{{stats['tutoria_timeout_percent']|int}}%;"></div>
+								<div class="progress-bar bg-secondary" role="progressbar" aria-valuemin="0" aria-valuemax="100" style="height: 5px; width:{{100 - stats['tutoria_timeout_percent']|int}}%;"></div>
 							</div>
 						</div>
 						<div class="pt-2">
-							evolucion docentes ON
+							evolucion docentes OF
 							<span class="badge badge-secondary float-right" title="{{stats['evolucion_equipo_educativo_percent']|int}}% timeout tutorias desactivado">
-								{{stats['evolucion_equipo_educativo']}}
-								|
-								{{stats['evolucion_equipo_educativo_percent']|int}}%
+								{{100 - stats['evolucion_equipo_educativo_percent']|int}}%
 							</span>
 							<div class="progress rounded-0">
-								<div class="progress-bar bg-secondary" role="progressbar" aria-valuemin="0" aria-valuemax="100" style="height: 5px; width:{{stats['evolucion_equipo_educativo_percent']|int}}%;"></div>
+								<div class="progress-bar bg-secondary" role="progressbar" aria-valuemin="0" aria-valuemax="100" style="height: 5px; width:{{100 - stats['evolucion_equipo_educativo_percent']|int}}%;"></div>
 							</div>
 						</div>
 						<div class="pt-2">
@@ -115,7 +105,7 @@
 							</div>
 						</div>
 						<div class="pt-2">
-							longitud cuestionario
+							cuestiones ON
 							<span class="small">
 								[min
 								{{stats['preguntas_por_cuestionario_min']|int}}
@@ -124,8 +114,6 @@
 								| max
 								{{stats['preguntas_por_cuestionario_max']|int}}]</span>
 							<span class="badge badge-secondary float-right" title="{{stats['preguntas_por_cuestionario_percent']|int}}% preguntas usadas">
-								{{stats['preguntas_por_cuestionario_media']}}
-								|
 								{{stats['preguntas_por_cuestionario_percent']|int}}%
 							</span>
 							<div class="progress rounded-0">

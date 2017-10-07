@@ -1,5 +1,5 @@
 {% macro nav_tabs_admin(tab_active, params_args) %}
-	{{nav_tabs(link_active, params_args=params_args, dic={'Cuestionario':'admin_cuestionario', 'Citas':'admin_citas', 'Usuarios':'admin_usuarios', 'Estadisticas':'admin_estadisticas'})}}
+	{{nav_tabs(tab_active, params_args=params_args, dic={'Cuestiones':'admin_cuestionario', 'Citas':'admin_citas', 'Users':'admin_usuarios', 'Stats':'admin_estadisticas'})}}
 {% endmacro %}
 {% macro nav_tabs(tab_active, params_args, dic) %}
 	<div class="pb-2">

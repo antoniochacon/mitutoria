@@ -5,7 +5,7 @@
 	<div class="paper bg-white padding_contenido">
 		{{titulo_1(bg_color='bg-dark', titulo='Admin Settings')}}
 		{% include "admin_usuario_data_block.html" %}
-		{{nav_tabs(tab_active='Cuestionario', params_args=dic_encode_args({'current_usuario_id': usuario.id}), dic={'Grupos':'admin_usuario_data_grupos', 'Cuestionario':'admin_usuario_data_cuestionario', 'Opciones':'admin_usuario_data_opciones'})}}
+		{{nav_tabs(tab_active='Cuestiones', params_args=dic_encode_args({'current_usuario_id': usuario.id}), dic={'Grupos':'admin_usuario_data_grupos', 'Cuestionario':'admin_usuario_data_cuestionario', 'Opciones':'admin_usuario_data_opciones'})}}
 		<div class="row">
 			{% for pregunta in invitado_preguntas(params['current_usuario_id']) %}
 				<div class="media col-md-6 col-lg-4 pb-2">
