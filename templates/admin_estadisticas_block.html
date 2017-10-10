@@ -8,7 +8,7 @@
 			<div class="card border-mutted">
 				<div class="card-header text-center strong bg-info text-dark ">
 					<div class="text-truncate">
-						Estado de salud
+						Sobrecarga
 						<span class="small">
 							| tutores y equipo educativo
 						</span>
@@ -52,7 +52,7 @@
 					<div class="pl-2">
 						<div class="pt-0">
 							email NO validados
-							<span class="badge badge-secondary float-right" title="{{stats['emails_validados_percent']|int}}% emails validados">
+							<span class="badge badge-secondary float-right" title="{{100 - stats['emails_validados_percent']|int}}% emails NO validados">
 								{{100 - stats['emails_validados_percent']|int}}%
 							</span>
 							<div class="progress rounded-0">
@@ -61,7 +61,7 @@
 						</div>
 						<div class="pt-2">
 							Robinson ON
-							<span class="badge badge-secondary float-right" title="{{stats['emails_no_robinson_percent']|int}}% Robinson OFF">
+							<span class="badge badge-secondary float-right" title="{{100 - stats['emails_no_robinson_percent']|int}}% Robinson ON">
 								{{100 - stats['emails_no_robinson_percent']|int}}%
 							</span>
 							<div class="progress rounded-0">
@@ -70,7 +70,7 @@
 						</div>
 						<div class="pt-2">
 							baneados
-							<span class="badge badge-secondary float-right" title="{{stats['emails_no_ban_percent']|int}}%  ban OFF">
+							<span class="badge badge-secondary float-right" title="{{100 - stats['emails_no_ban_percent']|int}}%  baneados">
 								{{100 - stats['emails_no_ban_percent']|int}}%
 							</span>
 							<div class="progress rounded-0">
@@ -79,7 +79,7 @@
 						</div>
 						<div class="pt-2">
 							archivar tutorias OFF
-							<span class="badge badge-secondary float-right" title="{{stats['tutoria_timeout_percent']|int}}% archivar tutorias ON">
+							<span class="badge badge-secondary float-right" title="{{100 - stats['tutoria_timeout_percent']|int}}% archivar tutorias OFF">
 								{{100 - stats['tutoria_timeout_percent']|int}}%
 							</span>
 							<div class="progress rounded-0">
@@ -87,8 +87,8 @@
 							</div>
 						</div>
 						<div class="pt-2">
-							evolucion docentes OF
-							<span class="badge badge-secondary float-right" title="{{stats['evolucion_equipo_educativo_percent']|int}}% timeout tutorias desactivado">
+							evolucion docentes OFF
+							<span class="badge badge-secondary float-right" title="{{100 - stats['evolucion_equipo_educativo_percent']|int}}% evolucion docentes OFF">
 								{{100 - stats['evolucion_equipo_educativo_percent']|int}}%
 							</span>
 							<div class="progress rounded-0">
@@ -159,47 +159,48 @@
 				</div>
 				<div class="card-body">
 					<div class="pt-2">
-						participacion docentes
-						<span class="badge badge-secondary float-right" title="{{stats['profesores_actividad_percent']|int}}% docentes activos">
-							{{stats['profesores_actividad']}}
-							|
-							{{stats['profesores_actividad_percent']|int}}%
+						docentes sin participar
+						<span class="badge badge-secondary float-right" title="{{100 - stats['profesores_actividad_percent']|int}}% docentes sin participar">
+							{{100 - stats['profesores_actividad_percent']|int}}%
 						</span>
 						<div class="progress rounded-0">
-							<div class="progress-bar bg-secondary" role="progressbar" aria-valuemin="0" aria-valuemax="100" style="height: 5px; width:{{stats['profesores_actividad_percent']|int}}%;"></div>
+							<div class="progress-bar bg-secondary" role="progressbar" aria-valuemin="0" aria-valuemax="100" style="height: 5px; width:{{100 - stats['profesores_actividad_percent']|int}}%;"></div>
 						</div>
 					</div>
 					<div class="pt-2">
-						tutorías con respuesta
-						<span class="badge badge-secondary float-right" title="{{stats['tutorias_con_respuesta_percent']|int}}% tutorias con respuesta">
-							{{stats['tutorias_con_respuesta']}}
-							|
-							{{stats['tutorias_con_respuesta_percent']|int}}%
+						tutorías sin respuesta
+						<span class="badge badge-secondary float-right" title="{{100 - stats['tutorias_con_respuesta_percent']|int}}% tutorias sin respuesta">
+							{{100 - stats['tutorias_con_respuesta_percent']|int}}%
 						</span>
 						<div class="progress rounded-0">
-							<div class="progress-bar bg-secondary" role="progressbar" aria-valuemin="0" aria-valuemax="100" style="height: 5px; width:{{stats['tutorias_con_respuesta_percent']}}%;"></div>
+							<div class="progress-bar bg-secondary" role="progressbar" aria-valuemin="0" aria-valuemax="100" style="height: 5px; width:{{100 - stats['tutorias_con_respuesta_percent']}}%;"></div>
 						</div>
 					</div>
 					<div class="pt-2">
-						informes con comentario
-						<span class="badge badge-secondary float-right" title="{{stats['informes_con_comentario_percent']|int}}% informes con comentario">
-							{{stats['informes_con_comentario']}}
-							|
-							{{stats['informes_con_comentario_percent']|int}}%
+						tutorías sin acuerdos
+						<span class="badge badge-secondary float-right" title="{{100 - stats['tutorias_con_acuerdos_count']|int}}% tutorías sin acuerdos">
+							{{100 - stats['tutorias_con_acuerdos_count']|int}}%
 						</span>
 						<div class="progress rounded-0">
-							<div class="progress-bar bg-secondary" role="progressbar" aria-valuemin="0" aria-valuemax="100" style="height: 5px; width:{{stats['informes_con_comentario_percent']}}%;"></div>
+							<div class="progress-bar bg-secondary" role="progressbar" aria-valuemin="0" aria-valuemax="100" style="height: 5px; width:{{100 - stats['tutorias_con_acuerdos_count']}}%;"></div>
 						</div>
 					</div>
 					<div class="pt-2">
-						informes con notas
-						<span class="badge badge-secondary float-right" title="{{stats['informes_con_pruebas_evalubles_percent']|int}}% informes con notas">
-							{{stats['informes_con_pruebas_evalubles']}}
-							|
-							{{stats['informes_con_pruebas_evalubles_percent']|int}}%
+						informes sin comentario
+						<span class="badge badge-secondary float-right" title="{{100 - stats['informes_con_comentario_percent']|int}}% informes sin comentario">
+							{{100 - stats['informes_con_comentario_percent']|int}}%
 						</span>
 						<div class="progress rounded-0">
-							<div class="progress-bar bg-secondary" role="progressbar" aria-valuemin="0" aria-valuemax="100" style="height: 5px; width:{{stats['informes_con_pruebas_evalubles_percent']}}%;"></div>
+							<div class="progress-bar bg-secondary" role="progressbar" aria-valuemin="0" aria-valuemax="100" style="height: 5px; width:{{100 - stats['informes_con_comentario_percent']}}%;"></div>
+						</div>
+					</div>
+					<div class="pt-2">
+						informes sin notas
+						<span class="badge badge-secondary float-right" title="{{100 - stats['informes_con_pruebas_evalubles_percent']|int}}% informes sin notas">
+							{{100 - stats['informes_con_pruebas_evalubles_percent']|int}}%
+						</span>
+						<div class="progress rounded-0">
+							<div class="progress-bar bg-secondary" role="progressbar" aria-valuemin="0" aria-valuemax="100" style="height: 5px; width:{{100 - stats['informes_con_pruebas_evalubles_percent']}}%;"></div>
 						</div>
 					</div>
 				</div>

@@ -91,12 +91,12 @@
 					endAngle: 90,
 					data: [
 						{
-							name: "Tutores | Salud",
-							y: {{stats['tutores_over_all']|int}},
+							name: "Tutores | Sobrecarga",
+							y: {{100 - stats['tutores_over_all']|int}},
 							color: "#BA5FD3"
 						}, {
-							name: "Tutores | Sobrecarga",
-							y: {{100-stats['tutores_over_all']|int}},
+							name: "Tutores | Salud",
+							y: {{stats['tutores_over_all']|int}},
 							color: "#f5f5f5",
 							states: {
 								hover: {
@@ -116,12 +116,12 @@
 					endAngle: 90,
 					data: [
 						{
-							name: "Equipo educativo | Salud",
-							y: {{stats['profesores_over_all']|int}},
+							name: "Equipo educativo | Sobrecarga",
+							y: {{100 - stats['profesores_over_all']|int}},
 							color: "#ec407a"
 						}, {
-							name: "Equipo educativo | Sobrecarga",
-							y: {{100-stats['profesores_over_all']|int}},
+							name: "Equipo educativo | Salud",
+							y: {{stats['profesores_over_all']|int}},
 							color: "#f5f5f5",
 							states: {
 								hover: {

@@ -147,6 +147,8 @@ def admin_estadisticas_html(params={}):
     stats['tutorias_con_respuesta'] = tutorias_con_respuesta_count()[0]
     stats['tutorias_con_respuesta_percent'] = tutorias_con_respuesta_count()[1]
 
+    stats['tutorias_con_acuerdos_count'] = tutorias_con_acuerdos_count()
+
     stats['preguntas_por_cuestionario_min'] = preguntas_por_cuestionario()[0]
     stats['preguntas_por_cuestionario_media'] = preguntas_por_cuestionario()[1]
     stats['preguntas_por_cuestionario_max'] = preguntas_por_cuestionario()[2]
