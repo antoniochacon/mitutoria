@@ -81,8 +81,17 @@ class Pregunta (Base):
     orden = Column(Integer)
     visible = Column(Boolean, default=False)  # Controla la visibilidad hacia los usuarios
     active_default = Column(Boolean, default=False)  # controla las preguntas activas por defecto estaran activas para un nuevo usuario. Al crear nuevo usuario, habra que insertar estas preguntas en su preguntas de settings
+    categoria_id = Column(Integer, ForeignKey('categoria.id'))
     respuestas = relationship('Respuesta', backref='pregunta', lazy='dynamic', cascade='delete')
     created_at = Column(DateTime, default=datetime.datetime.now())
+
+
+class Categoria (Base):
+    __tablename__ = 'categoria'
+    id = Column(Integer, primary_key=True)
+    enunciado = Column(String)
+    orden = Column(Integer)
+    preguntas = relationship('Pregunta', backref='categoria', lazy='dynamic', cascade='delete')
 
 
 class Association_Settings_Pregunta (Base):

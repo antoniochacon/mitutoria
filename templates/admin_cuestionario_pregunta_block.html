@@ -1,185 +1,206 @@
-{% for pregunta in preguntas %}
-	<a id="anchor_pre_{{hashids_encode(pregunta.id)}}"></a>
-	<a data-toggle="collapse" data-parent="#parent_pregunta" href="#pregunta_{{hashids_encode(pregunta.id)}}" class="collapse_header_1" aria-expanded="false" title="{{pregunta.enunciado_ticker}}">
-		<div class="media">
-			<span class="capital {% if pregunta.visible %}capital-mutted{% else %}capital-warning{% endif %}">{{pregunta.orden}}</span>
-			<div class="media-body">
-				<div class="padding_2">
-					{{pregunta.enunciado}}
-					{# NOTE badge #}
-					{% if pregunta.active_default %}
-						<span class="badge badge-info float-right" title="activa por defecto">
-							default
-						</span>
-					{% endif %}
+{% for categoria in categorias() %}
+	<div class="bg-info pt-1 pl-2 {% if not preguntas_by_categoria_id(True, categoria.id) %}text-warning{% endif %}">
+
+		{{categoria.enunciado}}
+	</div>
+	<div class="divider bg-dark"></div>
+	{% for pregunta in preguntas_by_categoria_id('', categoria.id) %}
+		<a id="anchor_pre_{{hashids_encode(pregunta.id)}}"></a>
+		<a data-toggle="collapse" data-parent="#parent_pregunta" href="#pregunta_{{hashids_encode(pregunta.id)}}" class="collapse_header_1" aria-expanded="false" title="{{pregunta.enunciado_ticker}}">
+			<div class="media">
+				<span class="capital {% if pregunta.visible %}capital-mutted{% else %}capital-warning{% endif %}">{{pregunta.orden}}</span>
+				<div class="media-body">
+					<div class="padding_2">
+						{{pregunta.enunciado}}
+						{# NOTE badge #}
+						{% if pregunta.active_default %}
+							<span class="badge badge-info float-right" title="activa por defecto">
+								default
+							</span>
+						{% endif %}
+					</div>
 				</div>
 			</div>
-		</div>
-	</a>
-	<div id="pregunta_{{hashids_encode(pregunta.id)}}" class="collapse {% if equal_str(pregunta.id, params['current_pregunta_id']) and params['collapse_pregunta_edit'] %} show {% endif %}">
-		<div class="divider grueso bg-primary"></div>
-		{# XXX: pregunta_edit #}
-		<div class="padding_3 pt-3 pb-3">
-			<form action="/admin_cuestionario" method="POST">
-				<div class="row">
-					<div class="form-group col-md-12">
-						<div class="input-group">
-							<input
-								type="text"
-								{% if not equal_str(pregunta.id, params['current_pregunta_id']) or not params['pregunta_edit_link'] %}
-								readonly
-								{% endif %}
-								class="form-control {% if request.method=='POST' and params['collpase_pregunta_edit'] %} {% if pregunta_edit.enunciado.errors %} is-invalid {% else %} is-valid {% endif %}{% endif %}"
-								name="{{pregunta_edit.enunciado.name}}"
-								value="{% if equal_str(pregunta.id,params['current_pregunta_id']) and request.method=='POST' and params['collpase_pregunta_edit'] %}{{pregunta_edit.enunciado.data}}{% else %}{{pregunta.enunciado}}{% endif %}"
-								placeholder="{{pregunta_edit.enunciado.label.text}}">
-							<span class="input-group-addon {% if request.method=='POST' and params['collpase_pregunta_edit'] %} {% if pregunta_edit.enunciado.errors %} form_addon-warning {% else %} form_addon-success {% endif %} {% endif %}">{{pregunta_edit.enunciado.label.text}}</span>
-						</div>
-					</div>
-					<div class="form-group col-md-12">
-						<div class="input-group">
-							<input
-								type="text"
-								{% if not equal_str(pregunta.id, params['current_pregunta_id']) or not params['pregunta_edit_link'] %}
-								readonly
-								{% endif %}
-								class="form-control {% if request.method=='POST' and params['collpase_pregunta_edit'] %} {% if pregunta_edit.enunciado_ticker.errors %} is-invalid {% else %} is-valid {% endif %}{% endif %}"
-								name="{{pregunta_edit.enunciado_ticker.name}}"
-								value="{% if equal_str(pregunta.id,params['current_pregunta_id']) and request.method=='POST' and params['collpase_pregunta_edit'] %}{{pregunta_edit.enunciado_ticker.data}}{% else %}{{pregunta.enunciado_ticker}}{% endif %}"
-								placeholder="{{pregunta_edit.enunciado_ticker.label.text}}">
-							<span class="input-group-addon {% if request.method=='POST' and params['collpase_pregunta_edit'] %} {% if pregunta_edit.enunciado_ticker.errors %} form_addon-warning {% else %} form_addon-success {% endif %} {% endif %}">{{pregunta_edit.enunciado_ticker.label.text}}</span>
-						</div>
-					</div>
-					<div class="media col-sm-12 col-md-6 col-lg-4">
-						<div class="form-group align-self-center mr-1">
+		</a>
+		<div id="pregunta_{{hashids_encode(pregunta.id)}}" class="collapse {% if equal_str(pregunta.id, params['current_pregunta_id']) and params['collapse_pregunta_edit'] %} show {% endif %}">
+			<div class="divider grueso bg-primary"></div>
+			{# XXX: pregunta_edit #}
+			<div class="padding_3 pt-3 pb-3">
+				<form action="/admin_cuestionario" method="POST">
+					<div class="row">
+						<div class="form-group col-md-12">
 							<div class="input-group">
 								<input
-									type="number"
+									type="text"
 									{% if not equal_str(pregunta.id, params['current_pregunta_id']) or not params['pregunta_edit_link'] %}
 									readonly
 									{% endif %}
-									class="form-control {% if request.method=='POST' and params['collpase_pregunta_edit'] %} {% if pregunta_edit.orden.errors %} is-invalid {% else %} is-valid {% endif %}{% endif %}"
-									name="{{pregunta_edit.orden.name}}"
-									value="{% if equal_str(pregunta.id,params['current_pregunta_id']) and request.method=='POST' and params['collpase_pregunta_edit'] %}{{pregunta_edit.orden.data}}{% else %}{{pregunta.orden}}{% endif %}"
-									placeholder="{{pregunta_edit.orden.label.text}}">
-								<span class="input-group-addon {% if request.method=='POST' and params['collpase_pregunta_edit'] %} {% if pregunta_edit.orden.errors %} form_addon-warning {% else %} form_addon-success {% endif %} {% endif %}">{{pregunta_edit.orden.label.text}}</span>
+									class="form-control {% if request.method=='POST' and params['collpase_pregunta_edit'] %} {% if pregunta_edit.enunciado.errors %} is-invalid {% else %} is-valid {% endif %}{% endif %}"
+									name="{{pregunta_edit.enunciado.name}}"
+									value="{% if equal_str(pregunta.id,params['current_pregunta_id']) and request.method=='POST' and params['collpase_pregunta_edit'] %}{{pregunta_edit.enunciado.data}}{% else %}{{pregunta.enunciado}}{% endif %}"
+									placeholder="{{pregunta_edit.enunciado.label.text}}">
+								<span class="input-group-addon {% if request.method=='POST' and params['collpase_pregunta_edit'] %} {% if pregunta_edit.enunciado.errors %} form_addon-warning {% else %} form_addon-success {% endif %} {% endif %}">{{pregunta_edit.enunciado.label.text}}</span>
 							</div>
 						</div>
-						<div class="media-body">
-							<div class="padding_2">
-								<div class="btn-group-vertical">
-									<button
-										role="button"
-										type="submit"
-										name="selector_button"
-										value="selector_move_up"
-										class="btn btn-outline-dark btn-sm"
-										title="subir posición"
-										{% if equal_str(pregunta.id, params['current_pregunta_id'])and params['collapse_pregunta_edit'] %}
-										{% if not params['pregunta_edit_link'] %}
-										disabled
+						<div class="form-group col-md-12">
+							<div class="input-group">
+								<input
+									type="text"
+									{% if not equal_str(pregunta.id, params['current_pregunta_id']) or not params['pregunta_edit_link'] %}
+									readonly
+									{% endif %}
+									class="form-control {% if request.method=='POST' and params['collpase_pregunta_edit'] %} {% if pregunta_edit.enunciado_ticker.errors %} is-invalid {% else %} is-valid {% endif %}{% endif %}"
+									name="{{pregunta_edit.enunciado_ticker.name}}"
+									value="{% if equal_str(pregunta.id,params['current_pregunta_id']) and request.method=='POST' and params['collpase_pregunta_edit'] %}{{pregunta_edit.enunciado_ticker.data}}{% else %}{{pregunta.enunciado_ticker}}{% endif %}"
+									placeholder="{{pregunta_edit.enunciado_ticker.label.text}}">
+								<span class="input-group-addon {% if request.method=='POST' and params['collpase_pregunta_edit'] %} {% if pregunta_edit.enunciado_ticker.errors %} form_addon-warning {% else %} form_addon-success {% endif %} {% endif %}">{{pregunta_edit.enunciado_ticker.label.text}}</span>
+							</div>
+						</div>
+						<div class="form-group col-sm-12 col-md-8">
+							<div class="input-group">
+								<select name="{{pregunta_add.categoria_id.name}}" class="form-control" required {% if not equal_str(pregunta.id, params['current_pregunta_id']) or not params['pregunta_edit_link'] %} readonly {% endif %}>
+									<option value="{% if equal_str(pregunta.id,params['current_pregunta_id']) and request.method=='POST' and params['collpase_pregunta_edit'] %}{{pregunta_edit.categoria_id.data}}{% else %}{{pregunta.categoria_id}}{% endif %}">
+										{% if equal_str(pregunta.id, params['current_pregunta_id'])and request.method == 'POST' and params['collpase_pregunta_edit'] %}{{categoria_by_id(pregunta_edit.categoria_id.data).enunciado}}
+										{% else %}{{categoria_by_id(pregunta.categoria_id).enunciado}}{% endif %}
+									</option>
+									{% for categoria in categorias() %}
+										<option value="{{categoria.id}}">{{categoria.enunciado}}</option>
+									{% endfor %}
+								</select>
+								<span class="input-group-addon {% if request.method=='POST' and params['collapse_pregunta_add'] %} {% if pregunta_add.categoria_id.errors %} form_addon-warning {% else %} form_addon-success {% endif %} {% endif %}">categoria</span>
+							</div>
+						</div>
+						<div class="form-group media col-sm-12 col-md-4">
+							<div class="form-group align-self-center mr-1">
+								<div class="input-group">
+									<input
+										type="number"
+										{% if not equal_str(pregunta.id, params['current_pregunta_id']) or not params['pregunta_edit_link'] %}
+										readonly
 										{% endif %}
-										{% else %}
-										disabled
-										{% endif %}
-										{% if loop.first %}
-										disabled
-										{% endif %}>
-										<i class="material-icons vertical-center">keyboard_arrow_up</i>
-									</button>
-									<button
-										role="button"
-										type="submit"
-										name="selector_button"
-										value="selector_move_down"
-										class="btn btn-outline-dark btn-sm"
-										title="bajar posición"
-										{% if equal_str(pregunta.id, params['current_pregunta_id'])and params['collapse_pregunta_edit'] %}
-										{% if not params['pregunta_edit_link'] %}
-										disabled
-										{% endif %}
-										{% else %}
-										disabled
-										{% endif %}
-										{% if loop.last %}
-										disabled="disabled"
-										{% endif %}>
-										<i class="material-icons vertical-center">keyboard_arrow_down</i>
-									</button>
+										class="form-control {% if request.method=='POST' and params['collpase_pregunta_edit'] %} {% if pregunta_edit.orden.errors %} is-invalid {% else %} is-valid {% endif %}{% endif %}"
+										name="{{pregunta_edit.orden.name}}"
+										value="{% if equal_str(pregunta.id,params['current_pregunta_id']) and request.method=='POST' and params['collpase_pregunta_edit'] %}{{pregunta_edit.orden.data}}{% else %}{{pregunta.orden}}{% endif %}"
+										placeholder="{{pregunta_edit.orden.label.text}}">
+									<span class="input-group-addon {% if request.method=='POST' and params['collpase_pregunta_edit'] %} {% if pregunta_edit.orden.errors %} form_addon-warning {% else %} form_addon-success {% endif %} {% endif %}">{{pregunta_edit.orden.label.text}}</span>
+								</div>
+							</div>
+							<div class="media-body">
+								<div class="padding_2">
+									<div class="btn-group-vertical">
+										<button
+											role="button"
+											type="submit"
+											name="selector_button"
+											value="selector_move_up_pregunta"
+											class="btn btn-outline-dark btn-sm"
+											title="subir posición"
+											{% if equal_str(pregunta.id, params['current_pregunta_id'])and params['collapse_pregunta_edit'] %}
+											{% if not params['pregunta_edit_link'] %}
+											disabled
+											{% endif %}
+											{% else %}
+											disabled
+											{% endif %}
+											{% if loop.first %}
+											disabled
+											{% endif %}>
+											<i class="material-icons vertical-center">keyboard_arrow_up</i>
+										</button>
+										<button
+											role="button"
+											type="submit"
+											name="selector_button"
+											value="selector_move_down_pregunta"
+											class="btn btn-outline-dark btn-sm"
+											title="bajar posición"
+											{% if equal_str(pregunta.id, params['current_pregunta_id'])and params['collapse_pregunta_edit'] %}
+											{% if not params['pregunta_edit_link'] %}
+											disabled
+											{% endif %}
+											{% else %}
+											disabled
+											{% endif %}
+											{% if loop.last %}
+											disabled="disabled"
+											{% endif %}>
+											<i class="material-icons vertical-center">keyboard_arrow_down</i>
+										</button>
+									</div>
 								</div>
 							</div>
 						</div>
-					</div>
-					<div class="form-group col-auto">
-						<label class="custom-control custom-checkbox check_box_1">
-							<input type="checkbox" {% if not equal_str(pregunta.id, params['current_pregunta_id']) or not params['pregunta_edit_link'] %} disabled {% endif %} class="custom-control-input" name="visible" value="True" {% if pregunta.visible%} checked {% endif %}>
-							<span class="custom-control-indicator"></span>
-							<span class="custom-control-description">visible</span>
-						</label>
-					</div>
-					<div class="form-group col-auto">
-						<label class="custom-control custom-checkbox check_box_1">
-							<input
-								type="checkbox"
-								{% if not equal_str(pregunta.id, params['current_pregunta_id']) or not params['pregunta_edit_link'] %}
-								disabled
-								{% endif %}
-								class="custom-control-input"
-								name="active_default"
-								value="True"
-								{% if pregunta.active_default%}
-								checked
-								{% endif %}>
-							<span class="custom-control-indicator"></span>
-							<span class="custom-control-description">default</span>
-						</label>
-					</div>
-					<input type="hidden" name="current_pregunta_id" value="{{hashids_encode(pregunta.id)}}">
-				</div>
-				{% if equal_str(pregunta.id, params['current_pregunta_id'])and params['pregunta_edit_link'] %}
-					{% if params['pregunta_delete_link'] %}
-						<div class="btn-group" role="group" aria-label="...">
-							<button role="button" type="submit" name="selector_button" value="selector_pregunta_delete" class="btn btn-outline-warning btn-sm" title="confirmar eliminar pregunta">
-								<i class="material-icons vertical-center">delete</i>
-								confirmar eliminar
-							</button>
-							<button role="button" type="submit" name="selector_button" value="selector_pregunta_delete_close" class="btn btn-outline-dark btn-sm" title="cancelar eliminar">
-								<i class="material-icons vertical-center">close</i>
-							</button>
+						<div class="form-group col-auto">
+							<label class="custom-control custom-checkbox check_box_1">
+								<input type="checkbox" {% if not equal_str(pregunta.id, params['current_pregunta_id']) or not params['pregunta_edit_link'] %} disabled {% endif %} class="custom-control-input" name="visible" value="True" {% if pregunta.visible%} checked {% endif %}>
+								<span class="custom-control-indicator"></span>
+								<span class="custom-control-description">visible</span>
+							</label>
 						</div>
-						<br>
-						<span class="text-warning small">
-							Una vez elminada no podra ser recuperada.</span>
+						<div class="form-group col-auto">
+							<label class="custom-control custom-checkbox check_box_1">
+								<input
+									type="checkbox"
+									{% if not equal_str(pregunta.id, params['current_pregunta_id']) or not params['pregunta_edit_link'] %}
+									disabled
+									{% endif %}
+									class="custom-control-input"
+									name="active_default"
+									value="True"
+									{% if pregunta.active_default%}
+									checked
+									{% endif %}>
+								<span class="custom-control-indicator"></span>
+								<span class="custom-control-description">default</span>
+							</label>
+						</div>
+						<input type="hidden" name="current_pregunta_id" value="{{hashids_encode(pregunta.id)}}">
+					</div>
+					{% if equal_str(pregunta.id, params['current_pregunta_id'])and params['pregunta_edit_link'] %}
+						{% if params['pregunta_delete_link'] %}
+							<div class="btn-group" role="group" aria-label="...">
+								<button role="button" type="submit" name="selector_button" value="selector_pregunta_delete" class="btn btn-outline-warning btn-sm" title="confirmar eliminar pregunta">
+									<i class="material-icons vertical-center">delete</i>
+									confirmar eliminar
+								</button>
+								<button role="button" type="submit" name="selector_button" value="selector_pregunta_delete_close" class="btn btn-outline-dark btn-sm" title="cancelar eliminar">
+									<i class="material-icons vertical-center">close</i>
+								</button>
+							</div>
+							<br>
+							<span class="text-warning small">
+								Una vez elminada no podra ser recuperada.</span>
+						{% else %}
+							<div class="btn-group" role="group" aria-label="...">
+								<button role="button" type="submit" name="selector_button" value="selector_pregunta_edit" class="btn btn-outline-primary btn-sm" title="guardar cambios">
+									<i class="material-icons vertical-center">save</i>
+									guardar
+								</button>
+								{# <button role="button" type="submit" name="selector_button" value="selector_pregunta_edit_rollback" class="btn btn-outline-dark btn-sm" title="deshacer cambios"> <i class="material-icons vertical-center">settings_backup_restore</i> </button> #}
+								<button role="button" type="submit" name="selector_button" value="selector_pregunta_delete_link" class="btn btn-outline-dark btn-sm" title="eliminar pregunta">
+									<i class="material-icons vertical-center">delete</i>
+								</button>
+								<button role="button" type="submit" name="selector_button" value="selector_pregunta_edit_link_close" class="btn btn-outline-dark btn-sm" title="cerrar edición">
+									<i class="material-icons vertical-center">close</i>
+								</button>
+							</div>
+						{% endif %}
 					{% else %}
 						<div class="btn-group" role="group" aria-label="...">
-							<button role="button" type="submit" name="selector_button" value="selector_pregunta_edit" class="btn btn-outline-primary btn-sm" title="guardar cambios">
-								<i class="material-icons vertical-center">save</i>
-								guardar
+							<button role="button" type="submit" name="selector_button" class="btn btn-outline-dark btn-sm" value="selector_pregunta_edit_link" title="editar ficha">
+								<i class="material-icons vertical-center">edit</i>
+								editar ficha
 							</button>
-							{# <button role="button" type="submit" name="selector_button" value="selector_pregunta_edit_rollback" class="btn btn-outline-dark btn-sm" title="deshacer cambios"> <i class="material-icons vertical-center">settings_backup_restore</i> </button> #}
-							<button role="button" type="submit" name="selector_button" value="selector_pregunta_delete_link" class="btn btn-outline-dark btn-sm" title="eliminar pregunta">
-								<i class="material-icons vertical-center">delete</i>
-							</button>
-							<button role="button" type="submit" name="selector_button" value="selector_pregunta_edit_link_close" class="btn btn-outline-dark btn-sm" title="cerrar edición">
-								<i class="material-icons vertical-center">close</i>
-							</button>
+							{% if equal_str(pregunta.id,params['current_pregunta_id']) and params['collapse_pregunta_edit']%}
+								<button role="button" type="submit" name="selector_button" class="btn btn-outline-dark btn-sm" value="selector_pregunta_edit_close" title="cerrar ficha">
+									<i class="material-icons vertical-center">close</i>
+								</button>
+							{% endif %}
 						</div>
 					{% endif %}
-				{% else %}
-					<div class="btn-group" role="group" aria-label="...">
-						<button role="button" type="submit" name="selector_button" class="btn btn-outline-dark btn-sm" value="selector_pregunta_edit_link" title="editar ficha">
-							<i class="material-icons vertical-center">edit</i>
-							editar ficha
-						</button>
-						{% if equal_str(pregunta.id,params['current_pregunta_id']) and params['collapse_pregunta_edit']%}
-							<button role="button" type="submit" name="selector_button" class="btn btn-outline-dark btn-sm" value="selector_pregunta_edit_close" title="cerrar ficha">
-								<i class="material-icons vertical-center">close</i>
-							</button>
-						{% endif %}
-					</div>
-				{% endif %}
-			</form>
+				</form>
+			</div>
+			<div class="divider grueso bg-primary"></div>
 		</div>
-		<div class="divider grueso bg-primary"></div>
-	</div>
+	{% endfor %}
 {% endfor %}

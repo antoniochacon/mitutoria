@@ -869,6 +869,13 @@ def admin_cuestionario_html(params={}):
 
     params = {}
     params['anchor'] = params_old.get('anchor', 'anchor_top')
+
+    params['current_categoria_id'] = params_old.get('current_categoria_id', 0)
+    params['collapse_categoria_edit'] = params_old.get('collapse_categoria_edit', False)
+    params['categoria_delete_link'] = params_old.get('categoria_delete_link', False)
+    params['collapse_categoria_add'] = params_old.get('collapse_categoria_add', False)
+    params['categoria_edit_link'] = params_old.get('categoria_edit_link', False)
+
     params['current_pregunta_id'] = params_old.get('current_pregunta_id', 0)
     params['collapse_pregunta_edit'] = params_old.get('collapse_pregunta_edit', False)
     params['pregunta_delete_link'] = params_old.get('pregunta_delete_link', False)
@@ -876,8 +883,142 @@ def admin_cuestionario_html(params={}):
     params['pregunta_edit_link'] = params_old.get('pregunta_edit_link', False)
 
     if request.method == 'POST':
+        current_categoria_id = current_id_request('current_categoria_id')
+        params['current_categoria_id'] = current_categoria_id
         current_pregunta_id = current_id_request('current_pregunta_id')
         params['current_pregunta_id'] = current_pregunta_id
+
+        # XXX categoria_add
+        if request.form['selector_button'] == 'selector_categoria_add':
+            params['collapse_categoria_add'] = True
+            categoria_add_form = Categoria_Add(request.form)
+            if categoria_add_form.validate():
+                categoria_add = Categoria(enunciado=categoria_add_form.enunciado.data, orden=categoria_add_form.orden.data)
+                # NOTE checking unicidad de enunciado y orden
+                categoria_enunciado_sql = session_sql.query(Categoria).filter(Categoria.enunciado == categoria_add_form.enunciado.data).first()
+                categoria_orden_sql = session_sql.query(Categoria).filter(Categoria.orden == categoria_add_form.orden.data).first()
+                if categoria_enunciado_sql or categoria_orden_sql:
+                    if categoria_enunciado_sql:
+                        categoria_add_form.enunciado.errors = ['']
+                        flash_toast('Enunciado duplicado', 'warning')
+                    if categoria_orden_sql:
+                        categoria_add_form.orden.errors = ['']
+                        flash_toast('Orden duplicado', 'warning')
+                    return render_template('admin_cuestionario.html',
+                        categoria_add=categoria_add_form, categoria_edit=Categoria_Add(),
+                        pregunta_add=Pregunta_Add(), pregunta_edit=Pregunta_Add(),
+                        params=params)
+                else:
+                    session_sql.add(categoria_add)
+                    session_sql.commit()
+                    flash_toast('Categoria agregada', 'success')
+                    return redirect(url_for('admin_cuestionario_html', params=dic_encode(params)))
+            else:
+                params['collapse_categoria_add'] = True
+                flash_wtforms(categoria_add_form, flash_toast, 'warning')
+            return render_template('admin_cuestionario.html',
+                categoria_add=categoria_add_form,categoria_edit=Categoria_Add(),
+                pregunta_add=Pregunta_Add(), pregunta_edit=Pregunta_Add(), params=params)
+
+        # XXX selector_categoria_add_close
+        if request.form['selector_button'] == 'selector_categoria_add_close':
+            return redirect(url_for('admin_cuestionario_html'))
+
+        # XXX selector_categoria_edit_link
+        if request.form['selector_button'] == 'selector_categoria_edit_link':
+            params['categoria_edit_link'] = True
+            params['collapse_categoria_edit'] = True
+            params['anchor'] = 'anchor_pre_' + str(hashids_encode(current_categoria_id))
+            return redirect(url_for('admin_cuestionario_html', params=dic_encode(params)))
+
+        # XXX categoria_edit
+        if request.form['selector_button'] in ['selector_categoria_edit', 'selector_move_down_categoria', 'selector_move_up_categoria']:
+            params['current_categoria_id'] = current_categoria_id
+            params['collapse_categoria_edit'] = True
+            params['categoria_edit_link'] = True
+            params['anchor'] = 'anchor_pre_' + str(hashids_encode(current_categoria_id))
+            move_up = False
+            move_down = False
+            categoria_edit_form = Categoria_Add(request.form)
+            if categoria_edit_form.validate():
+                categoria_edit = Categoria(enunciado=categoria_edit_form.enunciado.data,
+                                           orden=categoria_edit_form.orden.data)
+                categoria = session_sql.query(Categoria).filter(Categoria.id == current_categoria_id).first()
+                if categoria.enunciado.lower() != categoria_edit.enunciado.lower() or categoria.orden != categoria_edit.orden:
+                    if categoria.enunciado.lower() != categoria_edit.enunciado.lower():
+                        categoria.enunciado = categoria_edit.enunciado
+                    if categoria.orden != categoria_edit.orden:
+                        categoria.orden = categoria_edit.orden
+                    flash_toast('Categoria actualizada', 'success')
+                if request.form['selector_button'] == 'selector_move_down_categoria':
+                    for k in range(1, 500):
+                        categoria_down = session_sql.query(Categoria).filter(Categoria.orden == (categoria.orden + k)).first()
+                        if categoria_down:
+                            move_down = int(str(categoria.orden + k))
+                            categoria.orden = categoria.orden + k
+                            categoria_down.orden = categoria.orden - k
+                            flash_toast('Categoria bajada', 'success')
+                            break
+
+                if request.form['selector_button'] == 'selector_move_up_categoria':
+                    for k in range(1, 500):
+                        categoria_down = session_sql.query(Categoria).filter(Categoria.orden == (categoria.orden - k)).first()
+                        if categoria_down:
+                            move_up = int(str(categoria.orden - k))
+                            categoria.orden = categoria.orden - k
+                            categoria_down.orden = categoria.orden + k
+                            flash_toast('Categoria subida', 'success')
+                            break
+
+                session_sql.commit()
+                return redirect(url_for('admin_cuestionario_html', params=dic_encode(params)))
+            else:
+                flash_wtforms(categoria_edit_form, flash_toast, 'warning')
+            return render_template(
+                'admin_cuestionario.html', categoria_add=Categoria_Add(),
+                categoria_edit=categoria_edit_form, move_down=move_down, move_up=move_up, params=params)
+
+        # XXX selector_categoria_edit_close
+        if request.form['selector_button'] == 'selector_categoria_edit_close':
+            return redirect(url_for('admin_cuestionario_html'))
+
+        # XXX selector_categoria_edit_rollback
+        if request.form['selector_button'] == 'selector_categoria_edit_rollback':
+            current_categoria_id = current_id_request('current_categoria_id')
+            params['current_categoria_id'] = current_categoria_id
+            params['collapse_categoria_edit'] = True
+            params['anchor'] = 'anchor_pre_' + str(hashids_encode(current_categoria_id))
+            session_sql.rollback()
+            return redirect(url_for('admin_cuestionario_html', params=dic_encode(params)))
+
+        # XXX selector_categoria_delete_link
+        if request.form['selector_button'] == 'selector_categoria_delete_link':
+            current_categoria_id = current_id_request('current_categoria_id')
+            params['current_categoria_id'] = current_categoria_id
+            params['collapse_categoria_edit'] = True
+            params['anchor'] = 'anchor_pre_' + str(hashids_encode(current_categoria_id))
+            params['categoria_edit_link'] = True
+            params['categoria_delete_link'] = True
+            flash_toast('Debe confirmar la aliminacion', 'warning')
+            return redirect(url_for('admin_cuestionario_html', params=dic_encode(params)))
+
+        # XXX categoria_delete
+        if request.form['selector_button'] == 'selector_categoria_delete':
+            categoria_delete_form = Categoria_Add(request.form)
+            current_categoria_id = current_id_request('current_categoria_id')
+            categoria_delete = categoria_by_id(current_categoria_id)
+            session_sql.delete(categoria_delete)
+            session_sql.commit()
+            flash_toast('Categoria elminada', 'success')
+            return redirect(url_for('admin_cuestionario_html'))
+
+        # XXX categoria_delete_close
+        if request.form['selector_button'] == 'selector_categoria_delete_close':
+            current_categoria_id = current_id_request('current_categoria_id')
+            params['current_categoria_id'] = current_categoria_id
+            params['collapse_categoria_edit'] = True
+            params['anchor'] = 'anchor_pre_' + str(hashids_encode(current_categoria_id))
+            return redirect(url_for('admin_cuestionario_html', params=dic_encode(params)))
 
         # XXX pregunta_add
         if request.form['selector_button'] == 'selector_pregunta_add':
@@ -885,7 +1026,8 @@ def admin_cuestionario_html(params={}):
             pregunta_add_form = Pregunta_Add(request.form)
             if pregunta_add_form.validate():
                 pregunta_add = Pregunta(enunciado=pregunta_add_form.enunciado.data, enunciado_ticker=pregunta_add_form.enunciado_ticker.data,
-                                        orden=pregunta_add_form.orden.data, visible=pregunta_add_form.visible.data, active_default=pregunta_add_form.active_default.data)
+                                        categoria_id=pregunta_add_form.categoria_id.data, orden=pregunta_add_form.orden.data,
+                                        visible=pregunta_add_form.visible.data, active_default=pregunta_add_form.active_default.data)
                 # NOTE checking unicidad de enunciado, ticker y orden
                 pregunta_enunciado_sql = session_sql.query(Pregunta).filter(Pregunta.enunciado == pregunta_add_form.enunciado.data).first()
                 pregunta_enunciado_ticker_sql = session_sql.query(Pregunta).filter(Pregunta.enunciado_ticker == pregunta_add_form.enunciado_ticker.data).first()
@@ -901,8 +1043,9 @@ def admin_cuestionario_html(params={}):
                         pregunta_add_form.orden.errors = ['']
                         flash_toast('Orden duplicado', 'warning')
                     return render_template(
-                        'admin_cuestionario.html',  pregunta_add=pregunta_add_form, preguntas=preguntas(''),
-                        pregunta_edit=Pregunta_Add(), params=params)
+                        'admin_cuestionario.html',
+                        pregunta_add=pregunta_add_form, pregunta_edit=Pregunta_Add(),
+                        categoria_add=Categoria_Add(), categoria_edit=Categoria_Add(), params=params)
                 else:
                     session_sql.add(pregunta_add)
                     session_sql.commit()
@@ -912,8 +1055,9 @@ def admin_cuestionario_html(params={}):
                 params['collapse_pregunta_add'] = True
                 flash_wtforms(pregunta_add_form, flash_toast, 'warning')
             return render_template(
-                'admin_cuestionario.html', pregunta_add=pregunta_add_form, preguntas=preguntas(''),
-                pregunta_edit=Pregunta_Add(), params=params)
+                'admin_cuestionario.html',
+                pregunta_add=pregunta_add_form, pregunta_edit=Pregunta_Add(),
+                categoria_add=Categoria_Add(), categoria_edit=Categoria_Add(), params=params)
 
         # XXX selector_pregunta_add_close
         if request.form['selector_button'] == 'selector_pregunta_add_close':
@@ -927,7 +1071,7 @@ def admin_cuestionario_html(params={}):
             return redirect(url_for('admin_cuestionario_html', params=dic_encode(params)))
 
         # XXX pregunta_edit
-        if request.form['selector_button'] in ['selector_pregunta_edit', 'selector_move_down', 'selector_move_up']:
+        if request.form['selector_button'] in ['selector_pregunta_edit', 'selector_move_down_pregunta', 'selector_move_up_pregunta']:
             params['current_pregunta_id'] = current_pregunta_id
             params['collapse_pregunta_edit'] = True
             params['pregunta_edit_link'] = True
@@ -937,6 +1081,7 @@ def admin_cuestionario_html(params={}):
             pregunta_edit_form = Pregunta_Add(request.form)
             visible = pregunta_edit_form.visible.data
             active_default = pregunta_edit_form.active_default.data
+
             if not visible:
                 visible = False
 
@@ -945,13 +1090,15 @@ def admin_cuestionario_html(params={}):
 
             if pregunta_edit_form.validate():
                 pregunta_edit = Pregunta(enunciado=pregunta_edit_form.enunciado.data, enunciado_ticker=pregunta_edit_form.enunciado_ticker.data,
-                                         orden=pregunta_edit_form.orden.data, visible=visible, active_default=active_default)
+                                         categoria_id=pregunta_edit_form.categoria_id.data, orden=pregunta_edit_form.orden.data, visible=visible, active_default=active_default)
                 pregunta = session_sql.query(Pregunta).filter(Pregunta.id == current_pregunta_id).first()
-                if pregunta.enunciado.lower() != pregunta_edit.enunciado.lower() or pregunta.enunciado_ticker.lower() != pregunta_edit.enunciado_ticker.lower() or pregunta.orden != pregunta_edit.orden or str(pregunta.visible) != str(visible) or str(pregunta.active_default) != str(active_default):
+                if pregunta.enunciado.lower() != pregunta_edit.enunciado.lower() or pregunta.enunciado_ticker.lower() != pregunta_edit.enunciado_ticker.lower() or pregunta.categoria_id != pregunta_edit.categoria_id or pregunta.orden != pregunta_edit.orden or str(pregunta.visible) != str(visible) or str(pregunta.active_default) != str(active_default):
                     if pregunta.enunciado.lower() != pregunta_edit.enunciado.lower():
                         pregunta.enunciado = pregunta_edit.enunciado
                     if pregunta.enunciado_ticker.lower() != pregunta_edit.enunciado_ticker.lower():
                         pregunta.enunciado_ticker = pregunta_edit.enunciado_ticker
+                    if pregunta.categoria_id != pregunta_edit.categoria_id:
+                        pregunta.categoria_id = pregunta_edit.categoria_id
                     if pregunta.orden != pregunta_edit.orden:
                         pregunta.orden = pregunta_edit.orden
                     if pregunta.visible != visible:
@@ -960,7 +1107,7 @@ def admin_cuestionario_html(params={}):
                         pregunta.active_default = active_default
 
                     flash_toast('Pregunta actualizada', 'success')
-                if request.form['selector_button'] == 'selector_move_down':
+                if request.form['selector_button'] == 'selector_move_down_pregunta':
                     for k in range(1, 500):
                         pregunta_down = session_sql.query(Pregunta).filter(Pregunta.orden == (pregunta.orden + k)).first()
                         if pregunta_down:
@@ -970,7 +1117,7 @@ def admin_cuestionario_html(params={}):
                             flash_toast('Pregunta bajada', 'success')
                             break
 
-                if request.form['selector_button'] == 'selector_move_up':
+                if request.form['selector_button'] == 'selector_move_up_pregunta':
                     for k in range(1, 500):
                         pregunta_down = session_sql.query(Pregunta).filter(Pregunta.orden == (pregunta.orden - k)).first()
                         if pregunta_down:
@@ -985,8 +1132,10 @@ def admin_cuestionario_html(params={}):
             else:
                 flash_wtforms(pregunta_edit_form, flash_toast, 'warning')
             return render_template(
-                'admin_cuestionario.html', pregunta_add=Pregunta_Add(), preguntas=preguntas(''),
-                pregunta_edit=pregunta_edit_form, move_down=move_down, move_up=move_up, visible=visible,
+                'admin_cuestionario.html',
+                pregunta_add=Pregunta_Add(), pregunta_edit=pregunta_edit_form,
+                categoria_add=Categoria_Add(), categoria_edit=Categoria_Add(),
+                move_down=move_down, move_up=move_up, visible=visible,
                 active_default=active_default, params=params)
 
         # XXX selector_pregunta_edit_close
@@ -1032,8 +1181,10 @@ def admin_cuestionario_html(params={}):
             return redirect(url_for('admin_cuestionario_html', params=dic_encode(params)))
 
     return render_template(
-        'admin_cuestionario.html', pregunta_add=Pregunta_Add(), preguntas=preguntas(''),
-        pregunta_edit=Pregunta_Add(), params=params)
+        'admin_cuestionario.html',
+        pregunta_add=Pregunta_Add(), categoria_add=Categoria_Add(),
+        pregunta_edit=Pregunta_Add(), categoria_edit=Categoria_Add(),
+        params=params)
 
 
 @app.route('/settings_cuestionario', methods=['GET', 'POST'])

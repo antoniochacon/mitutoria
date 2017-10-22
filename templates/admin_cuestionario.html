@@ -7,9 +7,18 @@
 		{{nav_tabs_admin(tab_active='Cuestiones')}}
 		<div id="parent_pregunta">
 			<a id="anchor_pre_add"></a>
+
+			<div>
+				{# XXX: categoria_add #}
+				{% include 'admin_cuestionario_categoria_add_block.html' %}
+			</div>
+				<div>
+					{# XXX: categorias_listado #}
+					{% include 'admin_cuestionario_categoria_block.html' %}
+				</div>
 			<div>
 				{# XXX: pregunta_add #}
-				{% include 'admin_cuestionario_add_block.html' %}
+				{% include 'admin_cuestionario_pregunta_add_block.html' %}
 			</div>
 			<div>
 				{# XXX: preguntas_listado #}

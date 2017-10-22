@@ -133,7 +133,14 @@ class Invitado_Informe (Form):
 class Pregunta_Add (Form):
     enunciado = StringField('enunciado', [validators.Required(message='enunciado es obligatorio')])
     enunciado_ticker = StringField('ticker', [validators.Required(message='ticker es obligatorio')])
+    categoria_id = IntegerField('categoria', [validators.Required(message='categoria es obligatoria')])
     orden = IntegerField('orden', [validators.Required(message='orden es obligatorio')])
     visible = BooleanField('visible')
     active_default = BooleanField('active_default')
     current_pregunta_id = HiddenField('current_pregunta_id')
+
+
+class Categoria_Add (Form):
+    enunciado = StringField('categoria', [validators.Required(message='categoria es obligatoria')])
+    orden = IntegerField('orden', [validators.Required(message='orden es obligatorio')])
+    current_categoria_id = HiddenField('current_categoria_id')

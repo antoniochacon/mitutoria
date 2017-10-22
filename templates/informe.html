@@ -53,7 +53,7 @@
 								name="pregunta_{{hashids_encode(pregunta.id)}}"
 								class="range-slider-range"
 								type="range"
-								step="1"
+								step="2"
 								{% if informe %}
 								{% if invitado_respuesta(informe.id,pregunta.id).resultado %}
 								value="{{invitado_respuesta(informe.id,pregunta.id).resultado}}"
