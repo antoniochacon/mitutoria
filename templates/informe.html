@@ -46,12 +46,12 @@
 				{% endif %}
 				{% for pregunta in invitado_preguntas(invitado_settings(tutoria.id).id) %}
 					<div class="col-sm-12 col-md-6 col-lg-4 pt-3 pb-3 pl-4">
-						{{pregunta.enunciado}}.
-						<div class="range-slider">
-							<div class="range-slider-value">0</div>
+						{{pregunta.enunciado}}:
+						<div class="range-slider_cualitativo">
+							<div class="range-slider-value_cualitativo">0</div>
 							<input
 								name="pregunta_{{hashids_encode(pregunta.id)}}"
-								class="range-slider-range"
+								class="range-slider-range_cualitativo"
 								type="range"
 								step="2"
 								{% if informe %}
