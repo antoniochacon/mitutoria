@@ -46,7 +46,7 @@
 				{% endif %}
 				{% for pregunta in invitado_preguntas(invitado_settings(tutoria.id).id) %}
 					<div class="col-sm-12 col-md-6 col-lg-4 pt-3 pb-3 pl-4">
-						{{pregunta.enunciado}}:
+						{{pregunta.enunciado}}.
 						<div class="range-slider">
 							<div class="range-slider-value">0</div>
 							<input
@@ -101,7 +101,7 @@
 						<span class="input-group-btn">
 							<button role="button" name="selector_button" value="selector_prueba_evaluable_add" class="btn btn-outline-dark" title="agregar prueba evaluable">
 								<i class="material-icons vertical-center">add</i>
-								Agregar
+								notas
 							</button>
 							{% if informe %}
 								{% if invitado_pruebas_evaluables(informe.id) %}
