@@ -109,94 +109,95 @@
 				{% if params['tutoria_edit_link'] %}
 					{% include 'analisis_tutoria_edit_block.html' %}
 				{% endif %}
-			<a data-toggle="collapse" href="#analisis_cuestionario" class="collapse_header_1" aria-expanded="true" title="Analisis del cuestionario">
-				<i class="material-icons vertical-center">expand_more</i>
-				Analisis del cuestionario
-			</a>
-			<div class="collapse {% if tutoria.activa %}show{% endif %}" id="analisis_cuestionario">
-				<div class="col pt-4 pb-3">
-					{{highcharts_cuestionario(char_id='cuestionario', color='#ffa000', df_data=df_data, grupo=grupo, tutoria_id=tutoria.id, alumno_id=alumno.id)}}
-				</div>
-			</div>
-			<a data-toggle="collapse" href="#analisis_general_asignaturas" class="collapse_header_1" aria-expanded="false" title="Analisis comparativo de asignaturas">
-				<i class="material-icons vertical-center">expand_more</i>
-				Analisis comparativo de asignaturas
-			</a>
-			<div class="collapse" id="analisis_general_asignaturas">
-				<div class="col pt-4 pb-3">
-					{{highcharts_asignaturas(char_id='asignaturas', color_1='#ec407a',color_2='#f48fb1', df_data=df_data, grupo=grupo, tutoria_id=tutoria.id, alumno_id=alumno.id)}}
-				</div>
-			</div>
-			<a data-toggle="collapse" href="#analisis_detallado_asignaturas" class="collapse_header_1" aria-expanded="false" title="Analisis detallado por asignaturas">
-				<i class="material-icons vertical-center">expand_more</i>
-				Analisis detallado por asignatura
-			</a>
-			<div class="collapse" id="analisis_detallado_asignaturas">
-				<div class="row">
-					<div class="padding_3">
-						<div class="padding_contenido">
-							{% if not df_asignaturas_lista(df_data, tutoria.id) %}
-								<span class="text-info">No se han recibido ningun informe para esta tutoría.</span>
-							{% endif %}
-						</div>
+				<a data-toggle="collapse" href="#analisis_cuestionario" class="collapse_header_1" aria-expanded="true" title="Analisis del cuestionario">
+					<i class="material-icons vertical-center">expand_more</i>
+					Analisis del cuestionario
+				</a>
+				<div class="collapse {% if tutoria.activa %}show{% endif %}" id="analisis_cuestionario">
+					<div class="col pt-4 pb-3">
+						{{highcharts_cuestionario(char_id='cuestionario', color='#ffa000', grupo=grupo, tutoria_id=tutoria.id)}}
 					</div>
 				</div>
-				<div class="row">
-					{% for asignatura in df_asignaturas_lista(df_data, tutoria.id) %}
-						<div class="col-sm-12 col-md-6 col-lg-4 pb-4">
-							<div class="card border-mutted">
-								<div class="card-header text-center strong bg-info text-dark ">
-									<div class="text-truncate">
-										{{asignatura}}
-										<span class="small">
-											|
-											{{df_asignatura_profesor(df_data, tutoria.id,asignatura)}}</span>
-									</div>
-								</div>
-								<div class="card-body">
-									{% if diferencial_check(settings().diferencial, df_analisis_asignatura(df_data, tutoria.id, asignatura, alumno.id)[3], notas_asignatura(df_data, tutoria.id, asignatura)[1]) %}
-										<span class="badge text-white badge-secondary float-right">
-											resultados !
-										</span>
-									{% endif %}
-									{% if diferencial_check(settings().diferencial, df_analisis_asignatura(df_data, tutoria.id, asignatura, alumno.id)[1], df_analisis_asignatura(df_data, tutoria.id, asignatura, alumno.id)[3]) %}
-										<span class="badge badge-primary float-right mr-1">
-											actitud !
-										</span>
-									{% endif %}
-									{{highcharts_asignatura(char_id=asignatura, asignatura=asignatura, alumno=alumno, grupo=grupo, df_data=df_data, tutoria_id=tutoria.id)}}
-								</div>
-								{% if asignatura_comentario(tutoria.id, asignatura) %}
-									<div class="card-footer">
-										<div class="strong">Observaciones:</div>
-										<div class="line_break">
-											{{-asignatura_comentario(tutoria.id, asignatura)-}}
-										</div>
-									</div>
+				<a data-toggle="collapse" href="#analisis_general_asignaturas" class="collapse_header_1" aria-expanded="false" title="Analisis comparativo de asignaturas">
+					<i class="material-icons vertical-center">expand_more</i>
+					Analisis comparativo de asignaturas
+				</a>
+				<div class="collapse" id="analisis_general_asignaturas">
+					<div class="col pt-4 pb-3">
+						{{highcharts_asignaturas(char_id='asignaturas', color_1='#ec407a',color_2='#f48fb1', grupo=grupo, tutoria_id=tutoria.id)}}
+					</div>
+				</div>
+				<a data-toggle="collapse" href="#analisis_detallado_asignaturas" class="collapse_header_1" aria-expanded="false" title="Analisis detallado por asignaturas">
+					<i class="material-icons vertical-center">expand_more</i>
+					Analisis detallado por asignatura
+				</a>
+				<div class="collapse" id="analisis_detallado_asignaturas">
+					<div class="row">
+						<div class="padding_3">
+							<div class="padding_contenido">
+								{% if not asignaturas_by_tutoria_id(tutoria.id) %}
+									<span class="text-info">No se han recibido ningun informe para esta tutoría.</span>
 								{% endif %}
 							</div>
 						</div>
-					{% endfor %}
+					</div>
+					<div class="row">
+						{% for asignatura in asignaturas_by_tutoria_id(tutoria.id) %}
+							<div class="col-sm-12 col-md-6 col-lg-4 pb-4">
+								<div class="card border-mutted">
+									<div class="card-header text-center strong bg-info text-dark ">
+										<div class="text-truncate">
+											{{asignatura.asignatura}}
+											<span class="small">
+												|
+												{{asignatura.nombre}}</span>
+										</div>
+									</div>
+									<div class="card-body">
+										{% if diferencial_check(settings().diferencial, df_analisis_asignatura(df_data, tutoria.id, asignatura.asignatura, alumno.id)[3], notas_asignatura(df_data, tutoria.id, asignatura.asignatura)[1]) %}
+											<span class="badge text-white badge-secondary float-right">
+												resultados !
+											</span>
+										{% endif %}
+										{% if diferencial_check(settings().diferencial, df_analisis_asignatura(df_data, tutoria.id, asignatura.asignatura, alumno.id)[1], df_analisis_asignatura(df_data, tutoria.id, asignatura.asignatura, alumno.id)[3]) %}
+											<span class="badge badge-primary float-right mr-1">
+												actitud !
+											</span>
+										{% endif %}
+										{{highcharts_asignatura(char_id=asignatura.asignatura, asignatura=asignatura.asignatura, alumno=alumno, grupo=grupo, df_data=df_data, tutoria_id=tutoria.id)}}
+									</div>
+									{% if informe_by_tutoria_id(tutoria.id, asignatura.id).comentario %}
+										<div class="card-footer">
+											<div class="strong">Observaciones:</div>
+											<div class="line_break">
+												{{-informe_by_tutoria_id(tutoria.id, asignatura.id).comentario-}}
+											</div>
+										</div>
+									{% endif %}
+								</div>
+							</div>
+						{% endfor %}
+					</div>
 				</div>
-			</div>
-			<a data-toggle="collapse" href="#analisis_evoluacion" class="collapse_header_1" aria-expanded="false" title="Analisis en el tiempo">
-				<i class="material-icons vertical-center">expand_more</i>
-				Analisis en el tiempo
-			</a>
-			<div class="collapse" id="analisis_evoluacion">
-				<div class="col pt-4 pb-3">
-					{{highcharts_evalucion(char_id='evalucion', color_1='#ec407a',color_2='#f48fb1', df_data=df_data, grupo=grupo, alumno=alumno)}}
+				<a data-toggle="collapse" href="#analisis_evoluacion" class="collapse_header_1" aria-expanded="false" title="Analisis en el tiempo">
+					<i class="material-icons vertical-center">expand_more</i>
+					Analisis en el tiempo
+				</a>
+				<div class="collapse" id="analisis_evoluacion">
+					<div class="col pt-4 pb-3">
+						{{highcharts_evalucion(char_id='evalucion', color_1='#ec407a',color_2='#f48fb1', df_data=df_data, grupo=grupo, alumno=alumno)}}
+					</div>
 				</div>
-			</div>
-			<a data-toggle="collapse" href="#analisis_acuerdos" class="collapse_header_1" aria-expanded="false" title="Acuerdos">
-				<i class="material-icons vertical-center">expand_more</i>
-				Acuerdos
-			</a>
-			<div class="collapse show" id="analisis_acuerdos">
-				<div class="col pt-4 pb-2">
-
+				<a data-toggle="collapse" href="#analisis_acuerdos" class="collapse_header_1" aria-expanded="false" title="Acuerdos">
+					<i class="material-icons vertical-center">expand_more</i>
+					Acuerdos
+				</a>
+				<div class="collapse show" id="analisis_acuerdos">
+					<div class="col pt-4 pb-2">
 						<div class="form-group">
-							<textarea class="form-control" {% if not tutoria.acuerdos %}rows="3"{% endif %} name="acuerdos" placeholder="Escriba aqui sus acuerdos">{% if tutoria.acuerdos %}{{tutoria.acuerdos}}{% endif %}</textarea>
+							<textarea class="form-control" {% if not tutoria.acuerdos %} rows="3" {% endif %} name="acuerdos" placeholder="Escriba aqui sus acuerdos">
+								{% if tutoria.acuerdos %}{{tutoria.acuerdos}}{% endif %}
+							</textarea>
 						</div>
 					</div>
 					<div class="col">

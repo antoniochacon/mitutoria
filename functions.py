@@ -11,9 +11,183 @@ import config_gmail_api
 # {} Valor
 # *****************************************************************
 
+
 # ***********************************************************************
 # XXX: tutoria stats (SIN PANDA)
 # ***********************************************************************
+def respuestas_grupo_areaspline(tutoria_id):
+    respuestas_pregunta_grupo_spline = []
+    respuestas_asignatura_grupo_spline = []
+    grupo = grupo_by_tutoria_id(tutoria_id)
+    preguntas = preguntas_by_tutoria_id(tutoria_id)
+    asignaturas = asignaturas_by_tutoria_id(tutoria_id)
+
+    for pregunta in preguntas:
+        respuestas_pregunta_lista = []
+        for asignatura in asignaturas:
+            respuestas = session_sql.query(Respuesta).join(Informe).join(Tutoria).join(Alumno).join(Grupo).filter(Respuesta.pregunta_id == pregunta.id, Informe.asignatura_id == asignatura.id, Informe.tutoria_id != tutoria_id, Grupo.id == grupo.id).all()
+            for respuesta in respuestas:
+                if respuesta:
+                    respuestas_pregunta_lista.append(int(respuesta.resultado))
+        if respuestas_pregunta_lista:
+            respuestas_pregunta_grupo_spline.append(round(mean(respuestas_pregunta_lista), 1))
+
+    for asignatura in asignaturas:
+        respuestas_asignatura_lista = []
+        for pregunta in preguntas:
+            respuestas = session_sql.query(Respuesta).join(Informe).join(Tutoria).join(Alumno).join(Grupo).filter(Respuesta.pregunta_id == pregunta.id, Informe.asignatura_id == asignatura.id, Informe.tutoria_id != tutoria_id, Grupo.id == grupo.id).all()
+            for respuesta in respuestas:
+                if respuesta:
+                    respuestas_asignatura_lista.append(int(respuesta.resultado))
+        if respuestas_asignatura_lista:
+            respuestas_asignatura_grupo_spline.append(round(mean(respuestas_asignatura_lista), 1))
+
+    return respuestas_pregunta_grupo_spline, respuestas_asignatura_grupo_spline
+
+
+def pregunta_by_enunciado_ticker(enunciado_ticker):
+    return session_sql.query(Pregunta).filter(Pregunta.enunciado_ticker == enunciado_ticker).first()
+
+
+def preguntas_by_tutoria_id(tutoria_id):
+    preguntas_lista = []
+    preguntas_settings = session_sql.query(Pregunta).join(Association_Settings_Pregunta).filter(Association_Settings_Pregunta.settings_id == settings().id).order_by('orden').all()
+
+    for pregunta in preguntas_settings:
+        informes = session_sql.query(Informe).filter(Informe.tutoria_id == tutoria_id).all()
+        for informe in informes:
+            respuesta = session_sql.query(Respuesta).filter(Respuesta.pregunta_id == pregunta.id, Respuesta.informe_id == informe.id).first()
+            if respuesta and pregunta not in preguntas_lista:
+                preguntas_lista.append(pregunta)
+    return preguntas_lista
+
+
+def preguntas_by_tutoria_id_lista(tutoria_id):
+    preguntas_by_tutoria_id_lista = []
+    for pregunta in preguntas_by_tutoria_id(tutoria_id):
+        preguntas_by_tutoria_id_lista.append(pregunta.enunciado_ticker)
+    return preguntas_by_tutoria_id_lista
+
+
+def asignaturas_by_tutoria_id(tutoria_id):
+    return session_sql.query(Asignatura).join(Association_Tutoria_Asignatura).join(Tutoria).filter(Tutoria.id == tutoria_id).order_by('asignatura').all()
+
+
+def asignaturas_by_tutoria_id_lista_asignatura(tutoria_id):
+    asignaturas_asignatura_lista = []
+    for asignatura in asignaturas_by_tutoria_id(tutoria_id):
+        asignaturas_asignatura_lista.append(asignatura.asignatura)
+    return asignaturas_asignatura_lista
+
+
+def asignaturas_by_tutoria_id_count(tutoria_id):
+    return session_sql.query(Asignatura).join(Association_Tutoria_Asignatura).join(Tutoria).filter(Tutoria.id == tutoria_id).order_by('asignatura').count()
+
+
+def alumno_by_tutoria_id(tutoria_id):
+    return session_sql.query(Alumno).join(Tutoria).filter(Tutoria.id == tutoria_id).first()
+
+
+def grupo_by_tutoria_id(tutoria_id):
+    return session_sql.query(Grupo).join(Alumno).filter(Alumno.id == alumno_by_tutoria_id(tutoria_id).id).first()
+
+
+def informe_by_tutoria_id(tutoria_id, asignatura_id):
+    return session_sql.query(Informe).filter(Informe.tutoria_id == tutoria_id, Informe.asignatura_id == asignatura_id).first()
+
+
+def informes_by_tutoria_id(tutoria_id):
+    return session_sql.query(Informe).filter(Informe.tutoria_id == tutoria_id).all()
+
+
+def informes_grupo_by_tutoria_id(tutoria_id):
+    return session_sql.query(Informe).join(Tutoria).join(Alumno).join(Grupo).filter(Grupo.id == grupo_by_tutoria_id(tutoria_id).id).all()
+
+
+def respuestas_pregunta_stacked_lista(tutoria_id, asignatura_id):
+    respuestas_pregunta_spline = []
+    respuestas_pregunta_stacked = []
+    informe = session_sql.query(Informe).filter(Informe.tutoria_id == tutoria_id, Informe.asignatura_id == asignatura_id).first()
+    for pregunta in preguntas_by_tutoria_id(tutoria_id):
+        respuestas_pregunta = session_sql.query(Respuesta).filter(Respuesta.pregunta_id == pregunta.id, Respuesta.informe_id == informe.id).all()
+        for respuesta_pregunta in respuestas_pregunta:
+            respuestas_pregunta_spline.append(int(respuesta_pregunta.resultado))
+            respuestas_pregunta_stacked.append(int(respuesta_pregunta.resultado) / asignaturas_by_tutoria_id_count(tutoria_id))
+    return respuestas_pregunta_spline, respuestas_pregunta_stacked
+
+
+def respuestas_asignatura_stacked_lista(tutoria_id, pregunta_id):
+    respuestas_asignatura_spline = []
+    respuestas_asignatura_stacked = []
+    for asignatura in asignaturas_by_tutoria_id(tutoria_id):
+        informe = session_sql.query(Informe).filter(Informe.tutoria_id == tutoria_id, Informe.asignatura_id == asignatura.id).first()
+        respuestas_asignatura = session_sql.query(Respuesta).filter(Respuesta.pregunta_id == pregunta_id, Respuesta.informe_id == informe.id).all()
+        for respuesta_asignatura in respuestas_asignatura:
+            respuestas_asignatura_spline.append(int(respuesta_asignatura.resultado))
+            respuestas_asignatura_stacked.append(int(respuesta_asignatura.resultado) / len(preguntas_by_tutoria_id(tutoria_id)))
+    return respuestas_asignatura_spline, respuestas_asignatura_stacked
+
+
+def pruebas_evaluables_asignatura_lista(tutoria_id, asignatura_id):
+    pruebas_evaluables_asignatura_lista = []
+    pruebas_evaluables_nombre_asignatura_lista = []
+    nota_media_asignatura = 'sin_notas'
+    informe = session_sql.query(Informe).filter(Informe.tutoria_id == tutoria_id, Informe.asignatura_id == asignatura_id).first()
+    pruebas_evaluables_asignatura = session_sql.query(Prueba_Evaluable).filter(Prueba_Evaluable.informe_id == informe.id).all()
+    for prueba_evaluable in pruebas_evaluables_asignatura:
+        pruebas_evaluables_asignatura_lista.append(float(prueba_evaluable.nota))
+        pruebas_evaluables_nombre_asignatura_lista.append((prueba_evaluable.nombre, float(prueba_evaluable.nota)))
+    if pruebas_evaluables_asignatura_lista:
+        nota_media_asignatura = mean(pruebas_evaluables_asignatura_lista)
+    return pruebas_evaluables_asignatura_lista, nota_media_asignatura, pruebas_evaluables_nombre_asignatura_lista
+
+
+# ***********************************************************************
+# Funciones para usuario anonimos para rellenar el formulario.
+# ***********************************************************************
+
+
+def invitado_settings(tutoria_id):  # (Settings) by tutoria_id
+    invitado_settings = session_sql.query(Settings).join(Grupo).join(Alumno).join(Tutoria).filter(Tutoria.id == tutoria_id).first()
+    return invitado_settings
+
+
+def invitado_grupo(tutoria_id):  # (Grupo) by tutoria_id
+    invitado_grupo = session_sql.query(Grupo).join(Alumno).filter(Tutoria.id == tutoria_id).first()
+    return invitado_grupo
+
+
+def invitado_preguntas(settings_id):  # [Preguntas] by settings_id
+    invitado_preguntas = session_sql.query(Pregunta).join(Association_Settings_Pregunta).filter(Association_Settings_Pregunta.settings_id == settings_id).order_by('orden').all()
+    return invitado_preguntas
+
+
+def invitado_settings_by_id(settings_id):  # (Settings) by settings_id
+    invitado_settings_by_id = session_sql.query(Settings).filter(Settings.user_id == settings_id).first()
+    return invitado_settings_by_id
+
+
+def invitado_alumno(tutoria_id):  # (Alumno) by tutoria_id
+    invitado_alumno = session_sql.query(Alumno).join(Tutoria).filter(Tutoria.id == tutoria_id).first()
+    return invitado_alumno
+
+
+def invitado_informe(tutoria_id, asignatura_id):  # (informe) actual
+    invitado_informe = session_sql.query(Informe).filter(Informe.tutoria_id == tutoria_id, Informe.asignatura_id == asignatura_id).first()
+    return invitado_informe
+
+
+def invitado_respuesta(informe_id, pregunta_id):  # (Respuesta) by informe_id y pregunta_id
+    invitado_respuesta = session_sql.query(Respuesta).filter(Respuesta.informe_id == informe_id, Respuesta.pregunta_id == pregunta_id).first()
+    return invitado_respuesta
+
+
+def invitado_pruebas_evaluables(informe_id):  # [pruebas_evaluables] by informe_id
+    invitado_pruebas_evaluables = session_sql.query(Prueba_Evaluable).filter(Prueba_Evaluable.informe_id == informe_id).order_by('id').all()
+    return invitado_pruebas_evaluables
+
+
+# ********************************************************************************************
 
 
 # ***********************************************************************
@@ -72,7 +246,7 @@ def df_load():
 
 
 # ***********************************************************************
-# tutoria stats (CON PANDA)
+# tutoria analisis (CON PANDA)
 # ***********************************************************************
 def df_evolucion_notas(alumno_id):
     tutorias_alumno = session_sql.query(Tutoria).filter(Tutoria.alumno_id == alumno_id).order_by(desc('fecha')).all()
@@ -131,6 +305,42 @@ def df_analisis_asignatura(df_data, tutoria_id, asignatura, alumno_id):
     df_data_tutoria_asignatura = df_data[(df_data.tutoria_id == tutoria_id) & (df_data.asignatura == asignatura)]
     cuestionario_asignatura_tutoria_media = df_data_tutoria_asignatura.cuestionario_resultado.mean().round(decimals=2)
     return cuestionario_media, cuestionario_tutoria_media, cuestionario_asignatura_media, cuestionario_asignatura_tutoria_media
+
+
+def notas_asignatura_grupo(df_data, asignatura, alumno_id):
+    notas_asignatura = []
+    nota_media = []
+    notas = []
+    asignatura_sql = session_sql.query(Asignatura).join(Grupo).filter(Grupo.id == settings().grupo_activo_id).filter(Asignatura.asignatura == asignatura).first()
+    informes = session_sql.query(Informe).filter(Informe.asignatura_id == asignatura_sql.id).all()
+    for informe in informes:
+        alumno_informes = session_sql.query(Informe).join(Tutoria).join(Alumno).filter(Alumno.id == alumno_id)
+        if informe not in alumno_informes:
+            notas = session_sql.query(Prueba_Evaluable).filter(Prueba_Evaluable.informe_id == informe.id).all()
+        if notas:
+            for nota in notas:
+                notas_asignatura.append(float(nota.nota))
+    if notas_asignatura:
+        nota_media = mean(notas_asignatura)
+    else:
+        nota_media = 'sin_notas'
+    return nota_media
+
+
+def notas_asignatura(df_data, tutoria_id, asignatura):  # NOTE aqui estaba el dichoso problema del NoneType al cargar analisis
+    notas_asignatura = []
+    nota_media = []
+    # NOTE  hay que restringir al grupo activo para que indentifique correctamente la asignatura
+    asignatura_sql = session_sql.query(Asignatura).join(Grupo).filter(Grupo.id == settings().grupo_activo_id).filter(Asignatura.asignatura == asignatura).first()
+    informe = session_sql.query(Informe).filter(Informe.tutoria_id == tutoria_id, Informe.asignatura_id == asignatura_sql.id).first()
+    notas = session_sql.query(Prueba_Evaluable).filter(Prueba_Evaluable.informe_id == informe.id).all()
+    if notas:
+        for nota in notas:
+            notas_asignatura.append(float(nota.nota))
+        nota_media = mean(notas_asignatura)
+    else:
+        nota_media = 'sin_notas'
+    return notas_asignatura, nota_media
 
 
 def df_asignaturas_lista(df_data, tutoria_id):
@@ -268,7 +478,7 @@ def df_analisis_asignatura_stacked(df_data, tutoria_id, asignatura):
     return cuestionario_serie, cuestionario_serie_tutoria, cuestionario_sin_alcanzar, cuestionario_sin_alcanzar_tutoria, cuestionario_asignatura_serie, cuestionario_asignatura_serie_tutoria, cuestionario_asignatura_sin_alcanzar, cuestionario_asignatura_sin_alcanzar_tutoria
 
 # ***********************************************************************
-# FIN tutoria stats (CON PANDA)
+# FIN tutoria analisis (CON PANDA)
 # ***********************************************************************
 
 
@@ -406,7 +616,7 @@ def evolucion_equipo_educativo_count():
 
 def tutorias_con_respuesta_count():
     try:
-        # NOTE todos los informes tienen repuesta pues son generados al responder
+        # NOTE todos los informes tienen respuesta pues son generados al responder
         tutorias_sin_respuesta_count = 0
         tutorias = session_sql.query(Tutoria).all()
         for tutoria in tutorias:
@@ -912,43 +1122,6 @@ def pregunta_visible_check(pregunta_id):
     return visible_check
 
 
-def notas_asignatura_grupo(df_data, asignatura, alumno_id):
-    notas_asignatura = []
-    nota_media = []
-    notas = []
-    asignatura_sql = session_sql.query(Asignatura).join(Grupo).filter(Grupo.id == settings().grupo_activo_id).filter(Asignatura.asignatura == asignatura).first()
-    informes = session_sql.query(Informe).filter(Informe.asignatura_id == asignatura_sql.id).all()
-    for informe in informes:
-        alumno_informes = session_sql.query(Informe).join(Tutoria).join(Alumno).filter(Alumno.id == alumno_id)
-        if informe not in alumno_informes:
-            notas = session_sql.query(Prueba_Evaluable).filter(Prueba_Evaluable.informe_id == informe.id).all()
-        if notas:
-            for nota in notas:
-                notas_asignatura.append(float(nota.nota))
-    if notas_asignatura:
-        nota_media = mean(notas_asignatura)
-    else:
-        nota_media = 'sin_notas'
-    return nota_media
-
-
-def notas_asignatura(df_data, tutoria_id, asignatura):  # NOTE aqui estaba el dichoso problema del NoneType al cargar analisis
-    notas_asignatura = []
-    nota_media = []
-    # NOTE  hay que restringir al grupo activo para que indentifique correctamente la asignatura
-    asignatura_sql = session_sql.query(Asignatura).join(Grupo).filter(Grupo.id == settings().grupo_activo_id).filter(Asignatura.asignatura == asignatura).first()
-    informe = session_sql.query(Informe).filter(Informe.tutoria_id == tutoria_id, Informe.asignatura_id == asignatura_sql.id).first()
-    notas = session_sql.query(Prueba_Evaluable).filter(Prueba_Evaluable.informe_id == informe.id).all()
-    if notas:
-        for nota in notas:
-            notas_asignatura.append(float(nota.nota))
-        nota_media = mean(notas_asignatura)
-    else:
-        nota_media = 'sin_notas'
-    return notas_asignatura, nota_media
-    return notas_asignatura, nota_media
-
-
 def settings():
     if current_user:
         settings = session_sql.query(Settings).filter(Settings.user_id == current_user.id).first()
@@ -999,60 +1172,13 @@ def preguntas_active_default(settings_id):  # Inserta las preguntas_active_defau
 
 
 # NOTE: hay que usarlo para mantener el formato de texto asi como su posterior manipulacion
-def asignatura_comentario(tutoria_id, asignatura_asignatura):
-    asignatura_comentario = ''
-    for informe in tutoria_informes(tutoria_id):
-        asignatura = session_sql.query(Asignatura).filter(Asignatura.id == informe.asignatura_id).first()
-        if asignatura.asignatura == asignatura_asignatura:
-            asignatura_comentario = informe.comentario
-    return asignatura_comentario
-
-
-# Funciones para usuario anonimos para rellenar el formulario.
-# -------------------------------------------------------------------------------------------
-
-
-def invitado_settings(tutoria_id):  # (Settings) by tutoria_id
-    invitado_settings = session_sql.query(Settings).join(Grupo).join(Alumno).join(Tutoria).filter(Tutoria.id == tutoria_id).first()
-    return invitado_settings
-
-
-def invitado_grupo(tutoria_id):  # (Grupo) by tutoria_id
-    invitado_grupo = session_sql.query(Grupo).join(Alumno).filter(Tutoria.id == tutoria_id).first()
-    return invitado_grupo
-
-
-def invitado_preguntas(settings_id):  # [Preguntas] by settings_id
-    invitado_preguntas = session_sql.query(Pregunta).join(Association_Settings_Pregunta).filter(Association_Settings_Pregunta.settings_id == settings_id).order_by('orden').all()
-    return invitado_preguntas
-
-
-def invitado_settings_by_id(settings_id):  # (Settings) by settings_id
-    invitado_settings_by_id = session_sql.query(Settings).filter(Settings.user_id == settings_id).first()
-    return invitado_settings_by_id
-
-
-def invitado_alumno(tutoria_id):  # (Alumno) by tutoria_id
-    invitado_alumno = session_sql.query(Alumno).join(Tutoria).filter(Tutoria.id == tutoria_id).first()
-    return invitado_alumno
-
-
-def invitado_informe(tutoria_id, asignatura_id):  # (informe) actual
-    invitado_informe = session_sql.query(Informe).filter(Informe.tutoria_id == tutoria_id, Informe.asignatura_id == asignatura_id).first()
-    return invitado_informe
-
-
-def invitado_respuesta(informe_id, pregunta_id):  # (Respuesta) by informe_id y pregunta_id
-    invitado_respuesta = session_sql.query(Respuesta).filter(Respuesta.informe_id == informe_id, Respuesta.pregunta_id == pregunta_id).first()
-    return invitado_respuesta
-
-
-def invitado_pruebas_evaluables(informe_id):  # [pruebas_evaluables] by informe_id
-    invitado_pruebas_evaluables = session_sql.query(Prueba_Evaluable).filter(Prueba_Evaluable.informe_id == informe_id).order_by('id').all()
-    return invitado_pruebas_evaluables
-
-
-# ********************************************************************************************
+# def asignatura_comentario(tutoria_id, asignatura_asignatura):
+#     asignatura_comentario = ''
+#     for informe in tutoria_informes(tutoria_id):
+#         asignatura = session_sql.query(Asignatura).filter(Asignatura.id == informe.asignatura_id).first()
+#         if asignatura.asignatura == asignatura_asignatura:
+#             asignatura_comentario = informe.comentario
+#     return asignatura_comentario
 
 
 def informe_by_id(informe_id):
@@ -1091,8 +1217,11 @@ def cociente_porcentual(a, b):
 
 
 def tutoria_informes(tutoria_id):  # [informes] de una tutoria
-    tutoria_informes = session_sql.query(Informe).filter(Informe.tutoria_id == tutoria_id).all()
-    return tutoria_informes
+    return session_sql.query(Informe).filter(Informe.tutoria_id == tutoria_id).all()
+
+
+def tutoria_informes_count(tutoria_id):
+    return session_sql.query(Informe).filter(Informe.tutoria_id == tutoria_id).count()
 
 
 def preguntas_by_categoria_id(visible, categoria_id):
@@ -1324,4 +1453,4 @@ def cita_random():
 
 
 app.jinja_env.globals.update(settings=settings, cita_random=cita_random,  singular_plural=singular_plural, grupo_activo=grupo_activo, curso=curso, alumnos_not_sorted=alumnos_not_sorted, alumnos=alumnos, alumno_tutorias=alumno_tutorias, equal_str=equal_str, alumno_asignaturas_id=alumno_asignaturas_id, asignaturas=asignaturas, asignatura_alumnos=asignatura_alumnos, association_alumno_asignatura_check=association_alumno_asignatura_check,
-                             tutoria_asignaturas_count=tutoria_asignaturas_count, string_to_date=string_to_date, association_settings_pregunta_check=association_settings_pregunta_check, preguntas=preguntas, informe_preguntas=informe_preguntas, invitado_settings=invitado_settings, invitado_preguntas=invitado_preguntas, invitado_settings_by_id=invitado_settings_by_id, invitado_respuesta=invitado_respuesta, invitado_pruebas_evaluables=invitado_pruebas_evaluables, invitado_informe=invitado_informe, tutoria_informes=tutoria_informes, cociente_porcentual=cociente_porcentual, tutoria_asignaturas=tutoria_asignaturas, df_analisis_asignatura_stacked=df_analisis_asignatura_stacked, df_cuestion_stacked=df_cuestion_stacked, df_asignaturas_lista=df_asignaturas_lista, df_cuestiones_lista=df_cuestiones_lista, df_cuestion_grupo_spline=df_cuestion_grupo_spline, df_asignatura_stacked=df_asignatura_stacked, df_asignatura_grupo_spline=df_asignatura_grupo_spline, df_analisis_asignatura=df_analisis_asignatura, asignatura_comentario=asignatura_comentario, pregunta_active_default_check=pregunta_active_default_check, notas_asignatura=notas_asignatura, notas_asignatura_grupo=notas_asignatura_grupo, pregunta_visible_check=pregunta_visible_check, grupo_activo_check=grupo_activo_check, user_by_id=user_by_id, df_evolucion=df_evolucion, df_evolucion_notas=df_evolucion_notas, tutoria_stats=tutoria_stats, asignatura_informes_count=asignatura_informes_count, asignatura_informes_respondidos_count=asignatura_informes_respondidos_count, alumno_asignaturas=alumno_asignaturas, asignaturas_not_sorted=asignaturas_not_sorted, grupo_tutorias=grupo_tutorias, alumno_by_id=alumno_by_id, hashids_encode=hashids_encode, hashids_decode=hashids_decode, f_encode=f_encode, f_decode=f_decode, dic_encode_args=dic_encode_args, dic_try=dic_try, settings_by_id=settings_by_id, usuario_grupos=usuario_grupos, usuarios=usuarios, round_custom=round_custom, usuarios_mas_activos=usuarios_mas_activos, df_asignatura_profesor=df_asignatura_profesor, grupo_alumnos_count=grupo_alumnos_count, diferencial_check=diferencial_check, categoria_by_id=categoria_by_id, categorias=categorias, preguntas_by_categoria_id=preguntas_by_categoria_id)
+                             tutoria_asignaturas_count=tutoria_asignaturas_count, string_to_date=string_to_date, association_settings_pregunta_check=association_settings_pregunta_check, preguntas=preguntas, informe_preguntas=informe_preguntas, invitado_settings=invitado_settings, invitado_preguntas=invitado_preguntas, invitado_settings_by_id=invitado_settings_by_id, invitado_respuesta=invitado_respuesta, invitado_pruebas_evaluables=invitado_pruebas_evaluables, invitado_informe=invitado_informe, tutoria_informes=tutoria_informes, cociente_porcentual=cociente_porcentual, tutoria_asignaturas=tutoria_asignaturas, df_analisis_asignatura_stacked=df_analisis_asignatura_stacked, df_cuestion_stacked=df_cuestion_stacked, df_asignaturas_lista=df_asignaturas_lista, df_cuestiones_lista=df_cuestiones_lista, df_cuestion_grupo_spline=df_cuestion_grupo_spline, df_asignatura_stacked=df_asignatura_stacked, df_asignatura_grupo_spline=df_asignatura_grupo_spline, df_analisis_asignatura=df_analisis_asignatura, pregunta_active_default_check=pregunta_active_default_check, notas_asignatura=notas_asignatura, notas_asignatura_grupo=notas_asignatura_grupo, pregunta_visible_check=pregunta_visible_check, grupo_activo_check=grupo_activo_check, user_by_id=user_by_id, df_evolucion=df_evolucion, df_evolucion_notas=df_evolucion_notas, tutoria_stats=tutoria_stats, asignatura_informes_count=asignatura_informes_count, asignatura_informes_respondidos_count=asignatura_informes_respondidos_count, alumno_asignaturas=alumno_asignaturas, asignaturas_not_sorted=asignaturas_not_sorted, grupo_tutorias=grupo_tutorias, alumno_by_id=alumno_by_id, hashids_encode=hashids_encode, hashids_decode=hashids_decode, f_encode=f_encode, f_decode=f_decode, dic_encode_args=dic_encode_args, dic_try=dic_try, settings_by_id=settings_by_id, usuario_grupos=usuario_grupos, usuarios=usuarios, round_custom=round_custom, usuarios_mas_activos=usuarios_mas_activos, df_asignatura_profesor=df_asignatura_profesor, grupo_alumnos_count=grupo_alumnos_count, diferencial_check=diferencial_check, categoria_by_id=categoria_by_id, categorias=categorias, preguntas_by_categoria_id=preguntas_by_categoria_id, preguntas_by_tutoria_id_lista=preguntas_by_tutoria_id_lista, respuestas_pregunta_stacked_lista=respuestas_pregunta_stacked_lista, asignatura_by_id=asignatura_by_id, asignaturas_by_tutoria_id_count=asignaturas_by_tutoria_id_count, asignaturas_by_tutoria_id=asignaturas_by_tutoria_id, pregunta_by_enunciado_ticker=pregunta_by_enunciado_ticker, asignaturas_by_tutoria_id_lista_asignatura=asignaturas_by_tutoria_id_lista_asignatura, preguntas_by_tutoria_id=preguntas_by_tutoria_id, respuestas_asignatura_stacked_lista=respuestas_asignatura_stacked_lista, pruebas_evaluables_asignatura_lista=pruebas_evaluables_asignatura_lista, respuestas_grupo_areaspline=respuestas_grupo_areaspline, informe_by_tutoria_id=informe_by_tutoria_id)
