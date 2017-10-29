@@ -152,7 +152,6 @@ def informes_grupo_by_tutoria_id(tutoria_id):
 # Funciones para usuario anonimos para rellenar el formulario.
 # ***********************************************************************
 
-
 def invitado_settings(tutoria_id):  # (Settings) by tutoria_id
     invitado_settings = session_sql.query(Settings).join(Grupo).join(Alumno).join(Tutoria).filter(Tutoria.id == tutoria_id).first()
     return invitado_settings
