@@ -113,7 +113,7 @@
 					<i class="material-icons vertical-center">expand_more</i>
 					Analisis del cuestionario
 				</a>
-				<div class="collapse {% if tutoria.activa %}showXXX show{% endif %}" id="analisis_cuestionario">
+				<div class="collapse {% if tutoria.activa %}showXXX{% endif %}" id="analisis_cuestionario">
 					<div class="col pt-4 pb-3">
 						{{highcharts_cuestionario(char_id='cuestionario', color='#ffa000', grupo=grupo, tutoria_id=tutoria.id)}}
 					</div>
@@ -122,7 +122,7 @@
 					<i class="material-icons vertical-center">expand_more</i>
 					Analisis comparativo de asignaturas
 				</a>
-				<div class="collapse" id="analisis_general_asignaturas">
+				<div class="collapse show" id="analisis_general_asignaturas">
 					<div class="col pt-4 pb-3">
 						{{highcharts_asignaturas(char_id='asignaturas', color_1='#ec407a',color_2='#f48fb1', grupo=grupo, tutoria_id=tutoria.id)}}
 					</div>

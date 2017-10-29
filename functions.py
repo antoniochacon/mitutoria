@@ -15,6 +15,21 @@ import config_gmail_api
 # ***********************************************************************
 # XXX: tutoria stats (SIN PANDA)
 # ***********************************************************************
+def pruebas_evaluables_asignatura_spline(tutoria_id, asignatura_id):
+    pruebas_evaluables_asignatura_lista = []
+    pruebas_evaluables_nombre_asignatura_lista = []
+    nota_media_asignatura = 'sin_notas'
+
+    pruebas_evaluables = session_sql.query(Prueba_Evaluable).join(Informe).join(Tutoria).filter(Tutoria.id == tutoria_id, Informe.asignatura_id == asignatura_id).all()
+    for prueba_evaluable in pruebas_evaluables:
+        if prueba_evaluable:
+            pruebas_evaluables_asignatura_lista.append(float(prueba_evaluable.nota))
+            pruebas_evaluables_nombre_asignatura_lista.append((prueba_evaluable.nombre, float(prueba_evaluable.nota)))
+    if pruebas_evaluables_asignatura_lista:
+        nota_media_asignatura = mean(pruebas_evaluables_asignatura_lista)
+    return pruebas_evaluables_asignatura_lista, nota_media_asignatura, pruebas_evaluables_nombre_asignatura_lista
+
+
 def respuestas_asignatura_alumno_spline(tutoria_id, pregunta_id):
     respuestas_asignatura_spline = []
     respuestas_asignatura_stacked = []
@@ -131,20 +146,6 @@ def informes_by_tutoria_id(tutoria_id):
 
 def informes_grupo_by_tutoria_id(tutoria_id):
     return session_sql.query(Informe).join(Tutoria).join(Alumno).join(Grupo).filter(Grupo.id == grupo_by_tutoria_id(tutoria_id).id).all()
-
-
-def pruebas_evaluables_asignatura_lista(tutoria_id, asignatura_id):
-    pruebas_evaluables_asignatura_lista = []
-    pruebas_evaluables_nombre_asignatura_lista = []
-    nota_media_asignatura = 'sin_notas'
-    informe = session_sql.query(Informe).filter(Informe.tutoria_id == tutoria_id, Informe.asignatura_id == asignatura_id).first()
-    pruebas_evaluables_asignatura = session_sql.query(Prueba_Evaluable).filter(Prueba_Evaluable.informe_id == informe.id).all()
-    for prueba_evaluable in pruebas_evaluables_asignatura:
-        pruebas_evaluables_asignatura_lista.append(float(prueba_evaluable.nota))
-        pruebas_evaluables_nombre_asignatura_lista.append((prueba_evaluable.nombre, float(prueba_evaluable.nota)))
-    if pruebas_evaluables_asignatura_lista:
-        nota_media_asignatura = mean(pruebas_evaluables_asignatura_lista)
-    return pruebas_evaluables_asignatura_lista, nota_media_asignatura, pruebas_evaluables_nombre_asignatura_lista
 
 
 # ***********************************************************************
@@ -1458,4 +1459,4 @@ def cita_random():
 
 
 app.jinja_env.globals.update(settings=settings, cita_random=cita_random,  singular_plural=singular_plural, grupo_activo=grupo_activo, curso=curso, alumnos_not_sorted=alumnos_not_sorted, alumnos=alumnos, alumno_tutorias=alumno_tutorias, equal_str=equal_str, alumno_asignaturas_id=alumno_asignaturas_id, asignaturas=asignaturas, asignatura_alumnos=asignatura_alumnos, association_alumno_asignatura_check=association_alumno_asignatura_check,
-                             tutoria_asignaturas_count=tutoria_asignaturas_count, string_to_date=string_to_date, association_settings_pregunta_check=association_settings_pregunta_check, preguntas=preguntas, informe_preguntas=informe_preguntas, invitado_settings=invitado_settings, invitado_preguntas=invitado_preguntas, invitado_settings_by_id=invitado_settings_by_id, invitado_respuesta=invitado_respuesta, invitado_pruebas_evaluables=invitado_pruebas_evaluables, invitado_informe=invitado_informe, tutoria_informes=tutoria_informes, cociente_porcentual=cociente_porcentual, tutoria_asignaturas=tutoria_asignaturas, df_analisis_asignatura_stacked=df_analisis_asignatura_stacked, df_cuestion_stacked=df_cuestion_stacked, df_asignaturas_lista=df_asignaturas_lista, df_cuestiones_lista=df_cuestiones_lista, df_cuestion_grupo_spline=df_cuestion_grupo_spline, df_asignatura_stacked=df_asignatura_stacked, df_asignatura_grupo_spline=df_asignatura_grupo_spline, df_analisis_asignatura=df_analisis_asignatura, pregunta_active_default_check=pregunta_active_default_check, notas_asignatura=notas_asignatura, notas_asignatura_grupo=notas_asignatura_grupo, pregunta_visible_check=pregunta_visible_check, grupo_activo_check=grupo_activo_check, user_by_id=user_by_id, df_evolucion=df_evolucion, df_evolucion_notas=df_evolucion_notas, tutoria_stats=tutoria_stats, asignatura_informes_count=asignatura_informes_count, asignatura_informes_respondidos_count=asignatura_informes_respondidos_count, alumno_asignaturas=alumno_asignaturas, asignaturas_not_sorted=asignaturas_not_sorted, grupo_tutorias=grupo_tutorias, alumno_by_id=alumno_by_id, hashids_encode=hashids_encode, hashids_decode=hashids_decode, f_encode=f_encode, f_decode=f_decode, dic_encode_args=dic_encode_args, dic_try=dic_try, settings_by_id=settings_by_id, usuario_grupos=usuario_grupos, usuarios=usuarios, round_custom=round_custom, usuarios_mas_activos=usuarios_mas_activos, df_asignatura_profesor=df_asignatura_profesor, grupo_alumnos_count=grupo_alumnos_count, diferencial_check=diferencial_check, categoria_by_id=categoria_by_id, categorias=categorias, preguntas_by_categoria_id=preguntas_by_categoria_id, preguntas_by_tutoria_id_lista=preguntas_by_tutoria_id_lista, respuestas_pregunta_alumno_spline=respuestas_pregunta_alumno_spline, asignatura_by_id=asignatura_by_id, asignaturas_by_tutoria_id_count=asignaturas_by_tutoria_id_count, asignaturas_by_tutoria_id=asignaturas_by_tutoria_id, pregunta_by_enunciado_ticker=pregunta_by_enunciado_ticker, asignaturas_by_tutoria_id_lista_asignatura=asignaturas_by_tutoria_id_lista_asignatura, preguntas_by_tutoria_id=preguntas_by_tutoria_id, respuestas_asignatura_alumno_spline=respuestas_asignatura_alumno_spline, pruebas_evaluables_asignatura_lista=pruebas_evaluables_asignatura_lista, respuestas_grupo_areaspline=respuestas_grupo_areaspline, informe_by_tutoria_id=informe_by_tutoria_id)
+                             tutoria_asignaturas_count=tutoria_asignaturas_count, string_to_date=string_to_date, association_settings_pregunta_check=association_settings_pregunta_check, preguntas=preguntas, informe_preguntas=informe_preguntas, invitado_settings=invitado_settings, invitado_preguntas=invitado_preguntas, invitado_settings_by_id=invitado_settings_by_id, invitado_respuesta=invitado_respuesta, invitado_pruebas_evaluables=invitado_pruebas_evaluables, invitado_informe=invitado_informe, tutoria_informes=tutoria_informes, cociente_porcentual=cociente_porcentual, tutoria_asignaturas=tutoria_asignaturas, df_analisis_asignatura_stacked=df_analisis_asignatura_stacked, df_cuestion_stacked=df_cuestion_stacked, df_asignaturas_lista=df_asignaturas_lista, df_cuestiones_lista=df_cuestiones_lista, df_cuestion_grupo_spline=df_cuestion_grupo_spline, df_asignatura_stacked=df_asignatura_stacked, df_asignatura_grupo_spline=df_asignatura_grupo_spline, df_analisis_asignatura=df_analisis_asignatura, pregunta_active_default_check=pregunta_active_default_check, notas_asignatura=notas_asignatura, notas_asignatura_grupo=notas_asignatura_grupo, pregunta_visible_check=pregunta_visible_check, grupo_activo_check=grupo_activo_check, user_by_id=user_by_id, df_evolucion=df_evolucion, df_evolucion_notas=df_evolucion_notas, tutoria_stats=tutoria_stats, asignatura_informes_count=asignatura_informes_count, asignatura_informes_respondidos_count=asignatura_informes_respondidos_count, alumno_asignaturas=alumno_asignaturas, asignaturas_not_sorted=asignaturas_not_sorted, grupo_tutorias=grupo_tutorias, alumno_by_id=alumno_by_id, hashids_encode=hashids_encode, hashids_decode=hashids_decode, f_encode=f_encode, f_decode=f_decode, dic_encode_args=dic_encode_args, dic_try=dic_try, settings_by_id=settings_by_id, usuario_grupos=usuario_grupos, usuarios=usuarios, round_custom=round_custom, usuarios_mas_activos=usuarios_mas_activos, df_asignatura_profesor=df_asignatura_profesor, grupo_alumnos_count=grupo_alumnos_count, diferencial_check=diferencial_check, categoria_by_id=categoria_by_id, categorias=categorias, preguntas_by_categoria_id=preguntas_by_categoria_id, preguntas_by_tutoria_id_lista=preguntas_by_tutoria_id_lista, respuestas_pregunta_alumno_spline=respuestas_pregunta_alumno_spline, asignatura_by_id=asignatura_by_id, asignaturas_by_tutoria_id_count=asignaturas_by_tutoria_id_count, asignaturas_by_tutoria_id=asignaturas_by_tutoria_id, pregunta_by_enunciado_ticker=pregunta_by_enunciado_ticker, asignaturas_by_tutoria_id_lista_asignatura=asignaturas_by_tutoria_id_lista_asignatura, preguntas_by_tutoria_id=preguntas_by_tutoria_id, respuestas_asignatura_alumno_spline=respuestas_asignatura_alumno_spline, pruebas_evaluables_asignatura_spline=pruebas_evaluables_asignatura_spline, respuestas_grupo_areaspline=respuestas_grupo_areaspline, informe_by_tutoria_id=informe_by_tutoria_id)

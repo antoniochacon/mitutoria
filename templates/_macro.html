@@ -72,13 +72,13 @@
 						type: "column",
 						maxPointWidth: 20,
 						// FIXME posible problema con las comillas en la siguiente linea
-						name: "Notas({{pruebas_evaluables_asignatura_lista(tutoria_id, asignatura.id)[0] | count}}):  {{pruebas_evaluables_asignatura_lista(tutoria_id, asignatura.id)[2] | replace("(", "") | replace("''", "'nota'") | replace(",", "") | replace(") ", " | ") | replace(")", "") | safe}}",
+						name: "Notas({{pruebas_evaluables_asignatura_spline(tutoria_id, asignatura.id)[0] | count}}):  {{pruebas_evaluables_asignatura_spline(tutoria_id, asignatura.id)[2] | replace("(", "") | replace("''", "'X_X_X'") | replace(",", "") | replace(") ", " | ") | replace(")", "") | replace("'X_X_X'", "") | safe}}",
 						data: [
 							{
 								x: {{loop.index}}-1,
-								y:{% if pruebas_evaluables_asignatura_lista(tutoria_id, asignatura.id)[1] != "sin_notas" %}
-									{% if pruebas_evaluables_asignatura_lista(tutoria_id, asignatura.id)[0]|sum !=0 %}
-										{{pruebas_evaluables_asignatura_lista(tutoria_id, asignatura.id)[1] | safe}}
+								y:{% if pruebas_evaluables_asignatura_spline(tutoria_id, asignatura.id)[1] != "sin_notas" %}
+									{% if pruebas_evaluables_asignatura_spline(tutoria_id, asignatura.id)[0]|sum !=0 %}
+										{{pruebas_evaluables_asignatura_spline(tutoria_id, asignatura.id)[1] | safe}}
 									{% else %}
 										1
 									{% endif %}
@@ -87,7 +87,7 @@
 								{% endif %}
 							}
 						],
-						{% if pruebas_evaluables_asignatura_lista(tutoria_id, asignatura.id)[0]|sum !=0 %}
+						{% if pruebas_evaluables_asignatura_spline(tutoria_id, asignatura.id)[0]|sum !=0 %}
 							color: "{{color_2}}"
 						{% else %}
 							color: "#26c6da"
