@@ -196,7 +196,7 @@
 						},
 						color: "{{color}}",
 						name: "{{asignatura.asignatura}}",
-						data: {{respuestas_pregunta_stacked_lista(tutoria_id, asignatura.id)[1] | safe}}
+						data: {{respuestas_pregunta_alumno_spline(tutoria_id, asignatura.id)[1] | safe}}
 					},
 				{% endfor %}
 				{
@@ -217,7 +217,7 @@
 				}{% for asignatura in asignaturas_by_tutoria_id(tutoria_id) %}, {
 						type: "spline",
 						name: "{{asignatura.asignatura}}",
-						data: {{respuestas_pregunta_stacked_lista(tutoria_id, asignatura.id)[0] | safe}},
+						data: {{respuestas_pregunta_alumno_spline(tutoria_id, asignatura.id)[0] | safe}},
 						// color: "#26c6da",
 						visible: false,
 						marker: {
