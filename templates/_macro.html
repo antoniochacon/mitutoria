@@ -63,7 +63,7 @@
 						maxPointWidth: 50,
 						color: "{{color_1}}",
 						name: "{{pregunta.enunciado}}",
-						data: {{respuestas_asignatura_stacked_lista(tutoria_id, pregunta.id)[1] | safe}}
+						data: {{respuestas_asignatura_alumno_spline(tutoria_id, pregunta.id)[1] | safe}}
 					},
 				{% endfor %}
 
@@ -115,7 +115,7 @@
 						type: "spline",
 						name: "{{pregunta.enunciado_ticker}}",
 
-						data: {{respuestas_asignatura_stacked_lista(tutoria_id, pregunta.id)[0]}},
+						data: {{respuestas_asignatura_alumno_spline(tutoria_id, pregunta.id)[0]}},
 						// color: "#26c6da",
 						visible: false,
 						marker: {
