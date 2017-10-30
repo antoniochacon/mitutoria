@@ -905,9 +905,9 @@ def admin_cuestionario_html(params={}):
                         categoria_add_form.orden.errors = ['']
                         flash_toast('Orden duplicado', 'warning')
                     return render_template('admin_cuestionario.html',
-                                           categoria_add=categoria_add_form, categoria_edit=Categoria_Add(),
-                                           pregunta_add=Pregunta_Add(), pregunta_edit=Pregunta_Add(),
-                                           params=params)
+                        categoria_add=categoria_add_form, categoria_edit=Categoria_Add(),
+                        pregunta_add=Pregunta_Add(), pregunta_edit=Pregunta_Add(),
+                        params=params)
                 else:
                     session_sql.add(categoria_add)
                     session_sql.commit()
@@ -917,8 +917,8 @@ def admin_cuestionario_html(params={}):
                 params['collapse_categoria_add'] = True
                 flash_wtforms(categoria_add_form, flash_toast, 'warning')
             return render_template('admin_cuestionario.html',
-                                   categoria_add=categoria_add_form, categoria_edit=Categoria_Add(),
-                                   pregunta_add=Pregunta_Add(), pregunta_edit=Pregunta_Add(), params=params)
+                categoria_add=categoria_add_form,categoria_edit=Categoria_Add(),
+                pregunta_add=Pregunta_Add(), pregunta_edit=Pregunta_Add(), params=params)
 
         # XXX selector_categoria_add_close
         if request.form['selector_button'] == 'selector_categoria_add_close':
@@ -1272,6 +1272,7 @@ def analisis_html(params={}):
 
     df_data = df_load()
     # print(df_data)
+
     # abort(404)
     return render_template(
         'analisis.html', grupo=grupo, alumno=alumno_sql, tutoria=tutoria_sql,
