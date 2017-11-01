@@ -129,54 +129,67 @@ def admin_estadisticas_html(params={}):
     stats = {}
     stats['usuarios_all'] = usuarios_all_count()
 
-    stats['emails_validados'] = emails_validados_count()[0]
-    stats['emails_validados_percent'] = emails_validados_count()[1]
+    emails_validados_count_sql = emails_validados_count()
+    stats['emails_validados'] = emails_validados_count_sql[0]
+    stats['emails_validados_percent'] = emails_validados_count_sql[1]
 
-    stats['emails_no_robinson'] = emails_no_robinson_count()[0]
-    stats['emails_no_robinson_percent'] = emails_no_robinson_count()[1]
+    emails_no_robinson_count_sql=emails_no_robinson_count()
+    stats['emails_no_robinson'] = emails_no_robinson_count_sql[0]
+    stats['emails_no_robinson_percent'] = emails_no_robinson_count_sql[1]
 
-    stats['emails_no_ban'] = emails_no_ban_count()[0]
-    stats['emails_no_ban_percent'] = emails_no_ban_count()[1]
+    emails_no_ban_count_sql=emails_no_ban_count()
+    stats['emails_no_ban'] = emails_no_ban_count_sql[0]
+    stats['emails_no_ban_percent'] = emails_no_ban_count_sql[1]
 
-    stats['tutoria_timeout'] = tutoria_timeout_count()[0]
-    stats['tutoria_timeout_percent'] = tutoria_timeout_count()[1]
-    stats['evolucion_equipo_educativo'] = evolucion_equipo_educativo_count()[0]
-    stats['evolucion_equipo_educativo_percent'] = evolucion_equipo_educativo_count()[1]
+    tutoria_timeout_count_sql=tutoria_timeout_count()
+    stats['tutoria_timeout'] = tutoria_timeout_count_sql[0]
+    stats['tutoria_timeout_percent'] = tutoria_timeout_count_sql[1]
+
+    evolucion_equipo_educativo_count_sql=evolucion_equipo_educativo_count()
+    stats['evolucion_equipo_educativo'] = evolucion_equipo_educativo_count_sql[0]
+    stats['evolucion_equipo_educativo_percent'] = evolucion_equipo_educativo_count_sql[1]
 
     stats['tutorias_all_count'] = tutorias_all_count()
-    stats['tutorias_con_respuesta'] = tutorias_con_respuesta_count()[0]
-    stats['tutorias_con_respuesta_percent'] = tutorias_con_respuesta_count()[1]
+    tutorias_con_respuesta_count_sql=tutorias_con_respuesta_count()
+    stats['tutorias_con_respuesta'] = tutorias_con_respuesta_count_sql[0]
+    stats['tutorias_con_respuesta_percent'] =tutorias_con_respuesta_count_sql[1]
 
     stats['tutorias_con_acuerdos_count'] = tutorias_con_acuerdos_count()
 
-    stats['preguntas_por_cuestionario_min'] = preguntas_por_cuestionario()[0]
-    stats['preguntas_por_cuestionario_media'] = preguntas_por_cuestionario()[1]
-    stats['preguntas_por_cuestionario_max'] = preguntas_por_cuestionario()[2]
-    stats['preguntas_por_cuestionario_percent'] = preguntas_por_cuestionario()[3]
+    preguntas_por_cuestionario_sql=preguntas_por_cuestionario()
+    stats['preguntas_por_cuestionario_min'] = preguntas_por_cuestionario_sql[0]
+    stats['preguntas_por_cuestionario_media'] = preguntas_por_cuestionario_sql[1]
+    stats['preguntas_por_cuestionario_max'] = preguntas_por_cuestionario_sql[2]
+    stats['preguntas_por_cuestionario_percent'] = preguntas_por_cuestionario_sql[3]
 
+    profesores_por_usuario_sql = profesores_por_usuario()
     stats['profesores_all_count'] = profesores_all_cunt()
-    stats['profesores_por_usuario_min'] = profesores_por_usuario()[0]
-    stats['profesores_por_usuario_media'] = profesores_por_usuario()[1]
-    stats['profesores_por_usuario_max'] = profesores_por_usuario()[2]
+    stats['profesores_por_usuario_min'] = profesores_por_usuario_sql[0]
+    stats['profesores_por_usuario_media'] = profesores_por_usuario_sql[1]
+    stats['profesores_por_usuario_max'] = profesores_por_usuario_sql[2]
 
-    stats['profesores_actividad'] = profesores_actividad_count()[0]
-    stats['profesores_actividad_percent'] = profesores_actividad_count()[1]
-    stats['profesores_activos_evolucion'] = profesores_actividad_count()[2]
-    stats['profesores_activos_evolucion_frecuencia'] = profesores_actividad_count()[3]
-    stats['profesores_activos_evolucion_frecuencia_absoluta'] = profesores_actividad_count()[4]
-    stats['profesores_activos_evolucion_media'] = profesores_actividad_count()[5]
+    profesores_actividad_count_sql = profesores_actividad_count()
+    stats['profesores_actividad'] = profesores_actividad_count_sql[0]
+    stats['profesores_actividad_percent'] = profesores_actividad_count_sql[1]
+    stats['profesores_activos_evolucion'] = profesores_actividad_count_sql[2]
+    stats['profesores_activos_evolucion_frecuencia'] = profesores_actividad_count_sql[3]
+    stats['profesores_activos_evolucion_frecuencia_absoluta'] = profesores_actividad_count_sql[4]
+    stats['profesores_activos_evolucion_media'] = profesores_actividad_count_sql[5]
 
-    stats['tutorias_por_usuario_min'] = tutorias_por_usuario_count()[0]
-    stats['tutorias_por_usuario_media'] = tutorias_por_usuario_count()[1]
-    stats['tutorias_por_usuario_max'] = tutorias_por_usuario_count()[2]
+    tutorias_por_usuario_count_sql=tutorias_por_usuario_count()
+    stats['tutorias_por_usuario_min'] = tutorias_por_usuario_count_sql[0]
+    stats['tutorias_por_usuario_media'] = tutorias_por_usuario_count_sql[1]
+    stats['tutorias_por_usuario_max'] = tutorias_por_usuario_count_sql[2]
 
     stats['cuestionario_actividad'] = cuestionario_actividad()
 
-    stats['informes_con_comentario'] = informes_con_comentario_count()[0]
-    stats['informes_con_comentario_percent'] = informes_con_comentario_count()[1]
+    informes_con_comentario_count_sql=informes_con_comentario_count()
+    stats['informes_con_comentario'] = informes_con_comentario_count_sql[0]
+    stats['informes_con_comentario_percent'] = informes_con_comentario_count_sql[1]
 
-    stats['informes_con_pruebas_evalubles'] = informes_con_pruebas_evalubles_count()[0]
-    stats['informes_con_pruebas_evalubles_percent'] = informes_con_pruebas_evalubles_count()[1]
+    informes_con_pruebas_evalubles_count_sql=informes_con_pruebas_evalubles_count()
+    stats['informes_con_pruebas_evalubles'] = informes_con_pruebas_evalubles_count_sql[0]
+    stats['informes_con_pruebas_evalubles_percent'] = informes_con_pruebas_evalubles_count_sql[1]
 
     stats['diferencial_media'] = diferencial_media()
 
