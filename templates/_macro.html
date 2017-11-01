@@ -555,7 +555,7 @@
 				formatter: function () {
 					var text = "";
 					if (this.series.type == "column") {
-						text = this.x + " | Media: " + Highcharts.numberFormat(this.total, 1) + "<br>" + this.series.name + ": " + Highcharts.numberFormat(this.y * {{asignaturas_con_respuesta_by_tutoria_id(tutoria_id)[1]|count}}, 1);
+						text = this.x + " | Media: " + Highcharts.numberFormat(this.total, 1) + "<br>" + this.series.name + ": " + Highcharts.numberFormat(this.y * {{asignaturas_con_respuesta_by_tutoria_id(tutoria_id)[1] | count}}, 1);
 					} else {
 						text = this.x + "<br>" + this.series.name + ": " + Highcharts.numberFormat(this.y, 1);
 					}
