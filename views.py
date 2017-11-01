@@ -1264,14 +1264,16 @@ def analisis_html(params={}):
     params['tutoria_re_enviar_link'] = params_old.get('tutoria_re_enviar_link', False)
     params['tutoria_edit_link'] = params_old.get('tutoria_edit_link', False)
 
-    grupo = grupo_activo()
-    tutoria_sql = tutoria_by_id(current_tutoria_id)
-    alumno_sql = invitado_alumno(current_tutoria_id)
-    if not tutoria_sql or not alumno_sql:
+    stats = {}
+    stats['grupo'] = grupo_by_tutoria_id(current_tutoria_id)
+    stats['tutoria'] = tutoria_by_id(current_tutoria_id)
+    stats['alumno'] = alumno_by_tutoria_id(current_tutoria_id)
+
+    if not stats['tutoria'] or not stats['alumno']:
         return redirect(url_for('analisis_tutoria_no_disponible_html'))
 
-    return render_template('analisis.html',
-                           grupo=grupo, alumno=alumno_sql, tutoria=tutoria_sql, params=params)
+
+    return render_template('analisis.html', stats=stats, params=params)
 
 
 # XXX analisis_tutoria_edit
