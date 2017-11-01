@@ -62,6 +62,7 @@ hashids = Hashids(salt=salt)
 # email_time_sleep = 3
 
 
+
 # XXX Heroku_Host
 tutoria_email_link = 'https://mitutoria.herokuapp.com/informe/'
 email_validate_link = 'https://mitutoria.herokuapp.com/email_validate/'

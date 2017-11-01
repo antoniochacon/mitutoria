@@ -8,6 +8,7 @@ class Config(object):
     SECRET_KEY = '00bocata00'
 
 
+
 class Server_Config(Config):
     DEBUG = True
     # NOTE Local_Host
