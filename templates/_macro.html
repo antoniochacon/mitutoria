@@ -1,3 +1,644 @@
+{% macro highcharts_evalucion(char_id, color_1, color_2, grupo, alumno) %}
+	<div id="{{char_id | safe}}" class="chart" style="height: 300px"></div>
+	<script>
+		Highcharts.stockChart("{{char_id | safe }}", {
+			title: {
+				text: null
+			},
+			scrollbar: {
+				barBackgroundColor: "#212529",
+				barBorderRadius: 7,
+				barBorderWidth: 0,
+				buttonBackgroundColor: "#212529",
+				buttonBorderWidth: 0,
+				buttonBorderRadius: 7,
+				trackBackgroundColor: "#212529", //"none",
+				trackBorderWidth: 1,
+				trackBorderRadius: 8,
+				trackBorderColor: "#212529",
+				enabled: false,
+				showFull: true
+			},
+			navigator: {
+				enabled: false
+			},
+			rangeSelector: {
+				allButtonsEnabled: false,
+				buttons: [
+					{
+						type: "all",
+						text: "todo"
+					}
+				],
+				selected: 1,
+				inputEnabled: false
+			},
+			tooltip: {
+				shared: false
+			},
+			xAxis: {
+				type: "datetime",
+				startOfWeek: 2,
+				dateTimeLabelFormats: {
+					second: "%Y-%m-%d<br/>%H:%M:%S",
+					minute: "%Y-%m-%d<br/>%H:%M",
+					hour: "%Y-%m-%d<br/>%H:%M",
+					day: "%d-%m",
+					week: "%d-%m",
+					month: "%m-%Y",
+					year: "%Y"
+				}
+			},
+			yAxis: {
+				gridLineColor: Highcharts.getOptions().colors_gray["gray-500"],
+				plotBands: [
+					{
+						color: Highcharts.getOptions().colors_gray["gray-200"],
+						from: 0,
+						to: 5
+					}
+				],
+				floor: 0,
+				ceiling: 10,
+				title: {
+					text: "Media"
+				},
+				opposite: false
+			},
+			legend: {
+				enabled: true
+			},
+			plotOptions: {
+				series: {
+					pointIntervalUnit: "week"
+				},
+				column: {
+					grouping: false
+				}
+			},
+			series: [
+				{
+					type: "column",
+					name: "{{alumno.nombre}} | Cuestionario",
+					color: "{{color_1}}",
+					maxPointWidth: 50,
+					showInLegend: false,
+					borderWidth: 1,
+					animation: {
+						duration: 2000
+					},
+					data: {{respuestas_evolucion(alumno.id)[1]}},
+					tooltip: {
+						valueDecimals: 2
+					},
+					fillOpacity: 0.25,
+					marker: {
+						fillColor: "#fff",
+						lineWidth: 2,
+						lineColor: null
+					}
+				}, {
+					type: "column",
+					name: "{{alumno.nombre}} | Notas",
+					color: "{{color_2}}",
+					maxPointWidth: 20,
+					showInLegend: false,
+					borderWidth: 1,
+					animation: {
+						duration: 2000
+					},
+					data: {{notas_evolucion(alumno.id)|safe}},
+					tooltip: {
+						valueDecimals: 2
+					},
+					fillOpacity: 0.25,
+					marker: {
+						fillColor: "#fff",
+						lineWidth: 2,
+						lineColor: null // inherit from series
+					}
+				}, {
+					type: "areaspline",
+					name: "{{grupo.nombre}} | Cuestionario",
+					animation: {
+						duration: 2000
+					},
+					color: "#424242",
+					data: {{respuestas_evolucion(alumno.id)[0]}},
+					tooltip: {
+						valueDecimals: 2
+					},
+					fillOpacity: 0.25,
+					visible: false,
+					marker: {
+						fillColor: "#dee2e6",
+						lineWidth: 2,
+						lineColor: null // inherit from series
+					}
+				}
+			]
+		});
+	</script>
+{% endmacro %}
+
+{% macro highcharts_asignatura(char_id, asignatura, alumno, grupo, tutoria_id) %}
+
+	<div id="{{char_id | safe}}" class="chart" style="height: 200px"></div>
+	<script>
+		Highcharts.chart("{{char_id | safe }}", {
+			chart: {
+				plotBackgroundColor: null,
+				plotBorderWidth: 0,
+				plotShadow: false,
+				marginBottom: -130,
+				spacingBottom: 20
+			},
+			title: null,
+			plotOptions: {
+				pie: {
+					dataLabels: {
+						enabled: null
+					}
+				},
+				series: {
+					states: {
+						hover: {
+							halo: {
+								size: 0
+							}
+						}
+					}
+				}
+			},
+			series: [
+				{% if pruebas_evaluables_asignatura_grupo(tutoria_id, asignatura.id) != "sin_notas" %}
+					{
+						type: "pie",
+						size: "32%",
+						innerSize: "55%",
+						tooltip: {
+							pointFormat: "Media: {point.y:.1f}"
+						},
+						startAngle: -90,
+						endAngle: 90,
+						data: [
+							{
+								name: "{{grupo.nombre}} | {{asignatura.asignatura}} | Notas",
+								y:{% if pruebas_evaluables_asignatura_grupo(tutoria_id, asignatura.id) != "sin_notas" %}
+									{{pruebas_evaluables_asignatura_grupo(tutoria_id, asignatura.id)}}
+								{% else %}
+									1
+								{% endif %},
+								{% if pruebas_evaluables_asignatura_grupo(tutoria_id, asignatura.id) != 0 %}
+									color: "#e1bee7"
+								{% else %}
+									color: "#80deea"
+								{% endif %}
+							}, {
+								name: "{{grupo.nombre}} | {{asignatura.asignatura}} | Notas | Sin alcanzar",
+								y: 10 -{% if pruebas_evaluables_asignatura_grupo(tutoria_id, asignatura.id) !=0 %}
+									{{pruebas_evaluables_asignatura_grupo(tutoria_id, asignatura.id)}}
+								{% else %}
+									1
+								{% endif %},
+								color: "#f5f5f5",
+								states: {
+									hover: {
+										brightness: -0.3
+									}
+								}
+							}
+						]
+					},
+				{% else %}
+					{
+						type: "pie",
+						size: "32%",
+						innerSize: "55%",
+						tooltip: {
+							pointFormat: "Sin pruebas evaluables"
+						},
+						startAngle: -90,
+						endAngle: 90,
+						data: [
+							{
+								name: "{{grupo.nombre}} | {{asignatura.asignatura}}",
+								y: 100,
+								color: "#f5f5f5"
+							}
+						]
+					},
+				{% endif %}
+				{% if pruebas_evaluables_asignatura_spline(tutoria_id, asignatura.id)[1] != "sin_notas" %}
+					{
+						type: "pie",
+						size: "25%",
+						innerSize: "55%",
+						tooltip: {
+							pointFormat: "Media: {point.y:.1f}<br>Notas({{ pruebas_evaluables_asignatura_spline(tutoria_id, asignatura.id)[0] | count }}): {{ pruebas_evaluables_asignatura_spline(tutoria_id, asignatura.id)[1] | safe }}"
+						},
+						startAngle: -90,
+						endAngle: 90,
+						data: [
+							{
+								name: "{{alumno.nombre}} | {{asignatura.asignatura}} | Notas",
+								y:{% if pruebas_evaluables_asignatura_spline(tutoria_id, asignatura.id)[1] != 'sin_notas' %}
+									{{ pruebas_evaluables_asignatura_spline(tutoria_id, asignatura.id)[1] | safe}}
+								{% else %}
+									1
+								{% endif %},
+								{% if pruebas_evaluables_asignatura_spline(tutoria_id, asignatura.id)[1] != 'sin_notas' %}
+									color: "#ba68c8"
+								{% else %}
+									color: "#26c6da"
+								{% endif %}
+							}, {
+								name: "{{alumno.nombre}} | {{asignatura.asignatura}} | Notas | Sin alcanzar",
+								y: 10 -{% if pruebas_evaluables_asignatura_spline(tutoria_id, asignatura.id)[1] != 'sin_notas' %}
+									{{ pruebas_evaluables_asignatura_spline(tutoria_id, asignatura.id)[1] | safe}}
+								{% else %}
+									1
+								{% endif %},
+								color: "#f5f5f5",
+								states: {
+									hover: {
+										brightness: -0.3
+									}
+								}
+							}
+						]
+					},
+				{% else %}
+					{
+						type: "pie",
+						size: "25%",
+						innerSize: "55%",
+						tooltip: {
+							pointFormat: "Sin pruebas evaluables"
+						},
+						startAngle: -90,
+						endAngle: 90,
+						data: [
+							{
+								name: "{{alumno.nombre}} | {{asignatura.asignatura}}",
+								y: 100,
+								color: "#f5f5f5"
+							}
+						]
+					},
+				{% endif %}
+				{% if respuestas_asignatura_grupo_media(tutoria_id, asignatura.id)!='sin_notas' %}
+					{
+						type: "pie",
+						size: "65%",
+						innerSize: "75%",
+						tooltip: {
+							pointFormat: "Media: {point.y:.1f}"
+						},
+						startAngle: -90,
+						endAngle: 90,
+						data: [
+							{
+								name: "{{grupo.nombre}} | Cuestionario | {{asignatura.asignatura}}",
+								y: {{respuestas_asignatura_grupo_media(tutoria_id, asignatura.id)}},
+								color: "#f48fb1"
+							}, {
+								name: "{{grupo.nombre}} | Cuestionario | {{asignatura.asignatura}} | Sin alcanzar",
+								y: 10 - {{respuestas_asignatura_grupo_media(tutoria_id, asignatura.id) | safe}},
+								color: "#f5f5f5",
+								states: {
+									hover: {
+										brightness: -0.3
+									}
+								}
+							}
+						]
+					},
+				{% endif %}
+				{% if respuestas_pregunta_alumno_spline(tutoria_id, asignatura.id)[2]!='sin_notas' %}
+					{
+						type: "pie",
+						size: "58%",
+						innerSize: "65%",
+						tooltip: {
+							pointFormat: "Media: {point.y:.1f}"
+						},
+						startAngle: -90,
+						endAngle: 90,
+						data: [
+							{
+								name: "{{alumno.nombre}} | Cuestionario | {{asignatura.asignatura}}",
+								y: {{respuestas_pregunta_alumno_spline(tutoria_id, asignatura.id)[2]}},
+								color: "#ec407a"
+							}, {
+								name: "{{alumno.nombre}} | Cuestionario | {{asignatura.asignatura}} | Sin alcanzar",
+								y: 10 - {{respuestas_pregunta_alumno_spline(tutoria_id, asignatura.id)[2]}},
+								color: "#f5f5f5",
+								states: {
+									hover: {
+										brightness: -0.3
+									}
+								}
+							}
+						]
+					},
+				{% endif %}
+				{% if respuestas_grupo(tutoria_id)[1]!='sin_notas' %}
+					{
+						type: "pie",
+						size: "100%",
+						innerSize: "75%",
+						tooltip: {
+							pointFormat: "Media: {point.y:.1f}"
+						},
+						startAngle: -90,
+						endAngle: 90,
+						data: [
+							{
+								name: "{{grupo.nombre}} | Cuestionario",
+								y: {{respuestas_grupo(tutoria_id)[1]}},
+								color: "#ffd54f"
+							}, {
+								name: "{{grupo.nombre}} | Cuestionario Sin alcanzar",
+								y: {{10-respuestas_grupo(tutoria_id)[1]}},
+								color: "#f5f5f5",
+								states: {
+									hover: {
+										brightness: -0.3
+									}
+								}
+							}
+						]
+					},
+				{% endif %}
+				{% if respuestas_tutoria_media(tutoria_id)!='sin_notas' %}
+					{
+						type: "pie",
+						size: "93%",
+						innerSize: "75%",
+						tooltip: {
+							pointFormat: "Media: {point.y:.1f}"
+						},
+						startAngle: -90,
+						endAngle: 90,
+						data: [
+							{
+								name: "{{alumno.nombre}} | Cuestionario",
+								y: {{respuestas_tutoria_media(tutoria_id)}},
+								color: "#ffa000"
+							}, {
+								name: "{{alumno.nombre}} | Cuestionario Sin alcanzar",
+								y: {{10-respuestas_tutoria_media(tutoria_id)}},
+								color: "#f5f5f5",
+								states: {
+									hover: {
+										brightness: -0.3
+									}
+								}
+							}
+						]
+					}
+				{% endif %}
+			]
+		});
+	</script>
+{% endmacro %}
+{% macro highcharts_asignaturas(char_id, color_1, color_2, grupo, tutoria_id) %}
+	<div id="{{char_id | safe}}" class="chart" style="height: 300px"></div>
+	<script>
+		Highcharts.chart("{{char_id | safe }}", {
+			chart: {
+				zoomType: "x",
+				panning: true,
+				panKey: "shift"
+			},
+			title: {
+				text: null
+			},
+			tooltip: {
+				shared: false,
+				formatter: function () {
+					var text = "";
+					var cuestiones_lista = {{preguntas_con_respuesta_by_tutoria_id(tutoria_id)[1] | safe}};
+					var cuestion = this.series.name;
+					if (this.series.type == "column" && cuestiones_lista.indexOf(cuestion) >= 0) {
+						text = this.x + " | Cuestionario | Media: " + Highcharts.numberFormat(this.total, 1) + "<br>" + this.series.name + ": " + Highcharts.numberFormat(this.y * {{preguntas_con_respuesta_by_tutoria_id(tutoria_id)[1] | count }}, 1);
+					} else if (this.series.type == "column") {
+						text = this.x + " | Notas | Media: " + Highcharts.numberFormat(this.y, 1) + "<br>" + this.series.name;
+					} else {
+						text = this.x + " | " + this.series.name + ": " + Highcharts.numberFormat(this.y, 1);
+					}
+					return text;
+				}
+			},
+			xAxis: {
+				crosshair: {
+					width: 1,
+					color: "#343a40"
+				},
+				categories: {{asignaturas_con_respuesta_by_tutoria_id(tutoria_id)[1] | safe}}
+			},
+			yAxis: {
+				gridLineColor: Highcharts.getOptions().colors_gray["gray-500"],
+				plotBands: [
+					{
+						color: Highcharts.getOptions().colors_gray["gray-200"],
+						from: 0,
+						to: 5
+					}
+				],
+				max: 10,
+				min: 1,
+				title: {
+					text: "Media"
+				}
+			},
+			plotOptions: {
+				column: {
+					grouping: false
+				}
+			},
+			series: [
+				{% for pregunta in preguntas_con_respuesta_by_tutoria_id(tutoria_id)[0] %}
+					{
+						type: "column",
+						stack: "cuestion",
+						stacking: "normal",
+						showInLegend: false,
+						maxPointWidth: 50,
+						color: "{{color_1}}",
+						name: "{{pregunta.enunciado}}",
+						data: {{respuestas_asignatura_alumno_spline(tutoria_id, pregunta.id)[1] | safe}}
+					},
+				{% endfor %}
+				{% for asignatura in asignaturas_con_respuesta_by_tutoria_id(tutoria_id)[0] %}
+					{
+						type: "column",
+						maxPointWidth: 20,
+						// FIXME posible problema con las comillas en la siguiente linea
+						name: "Notas({{pruebas_evaluables_asignatura_spline(tutoria_id, asignatura.id)[0] | count}}):  {{pruebas_evaluables_asignatura_spline(tutoria_id, asignatura.id)[2] | replace("(", "") | replace("''", "'X_X_X'") | replace(",", "") | replace(") ", " | ") | replace(")", " ") | replace("'X_X_X'", " ") | safe}}",
+						data: [
+							{
+								x: {{loop.index}}-1,
+								y:{% if pruebas_evaluables_asignatura_spline(tutoria_id, asignatura.id)[1] != "sin_notas" %}
+									{% if pruebas_evaluables_asignatura_spline(tutoria_id, asignatura.id)[0]|sum !=0 %}
+										{{pruebas_evaluables_asignatura_spline(tutoria_id, asignatura.id)[1] | safe}}
+									{% else %}
+										1
+									{% endif %}
+								{% else %}
+									["sin_notas"]
+								{% endif %}
+							}
+						],
+						{% if pruebas_evaluables_asignatura_spline(tutoria_id, asignatura.id)[0]|sum !=0 %}
+							color: "{{color_2}}"
+						{% else %}
+							color: "#26c6da"
+						{% endif %},
+						showInLegend: false
+					},
+				{% endfor %}
+				{
+					type: "areaspline",
+					name: "{{grupo.nombre}} | Media",
+					data: {{respuestas_grupo(tutoria_id)[2]}},
+					// data:[1,1],
+					color: "#424242",
+					fillOpacity: 0.25,
+					// lineWidth: 2,
+					visible: false,
+					marker: {
+						fillColor: "#fff",
+						// radius: 4,
+						lineWidth: 2,
+						lineColor: null // inherit from series
+					}
+				}{% for pregunta in preguntas_con_respuesta_by_tutoria_id(tutoria_id)[0] %}, {
+						type: "spline",
+						name: "{{pregunta.enunciado_ticker}}",
+						data: {{respuestas_asignatura_alumno_spline(tutoria_id, pregunta.id)[0]}},
+						// color: "#26c6da",
+						visible: false,
+						marker: {
+							fillColor: "#fff",
+							lineWidth: 2,
+							lineColor: null // inherit from series
+						},
+						shadow: {
+							color: "#616161",
+							width: 3,
+							offsetX: 2,
+							offsetY: 2
+						}
+					}
+				{% endfor %}
+			]
+		});
+	</script>
+{% endmacro %}
+{% macro highcharts_cuestionario(char_id, color, grupo, tutoria_id) %}
+	<div id="{{char_id | safe}}" class="chart" style="height: 300px"></div>
+	<script>
+		Highcharts.chart("{{char_id | safe }}", {
+			chart: {
+				zoomType: "x",
+				panning: true,
+				panKey: "shift"
+			},
+			title: {
+				text: null
+			},
+			tooltip: {
+				shared: false,
+				formatter: function () {
+					var text = "";
+					if (this.series.type == "column") {
+						text = this.x + " | Media: " + Highcharts.numberFormat(this.total, 1) + "<br>" + this.series.name + ": " + Highcharts.numberFormat(this.y * {{asignaturas_con_respuesta_by_tutoria_id(tutoria_id)[1]|count}}, 1);
+					} else {
+						text = this.x + "<br>" + this.series.name + ": " + Highcharts.numberFormat(this.y, 1);
+					}
+					return text;
+				}
+			},
+			xAxis: {
+				crosshair: {
+					width: 1,
+					color: "#bdbdbd"
+				},
+				categories: {{preguntas_con_respuesta_by_tutoria_id(tutoria_id)[1] | safe}}
+			},
+			yAxis: {
+				gridLineColor: Highcharts.getOptions().colors_gray["gray-500"],
+				plotBands: [
+					{
+						color: Highcharts.getOptions().colors_gray["gray-200"],
+						from: 0,
+						to: 5
+					}
+				],
+				max: 10,
+				min: 1,
+				title: {
+					text: "Media"
+				}
+			},
+			series: [
+				{% for asignatura in asignaturas_con_respuesta_by_tutoria_id(tutoria_id)[0] %}
+					{
+						type: "column",
+						stacking: "normal",
+						showInLegend: false,
+						maxPointWidth: 50,
+						animation: {
+							duration: 2000
+						},
+						tooltip: {
+							pointFormat: "{{asignatura.asignatura}}"
+						},
+						color: "{{color}}",
+						name: "{{asignatura.asignatura}}",
+						data: {{respuestas_pregunta_alumno_spline(tutoria_id, asignatura.id)[1] | safe}}
+					},
+				{% endfor %}
+				{
+					type: "areaspline",
+					name: "{{grupo.nombre}} | Media",
+					data: {{respuestas_grupo(tutoria_id)[0] | safe}},
+					color: "#424242",
+					fillOpacity: 0.25,
+					// lineWidth: 2,
+					visible: false,
+					marker: {
+						fillColor: "#e0e0e0", //"{{color}}",
+						// radius: 4,
+						lineWidth: 2,
+						lineColor: null // inherit from series
+					}
+					// ,shadow: { 	color: "#616161", 	width: 3, 	offsetX: 2, 	offsetY: 2 }
+				}{% for asignatura in asignaturas_con_respuesta_by_tutoria_id(tutoria_id)[0] %}, {
+						type: "spline",
+						name: "{{asignatura.asignatura}}",
+						data: {{respuestas_pregunta_alumno_spline(tutoria_id, asignatura.id)[0] | safe}},
+						// color: "#26c6da",
+						visible: false,
+						marker: {
+							fillColor: "#fff",
+							lineWidth: 2,
+							lineColor: null
+						},
+						shadow: {
+							color: "#616161",
+							width: 3,
+							offsetX: 2,
+							offsetY: 2
+						}
+					}
+				{% endfor %}
+			]
+		});
+	</script>
+{% endmacro %}
 {% macro nav_tabs_admin(tab_active, params_args) %}
 	{{nav_tabs(tab_active, params_args=params_args, dic={'Cuestiones':'admin_cuestionario', 'Citas':'admin_citas', 'Users':'admin_usuarios', 'Stats':'admin_estadisticas'})}}
 {% endmacro %}
@@ -51,7 +692,6 @@
 	</nav>
 {% endmacro %}
 {% macro highcharts_salud_tutores_equipo_educativo(char_id, color, df_data_1, df_data_2, stats) %}
-	{% set alumno_id = 5 %}
 	<div id="{{char_id | safe}}" class="chart" style="height: 200px"></div>
 	<script>
 		Highcharts.chart("{{char_id | safe }}", {
@@ -242,268 +882,6 @@
 		});
 	</script>
 {% endmacro %}
-{% macro highcharts_asignatura(char_id, asignatura, alumno, grupo, df_data, tutoria_id) %}
-	{% set alumno_id = alumno.id %}
-	<div id="{{char_id | safe}}" class="chart" style="height: 200px"></div>
-	<script>
-		Highcharts.chart("{{char_id | safe }}", {
-			chart: {
-				plotBackgroundColor: null,
-				plotBorderWidth: 0,
-				plotShadow: false,
-				marginBottom: -130,
-				spacingBottom: 20
-			},
-			title: null,
-			plotOptions: {
-				pie: {
-					dataLabels: {
-						enabled: null
-					}
-				},
-				series: {
-					states: {
-						hover: {
-							halo: {
-								size: 0
-							}
-						}
-					}
-				}
-			},
-			series: [
-				{% if notas_asignatura_grupo(df_data, asignatura, alumno_id) != "sin_notas" %}
-					{
-						type: "pie",
-						size: "32%",
-						innerSize: "55%",
-						tooltip: {
-							pointFormat: "Media: {point.y:.1f}"
-						},
-						startAngle: -90,
-						endAngle: 90,
-						data: [
-							{
-								name: "{{grupo.nombre}} | {{asignatura}} | Notas",
-								y:{% if notas_asignatura_grupo(df_data, asignatura, alumno_id) !=0 %}
-									{{notas_asignatura_grupo(df_data, asignatura, alumno_id)}}
-								{% else %}
-									1
-								{% endif %},
-								{% if notas_asignatura_grupo(df_data, asignatura, alumno_id) !=0 %}
-									color: "#e1bee7"
-								{% else %}
-									color: "#80deea"
-								{% endif %}
-							}, {
-								name: "{{grupo.nombre}} | {{asignatura}} | Notas | Sin alcanzar",
-								y: 10 -{% if notas_asignatura_grupo(df_data, asignatura, alumno_id) !=0 %}
-									{{notas_asignatura_grupo(df_data, asignatura, alumno_id)}}
-								{% else %}
-									1
-								{% endif %},
-								color: "#f5f5f5",
-								states: {
-									hover: {
-										brightness: -0.3
-									}
-								}
-							}
-						]
-					},
-				{% else %}
-					{
-						type: "pie",
-						size: "32%",
-						innerSize: "55%",
-						tooltip: {
-							pointFormat: "Sin pruebas evaluables"
-						},
-						startAngle: -90,
-						endAngle: 90,
-						data: [
-							{
-								name: "{{grupo.nombre}} | {{asignatura}}",
-								y: 100,
-								color: "#f5f5f5"
-							}
-						]
-					},
-				{% endif %}
-				{% if notas_asignatura(df_data, tutoria_id, asignatura)[1] != "sin_notas" %}
-					{
-						type: "pie",
-						size: "25%",
-						innerSize: "55%",
-						tooltip: {
-							pointFormat: "Media: {point.y:.1f}<br>Notas({{notas_asignatura(df_data, tutoria_id, asignatura)[0] | count}}): {{notas_asignatura(df_data, tutoria_id, asignatura)[0] | safe}}"
-						},
-						startAngle: -90,
-						endAngle: 90,
-						data: [
-							{
-								name: "{{alumno.nombre}} | {{asignatura}} | Notas",
-								y:{% if notas_asignatura(df_data, tutoria_id, asignatura)[0]|sum !=0 %}
-									{{notas_asignatura(df_data, tutoria_id, asignatura)[1] | safe}}
-								{% else %}
-									1
-								{% endif %},
-								{% if notas_asignatura(df_data, tutoria_id, asignatura)[0]|sum !=0 %}
-									color: "#ba68c8"
-								{% else %}
-									color: "#26c6da"
-								{% endif %}
-							}, {
-								name: "{{alumno.nombre}} | {{asignatura}} | Notas | Sin alcanzar",
-								y: 10 -{% if notas_asignatura(df_data, tutoria_id, asignatura)[0]|sum !=0 %}
-									{{notas_asignatura(df_data, tutoria_id, asignatura)[1] | safe}}
-								{% else %}
-									1
-								{% endif %},
-								color: "#f5f5f5",
-								states: {
-									hover: {
-										brightness: -0.3
-									}
-								}
-							}
-						]
-					},
-				{% else %}
-					{
-						type: "pie",
-						size: "25%",
-						innerSize: "55%",
-						tooltip: {
-							pointFormat: "Sin pruebas evaluables"
-						},
-						startAngle: -90,
-						endAngle: 90,
-						data: [
-							{
-								name: "{{alumno.nombre}} | {{asignatura}}",
-								y: 100,
-								color: "#f5f5f5"
-							}
-						]
-					},
-				{% endif %}
-				{% if df_analisis_asignatura(df_data,tutoria_id, asignatura, alumno_id)[2] %}
-					{
-						type: "pie",
-						size: "65%",
-						innerSize: "75%",
-						tooltip: {
-							pointFormat: "Media: {point.y:.1f}"
-						},
-						startAngle: -90,
-						endAngle: 90,
-						data: [
-							{
-								name: "{{grupo.nombre}} | Cuestionario | {{asignatura}}",
-								y: {{df_analisis_asignatura(df_data,tutoria_id, asignatura, alumno_id)[2]}},
-								color: "#f48fb1"
-							}, {
-								name: "{{grupo.nombre}} | Cuestionario | {{asignatura}} | Sin alcanzar",
-								y: {{10-df_analisis_asignatura(df_data, tutoria_id, asignatura, alumno_id)[2]}},
-								color: "#f5f5f5",
-								states: {
-									hover: {
-										brightness: -0.3
-									}
-								}
-							}
-						]
-					},
-				{% endif %}
-				{% if df_analisis_asignatura(df_data, tutoria_id, asignatura, alumno_id)[3] %}
-					{
-						type: "pie",
-						size: "58%",
-						innerSize: "65%",
-						tooltip: {
-							pointFormat: "Media: {point.y:.1f}"
-						},
-						startAngle: -90,
-						endAngle: 90,
-						data: [
-							{
-								name: "{{alumno.nombre}} | Cuestionario | {{asignatura}}",
-								y: {{df_analisis_asignatura(df_data, tutoria_id, asignatura,alumno_id)[3]}},
-								color: "#ec407a"
-							}, {
-								name: "{{alumno.nombre}} | Cuestionario | {{asignatura}} | Sin alcanzar",
-								y: {{10-df_analisis_asignatura(df_data, tutoria_id, asignatura,alumno_id)[3]}},
-								color: "#f5f5f5",
-								states: {
-									hover: {
-										brightness: -0.3
-									}
-								}
-							}
-						]
-					},
-				{% endif %}
-				{% if df_analisis_asignatura(df_data, tutoria_id, asignatura, alumno_id)[0] %}
-					{
-						type: "pie",
-						size: "100%",
-						innerSize: "75%",
-						tooltip: {
-							pointFormat: "Media: {point.y:.1f}"
-						},
-						startAngle: -90,
-						endAngle: 90,
-						data: [
-							{
-								name: "{{grupo.nombre}} | Cuestionario",
-								y: {{df_analisis_asignatura(df_data, tutoria_id, asignatura,alumno_id)[0]}},
-								color: "#ffd54f"
-							}, {
-								name: "{{grupo.nombre}} | Cuestionario Sin alcanzar",
-								y: {{10-df_analisis_asignatura(df_data, tutoria_id, asignatura,alumno_id)[0]}},
-								color: "#f5f5f5",
-								states: {
-									hover: {
-										brightness: -0.3
-									}
-								}
-							}
-						]
-					},
-				{% endif %}
-				{% if df_analisis_asignatura(df_data, tutoria_id, asignatura,alumno_id)[1] %}
-					{
-						type: "pie",
-						size: "93%",
-						innerSize: "75%",
-						tooltip: {
-							pointFormat: "Media: {point.y:.1f}"
-						},
-						startAngle: -90,
-						endAngle: 90,
-						data: [
-							{
-								name: "{{alumno.nombre}} | Cuestionario",
-								y: {{df_analisis_asignatura(df_data, tutoria_id, asignatura, alumno_id)[1]}},
-								color: "#ffa000"
-							}, {
-								name: "{{alumno.nombre}} | Cuestionario Sin alcanzar",
-								y: {{10-df_analisis_asignatura(df_data, tutoria_id, asignatura, alumno_id)[1]}},
-								color: "#f5f5f5",
-								states: {
-									hover: {
-										brightness: -0.3
-									}
-								}
-							}
-						]
-					}
-				{% endif %}
-			]
-		});
-	</script>
-{% endmacro %}
 {% macro highcharts_admin_cuestionario_actividad(char_id, color, df_data) %}
 	<div id="{{char_id | safe}}" class="chart" style="height: 300px"></div>
 	<script>
@@ -562,148 +940,7 @@
 		});
 	</script>
 {% endmacro %}
-{% macro highcharts_evalucion(char_id, color_1, color_2, df_data, grupo, alumno) %}
-	<div id="{{char_id | safe}}" class="chart" style="height: 300px"></div>
-	<script>
-		Highcharts.stockChart("{{char_id | safe }}", {
-			title: {
-				text: null
-			},
-			scrollbar: {
-				barBackgroundColor: "#212529",
-				barBorderRadius: 7,
-				barBorderWidth: 0,
-				buttonBackgroundColor: "#212529",
-				buttonBorderWidth: 0,
-				buttonBorderRadius: 7,
-				trackBackgroundColor: "#212529", //"none",
-				trackBorderWidth: 1,
-				trackBorderRadius: 8,
-				trackBorderColor: "#212529",
-				enabled: false,
-				showFull: true
-			},
-			navigator: {
-				enabled: false
-			},
-			rangeSelector: {
-				allButtonsEnabled: false,
-				buttons: [
-					{
-						type: "all",
-						text: "todo"
-					}
-				],
-				selected: 1,
-				inputEnabled: false
-			},
-			tooltip: {
-				shared: false
-			},
-			xAxis: {
-				type: "datetime",
-				startOfWeek: 2,
-				dateTimeLabelFormats: {
-					second: "%Y-%m-%d<br/>%H:%M:%S",
-					minute: "%Y-%m-%d<br/>%H:%M",
-					hour: "%Y-%m-%d<br/>%H:%M",
-					day: "%d-%m",
-					week: "%d-%m",
-					month: "%m-%Y",
-					year: "%Y"
-				}
-			},
-			yAxis: {
-				gridLineColor: Highcharts.getOptions().colors_gray["gray-500"],
-				plotBands: [
-					{
-						color: Highcharts.getOptions().colors_gray["gray-200"],
-						from: 0,
-						to: 5
-					}
-				],
-				floor: 0,
-				ceiling: 10,
-				title: {
-					text: "Media"
-				},
-				opposite: false
-			},
-			legend: {
-				enabled: true
-			},
-			plotOptions: {
-				series: {
-					pointIntervalUnit: "week"
-				},
-				column: {
-					grouping: false
-				}
-			},
-			series: [
-				{
-					type: "column",
-					name: "{{alumno.nombre}} | Cuestionario",
-					color: "{{color_1}}",
-					maxPointWidth: 50,
-					showInLegend: false,
-					borderWidth: 1,
-					animation: {
-						duration: 2000
-					},
-					data: {{df_evolucion(df_data,alumno.id)[1]}},
-					tooltip: {
-						valueDecimals: 2
-					},
-					fillOpacity: 0.25,
-					marker: {
-						fillColor: "#fff",
-						lineWidth: 2,
-						lineColor: null
-					}
-				}, {
-					type: "column",
-					name: "{{alumno.nombre}} | Notas",
-					color: "{{color_2}}",
-					maxPointWidth: 20,
-					showInLegend: false,
-					borderWidth: 1,
-					animation: {
-						duration: 2000
-					},
-					data: {{df_evolucion_notas(alumno.id)|safe}},
-					tooltip: {
-						valueDecimals: 2
-					},
-					fillOpacity: 0.25,
-					marker: {
-						fillColor: "#fff",
-						lineWidth: 2,
-						lineColor: null // inherit from series
-					}
-				}, {
-					type: "areaspline",
-					name: "{{grupo.nombre}} | Cuestionario",
-					animation: {
-						duration: 2000
-					},
-					color: "#424242",
-					data: {{df_evolucion(df_data,alumno.id)[0]}},
-					tooltip: {
-						valueDecimals: 2
-					},
-					fillOpacity: 0.25,
-					visible: false,
-					marker: {
-						fillColor: "#dee2e6",
-						lineWidth: 2,
-						lineColor: null // inherit from series
-					}
-				}
-			]
-		});
-	</script>
-{% endmacro %}
+
 {% macro highcharts_admin_profesores_activos_evolucion_frecuencia(char_id, color, df_data) %}
 	<div id="{{char_id | safe}}" class="chart" style="height: 300px"></div>
 	<script>
@@ -767,241 +1004,6 @@
 						offsetY: 2
 					}
 				}
-			]
-		});
-	</script>
-{% endmacro %}
-{% macro highcharts_cuestionario(char_id, color, df_data, grupo, alumno_id, tutoria_id) %}
-	<div id="{{char_id | safe}}" class="chart" style="height: 300px"></div>
-	<script>
-		Highcharts.chart("{{char_id | safe }}", {
-			chart: {
-				zoomType: "x",
-				panning: true,
-				panKey: "shift"
-			},
-			title: {
-				text: null
-			},
-			tooltip: {
-				shared: false,
-				formatter: function () {
-					var text = "";
-					if (this.series.type == "column") {
-						text = this.x + " | Media: " + Highcharts.numberFormat(this.total, 1) + "<br>" + this.series.name + ": " + Highcharts.numberFormat(this.y * {{df_asignaturas_lista(df_data, tutoria_id) | count }}, 1);
-					} else {
-						text = this.x + "<br>" + this.series.name + ": " + Highcharts.numberFormat(this.y, 1);
-					}
-					return text;
-				}
-			},
-			xAxis: {
-				crosshair: {
-					width: 1,
-					color: "#bdbdbd"
-				},
-				categories: {{df_cuestiones_lista(df_data, tutoria_id) | safe}}
-			},
-			yAxis: {
-				gridLineColor: Highcharts.getOptions().colors_gray["gray-500"],
-				plotBands: [
-					{
-						color: Highcharts.getOptions().colors_gray["gray-200"],
-						from: 0,
-						to: 5
-					}
-				],
-				max: 10,
-				min: 1,
-				title: {
-					text: "Media"
-				}
-			},
-			series: [
-				{% for asignatura in df_asignaturas_lista(df_data, tutoria_id) %}
-					{
-						type: "column",
-						stacking: "normal",
-						showInLegend: false,
-						maxPointWidth: 50,
-						animation: {
-							duration: 2000
-						},
-						tooltip: {
-							pointFormat: "{{asignatura}}"
-						},
-						color: "{{color}}",
-						name: "{{asignatura}}",
-						data: {{df_cuestion_stacked(df_data, tutoria_id, asignatura)[0]}}
-					},
-				{% endfor %}
-				{
-					type: "areaspline",
-					name: "{{grupo.nombre}} | Media",
-					data: {{df_cuestion_grupo_spline(df_data, tutoria_id, alumno_id)}},
-					color: "#424242",
-					fillOpacity: 0.25,
-					// lineWidth: 2,
-					visible: false,
-					marker: {
-						fillColor: "#e0e0e0", //"{{color}}",
-						// radius: 4,
-						lineWidth: 2,
-						lineColor: null // inherit from series
-					}
-					// ,shadow: { 	color: "#616161", 	width: 3, 	offsetX: 2, 	offsetY: 2 }
-				}{% for asignatura in df_asignaturas_lista(df_data, tutoria_id) %}, {
-						type: "spline",
-						name: "{{asignatura}}",
-						data: {{df_cuestion_stacked(df_data, tutoria_id, asignatura)[1]}},
-						// color: "#26c6da",
-						visible: false,
-						marker: {
-							fillColor: "#fff",
-							lineWidth: 2,
-							lineColor: null
-						},
-						shadow: {
-							color: "#616161",
-							width: 3,
-							offsetX: 2,
-							offsetY: 2
-						}
-					}
-				{% endfor %}
-			]
-		});
-	</script>
-{% endmacro %}
-{% macro highcharts_asignaturas(char_id, color_1, color_2, df_data, grupo, tutoria_id, alumno_id) %}
-	<div id="{{char_id | safe}}" class="chart" style="height: 300px"></div>
-	<script>
-		Highcharts.chart("{{char_id | safe }}", {
-			chart: {
-				zoomType: "x",
-				panning: true,
-				panKey: "shift"
-			},
-			title: {
-				text: null
-			},
-			tooltip: {
-				shared: false,
-				formatter: function () {
-					var text = "";
-					var cuestiones_lista = {{df_cuestiones_lista(df_data, tutoria_id)|safe}};
-					var cuestion = this.series.name;
-					if (this.series.type == "column" && cuestiones_lista.indexOf(cuestion) >= 0) {
-						text = this.x + " | Cuestionario | Media: " + Highcharts.numberFormat(this.total, 1) + "<br>" + this.series.name + ": " + Highcharts.numberFormat(this.y * {{df_cuestiones_lista(df_data, tutoria_id) | count }}, 1);
-					} else if (this.series.type == "column") {
-						text = this.x + " | Notas | Media: " + Highcharts.numberFormat(this.y, 1) + "<br>" + this.series.name;
-					} else {
-						text = this.x + " | " + this.series.name + ": " + Highcharts.numberFormat(this.y, 1);
-					}
-					return text;
-				}
-			},
-			xAxis: {
-				crosshair: {
-					width: 1,
-					color: "#343a40"
-				},
-				categories: {{df_asignaturas_lista(df_data, tutoria_id)|safe}}
-			},
-			yAxis: {
-				gridLineColor: Highcharts.getOptions().colors_gray["gray-500"],
-				plotBands: [
-					{
-						color: Highcharts.getOptions().colors_gray["gray-200"],
-						from: 0,
-						to: 5
-					}
-				],
-				max: 10,
-				min: 1,
-				title: {
-					text: "Media"
-				}
-			},
-			plotOptions: {
-				column: {
-					grouping: false
-				}
-			},
-			series: [
-				{% for cuestion in df_cuestiones_lista(df_data, tutoria_id) %}
-					{
-						type: "column",
-						stack: "cuestion",
-						stacking: "normal",
-						showInLegend: false,
-						maxPointWidth: 50,
-						color: "{{color_1}}",
-						name: "{{cuestion}}",
-						data: {{df_asignatura_stacked(df_data, tutoria_id, cuestion)[0]}}
-					},
-				{% endfor %}
-				{% for asignatura in df_asignaturas_lista(df_data, tutoria_id) %}
-					{
-						type: "column",
-						maxPointWidth: 20,
-						// FIXME posible problema con las comillas en la siguiente linea
-						name: "Notas({{notas_asignatura(df_data, tutoria_id, asignatura)[0] | count}}): {{notas_asignatura(df_data, tutoria_id, asignatura)[0] |replace(",", " |") | safe}}",
-						data: [
-							{
-								x: {{loop.index}}-1,
-								y:{% if notas_asignatura(df_data, tutoria_id, asignatura)[1] != "sin_notas" %}
-									{% if notas_asignatura(df_data, tutoria_id, asignatura)[0]|sum !=0 %}
-										{{notas_asignatura(df_data, tutoria_id, asignatura)[1] | safe}}
-									{% else %}
-										1
-									{% endif %}
-								{% else %}
-									["sin_notas"]
-								{% endif %}
-							}
-						],
-						{% if notas_asignatura(df_data, tutoria_id, asignatura)[0]|sum !=0 %}
-							color: "{{color_2}}"
-						{% else %}
-							color: "#26c6da"
-						{% endif %},
-						showInLegend: false
-					},
-				{% endfor %}
-				{
-					type: "areaspline",
-					name: "{{grupo.nombre}} | Media",
-					data: {{df_asignatura_grupo_spline(df_data, tutoria_id, alumno_id)}},
-					color: "#424242",
-					fillOpacity: 0.25,
-					// lineWidth: 2,
-					visible: false,
-					marker: {
-						fillColor: "#fff",
-						// radius: 4,
-						lineWidth: 2,
-						lineColor: null // inherit from series
-					}
-				}{% for cuestion in df_cuestiones_lista(df_data, tutoria_id) %}, {
-						type: "spline",
-						name: "{{cuestion}}",
-						data: {{df_asignatura_stacked(df_data, tutoria_id, cuestion)[1]}},
-						// color: "#26c6da",
-						visible: false,
-						marker: {
-							fillColor: "#fff",
-							lineWidth: 2,
-							lineColor: null // inherit from series
-						},
-						shadow: {
-							color: "#616161",
-							width: 3,
-							offsetX: 2,
-							offsetY: 2
-						}
-					}
-				{% endfor %}
 			]
 		});
 	</script>

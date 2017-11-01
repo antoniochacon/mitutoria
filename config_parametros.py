@@ -11,7 +11,6 @@ from forms import *
 import csv
 # ****************************************
 # XXX: google api
-# import httplib2
 import httplib2
 from apiclient import errors, discovery
 from oauth2client import client
@@ -25,9 +24,6 @@ import arrow
 utc = arrow.utcnow()
 # ****************************************
 from statistics import mean, mode
-# from decimal import Decimal
-# ****************************************
-import pandas as pd
 # ****************************************
 import base64
 from cryptography.fernet import Fernet

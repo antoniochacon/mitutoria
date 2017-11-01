@@ -905,9 +905,9 @@ def admin_cuestionario_html(params={}):
                         categoria_add_form.orden.errors = ['']
                         flash_toast('Orden duplicado', 'warning')
                     return render_template('admin_cuestionario.html',
-                        categoria_add=categoria_add_form, categoria_edit=Categoria_Add(),
-                        pregunta_add=Pregunta_Add(), pregunta_edit=Pregunta_Add(),
-                        params=params)
+                                           categoria_add=categoria_add_form, categoria_edit=Categoria_Add(),
+                                           pregunta_add=Pregunta_Add(), pregunta_edit=Pregunta_Add(),
+                                           params=params)
                 else:
                     session_sql.add(categoria_add)
                     session_sql.commit()
@@ -917,8 +917,8 @@ def admin_cuestionario_html(params={}):
                 params['collapse_categoria_add'] = True
                 flash_wtforms(categoria_add_form, flash_toast, 'warning')
             return render_template('admin_cuestionario.html',
-                categoria_add=categoria_add_form,categoria_edit=Categoria_Add(),
-                pregunta_add=Pregunta_Add(), pregunta_edit=Pregunta_Add(), params=params)
+                                   categoria_add=categoria_add_form, categoria_edit=Categoria_Add(),
+                                   pregunta_add=Pregunta_Add(), pregunta_edit=Pregunta_Add(), params=params)
 
         # XXX selector_categoria_add_close
         if request.form['selector_button'] == 'selector_categoria_add_close':
@@ -1259,7 +1259,7 @@ def analisis_html(params={}):
         abort(404)
     params = {}
     params['current_tutoria_id'] = params_old.get('current_tutoria_id', 0)
-    current_tutoria_id = params['current_tutoria_id']  # NOTE current_tutoria_id evaluado correctamente
+    current_tutoria_id = params['current_tutoria_id']
     params['tutoria_delete_link'] = params_old.get('tutoria_delete_link', False)
     params['tutoria_re_enviar_link'] = params_old.get('tutoria_re_enviar_link', False)
     params['tutoria_edit_link'] = params_old.get('tutoria_edit_link', False)
@@ -1270,13 +1270,8 @@ def analisis_html(params={}):
     if not tutoria_sql or not alumno_sql:
         return redirect(url_for('analisis_tutoria_no_disponible_html'))
 
-    df_data = df_load()
-    # print(df_data)
-
-    # abort(404)
-    return render_template(
-        'analisis.html', grupo=grupo, alumno=alumno_sql, tutoria=tutoria_sql,
-        df_data=df_data, params=params)
+    return render_template('analisis.html',
+                           grupo=grupo, alumno=alumno_sql, tutoria=tutoria_sql, params=params)
 
 
 # XXX analisis_tutoria_edit
