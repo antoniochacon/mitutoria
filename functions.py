@@ -160,8 +160,7 @@ def respuestas_pregunta_alumno_spline(tutoria_id, asignatura_id):
         for respuesta in respuestas:
             if respuesta:
                 respuestas_pregunta_spline.append(int(respuesta.resultado))
-                respuestas_pregunta_stacked.append(int(respuesta.resultado) / len(asignaturas_con_respuesta_by_tutoria_id(tutoria_id)[1]))
-                # respuestas_pregunta_stacked.append(int(respuesta.resultado) / len(informes_recibidos_by_tutoria_id(tutoria_id)))
+                respuestas_pregunta_stacked.append(int(respuesta.resultado) / len(informes_recibidos_by_tutoria_id(tutoria_id)))
 
     if respuestas_pregunta_spline:
         respuestas_pregunta_media = round(mean(respuestas_pregunta_spline), 1)
@@ -189,13 +188,14 @@ def respuestas_asignatura_alumno_spline(tutoria_id, pregunta_id):
     respuestas_asignatura_stacked = []
     respuestas_asignatura_media = 'sin_notas'
     asignaturas = asignaturas_con_respuesta_by_tutoria_id(tutoria_id)[0]
+    preguntas = preguntas_con_respuesta_by_tutoria_id(tutoria_id)[0]
 
     for asignatura in asignaturas:
         respuestas = session_sql.query(Respuesta).join(Informe).join(Tutoria).filter(Respuesta.pregunta_id == pregunta_id, Informe.asignatura_id == asignatura.id, Informe.tutoria_id == tutoria_id).all()
         for respuesta in respuestas:
             if respuesta:
                 respuestas_asignatura_spline.append(int(respuesta.resultado))
-                respuestas_asignatura_stacked.append(int(respuesta.resultado) / len(asignaturas_con_respuesta_by_tutoria_id(tutoria_id)[0]))
+                respuestas_asignatura_stacked.append(int(respuesta.resultado) / len(preguntas_con_respuesta_by_tutoria_id(tutoria_id)[0]))
         if respuestas_asignatura_spline:
             respuestas_asignatura_media = round(mean(respuestas_asignatura_spline), 1)
     return respuestas_asignatura_spline, respuestas_asignatura_stacked, respuestas_asignatura_media
