@@ -422,7 +422,7 @@
 					var cuestiones_lista = {{preguntas_con_respuesta_by_tutoria_id(tutoria_id)[1] | safe}};
 					var cuestion = this.series.name;
 					if (this.series.type == "column" && cuestiones_lista.indexOf(cuestion) >= 0) {
-						text = this.x + " | Cuestionario | Media: " + Highcharts.numberFormat(this.total, 1) + "<br>" + this.series.name + ": " + Highcharts.numberFormat(this.y * {{preguntas_con_respuesta_by_tutoria_id(tutoria_id)[1] | count }}, 1);
+						text = this.x + " | Cuestionario | Media: " + Highcharts.numberFormat(this.total, 1) + "<br>" + this.series.name + ": " + Highcharts.numberFormat(this.y * {{ preguntas_con_respuesta_by_tutoria_id(tutoria_id)[0] | count }}, 1);
 					} else if (this.series.type == "column") {
 						text = this.x + " | Notas | Media: " + Highcharts.numberFormat(this.y, 1) + "<br>" + this.series.name;
 					} else {

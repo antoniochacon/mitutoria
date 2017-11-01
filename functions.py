@@ -168,21 +168,6 @@ def respuestas_pregunta_alumno_spline(tutoria_id, asignatura_id):
     return respuestas_pregunta_spline, respuestas_pregunta_stacked, respuestas_pregunta_media
 
 
-def pruebas_evaluables_asignatura_spline(tutoria_id, asignatura_id):
-    nota_pruebas_evaluables_asignatura_lista = []
-    pruebas_evaluables_nombre_asignatura_lista = []
-    nota_pruebas_evaluables_asignatura_media = 'sin_notas'
-    pruebas_evaluables = session_sql.query(Prueba_Evaluable).join(Informe).join(Tutoria).filter(Tutoria.id == tutoria_id, Informe.asignatura_id == asignatura_id).all()
-
-    for prueba_evaluable in pruebas_evaluables:
-        if prueba_evaluable:
-            nota_pruebas_evaluables_asignatura_lista.append(float(prueba_evaluable.nota))
-            pruebas_evaluables_nombre_asignatura_lista.append((prueba_evaluable.nombre, float(prueba_evaluable.nota)))
-    if nota_pruebas_evaluables_asignatura_lista:
-        nota_pruebas_evaluables_asignatura_media = round(mean(nota_pruebas_evaluables_asignatura_lista), 1)
-    return nota_pruebas_evaluables_asignatura_lista, nota_pruebas_evaluables_asignatura_media, pruebas_evaluables_nombre_asignatura_lista
-
-
 def respuestas_asignatura_alumno_spline(tutoria_id, pregunta_id):
     respuestas_asignatura_spline = []
     respuestas_asignatura_stacked = []
@@ -199,6 +184,21 @@ def respuestas_asignatura_alumno_spline(tutoria_id, pregunta_id):
         if respuestas_asignatura_spline:
             respuestas_asignatura_media = round(mean(respuestas_asignatura_spline), 1)
     return respuestas_asignatura_spline, respuestas_asignatura_stacked, respuestas_asignatura_media
+
+
+def pruebas_evaluables_asignatura_spline(tutoria_id, asignatura_id):
+    nota_pruebas_evaluables_asignatura_lista = []
+    pruebas_evaluables_nombre_asignatura_lista = []
+    nota_pruebas_evaluables_asignatura_media = 'sin_notas'
+    pruebas_evaluables = session_sql.query(Prueba_Evaluable).join(Informe).join(Tutoria).filter(Tutoria.id == tutoria_id, Informe.asignatura_id == asignatura_id).all()
+
+    for prueba_evaluable in pruebas_evaluables:
+        if prueba_evaluable:
+            nota_pruebas_evaluables_asignatura_lista.append(float(prueba_evaluable.nota))
+            pruebas_evaluables_nombre_asignatura_lista.append((prueba_evaluable.nombre, float(prueba_evaluable.nota)))
+    if nota_pruebas_evaluables_asignatura_lista:
+        nota_pruebas_evaluables_asignatura_media = round(mean(nota_pruebas_evaluables_asignatura_lista), 1)
+    return nota_pruebas_evaluables_asignatura_lista, nota_pruebas_evaluables_asignatura_media, pruebas_evaluables_nombre_asignatura_lista
 
 
 def asignaturas_by_tutoria_id(tutoria_id):
