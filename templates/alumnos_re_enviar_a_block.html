@@ -1,6 +1,6 @@
 <a data-toggle="collapse" href="#asignatura_pick_temporal_re_enviar{{alumno.id}}" class="list-group-item-2" aria-expanded="false">
 	<i class="material-icons vertical-center">expand_more</i>Enviar a:
-	<span class="badge tag-pill badge tag-pill-info">{{ asignaturas_alumno_by_alumno_id_id(alumno.id) | count}}/{{asignaturas('apellidos', 'nombre', 'asignatura') | count}}</span>
+	<span class="badge tag-pill badge tag-pill-info">{{ alumno_asignaturas_id(alumno.id) | count}}/{{asignaturas('apellidos', 'nombre', 'asignatura') | count}}</span>
 </a>
 <div id="asignatura_pick_temporal_re_enviar{{alumno.id}}" class="collapse {% if equal_str(alumno.id, params['current_alumno_id']) and params['collapse_tutoria_add'] and params['collapse_tutoria_add_enviar_a']%} show {% endif %}">
 	<div class="card_XXX">

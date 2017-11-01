@@ -1,7 +1,7 @@
 <div class="list_group_item_1 pt-3">
 	Selecciona las asignaturas a las que reenviar esta tutoría:
 	{# NOTE badge #}
-	<span class="badge badge-mutted float-right">{{ stats['asignaturas_alumno'] }}/{{asignaturas('apellidos', 'nombre', 'asignatura') | count}}</span>
+	<span class="badge badge-mutted float-right">{{ alumno_asignaturas_id(alumno.id) | count }}/{{asignaturas('apellidos', 'nombre', 'asignatura') | count}}</span>
 </div>
 <div class="padding_contenido">
 	{% if not asignaturas('asignatura', 'nombre', 'apellidos') %}
