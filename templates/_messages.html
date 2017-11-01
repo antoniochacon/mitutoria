@@ -1,0 +1,61 @@
+{#TODO: invocados por flash_toast #}
+{% with messages = get_flashed_messages(category_filter = ['success', 'info', 'warning']) %}
+{% if messages %}
+	{% for message in messages %}
+		{{message}}
+		{%endfor%}
+	{% endif %}
+	{%endwith%}
+	{#TODO: invocado por flash #}
+	{% with messages = get_flashed_messages(category_filter = ['error']) %}
+	{% if messages %}
+		{% for message in messages %}
+			<div id="toast-container" class="toast-top-right">
+				<div class="toast-error alert fade in" data-dismiss="alert">
+					{{message}}
+				</div>
+			</div>
+			{%endfor%}
+		{% endif %}
+		{%endwith%}
+		{#TODO: invocado por flash #}
+		{% with messages = get_flashed_messages(category_filter = ['error_tutoria_ya_existe']) %}
+		{% if messages %}
+			{% for message in messages %}
+				<div id="toast-container" class="toast-top-right">
+					<div class="toast-error alert fade in text-center">
+						{{message}}<br>
+						<form action="/alumnos" method="POST">
+							<input type="hidden" name="current_alumno_id" value={{tutoria_add.current_alumno_id.data}}>
+							<input type="hidden" name="tutoria_id" value={{tutoria.id}}>
+							{% for asignatura_id in asignaturas_id_lista %}
+								<input type="hidden" name="asignatura" value={{asignatura_id}}>
+							{% endfor %}
+							Deseas reenviar los emails?
+							<div class="btn-group" role="group" aria-label="...">
+								<button role="button" type="submit" class="btn btn-outline-danger" name="selector_button" value="selector_tutoria_ya_existe" title="reenviar tutoria">
+									si
+								</button>
+								<button role="button" type="button" class="btn btn-outline-primary" data-dismiss="alert" title="no enviar">
+									no
+								</button>
+							</div>
+						</form>
+					</div>
+				</div>
+			{% endfor %}
+		{% endif %}
+		{% endwith %}
+		{# TODO: Cita #}
+		{% with messages = get_flashed_messages(category_filter = ['cita_random']) %}
+		{% if messages %}
+			<div class="paper padding_contenido bg-white">
+				Cita del dia:
+				<div class="divider bg-mutted"></div>
+				{% for message in messages %}
+					{{message}}
+				{% endfor %}
+			</div>
+			<br>
+		{% endif %}
+		{% endwith %}

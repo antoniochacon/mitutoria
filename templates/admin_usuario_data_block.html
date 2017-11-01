@@ -1,0 +1,157 @@
+<a data-toggle="collapse" data-parent="#parent_usuario" href="#usuario_{{hashids_encode(usuario.id)}}" class="collapse_header_1" aria-expanded="false" title="{{usuario.email}}">
+	<strong>Datos de ususario</strong>
+	{# NOTE badge #}
+	<span class="badge badge-info float-right border border-dark" title="total de visitas">{{settings_by_id(usuario.id).visit_number}}
+		visitas
+	</span>
+	{% if not settings_by_id(usuario.id).email_validated %}
+		<span class="badge border border-dark bg-white text-dark float-right mr-2" title="no validado">
+			no validado
+		</span>
+	{% endif %}
+	{% if settings_by_id(usuario.id).email_robinson %}
+		<span class="badge border border-warning bg-white text-warning float-right mr-2" title="robinson">
+			robinson
+		</span>
+	{% endif %}
+	{% if settings_by_id(usuario.id).ban %}
+		<span class="badge badge-warning text-white float-right mr-2" title="banned">
+			banned
+		</span>
+	{% endif %}
+</a>
+<div id="usuario_{{hashids_encode(usuario.id)}}" class="collapse show">
+	<div class="padding_3 pt-3 pb-3">
+		<form action="/admin_usuario_edit" method="POST">
+			<div class="row">
+				<div class="form-group col-md-12">
+					<div class="input-group">
+						<input
+							type="text"
+							{% if not params['usuario_edit_link'] %}
+							readonly
+							{% endif %}
+							class="form-control {% if request.method=='POST'%} {% if usuario_edit.username.errors %} is-invalid {% else %} is-valid {% endif %}{% endif %}"
+							name="{{usuario_edit.username.name}}"
+							value="{% if request.method=='POST' %}{{usuario_edit.username.data}}{% else %}{{usuario.username}}{% endif %}"
+							placeholder="{{usuario_edit.username.label.text}}">
+						<span class="input-group-addon {% if request.method=='POST'%} {% if usuario_edit.username.errors %} form_addon-warning {% else %} form_addon-success {% endif %} {% endif %}">{{usuario_edit.username.label.text}}</span>
+					</div>
+				</div>
+				<div class="form-group col-md-12">
+					<div class="input-group">
+						<input
+							type="text"
+							{% if not params['usuario_edit_link'] %}
+							readonly
+							{% endif %}
+							class="form-control {% if request.method=='POST'%} {% if usuario_edit.password.errors %} is-invalid {% else %} is-valid {% endif %}{% endif %}"
+							name="{{usuario_edit.password.name}}"
+							value="{% if request.method=='POST' %}{{usuario_edit.password.data}}{% endif %}"
+							placeholder="nuevo password">
+						<span class="input-group-addon {% if request.method=='POST'%} {% if usuario_edit.password.errors %} form_addon-warning {% else %} form_addon-success {% endif %} {% endif %}">cambiar password</span>
+					</div>
+				</div>
+				<div class="form-group col-md-12">
+					<div class="input-group">
+						<input
+							type="text"
+							{% if not params['usuario_edit_link'] %}
+							readonly
+							{% endif %}
+							class="form-control {% if request.method=='POST'%} {% if usuario_edit.email.errors %} is-invalid {% else %} is-valid {% endif %}{% endif %}"
+							name="{{usuario_edit.email.name}}"
+							value="{% if request.method=='POST'%}{{usuario_edit.email.data}}{% else %}{{usuario.email}}{% endif %}"
+							placeholder="{{usuario_edit.email.label.text}}">
+						<span class="input-group-addon {% if request.method=='POST'%} {% if usuario_edit.email.errors %} form_addon-warning {% else %} form_addon-success {% endif %} {% endif %}">{{usuario_edit.email.label.text}}</span>
+					</div>
+				</div>
+				<div class="form-group col-sm-6 col-md-3">
+					<div class="input-group">
+						<select name="{{usuario_edit.role.name}}" class="form-control" required {% if not params['usuario_edit_link'] %} disabled {% endif %}>
+							<option value="{% if request.method=='POST'%}{{usuario_edit.role.data}}{% else %}{{settings_by_id(usuario.id).role}}{% endif %}">
+								{% if request.method == 'POST'%}{{usuario_edit.role.data}}
+								{% else %}{{settings_by_id(usuario.id).role}}{% endif %}
+							</option>
+							<option value="user">user</option>
+							<option value="admin">admin</option>
+						</select>
+						<span class="input-group-addon">role</span>
+					</div>
+				</div>
+				<div class="form-group col-auto">
+					<label class="custom-control custom-checkbox check_box_1">
+						<input type="checkbox" {% if not params['usuario_edit_link'] %} disabled {% endif %} class="custom-control-input" name="email_validated" value="True" {% if settings_by_id(usuario.id).email_validated%} checked {% endif %}>
+						<span class="custom-control-indicator"></span>
+						<span class="custom-control-description">{{usuario_edit.email_validated.label.text}}</span>
+					</label>
+				</div>
+				<div class="form-group col-auto">
+					<label class="custom-control custom-checkbox check_box_1">
+						<input type="checkbox" {% if not params['usuario_edit_link'] %} disabled {% endif %} class="custom-control-input" name="email_robinson" value="True" {% if settings_by_id(usuario.id).email_robinson%} checked {% endif %}>
+						<span class="custom-control-indicator"></span>
+						<span class="custom-control-description">{{usuario_edit.email_robinson.label.text}}</span>
+					</label>
+				</div>
+				<div class="form-group col-auto">
+					<label class="custom-control custom-checkbox check_box_1">
+						<input type="checkbox" {% if not params['usuario_edit_link'] %} disabled {% endif %} class="custom-control-input" name="ban" value="True" {% if settings_by_id(usuario.id).ban%} checked {% endif %}>
+						<span class="custom-control-indicator"></span>
+						<span class="custom-control-description">{{usuario_edit.ban.label.text}}</span>
+					</label>
+				</div>
+
+				<input type="hidden" name="current_usuario_id" value="{{hashids_encode(usuario.id)}}">
+				<input type="hidden" name="current_url" value="{{params['current_url']}}">
+			</div>
+			{% if params['usuario_edit_link'] %}
+				{% if params['usuario_delete_link'] %}
+					<div class="btn-group" role="group" aria-label="...">
+						<button role="button" type="submit" name="selector_button" value="selector_usuario_delete" class="btn btn-outline-warning btn-sm" title="confirmar eliminar usuario">
+							<i class="material-icons vertical-center">delete</i>
+							confirmar eliminar
+						</button>
+						<button role="button" type="submit" name="selector_button" value="selector_usuario_delete_close" class="btn btn-outline-dark btn-sm" title="cancelar eliminar">
+							<i class="material-icons vertical-center">close</i>
+						</button>
+					</div>
+					<br>
+					<span class="text-warning small">
+						Una vez elminada no podra ser recuperada.</span>
+				{% else %}
+					<div class="btn-group" role="group" aria-label="...">
+						<button role="button" type="submit" name="selector_button" value="selector_usuario_edit" class="btn btn-outline-primary btn-sm" title="guardar cambios">
+							<i class="material-icons vertical-center">save</i>
+							guardar
+						</button>
+						{# <button role="button" type="submit" name="selector_button" value="selector_usuario_edit_rollback" class="btn btn-outline-dark btn-sm" title="deshacer cambios"> <i class="material-icons vertical-center">settings_backup_restore</i> </button> #}
+						<button role="button" type="submit" name="selector_button" value="selector_usuario_delete_link" class="btn btn-outline-dark btn-sm" title="eliminar usuario">
+							<i class="material-icons vertical-center">delete</i>
+						</button>
+						<button role="button" type="submit" name="selector_button" value="selector_usuario_edit_link_close" class="btn btn-outline-dark btn-sm" title="cerrar edición">
+							<i class="material-icons vertical-center">close</i>
+						</button>
+					</div>
+				{% endif %}
+			{% else %}
+				<div class="btn-group" role="group" aria-label="...">
+					<button role="button" type="submit" name="selector_button" class="btn btn-outline-dark btn-sm" value="selector_usuario_edit_link" title="editar ficha">
+						<i class="material-icons vertical-center">edit</i>
+						editar ficha
+					</button>
+					{% if request.form=='POST'%}
+						<button role="button" type="submit" name="selector_button" class="btn btn-outline-dark btn-sm" value="selector_usuario_edit_close" title="cerrar ficha">
+							<i class="material-icons vertical-center">close</i>
+						</button>
+					{% endif %}
+				</div>
+				<div class="float-right">
+					<span class="text-mutted">Ultima visita:
+					</span>{{settings_by_id(usuario.id).visit_last.strftime('%Y-%m-%d')}}
+				</div>
+			{% endif %}
+		</form>
+	</div>
+	<div class="divider grueso bg-primary"></div>
+</div>
+<br>

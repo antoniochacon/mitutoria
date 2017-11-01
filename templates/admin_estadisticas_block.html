@@ -1,0 +1,263 @@
+<a data-toggle="collapse" href="#vista_general" class="collapse_header_1" aria-expanded="false" title="Analisis del cuestionario">
+	<i class="material-icons vertical-center">expand_more</i>
+	Vista general
+</a>
+<div class="collapse show" id="vista_general">
+	<div class="row pt-2">
+		<div class="col-sm-12 col-md-6 pb-3">
+			<div class="card border-mutted">
+				<div class="card-header text-center strong bg-info text-dark ">
+					<div class="text-truncate">
+						Sobrecarga
+						<span class="small">
+							| tutores y equipo educativo
+						</span>
+					</div>
+				</div>
+				<div class="card-body text-center">
+					{{highcharts_salud_tutores_equipo_educativo(char_id='salud_tutores_equipo_educativo', color='#BA5FD3', stats=stats)}}
+					<div class="text-truncate small">{{stats['profesores_all_count']}}
+						{{singular_plural('docente','docentes', stats['profesores_all_count'])}}
+						/ tutor: [ min
+						{{stats['profesores_por_usuario_min']|int}}
+						| media
+						{{stats['profesores_por_usuario_media']|int}}
+						| max
+						{{stats['profesores_por_usuario_max']|int}}]
+					</div>
+					<div class="text-truncate small">{{stats['tutorias_all_count']}}
+						{{singular_plural('tutoria','tutorias', stats['tutorias_all_count'])}}
+						/ tutor: [ min
+						{{stats['tutorias_por_usuario_min']}}
+						| media
+						{{stats['tutorias_por_usuario_media']}}
+						| max
+						{{stats['tutorias_por_usuario_max']}}]
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="col-sm-12 col-md-6 pb-3">
+			<div class="card border-mutted">
+				<div class="card-header text-center strong bg-info text-dark ">
+					<div class="text-truncate">
+						Detalles de usuarios
+						<span class="badge float-right badge-dark mt-1" title="total de usuarios">
+							{{stats['usuarios_all']}}
+							{{singular_plural('usuario','usuarios',stats['usuarios_all'])}}
+						</span>
+					</div>
+				</div>
+				<div class="card-body">
+					<div class="pl-2">
+						<div class="pt-0">
+							email NO validados
+							<span class="badge badge-secondary float-right" title="{{100 - stats['emails_validados_percent']|int}}% emails NO validados">
+								{{100 - stats['emails_validados_percent']|int}}%
+							</span>
+							<div class="progress rounded-0">
+								<div class="progress-bar bg-secondary" role="progressbar" aria-valuemin="0" aria-valuemax="100" style="height: 5px; width:{{100 - stats['emails_validados_percent']|int}}%;"></div>
+							</div>
+						</div>
+						<div class="pt-2">
+							Robinson ON
+							<span class="badge badge-secondary float-right" title="{{100 - stats['emails_no_robinson_percent']|int}}% Robinson ON">
+								{{100 - stats['emails_no_robinson_percent']|int}}%
+							</span>
+							<div class="progress rounded-0">
+								<div class="progress-bar bg-secondary" role="progressbar" aria-valuemin="0" aria-valuemax="100" style="height: 5px; width:{{100 - stats['emails_no_robinson_percent']|int}}%;"></div>
+							</div>
+						</div>
+						<div class="pt-2">
+							baneados
+							<span class="badge badge-secondary float-right" title="{{100 - stats['emails_no_ban_percent']|int}}%  baneados">
+								{{100 - stats['emails_no_ban_percent']|int}}%
+							</span>
+							<div class="progress rounded-0">
+								<div class="progress-bar bg-secondary" role="progressbar" aria-valuemin="0" aria-valuemax="100" style="height: 5px; width: {{100 - stats['emails_no_ban_percent']|int}}%;"></div>
+							</div>
+						</div>
+						<div class="pt-2">
+							archivar tutorias OFF
+							<span class="badge badge-secondary float-right" title="{{100 - stats['tutoria_timeout_percent']|int}}% archivar tutorias OFF">
+								{{100 - stats['tutoria_timeout_percent']|int}}%
+							</span>
+							<div class="progress rounded-0">
+								<div class="progress-bar bg-secondary" role="progressbar" aria-valuemin="0" aria-valuemax="100" style="height: 5px; width:{{100 - stats['tutoria_timeout_percent']|int}}%;"></div>
+							</div>
+						</div>
+						<div class="pt-2">
+							evolucion docentes OFF
+							<span class="badge badge-secondary float-right" title="{{100 - stats['evolucion_equipo_educativo_percent']|int}}% evolucion docentes OFF">
+								{{100 - stats['evolucion_equipo_educativo_percent']|int}}%
+							</span>
+							<div class="progress rounded-0">
+								<div class="progress-bar bg-secondary" role="progressbar" aria-valuemin="0" aria-valuemax="100" style="height: 5px; width:{{100 - stats['evolucion_equipo_educativo_percent']|int}}%;"></div>
+							</div>
+						</div>
+						<div class="pt-2">
+							diferencial medio
+							<span class="badge badge-secondary float-right" title="{{stats['diferencial_media']|int}}% diferencial medio">
+								{{stats['diferencial_media']}}%
+							</span>
+							<div class="progress rounded-0">
+								<div class="progress-bar bg-secondary" role="progressbar" aria-valuemin="0" aria-valuemax="100" style="height: 5px; width:{{stats['diferencial_media']|int}}%;"></div>
+							</div>
+						</div>
+						<div class="pt-2">
+							cuestiones ON
+							<span class="small">
+								[min
+								{{stats['preguntas_por_cuestionario_min']|int}}
+								| media
+								{{stats['preguntas_por_cuestionario_media']|int}}
+								| max
+								{{stats['preguntas_por_cuestionario_max']|int}}]</span>
+							<span class="badge badge-secondary float-right" title="{{stats['preguntas_por_cuestionario_percent']|int}}% preguntas usadas">
+								{{stats['preguntas_por_cuestionario_percent']|int}}%
+							</span>
+							<div class="progress rounded-0">
+								<div class="progress-bar bg-secondary" role="progressbar" aria-valuemin="0" aria-valuemax="100" style="height: 5px; width:{{stats['preguntas_por_cuestionario_percent']|int}}%;"></div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="col-sm-12 col-md-6 pb-3">
+			<div class="card border-mutted">
+				<div class="card-header text-center strong bg-info text-dark ">
+					<div class="text-truncate">
+						Participación equipo educativo
+					</div>
+				</div>
+				<div class="card-body">
+					{% if diferencial_check(settings().diferencial, 10, 10,) %}
+						<span class="badge text-white badge-secondary float-right">
+							resultados !
+						</span>
+					{% endif %}
+					{% if diferencial_check(settings().diferencial, 10, 10) %}
+						<span class="badge badge-primary float-right mr-1">
+							actitud !
+						</span>
+					{% endif %}
+					{{highcharts_admin_profesores_activos_evolucion_frecuencia(char_id='profesores_activos_evolucion_frecuencia', color='#BA5FD3', df_data=stats['profesores_activos_evolucion_frecuencia'])}}
+				</div>
+			</div>
+		</div>
+		<div class="col-sm-12 col-md-6 pb-3">
+			<div class="card border-mutted">
+				<div class="card-header text-center strong bg-info text-dark ">
+					<div class="text-truncate">
+						Detalles equipo educativo
+						<span class="badge float-right badge-dark mt-1" title="total de usuarios">
+							{{stats['profesores_all_count']}}
+							{{singular_plural('docente','docentes',stats['profesores_all_count'])}}
+						</span>
+					</div>
+				</div>
+				<div class="card-body">
+					<div class="pt-2">
+						docentes sin participar
+						<span class="badge badge-secondary float-right" title="{{100 - stats['profesores_actividad_percent']|int}}% docentes sin participar">
+							{{100 - stats['profesores_actividad_percent']|int}}%
+						</span>
+						<div class="progress rounded-0">
+							<div class="progress-bar bg-secondary" role="progressbar" aria-valuemin="0" aria-valuemax="100" style="height: 5px; width:{{100 - stats['profesores_actividad_percent']|int}}%;"></div>
+						</div>
+					</div>
+					<div class="pt-2">
+						tutorías sin respuesta
+						<span class="badge badge-secondary float-right" title="{{100 - stats['tutorias_con_respuesta_percent']|int}}% tutorias sin respuesta">
+							{{100 - stats['tutorias_con_respuesta_percent']|int}}%
+						</span>
+						<div class="progress rounded-0">
+							<div class="progress-bar bg-secondary" role="progressbar" aria-valuemin="0" aria-valuemax="100" style="height: 5px; width:{{100 - stats['tutorias_con_respuesta_percent']}}%;"></div>
+						</div>
+					</div>
+					<div class="pt-2">
+						tutorías sin acuerdos
+						<span class="badge badge-secondary float-right" title="{{100 - stats['tutorias_con_acuerdos_count']|int}}% tutorías sin acuerdos">
+							{{100 - stats['tutorias_con_acuerdos_count']|int}}%
+						</span>
+						<div class="progress rounded-0">
+							<div class="progress-bar bg-secondary" role="progressbar" aria-valuemin="0" aria-valuemax="100" style="height: 5px; width:{{100 - stats['tutorias_con_acuerdos_count']}}%;"></div>
+						</div>
+					</div>
+					<div class="pt-2">
+						informes sin comentario
+						<span class="badge badge-secondary float-right" title="{{100 - stats['informes_con_comentario_percent']|int}}% informes sin comentario">
+							{{100 - stats['informes_con_comentario_percent']|int}}%
+						</span>
+						<div class="progress rounded-0">
+							<div class="progress-bar bg-secondary" role="progressbar" aria-valuemin="0" aria-valuemax="100" style="height: 5px; width:{{100 - stats['informes_con_comentario_percent']}}%;"></div>
+						</div>
+					</div>
+					<div class="pt-2">
+						informes sin notas
+						<span class="badge badge-secondary float-right" title="{{100 - stats['informes_con_pruebas_evalubles_percent']|int}}% informes sin notas">
+							{{100 - stats['informes_con_pruebas_evalubles_percent']|int}}%
+						</span>
+						<div class="progress rounded-0">
+							<div class="progress-bar bg-secondary" role="progressbar" aria-valuemin="0" aria-valuemax="100" style="height: 5px; width:{{100 - stats['informes_con_pruebas_evalubles_percent']}}%;"></div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+<a data-toggle="collapse" href="#tutorias_evolucion" class="collapse_header_1" aria-expanded="false" title="Evolucion equipo educativo">
+	<i class="material-icons vertical-center">expand_more</i>
+	Evolucion equipo educativo
+</a>
+<div class="collapse" id="tutorias_evolucion">
+	<div class="pt-3 pb-3">
+		{{highcharts_admin_profesores_activos_evolucion(char_id='actividad_equpipo_educativo', color='#BA5FD3', df_data=stats['profesores_activos_evolucion'], df_media=stats['profesores_activos_evolucion_media'])}}
+	</div>
+</div>
+{# <a data-toggle="collapse" href="#tutorias_frecuencias_absolutas" class="collapse_header_1" aria-expanded="false" title="frecuencias acumuladas"> <i class="material-icons vertical-center">expand_more</i> Participacion frecuencias acumuladas </a>
+<div class="collapse" id="tutorias_frecuencias_absolutas"> <div class="pt-3 pb-3"> {{highcharts_admin_profesores_activos_evolucion_frecuencia(char_id='profesores_activos_evolucion_frecuencia_absoluta', color='#BA5FD3',
+df_data=stats['profesores_activos_evolucion_frecuencia_absoluta'])}} </div> </div> #}
+<a data-toggle="collapse" href="#tutorias_cuestionario" class="collapse_header_1" aria-expanded="false" title="Actividad cuestionario">
+	<i class="material-icons vertical-center">expand_more</i>
+	Actividad cuestionario
+</a>
+<div class="collapse" id="tutorias_cuestionario">
+	<div class="pt-3 pb-3">
+		{{highcharts_admin_cuestionario_actividad(char_id='cuestionario_actividad', color='#BA5FD3', df_data=stats['cuestionario_actividad'])}}
+	</div>
+</div>
+<a data-toggle="collapse" href="#usuarios_mas_activos" class="collapse_header_1" aria-expanded="false" title="Analisis del cuestionario">
+	<i class="material-icons vertical-center">expand_more</i>
+	TOP-20 usuarios activos
+	<span class="badge float-right badge-dark mr-2 mt-1" title="total de usuarios">
+		{{stats['usuarios_all']}}
+		{{singular_plural('usuario','usuarios',stats['usuarios_all'])}}
+	</span>
+</a>
+<div class="collapse" id="usuarios_mas_activos">
+	<div class="pt-2">
+		<table class="table table-sm table-striped table-xx">
+			<thead class="bg-gray text-white font-weight-normal">
+				<tr >
+					<th class="font-weight-normal">#</th>
+					<th class="font-weight-normal">usuario</th>
+					<th class="font-weight-normal">visitas</th>
+					<th class="font-weight-normal">ultima visita</th>
+				</tr>
+			</thead>
+			<tbody>
+				{% for settings in usuarios_mas_activos(20) %}
+					<tr>
+						<th scope="row">{{loop.index}}</th>
+						<td>{{user_by_id(settings.user_id).username}}</td>
+						<td>{{settings.visit_number}}</td>
+						<td>{{settings.visit_last.strftime('%d-%B-%Y')}}</td>
+					</tr>
+				{% endfor %}
+			</tbody>
+		</table>
+	</div>
+</div>

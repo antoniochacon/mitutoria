@@ -1,0 +1,20 @@
+{% extends '_layout.html' %}
+{% block body %}
+	{%from '_macro.html' import nav_bar_top, titulo_1, nav_tabs_admin%}
+	{{ nav_bar_top(link_active='admin',params=params, current_user=current_user) }}
+	<div class="paper bg-white padding_contenido">
+		{{titulo_1(bg_color='bg-dark',titulo='Admin Settings')}}
+		{{nav_tabs_admin(tab_active='Citas')}}
+		<div id="parent_cita">
+			<a id="anchor_pre_add"></a>
+			<div>
+				{# XXX: cita_add #}
+				{% include 'admin_citas_add_block.html' %}
+			</div>
+			<div>
+				{# XXX: citas_listado #}
+				{% include 'admin_citas_cita_block.html' %}
+			</div>
+		</div>
+	</div>
+{% endblock %}

@@ -1,0 +1,44 @@
+<div class="list_group_item_1 pt-3">
+	Selecciona las asignaturas a las que reenviar esta tutoría:
+	{# NOTE badge #}
+	<span class="badge badge-mutted float-right">{{ stats['asignaturas_alumno'] }}/{{asignaturas('apellidos', 'nombre', 'asignatura') | count}}</span>
+</div>
+<div class="padding_contenido">
+	{% if not asignaturas('asignatura', 'nombre', 'apellidos') %}
+		<span class="text-warning">
+			Este grupo no dispone de asignaturas.
+		</span>
+	{% else %}
+		{% if params['collapse_tutoria_edit_enviar_a'] %}
+			<span class="text-warning">
+				Debe indicar al menos una asignatura para solicitar informes de
+				<span class="strong">{{alumno.nombre}}</span>
+			</span>
+		{% endif %}
+		<div class="row">
+			{% for asignatura in asignaturas('asignatura', 'nombre', 'apellidos') %}
+				<div class="form-group col-md-6 col-lg-4">
+					<label class="custom-control custom-checkbox check_box_1">
+						<input type="checkbox" class="custom-control-input" name="asignatura" value="{{hashids_encode(asignatura.id)}}" {% if association_alumno_asignatura_check(alumno.id,asignatura.id) %} checked {% endif %}>
+						<span class="custom-control-indicator"></span>
+						<span class="custom-control-description {% if not association_alumno_asignatura_check(alumno.id,asignatura.id) %}text-muted{% endif %}">{{asignatura.asignatura}}</span>
+					</label>
+				</div>
+			{% endfor %}
+		</div>
+	{% endif %}
+
+	<div class="btn-group" role="group" aria-label="...">
+		<button type="submit" name="selector_button" value="selector_tutoria_re_enviar" class="btn btn-outline-primary btn-sm" title="Reenvair emails">
+			<i class="material-icons vertical-center">mail</i>
+			Reenviar
+		</button>
+		<button type="submit" name="selector_button" value="selector_tutoria_re_enviar_close" class="btn btn-outline-dark btn-sm" title="Cerrar">
+			<i class="material-icons vertical-center">close</i>
+		</button>
+	</div>
+	<div class="text-mutted small pt-2">
+		No modifica el equipo educativo del alumno, solo es efectivo para el envio temporal
+	</div>
+</div>
+<div class="divider bg-primary grueso"></div>

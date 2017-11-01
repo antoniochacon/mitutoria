@@ -1,0 +1,41 @@
+{% extends '_layout.html' %}
+{% block body %}
+	{%from '_macro.html' import nav_bar_top,titulo_1%}
+	{{nav_bar_top(link_active='inciar sesión', current_user=current_user)}}
+	<div class="container">
+		<div class="paper bg-white padding_contenido">
+			{{titulo_1(bg_color='bg-dark', titulo='Validación de email')}}
+			<div class="text-center">
+				<div class="pt-3 pb-3">
+					Revise su cuenta de correo.
+					<br>
+					Debe confirmar su registro.
+				</div>
+				<div class="divider bg-mutted"></div>
+				{% if params['email_validated_intentos'] < 5 %}
+					<div class="small pt-3 pb-3">
+						Podemos reenviar una petición para confirmar su email.
+						<br>
+						<span class="text-mutted">Por seguridad, le
+							{{singular_plural('queda', 'quedan', 4-params['email_validated_intentos'])}}
+							{{5 - params['email_validated_intentos']}}
+							{{singular_plural('intento', 'intentos', 5-params['email_validated_intentos'])}}</span>
+					</div>
+					<form action="/login_validacion_email" method="post">
+						<input type="hidden" name="current_user_id" value="{{hashids_encode(params['current_user_id'])}}">
+						<button type="submit" class="btn btn-outline-dark btn-sm" title="crear nueva cuenta">
+							<i class="material-icons align-middle">email</i>
+							recibir petición
+						</button>
+					</form>
+				{% else %}
+					<div class="text-warning small pt-3 pb-3">
+						Ha consumido sus 5 intentos para verificar su email.
+						<br>
+						Póngase en contacto con nosotros.
+					</div>
+				{% endif %}
+			</div>
+		</div>
+	</div>
+{% endblock %}
