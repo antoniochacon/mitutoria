@@ -235,19 +235,19 @@
 						size: "25%",
 						innerSize: "55%",
 						tooltip: {
-							pointFormat: "Media: {point.y:.1f}<br>Notas({{ pruebas_evaluables_asignatura_spline(tutoria_id, asignatura.id)[0] | count }}): {{ pruebas_evaluables_asignatura_spline(tutoria_id, asignatura.id)[1] | safe }}"
+							pointFormat: "Media: {point.y:.1f}<br>Notas({{ pruebas_evaluables_asignatura_spline(tutoria_id, asignatura.id)[0] | count }}): {{pruebas_evaluables_asignatura_spline(tutoria_id, asignatura.id)[2] | replace("(", "") | replace("''", "'X_X_X'") | replace(",", "") | replace(") ", " | ") | replace(")", " ") | replace("'X_X_X'", " ") | safe}}"
 						},
 						startAngle: -90,
 						endAngle: 90,
 						data: [
 							{
 								name: "{{alumno.nombre}} | {{asignatura.asignatura}} | Notas",
-								y:{% if pruebas_evaluables_asignatura_spline(tutoria_id, asignatura.id)[1] != 'sin_notas' %}
+								y:{% if pruebas_evaluables_asignatura_spline(tutoria_id, asignatura.id)[1] != 0 %}
 									{{ pruebas_evaluables_asignatura_spline(tutoria_id, asignatura.id)[1] | safe}}
 								{% else %}
 									1
 								{% endif %},
-								{% if pruebas_evaluables_asignatura_spline(tutoria_id, asignatura.id)[1] != 'sin_notas' %}
+								{% if pruebas_evaluables_asignatura_spline(tutoria_id, asignatura.id)[1] != 0 %}
 									color: "#ba68c8"
 								{% else %}
 									color: "#26c6da"
@@ -471,7 +471,7 @@
 						data: {{respuestas_asignatura_alumno_spline(tutoria_id, pregunta.id)[1] | safe}}
 					},
 				{% endfor %}
-				
+
 				{% for asignatura in asignaturas_con_respuesta_by_tutoria_id(tutoria_id)[0] %}
 					{
 						type: "column",

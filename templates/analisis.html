@@ -85,7 +85,7 @@
 							</div>
 						{% endif %}
 						{# NOTE badge #}
-						{# depurado hasta aqui #}
+
 						<span class="badge {% if tutoria.activa %}badge-secondary{% else %}badge-info text-white{% endif %} float-right" title="{{cociente_porcentual(stats['informes_recibidos'] | count, stats['informes_solicitados'] | count)}}% de los informes recibidos">
 							<span class="align-middle pr-1 {% if tutoria.activa %}color_secondary_lighten{% else %}badge-info text-mutted{% endif %}">{{stats['informes_recibidos'] | count}}
 								|
@@ -102,8 +102,9 @@
 						role="progressbar"
 						aria-valuemin="0"
 						aria-valuemax="100"
-						style="{% if not tutoria.activa %} height:2px; {% endif %} width: {{cociente_porcentual(stats['informes_recibidos'] | count,stats['informes_solicitados'] | count)}}%;"></div>
+						style="{% if not tutoria.activa %} height:2px; {% endif %} width: {{cociente_porcentual(stats['informes_recibidos'] | count, stats['informes_solicitados'] | count)}}%;"></div>
 				</div>
+				{# depurado hasta aqui #}
 				{% if params['tutoria_re_enviar_link']%}
 					{% include 'analisis_re_enviar_a_block.html' %}
 				{% endif %}

@@ -621,7 +621,7 @@ def alumnos_html(params={}):
             params['collapse_alumno_edit'] = True
             params['alumno_edit_link'] = True
             params['anchor'] = 'anchor_ficha_' + str(hashids_encode(current_alumno_id))
-            if not alumno_asignaturas(current_alumno_id):
+            if not asignaturas_alumno_by_alumno_id(current_alumno_id):
                 params['collapse_alumno_edit_asignaturas'] = True
             return redirect(url_for('alumnos_html', params=dic_encode(params)))
 
@@ -666,7 +666,7 @@ def alumnos_html(params={}):
                         alumno_asignatura_delete = session_sql.query(Association_Alumno_Asignatura).filter_by(alumno_id=current_alumno_id, asignatura_id=asignatura.id).first()
                         session_sql.delete(alumno_asignatura_delete)
                         collapse_alumno_edit_asignaturas_contador += 1
-            if not alumno_asignaturas_id(current_alumno_id):
+            if not asignaturas_alumno_by_alumno_id(current_alumno_id):
                 params['collapse_alumno_edit_asignaturas'] = True
                 flash_toast('Debería asignar asignaturas a ' + Markup('<strong>') + alumno_edit_form.nombre.data + Markup('</strong>'), 'warning')
             else:
@@ -761,7 +761,7 @@ def alumnos_html(params={}):
                 return redirect(url_for('asignaturas_html', params=dic_encode(params)))
 
             # NOTE check si hay asignaturas asignadas al alumno
-            if not alumno_asignaturas(current_alumno_id):
+            if not asignaturas_alumno_by_alumno_id(current_alumno_id):
                 params['collapse_alumno_edit'] = True
                 params['alumno_edit_link'] = True
                 params['collapse_alumno_edit_asignaturas'] = True
@@ -1285,8 +1285,11 @@ def analisis_html(params={}):
     if not tutoria or not alumno:
         return redirect(url_for('analisis_tutoria_no_disponible_html'))
 
-    stats['informes_solicitados'] = informes_solicitados_by_tutoria_id(tutoria.id)
+    stats['informes_solicitados'] = asignaturas_by_tutoria_id(tutoria.id)
     stats['informes_recibidos'] = informes_recibidos_by_tutoria_id(tutoria.id)
+
+    asignaturas_alumno_by_alumno_id_sql=asignaturas_alumno_by_alumno_id(alumno.id)
+    stats['asignaturas_alumno']=len(asignaturas_alumno_by_alumno_id_sql)
 
     return render_template('analisis.html',
                            tutoria=tutoria, alumno=alumno, grupo=grupo, params=params, stats=stats)

@@ -1,7 +1,7 @@
 <a data-toggle="collapse" href="#alumno_asignatura_{{hashids_encode(alumno.id)}}" class="collapse_header_1" aria-expanded="false">
 	<i class="material-icons vertical-center">expand_more</i>Asignaturas de
 	{{alumno.nombre}}:
-	<span class="badge badge-info float-right">{{alumno_asignaturas(alumno.id) | count}}
+	<span class="badge badge-info float-right">{{asignaturas_alumno_by_alumno_id(alumno.id) | count}}
 		|
 		{{asignaturas_not_sorted() | count}}
 	</span>
@@ -18,8 +18,8 @@
 						{% include 'alumnos_ficha_asiganturas_listado_block.html' %}
 					{% endfor %}
 				{% else %}
-					{% if alumno_asignaturas(alumno.id) %}
-						{% for asignatura in alumno_asignaturas(alumno.id) %}
+					{% if asignaturas_alumno_by_alumno_id(alumno.id) %}
+						{% for asignatura in asignaturas_alumno_by_alumno_id(alumno.id) %}
 							{% if association_alumno_asignatura_check(alumno.id, asignatura.id) %}
 								{% include 'alumnos_ficha_asiganturas_listado_block.html' %}
 							{% endif %}
