@@ -30,7 +30,8 @@
 											{{alumno.nombre}}
 											{{alumno.apellidos}}
 											|
-											{{asignatura.asignatura}}
+											{{tutoria.fecha.strftime('%A') | capitalize}}
+											{{tutoria.fecha.strftime('%d')}}
 											<br><br>
 											<a
 												href="{{tutoria_email_link}}{{hashids_encode(tutoria_asignatura_id|int)}}"

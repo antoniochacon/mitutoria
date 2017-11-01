@@ -1285,8 +1285,8 @@ def analisis_html(params={}):
     if not tutoria or not alumno:
         return redirect(url_for('analisis_tutoria_no_disponible_html'))
 
-    stats['informes_solicitados'] = asignaturas_solicitadas_by_tutoria_id(tutoria.id)
-    stats['informes_recibidos'] = informes_recibidos_by_tutoria_id(tutoria.id)
+    stats['asignaturas_solicitadas'] = asignaturas_solicitadas_by_tutoria_id(tutoria.id)
+    stats['asignaturas_con_respuesta'] = asignaturas_con_respuesta_by_tutoria_id(tutoria.id)
 
     asignaturas_alumno_by_alumno_id_sql=asignaturas_alumno_by_alumno_id(alumno.id)
     stats['asignaturas_alumno']=len(asignaturas_alumno_by_alumno_id_sql)
