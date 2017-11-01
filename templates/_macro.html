@@ -471,6 +471,7 @@
 						data: {{respuestas_asignatura_alumno_spline(tutoria_id, pregunta.id)[1] | safe}}
 					},
 				{% endfor %}
+				
 				{% for asignatura in asignaturas_con_respuesta_by_tutoria_id(tutoria_id)[0] %}
 					{
 						type: "column",
