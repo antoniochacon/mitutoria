@@ -3,6 +3,8 @@
 	{%from '_macro.html' import nav_bar_top, titulo_1, highcharts_asignatura, highcharts_cuestionario, highcharts_asignaturas, highcharts_evalucion, highcharts_tutoria_stats%}
 	{{ nav_bar_top(link_active='alumnos',params=params, current_user=current_user) }}
 	<div class="paper bg-white padding_contenido">
+		solicitados:{{stats['informes_solicitados'] | count}}<br>
+		recibidos.{{stats['informes_recibidos'] | count}}<br>
 		{% if grupo and alumno and tutoria %}
 			{{titulo_1(bg_color='bg-dark', titulo='Análisis gráfico de la tutoría')}}
 			<form action="/analisis_tutoria_edit" method="POST">
@@ -85,12 +87,13 @@
 							</div>
 						{% endif %}
 						{# NOTE badge #}
-						<span class="badge {% if tutoria.activa %}badge-secondary{% else %}badge-info text-white{% endif %} float-right" title="{{cociente_porcentual(tutoria_informes(tutoria.id) | count, tutoria_asignaturas_count(tutoria.id))}}% de los informes recibidos">
-							<span class="align-middle pr-1 {% if tutoria.activa %}color_secondary_lighten{% else %}badge-info text-mutted{% endif %}">{{tutoria_informes(tutoria.id) | count}}
+						{# depurado hasta aqui #}
+						<span class="badge {% if tutoria.activa %}badge-secondary{% else %}badge-info text-white{% endif %} float-right" title="{{cociente_porcentual(stats['informes_recibidos'] | count, stats['informes_solicitados'] | count)}}% de los informes recibidos">
+							<span class="align-middle pr-1 {% if tutoria.activa %}color_secondary_lighten{% else %}badge-info text-mutted{% endif %}">{{stats['informes_recibidos'] | count}}
 								|
-								{{tutoria_asignaturas_count(tutoria.id)}}
+								{{stats['informes_solicitados'] | count}}
 							</span>
-							<span class="h4 align-middle">{{cociente_porcentual(tutoria_informes(tutoria.id) | count, tutoria_asignaturas_count(tutoria.id))}}
+							<span class="h4 align-middle">{{cociente_porcentual(stats['informes_recibidos'] | count, stats['informes_solicitados'] | count)}}
 								%</span>
 						</span>
 					</div>
@@ -101,7 +104,7 @@
 						role="progressbar"
 						aria-valuemin="0"
 						aria-valuemax="100"
-						style="{% if not tutoria.activa %} height:2px; {% endif %} width: {{cociente_porcentual(tutoria_informes(tutoria.id) | count, tutoria_asignaturas_count(tutoria.id))}}%;"></div>
+						style="{% if not tutoria.activa %} height:2px; {% endif %} width: {{cociente_porcentual(stats['informes_recibidos'] | count,stats['informes_solicitados'] | count)}}%;"></div>
 				</div>
 				{% if params['tutoria_re_enviar_link']%}
 					{% include 'analisis_re_enviar_a_block.html' %}

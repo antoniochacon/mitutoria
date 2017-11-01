@@ -1265,15 +1265,18 @@ def analisis_html(params={}):
     params['tutoria_edit_link'] = params_old.get('tutoria_edit_link', False)
 
     stats = {}
-    stats['grupo'] = grupo_by_tutoria_id(current_tutoria_id)
-    stats['tutoria'] = tutoria_by_id(current_tutoria_id)
-    stats['alumno'] = alumno_by_tutoria_id(current_tutoria_id)
+    grupo = grupo_by_tutoria_id(current_tutoria_id)
+    tutoria = tutoria_by_id(current_tutoria_id)
+    alumno = alumno_by_tutoria_id(current_tutoria_id)
 
-    if not stats['tutoria'] or not stats['alumno']:
+    if not tutoria or not alumno:
         return redirect(url_for('analisis_tutoria_no_disponible_html'))
 
+    stats['informes_solicitados'] = informes_solicitados_by_tutoria_id(tutoria.id)
+    stats['informes_recibidos'] = informes_recibidos_by_tutoria_id(tutoria.id)
 
-    return render_template('analisis.html', stats=stats, params=params)
+    return render_template('analisis.html',
+                           tutoria=tutoria, alumno=alumno, grupo=grupo, params=params, stats=stats)
 
 
 # XXX analisis_tutoria_edit
