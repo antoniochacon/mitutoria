@@ -1,184 +1,4 @@
 
-{% macro highcharts_admin_profesores_activos_evolucion(char_id, color, stats) %}
-	<div id="{{char_id | safe}}" class="chart" style="height: 300px"></div>
-	<script>
-		Highcharts.stockChart("{{char_id | safe }}", {
-			title: {
-				text: null
-			},
-			scrollbar: {
-				barBackgroundColor: "#212529",
-				barBorderRadius: 7,
-				barBorderWidth: 0,
-				buttonBackgroundColor: "#212529",
-				buttonBorderWidth: 0,
-				buttonBorderRadius: 7,
-				trackBackgroundColor: "none",
-				trackBorderWidth: 1,
-				trackBorderRadius: 8,
-				trackBorderColor: "#212529",
-				enabled: false,
-				showFull: true
-			},
-			navigator: {
-				enabled: true
-			},
-			rangeSelector: {
-				allButtonsEnabled: false,
-				buttons: [
-					{
-						type: "all",
-						text: "todo"
-					}
-				],
-				selected: 1,
-				inputEnabled: false
-			},
-			tooltip: {
-				shared: false
-			},
-			xAxis: {
-				crosshair: {
-					width: 1,
-					color: "#bdbdbd"
-				},
-				type: "datetime",
-				startOfWeek: 2,
-				dateTimeLabelFormats: {
-					second: "%Y-%m-%d<br/>%H:%M:%S",
-					minute: "%Y-%m-%d<br/>%H:%M",
-					hour: "%Y-%m-%d<br/>%H:%M",
-					day: "%d-%m",
-					week: "%d-%m",
-					month: "%m-%Y",
-					year: "%Y"
-				}
-			},
-			yAxis: {
-				gridLineColor: Highcharts.getOptions().colors_gray["gray-500"],
-				labels: {
-					format: "{value} %"
-				},
-				min: 0,
-				max: 100,
-				title: {
-					text: "% profesores"
-				},
-				opposite: false,
-				plotLines: [
-					{
-						value: {{stats['evolucion_tutorias_exito_grupo_media'] | safe}},
-						width: 4,
-						color: "#26c6da",
-						dashStyle: "ShortDot",
-						zIndex: 100,
-						label: {
-							color: "#26c6da",
-							text: "<strong>media: {{stats['evolucion_tutorias_exito_grupo_media'] | safe}}%</strong>",
-							align: "right",
-							y: -5,
-							x: -10
-						}
-					}
-				]
-			},
-			series: [
-				{
-					type: "spline",
-					color: "{{color}}",
-					name: "tutorias",
-					tooltip: {
-						pointFormat: "participiacion: {point.y}%"
-					},
-					data: {{stats['evolucion_tutorias_exito_grupo'] | safe}},
-					marker: {
-						fillColor: "#fff",
-						lineWidth: 2,
-						lineColor: null
-					},
-					shadow: {
-						color: "#616161",
-						width: 3,
-						offsetX: 2,
-						offsetY: 2
-					}
-				}
-			]
-		});
-	</script>
-{% endmacro %}
-
-
-{% macro highcharts_admin_profesores_activos_evolucion_frecuencia(char_id, color, df_data) %}
-	<div id="{{char_id | safe}}" class="chart" style="height: 300px"></div>
-	<script>
-		Highcharts.chart("{{char_id | safe }}", {
-			chart: {
-				zoomType: "x",
-				panning: true,
-				panKey: "shift"
-			},
-			title: {
-				text: null
-			},
-			xAxis: {
-				labels: {
-					format: "{value} %"
-				},
-				title: {
-					text: "% de éxito de una tutoría"
-				},
-				crosshair: {
-					width: 1,
-					color: "#bdbdbd"
-				}
-			},
-			yAxis: {
-				labels: {
-					format: "{value} %"
-				},
-				gridLineColor: Highcharts.getOptions().colors_gray["gray-500"],
-				min: 0,
-				max: 100,
-				title: {
-					text: "% de cantidad total de tutorías"
-				}
-			},
-			plotOptions: {
-				series: {
-					allowPointSelect: false
-				}
-			},
-			series: [
-				{
-					type: "line",
-					color: "{{color}}",
-					name: "tutoria",
-					showInLegend: false,
-					tooltip: {
-						// headerFormat: "docentes que resonden: {point.x:.0f}% <br>",
-						headerFormat: null,
-						pointFormat: "{point.y:.0f}% de las tutorias contestadas al {point.x:.0f}% "
-					},
-					data: {{df_data | safe}},
-					marker: {
-						fillColor: "#fff",
-						lineWidth: 2,
-						lineColor: null
-					},
-					shadow: {
-						color: "#616161",
-						width: 3,
-						offsetX: 2,
-						offsetY: 2
-					}
-				}
-			]
-		});
-	</script>
-{% endmacro %}
-
-
 {% macro highcharts_evalucion(char_id, color_1, color_2, grupo, alumno, evolucion_stats) %}
 	<div id="{{char_id | safe}}" class="chart" style="height: 300px"></div>
 	<script>
@@ -288,7 +108,7 @@
 					animation: {
 						duration: 2000
 					},
-					data: {{evolucion_stats['evolucion_notas'] | safe}},
+					data: {{evolucion_stats['evalucion_notas'] | safe}},
 					tooltip: {
 						valueDecimals: 2
 					},
@@ -957,8 +777,114 @@
 		});
 	</script>
 {% endmacro %}
-
-
+{% macro highcharts_admin_profesores_activos_evolucion(char_id, color, df_data, df_media) %}
+	<div id="{{char_id | safe}}" class="chart" style="height: 300px"></div>
+	<script>
+		Highcharts.stockChart("{{char_id | safe }}", {
+			title: {
+				text: null
+			},
+			scrollbar: {
+				barBackgroundColor: "#212529",
+				barBorderRadius: 7,
+				barBorderWidth: 0,
+				buttonBackgroundColor: "#212529",
+				buttonBorderWidth: 0,
+				buttonBorderRadius: 7,
+				trackBackgroundColor: "none",
+				trackBorderWidth: 1,
+				trackBorderRadius: 8,
+				trackBorderColor: "#212529",
+				enabled: false,
+				showFull: true
+			},
+			navigator: {
+				enabled: true
+			},
+			rangeSelector: {
+				allButtonsEnabled: false,
+				buttons: [
+					{
+						type: "all",
+						text: "todo"
+					}
+				],
+				selected: 1,
+				inputEnabled: false
+			},
+			tooltip: {
+				shared: false
+			},
+			xAxis: {
+				crosshair: {
+					width: 1,
+					color: "#bdbdbd"
+				},
+				type: "datetime",
+				startOfWeek: 2,
+				dateTimeLabelFormats: {
+					second: "%Y-%m-%d<br/>%H:%M:%S",
+					minute: "%Y-%m-%d<br/>%H:%M",
+					hour: "%Y-%m-%d<br/>%H:%M",
+					day: "%d-%m",
+					week: "%d-%m",
+					month: "%m-%Y",
+					year: "%Y"
+				}
+			},
+			yAxis: {
+				gridLineColor: Highcharts.getOptions().colors_gray["gray-500"],
+				labels: {
+					format: "{value} %"
+				},
+				min: 0,
+				max: 100,
+				title: {
+					text: "% profesores"
+				},
+				opposite: false,
+				plotLines: [
+					{
+						value: {{df_media | safe}},
+						width: 4,
+						color: "#26c6da",
+						dashStyle: "ShortDot",
+						zIndex: 100,
+						label: {
+							color: "#26c6da",
+							text: "<strong>media: {{df_media | safe}}%</strong>",
+							align: "right",
+							y: -5,
+							x: -10
+						}
+					}
+				]
+			},
+			series: [
+				{
+					type: "spline",
+					color: "{{color}}",
+					name: "tutorias",
+					tooltip: {
+						pointFormat: "participiacion: {point.y}%"
+					},
+					data: {{df_data | safe}},
+					marker: {
+						fillColor: "#fff",
+						lineWidth: 2,
+						lineColor: null
+					},
+					shadow: {
+						color: "#616161",
+						width: 3,
+						offsetX: 2,
+						offsetY: 2
+					}
+				}
+			]
+		});
+	</script>
+{% endmacro %}
 {% macro highcharts_admin_cuestionario_actividad(char_id, color, df_data) %}
 	<div id="{{char_id | safe}}" class="chart" style="height: 300px"></div>
 	<script>
@@ -1018,6 +944,74 @@
 	</script>
 {% endmacro %}
 
+{% macro highcharts_admin_profesores_activos_evolucion_frecuencia(char_id, color, df_data) %}
+	<div id="{{char_id | safe}}" class="chart" style="height: 300px"></div>
+	<script>
+		Highcharts.chart("{{char_id | safe }}", {
+			chart: {
+				zoomType: "x",
+				panning: true,
+				panKey: "shift"
+			},
+			title: {
+				text: null
+			},
+			xAxis: {
+				labels: {
+					format: "{value} %"
+				},
+				title: {
+					text: "% de éxito de una tutoría"
+				},
+				crosshair: {
+					width: 1,
+					color: "#bdbdbd"
+				}
+			},
+			yAxis: {
+				labels: {
+					format: "{value} %"
+				},
+				gridLineColor: Highcharts.getOptions().colors_gray["gray-500"],
+				min: 0,
+				max: 100,
+				title: {
+					text: "% de cantidad total de tutorías"
+				}
+			},
+			plotOptions: {
+				series: {
+					allowPointSelect: false
+				}
+			},
+			series: [
+				{
+					type: "line",
+					color: "{{color}}",
+					name: "tutoria",
+					showInLegend: false,
+					tooltip: {
+						// headerFormat: "docentes que resonden: {point.x:.0f}% <br>",
+						headerFormat: null,
+						pointFormat: "{point.y:.0f}% de las tutorias contestadas al {point.x:.0f}% "
+					},
+					data: {{df_data | safe}},
+					marker: {
+						fillColor: "#fff",
+						lineWidth: 2,
+						lineColor: null
+					},
+					shadow: {
+						color: "#616161",
+						width: 3,
+						offsetX: 2,
+						offsetY: 2
+					}
+				}
+			]
+		});
+	</script>
+{% endmacro %}
 {% macro checkbox_funky(tipo_a, tipo_b, tipo, prefix) %}
 	<span class="text-danger">macro checkbox_funky a reemplazar</span>
 	<br>
