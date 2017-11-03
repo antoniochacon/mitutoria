@@ -2,7 +2,7 @@
 <a data-toggle="collapse" data-parent="#parent_alumno" href="#alumno_{{hashids_encode(alumno.id)}}" class="collapse_header_1" aria-expanded="false" title="{{alumno.apellidos}}, {{alumno.nombre}}">
 	<div class="media">
 		<span
-			class="capital {% if not alumno_asignaturas(alumno.id) %} capital-warning {% elif alumno_tutorias(alumno.id, '') %}
+			class="capital {% if not asignaturas_alumno_by_alumno_id(alumno.id) %} capital-warning {% elif alumno_tutorias(alumno.id, '') %}
 		{% if alumno_tutorias(alumno.id, True) %} capital-primary {% else %} capital-gray{% endif %}
 			 {% else %} capital-info {% endif %}">{{alumno.apellidos | first | upper}}</span>
 		<div class="media-body">

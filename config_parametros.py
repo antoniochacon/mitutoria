@@ -11,7 +11,6 @@ from forms import *
 import csv
 # ****************************************
 # XXX: google api
-# import httplib2
 import httplib2
 from apiclient import errors, discovery
 from oauth2client import client
@@ -25,9 +24,6 @@ import arrow
 utc = arrow.utcnow()
 # ****************************************
 from statistics import mean, mode
-# from decimal import Decimal
-# ****************************************
-import pandas as pd
 # ****************************************
 import base64
 from cryptography.fernet import Fernet
@@ -66,9 +62,10 @@ hashids = Hashids(salt=salt)
 # email_time_sleep = 3
 
 
+
 # XXX Heroku_Host
 tutoria_email_link = 'https://mitutoria.herokuapp.com/informe/'
 email_validate_link = 'https://mitutoria.herokuapp.com/email_validate/'
 index_link = 'https://mitutoria.herokuapp.com/'
 password_reset_link = 'https://mitutoria.herokuapp.com/password_reset/'
-email_time_sleep = 10
+email_time_sleep = 3

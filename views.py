@@ -129,54 +129,67 @@ def admin_estadisticas_html(params={}):
     stats = {}
     stats['usuarios_all'] = usuarios_all_count()
 
-    stats['emails_validados'] = emails_validados_count()[0]
-    stats['emails_validados_percent'] = emails_validados_count()[1]
+    emails_validados_count_sql = emails_validados_count()
+    stats['emails_validados'] = emails_validados_count_sql[0]
+    stats['emails_validados_percent'] = emails_validados_count_sql[1]
 
-    stats['emails_no_robinson'] = emails_no_robinson_count()[0]
-    stats['emails_no_robinson_percent'] = emails_no_robinson_count()[1]
+    emails_no_robinson_count_sql = emails_no_robinson_count()
+    stats['emails_no_robinson'] = emails_no_robinson_count_sql[0]
+    stats['emails_no_robinson_percent'] = emails_no_robinson_count_sql[1]
 
-    stats['emails_no_ban'] = emails_no_ban_count()[0]
-    stats['emails_no_ban_percent'] = emails_no_ban_count()[1]
+    emails_no_ban_count_sql = emails_no_ban_count()
+    stats['emails_no_ban'] = emails_no_ban_count_sql[0]
+    stats['emails_no_ban_percent'] = emails_no_ban_count_sql[1]
 
-    stats['tutoria_timeout'] = tutoria_timeout_count()[0]
-    stats['tutoria_timeout_percent'] = tutoria_timeout_count()[1]
-    stats['evolucion_equipo_educativo'] = evolucion_equipo_educativo_count()[0]
-    stats['evolucion_equipo_educativo_percent'] = evolucion_equipo_educativo_count()[1]
+    tutoria_timeout_count_sql = tutoria_timeout_count()
+    stats['tutoria_timeout'] = tutoria_timeout_count_sql[0]
+    stats['tutoria_timeout_percent'] = tutoria_timeout_count_sql[1]
+
+    evolucion_equipo_educativo_count_sql = evolucion_equipo_educativo_count()
+    stats['evolucion_equipo_educativo'] = evolucion_equipo_educativo_count_sql[0]
+    stats['evolucion_equipo_educativo_percent'] = evolucion_equipo_educativo_count_sql[1]
 
     stats['tutorias_all_count'] = tutorias_all_count()
-    stats['tutorias_con_respuesta'] = tutorias_con_respuesta_count()[0]
-    stats['tutorias_con_respuesta_percent'] = tutorias_con_respuesta_count()[1]
+    tutorias_con_respuesta_count_sql = tutorias_con_respuesta_count()
+    stats['tutorias_con_respuesta'] = tutorias_con_respuesta_count_sql[0]
+    stats['tutorias_con_respuesta_percent'] = tutorias_con_respuesta_count_sql[1]
 
-    stats['tutorias_con_acuerdos_count'] = tutorias_con_acuerdos_count()
+    stats['tutorias_con_acuerdo_count'] = tutorias_con_acuerdo_count()
 
-    stats['preguntas_por_cuestionario_min'] = preguntas_por_cuestionario()[0]
-    stats['preguntas_por_cuestionario_media'] = preguntas_por_cuestionario()[1]
-    stats['preguntas_por_cuestionario_max'] = preguntas_por_cuestionario()[2]
-    stats['preguntas_por_cuestionario_percent'] = preguntas_por_cuestionario()[3]
+    preguntas_por_cuestionario_sql = preguntas_por_cuestionario()
+    stats['preguntas_por_cuestionario_min'] = preguntas_por_cuestionario_sql[0]
+    stats['preguntas_por_cuestionario_media'] = preguntas_por_cuestionario_sql[1]
+    stats['preguntas_por_cuestionario_max'] = preguntas_por_cuestionario_sql[2]
+    stats['preguntas_por_cuestionario_percent'] = preguntas_por_cuestionario_sql[3]
 
+    profesores_por_usuario_sql = profesores_por_usuario()
     stats['profesores_all_count'] = profesores_all_cunt()
-    stats['profesores_por_usuario_min'] = profesores_por_usuario()[0]
-    stats['profesores_por_usuario_media'] = profesores_por_usuario()[1]
-    stats['profesores_por_usuario_max'] = profesores_por_usuario()[2]
+    stats['profesores_por_usuario_min'] = profesores_por_usuario_sql[0]
+    stats['profesores_por_usuario_media'] = profesores_por_usuario_sql[1]
+    stats['profesores_por_usuario_max'] = profesores_por_usuario_sql[2]
 
-    stats['profesores_actividad'] = profesores_actividad_count()[0]
-    stats['profesores_actividad_percent'] = profesores_actividad_count()[1]
-    stats['profesores_activos_evolucion'] = profesores_actividad_count()[2]
-    stats['profesores_activos_evolucion_frecuencia'] = profesores_actividad_count()[3]
-    stats['profesores_activos_evolucion_frecuencia_absoluta'] = profesores_actividad_count()[4]
-    stats['profesores_activos_evolucion_media'] = profesores_actividad_count()[5]
+    profesores_actividad_count_sql = profesores_actividad_count()
+    stats['profesores_actividad'] = profesores_actividad_count_sql[0]
+    stats['profesores_actividad_percent'] = profesores_actividad_count_sql[1]
+    stats['profesores_activos_evolucion'] = profesores_actividad_count_sql[2]
+    stats['profesores_activos_evolucion_frecuencia'] = profesores_actividad_count_sql[3]
+    stats['profesores_activos_evolucion_frecuencia_absoluta'] = profesores_actividad_count_sql[4]
+    stats['profesores_activos_evolucion_media'] = profesores_actividad_count_sql[5]
 
-    stats['tutorias_por_usuario_min'] = tutorias_por_usuario_count()[0]
-    stats['tutorias_por_usuario_media'] = tutorias_por_usuario_count()[1]
-    stats['tutorias_por_usuario_max'] = tutorias_por_usuario_count()[2]
+    tutorias_por_usuario_count_sql = tutorias_por_usuario_count()
+    stats['tutorias_por_usuario_min'] = tutorias_por_usuario_count_sql[0]
+    stats['tutorias_por_usuario_media'] = tutorias_por_usuario_count_sql[1]
+    stats['tutorias_por_usuario_max'] = tutorias_por_usuario_count_sql[2]
 
     stats['cuestionario_actividad'] = cuestionario_actividad()
 
-    stats['informes_con_comentario'] = informes_con_comentario_count()[0]
-    stats['informes_con_comentario_percent'] = informes_con_comentario_count()[1]
+    informes_con_comentario_count_sql = informes_con_comentario_count()
+    stats['informes_con_comentario'] = informes_con_comentario_count_sql[0]
+    stats['informes_con_comentario_percent'] = informes_con_comentario_count_sql[1]
 
-    stats['informes_con_pruebas_evalubles'] = informes_con_pruebas_evalubles_count()[0]
-    stats['informes_con_pruebas_evalubles_percent'] = informes_con_pruebas_evalubles_count()[1]
+    informes_con_pruebas_evalubles_count_sql = informes_con_pruebas_evalubles_count()
+    stats['informes_con_pruebas_evalubles'] = informes_con_pruebas_evalubles_count_sql[0]
+    stats['informes_con_pruebas_evalubles_percent'] = informes_con_pruebas_evalubles_count_sql[1]
 
     stats['diferencial_media'] = diferencial_media()
 
@@ -608,7 +621,7 @@ def alumnos_html(params={}):
             params['collapse_alumno_edit'] = True
             params['alumno_edit_link'] = True
             params['anchor'] = 'anchor_ficha_' + str(hashids_encode(current_alumno_id))
-            if not alumno_asignaturas(current_alumno_id):
+            if not asignaturas_alumno_by_alumno_id(current_alumno_id):
                 params['collapse_alumno_edit_asignaturas'] = True
             return redirect(url_for('alumnos_html', params=dic_encode(params)))
 
@@ -653,7 +666,7 @@ def alumnos_html(params={}):
                         alumno_asignatura_delete = session_sql.query(Association_Alumno_Asignatura).filter_by(alumno_id=current_alumno_id, asignatura_id=asignatura.id).first()
                         session_sql.delete(alumno_asignatura_delete)
                         collapse_alumno_edit_asignaturas_contador += 1
-            if not alumno_asignaturas_id(current_alumno_id):
+            if not asignaturas_alumno_by_alumno_id(current_alumno_id):
                 params['collapse_alumno_edit_asignaturas'] = True
                 flash_toast('Debería asignar asignaturas a ' + Markup('<strong>') + alumno_edit_form.nombre.data + Markup('</strong>'), 'warning')
             else:
@@ -748,7 +761,7 @@ def alumnos_html(params={}):
                 return redirect(url_for('asignaturas_html', params=dic_encode(params)))
 
             # NOTE check si hay asignaturas asignadas al alumno
-            if not alumno_asignaturas(current_alumno_id):
+            if not asignaturas_alumno_by_alumno_id(current_alumno_id):
                 params['collapse_alumno_edit'] = True
                 params['alumno_edit_link'] = True
                 params['collapse_alumno_edit_asignaturas'] = True
@@ -905,9 +918,9 @@ def admin_cuestionario_html(params={}):
                         categoria_add_form.orden.errors = ['']
                         flash_toast('Orden duplicado', 'warning')
                     return render_template('admin_cuestionario.html',
-                        categoria_add=categoria_add_form, categoria_edit=Categoria_Add(),
-                        pregunta_add=Pregunta_Add(), pregunta_edit=Pregunta_Add(),
-                        params=params)
+                                           categoria_add=categoria_add_form, categoria_edit=Categoria_Add(),
+                                           pregunta_add=Pregunta_Add(), pregunta_edit=Pregunta_Add(),
+                                           params=params)
                 else:
                     session_sql.add(categoria_add)
                     session_sql.commit()
@@ -917,8 +930,8 @@ def admin_cuestionario_html(params={}):
                 params['collapse_categoria_add'] = True
                 flash_wtforms(categoria_add_form, flash_toast, 'warning')
             return render_template('admin_cuestionario.html',
-                categoria_add=categoria_add_form,categoria_edit=Categoria_Add(),
-                pregunta_add=Pregunta_Add(), pregunta_edit=Pregunta_Add(), params=params)
+                                   categoria_add=categoria_add_form, categoria_edit=Categoria_Add(),
+                                   pregunta_add=Pregunta_Add(), pregunta_edit=Pregunta_Add(), params=params)
 
         # XXX selector_categoria_add_close
         if request.form['selector_button'] == 'selector_categoria_add_close':
@@ -974,9 +987,10 @@ def admin_cuestionario_html(params={}):
                 return redirect(url_for('admin_cuestionario_html', params=dic_encode(params)))
             else:
                 flash_wtforms(categoria_edit_form, flash_toast, 'warning')
-            return render_template(
-                'admin_cuestionario.html', categoria_add=Categoria_Add(),
-                categoria_edit=categoria_edit_form, move_down=move_down, move_up=move_up, params=params)
+            return render_template('admin_cuestionario.html',
+                                   pregunta_add=Pregunta_Add(), pregunta_edit=Pregunta_Add(),
+                                   categoria_add=Categoria_Add(), categoria_edit=categoria_edit_form,
+                                   move_down=move_down, move_up=move_up, params=params)
 
         # XXX selector_categoria_edit_close
         if request.form['selector_button'] == 'selector_categoria_edit_close':
@@ -1259,24 +1273,28 @@ def analisis_html(params={}):
         abort(404)
     params = {}
     params['current_tutoria_id'] = params_old.get('current_tutoria_id', 0)
-    current_tutoria_id = params['current_tutoria_id']  # NOTE current_tutoria_id evaluado correctamente
+    current_tutoria_id = params['current_tutoria_id']
     params['tutoria_delete_link'] = params_old.get('tutoria_delete_link', False)
     params['tutoria_re_enviar_link'] = params_old.get('tutoria_re_enviar_link', False)
     params['tutoria_edit_link'] = params_old.get('tutoria_edit_link', False)
 
-    grupo = grupo_activo()
-    tutoria_sql = tutoria_by_id(current_tutoria_id)
-    alumno_sql = invitado_alumno(current_tutoria_id)
-    if not tutoria_sql or not alumno_sql:
+    grupo = grupo_by_tutoria_id(current_tutoria_id)
+    tutoria = tutoria_by_id(current_tutoria_id)
+    alumno = alumno_by_tutoria_id(current_tutoria_id)
+
+    if not tutoria or not alumno:
         return redirect(url_for('analisis_tutoria_no_disponible_html'))
 
-    df_data = df_load()
-    # print(df_data)
-
+    stats = analisis_tutoria(current_tutoria_id)
+    grupo_stats = respuestas_grupo_stats(current_tutoria_id, stats['preguntas_con_respuesta_lista'], stats['asignaturas_recibidas_lista'])
+    respuestas_alumno_media = respuestas_tutoria_media(current_tutoria_id)
+    evolucion_stats = evolucion_tutorias(alumno.id)
     # abort(404)
-    return render_template(
-        'analisis.html', grupo=grupo, alumno=alumno_sql, tutoria=tutoria_sql,
-        df_data=df_data, params=params)
+
+    return render_template('analisis.html',
+                           params=params, tutoria=tutoria, alumno=alumno, grupo=grupo,
+                           stats=stats, grupo_stats=grupo_stats,
+                           respuestas_alumno_media=respuestas_alumno_media, evolucion_stats=evolucion_stats)
 
 
 # XXX analisis_tutoria_edit
@@ -1288,11 +1306,11 @@ def analisis_tutoria_edit_html(params={}):
         current_tutoria_id = current_id_request('current_tutoria_id')
         params['current_tutoria_id'] = current_tutoria_id
 
-        # XXX tutoria_acuerdos_save
-        if request.form['selector_button'] == 'selector_acuerdos_save':
-            acuerdos = request.form.get('acuerdos')
+        # XXX tutoria_acuerdo_save
+        if request.form['selector_button'] == 'selector_acuerdo_save':
+            acuerdo = request.form.get('acuerdo')
             tutoria_sql = tutoria_by_id(current_tutoria_id)
-            tutoria_sql.acuerdos = acuerdos
+            tutoria_sql.acuerdo = acuerdo
             session_sql.commit()
             return redirect(url_for('analisis_html', params=dic_encode(params)))
 

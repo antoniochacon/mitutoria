@@ -44,7 +44,7 @@ class Settings (Base):
     tutoria_duracion = Column(Integer, default=20)
     tutoria_timeout = Column(Boolean, default=True)
     show_asignaturas_analisis = Column(Boolean, default=True)
-    diferencial = Column(Integer, default=25)
+    diferencial = Column(Integer, default=15)
     grupo_activo_id = Column(Integer)
     grupos = relationship('Grupo', backref='settings', lazy='dynamic', cascade='delete')
     preguntas = relationship('Association_Settings_Pregunta', cascade='delete')
@@ -175,7 +175,7 @@ class Tutoria (Base):
     activa = Column(Boolean, default=True)
     deleted = Column(Boolean, default=False)
     calendar_event_id = Column(String)
-    acuerdos = Column(String)
+    acuerdo = Column(String)
     informes = relationship('Informe', backref='tutoria', lazy='dynamic', cascade='delete')
     created_at = Column(DateTime, default=datetime.datetime.now())
 
