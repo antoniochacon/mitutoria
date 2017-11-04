@@ -24,12 +24,12 @@
 						{{tutoria.fecha.strftime('%d')}}
 						[{{tutoria.hora.strftime('%H:%M')}}]
 						{{alumno_by_id(tutoria.alumno_id).nombre}}
-						<span class="badge badge-secondary float-right" title="{{cociente_porcentual(asignaturas_recibidas_by_tutoria_id(tutoria.id)[0] | count, asignaturas_solicitadas_horario_by_tutoria_id(tutoria.id) | count)}}% de los informes recibidos">
-							{{cociente_porcentual(asignaturas_recibidas_by_tutoria_id(tutoria.id)[0] | count, asignaturas_solicitadas_horario_by_tutoria_id(tutoria.id) | count)}}%
+						<span class="badge badge-secondary float-right" title="{{cociente_porcentual(analisis_tutoria(tutoria.id)['asignaturas_recibidas_lista'] | count, analisis_tutoria(tutoria.id)['asignaturas_solicitadas_horario_lista'] | count)}}% de los informes recibidos">
+							{{cociente_porcentual(analisis_tutoria(tutoria.id)['asignaturas_recibidas_lista'] | count, analisis_tutoria(tutoria.id)['asignaturas_solicitadas_horario_lista'] | count)}}%
 						</span>
 					</a>
 					<div class="progress">
-						<div class="progress-bar bg-secondary" role="progressbar" aria-valuemin="0" aria-valuemax="100" style="height:2px; width: {{cociente_porcentual(asignaturas_recibidas_by_tutoria_id(tutoria.id)[0] | count, asignaturas_solicitadas_horario_by_tutoria_id(tutoria.id) | count)}}%;"></div>
+						<div class="progress-bar bg-secondary" role="progressbar" aria-valuemin="0" aria-valuemax="100" style="height:2px; width: {{cociente_porcentual(analisis_tutoria(tutoria.id)['asignaturas_recibidas_lista'] | count, analisis_tutoria(tutoria.id)['asignaturas_solicitadas_horario_lista'] | count)}}%;"></div>
 					</div>
 				{% endfor %}
 			</div>
