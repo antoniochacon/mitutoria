@@ -15,14 +15,10 @@
 				shared: false,
 				formatter: function () {
 					var text = "";
-					var cuestiones_lista = {{stats['preguntas_con_respuesta_lista_enunciado_ticker'] | safe}};
-					var cuestion = this.series.name;
-					if (this.series.type == "column" && cuestiones_lista.indexOf(cuestion) >= 0) {
-						text = this.x + " | Cuestionario | Media: " + Highcharts.numberFormat(this.total, 1) + "<br>" + this.series.name + ": " + Highcharts.numberFormat(this.y * {{stats['preguntas_con_respuesta_lista'] | count}}, 1);
-					} else if (this.series.type == "column") {
-						text = this.x + " | Notas | Media: " + Highcharts.numberFormat(this.y, 1) + "<br>" + this.series.name;
+					if (this.series.type == "column") {
+						text = this.x + " | Media: " + Highcharts.numberFormat(this.total, 1) + "<br>" + this.series.name + ": " + Highcharts.numberFormat(this.y * {{stats['preguntas_con_respuesta_lista_enunciado_ticker'] | count}}, 1);
 					} else {
-						text = this.x + " | " + this.series.name + ": " + Highcharts.numberFormat(this.y, 1);
+						text = this.x + "<br>" + this.series.name + ": " + Highcharts.numberFormat(this.y, 1);
 					}
 					return text;
 				}
@@ -112,7 +108,7 @@
 				}{% for pregunta in stats['preguntas_con_respuesta_lista'] %}, {
 						type: "spline",
 						name: "{{pregunta.enunciado_ticker}}",
-						data: {{respuestas_asignatura_alumno_lista(tutoria_id, pregunta.id, stats['asignaturas_recibidas_lista'], stats['preguntas_con_respuesta_lista'])['respuestas_asignatura_lista']}},
+						data: {{respuestas_asignatura_alumno_lista(tutoria_id, pregunta.id, stats['asignaturas_recibidas_lista'], stats['preguntas_con_respuesta_lista'])['respuestas_asignatura_lista'] | safe}},
 						visible: false,
 						marker: {
 							fillColor: "#fff",
