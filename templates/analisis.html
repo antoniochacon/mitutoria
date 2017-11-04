@@ -6,6 +6,8 @@
 		{% if grupo and alumno and tutoria %}
 			{{titulo_1(bg_color='bg-dark', titulo='Análisis gráfico de la tutoría')}}
 			<form action="/analisis_tutoria_edit" method="POST">
+				{% with %}
+				{% set tutoria_incoming = tutoria_incoming(tutoria.id) %}
 				<div class="row align-items-center pb-2">
 					<div class="col-sm-12 col-md-6 col-lg-4">
 						<span class="{% if tutoria.activa %}text-mutted{% else %}text-info{% endif %}">Alumno:
@@ -85,16 +87,18 @@
 							</div>
 						{% endif %}
 						{# NOTE badge #}
+
 						<span
 							class="badge {% if tutoria.activa %}badge-secondary{% else %}badge-info text-white{% endif %} float-right"
-							title="{{cociente_porcentual(stats['asignaturas_recibidas_lista'] | count, stats['asignaturas_solicitadas_horario_lista'] | count)}}% de los informes recibidos">
+							title="{{tutoria_incoming['porcentaje']}}% de los informes recibidos">
 							<span class="align-middle pr-1 {% if tutoria.activa %}color_secondary_lighten{% else %}badge-info text-mutted{% endif %}">{{stats['asignaturas_recibidas_lista'] | count}}
 								|
 								{{stats['asignaturas_solicitadas_horario_lista'] | count}}
 							</span>
-							<span class="h4 align-middle">{{cociente_porcentual(stats['asignaturas_recibidas_lista'] | count, stats['asignaturas_solicitadas_horario_lista'] | count)}}
+							<span class="h4 align-middle">{{tutoria_incoming['porcentaje']}}
 								%</span>
 						</span>
+
 					</div>
 				</div>
 				<div class="progress rounded-0 mb-3">
@@ -103,8 +107,9 @@
 						role="progressbar"
 						aria-valuemin="0"
 						aria-valuemax="100"
-						style="{% if not tutoria.activa %} height:2px; {% endif %} width: {{cociente_porcentual(stats['asignaturas_recibidas_lista'] | count, stats['asignaturas_solicitadas_horario_lista'] | count)}}%;"></div>
+						style="{% if not tutoria.activa %} height:2px; {% endif %} width: {{tutoria_incoming['porcentaje']}}%;"></div>
 				</div>
+				{% endwith %}
 				{% if params['tutoria_re_enviar_link']%}
 					{% include 'analisis_re_enviar_a_block.html' %}
 				{% endif %}

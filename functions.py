@@ -15,18 +15,43 @@ import config_gmail_api
 # ***********************************************************************
 # XXX: tutoria stats (SIN PANDA)
 # ***********************************************************************
+def tutoria_incoming(tutoria_id):
+    stats = {}
+    alumno = alumno_by_tutoria_id(tutoria_id)
+    asignaturas_horario = alumno.asignaturas.order_by('asignatura')
+    asignaturas_solicitadas = session_sql.query(Asignatura).join(Association_Tutoria_Asignatura).filter(Tutoria.id == tutoria_id).order_by('asignatura').all()
+
+    asignaturas_solicitadas_horario_lista = []
+    asignaturas_solicitas_horario_asignatura_lista = []
+    for asignatura in asignaturas_horario:
+        if asignatura in asignaturas_solicitadas:
+            asignaturas_solicitadas_horario_lista.append(asignatura)
+    stats['asignaturas_solicitadas_horario_lista_count'] = len(asignaturas_solicitadas_horario_lista)
+
+    asignaturas_recibidas_lista = []
+    for asignatura in asignaturas_solicitadas_horario_lista:
+        informe = session_sql.query(Informe).filter(Informe.tutoria_id == tutoria_id, Informe.asignatura_id == asignatura.id).first()
+        if informe and asignatura not in asignaturas_recibidas_lista:
+            asignaturas_recibidas_lista.append(asignatura)
+    stats['asignaturas_recibidas_lista_count'] = len(asignaturas_recibidas_lista)
+
+    stats['porcentaje'] = cociente_porcentual(stats['asignaturas_recibidas_lista_count'], stats['asignaturas_solicitadas_horario_lista_count'])
+
+    return stats
+
+
 def analisis_tutoria(tutoria_id):
     stats = {}
-    grupo = grupo_by_tutoria_id(tutoria_id)
+    # grupo = grupo_by_tutoria_id(tutoria_id)
     tutoria = tutoria_by_id(tutoria_id)
     alumno = alumno_by_tutoria_id(tutoria_id)
 
-    stats['grupo'] = grupo
+    # stats['grupo'] = grupo
     stats['tutoria'] = tutoria
     stats['alumno'] = alumno
 
     stats['asignaturas_horario'] = alumno.asignaturas.order_by('asignatura')
-    stats['asignaturas_grupo'] = grupo.asignaturas.order_by('asignatura')
+    # stats['asignaturas_grupo'] = grupo.asignaturas.order_by('asignatura')
 
     asignaturas_solicitadas_horario_lista = []
     asignaturas_solicitas_horario_asignatura_lista = []
@@ -1274,4 +1299,4 @@ def cita_random():
 
 
 app.jinja_env.globals.update(settings=settings, cita_random=cita_random,  singular_plural=singular_plural, grupo_activo=grupo_activo, curso=curso, alumnos_not_sorted=alumnos_not_sorted, alumnos=alumnos, alumno_tutorias=alumno_tutorias, equal_str=equal_str, asignaturas=asignaturas, asignatura_alumnos=asignatura_alumnos, association_alumno_asignatura_check=association_alumno_asignatura_check,
-                             tutoria_asignaturas_count=tutoria_asignaturas_count, string_to_date=string_to_date, association_settings_pregunta_check=association_settings_pregunta_check, preguntas=preguntas, informe_preguntas=informe_preguntas, invitado_settings=invitado_settings, invitado_preguntas=invitado_preguntas, invitado_settings_by_id=invitado_settings_by_id, invitado_respuesta=invitado_respuesta, invitado_pruebas_evaluables=invitado_pruebas_evaluables, invitado_informe=invitado_informe, cociente_porcentual=cociente_porcentual, tutoria_asignaturas=tutoria_asignaturas, pregunta_active_default_check=pregunta_active_default_check, pregunta_visible_check=pregunta_visible_check, grupo_activo_check=grupo_activo_check, user_by_id=user_by_id, tutoria_stats=tutoria_stats, asignatura_informes_count=asignatura_informes_count, asignatura_informes_respondidos_count=asignatura_informes_respondidos_count, asignaturas_not_sorted=asignaturas_not_sorted, grupo_tutorias=grupo_tutorias, alumno_by_id=alumno_by_id, hashids_encode=hashids_encode, hashids_decode=hashids_decode, f_encode=f_encode, f_decode=f_decode, dic_encode_args=dic_encode_args, dic_try=dic_try, settings_by_id=settings_by_id, usuario_grupos=usuario_grupos, usuarios=usuarios, round_custom=round_custom, usuarios_mas_activos=usuarios_mas_activos, grupo_alumnos_count=grupo_alumnos_count, diferencial_check=diferencial_check, categoria_by_id=categoria_by_id, categorias=categorias, preguntas_by_categoria_id=preguntas_by_categoria_id, asignatura_by_id=asignatura_by_id, informe_by_tutoria_id_by_asignatura_id=informe_by_tutoria_id_by_asignatura_id, notas_evolucion=notas_evolucion, asignaturas_alumno_by_alumno_id=asignaturas_alumno_by_alumno_id, respuestas_pregunta_alumno_lista=respuestas_pregunta_alumno_lista, respuestas_asignatura_alumno_lista=respuestas_asignatura_alumno_lista, notas_pruebas_evaluables_grupo=notas_pruebas_evaluables_grupo, notas_pruebas_evaluables_alumno=notas_pruebas_evaluables_alumno, analisis_tutoria=analisis_tutoria)
+                             tutoria_asignaturas_count=tutoria_asignaturas_count, string_to_date=string_to_date, association_settings_pregunta_check=association_settings_pregunta_check, preguntas=preguntas, informe_preguntas=informe_preguntas, invitado_settings=invitado_settings, invitado_preguntas=invitado_preguntas, invitado_settings_by_id=invitado_settings_by_id, invitado_respuesta=invitado_respuesta, invitado_pruebas_evaluables=invitado_pruebas_evaluables, invitado_informe=invitado_informe, cociente_porcentual=cociente_porcentual, tutoria_asignaturas=tutoria_asignaturas, pregunta_active_default_check=pregunta_active_default_check, pregunta_visible_check=pregunta_visible_check, grupo_activo_check=grupo_activo_check, user_by_id=user_by_id, tutoria_stats=tutoria_stats, asignatura_informes_count=asignatura_informes_count, asignatura_informes_respondidos_count=asignatura_informes_respondidos_count, asignaturas_not_sorted=asignaturas_not_sorted, grupo_tutorias=grupo_tutorias, alumno_by_id=alumno_by_id, hashids_encode=hashids_encode, hashids_decode=hashids_decode, f_encode=f_encode, f_decode=f_decode, dic_encode_args=dic_encode_args, dic_try=dic_try, settings_by_id=settings_by_id, usuario_grupos=usuario_grupos, usuarios=usuarios, round_custom=round_custom, usuarios_mas_activos=usuarios_mas_activos, grupo_alumnos_count=grupo_alumnos_count, diferencial_check=diferencial_check, categoria_by_id=categoria_by_id, categorias=categorias, preguntas_by_categoria_id=preguntas_by_categoria_id, asignatura_by_id=asignatura_by_id, informe_by_tutoria_id_by_asignatura_id=informe_by_tutoria_id_by_asignatura_id, notas_evolucion=notas_evolucion, asignaturas_alumno_by_alumno_id=asignaturas_alumno_by_alumno_id, respuestas_pregunta_alumno_lista=respuestas_pregunta_alumno_lista, respuestas_asignatura_alumno_lista=respuestas_asignatura_alumno_lista, notas_pruebas_evaluables_grupo=notas_pruebas_evaluables_grupo, notas_pruebas_evaluables_alumno=notas_pruebas_evaluables_alumno, analisis_tutoria=analisis_tutoria, tutoria_incoming=tutoria_incoming)
