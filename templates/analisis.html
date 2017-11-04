@@ -111,7 +111,6 @@
 				{% if params['tutoria_edit_link'] %}
 					{% include 'analisis_tutoria_edit_block.html' %}
 				{% endif %}
-				{#
 				<a data-toggle="collapse" href="#analisis_cuestionario" class="collapse_header_1" aria-expanded="true" title="Analisis del cuestionario">
 					<i class="material-icons vertical-center">expand_more</i>
 					Analisis del cuestionario
@@ -157,17 +156,17 @@
 										</div>
 									</div>
 									<div class="card-body">
-										{% if diferencial_check(settings().diferencial, respuestas_alumno_media, resultados_pruebas_evaluables_alumno(tutoria.id, asignatura.id)['notas_asignatura_media']) %}
+										{% if diferencial_check(settings().diferencial, respuestas_alumno_media, notas_pruebas_evaluables_alumno(tutoria.id, asignatura.id)['notas_asignatura_media']) %}
 											<span class="badge text-white badge-secondary float-right">
 												resultados !
 											</span>
 										{% endif %}
-										{% if diferencial_check(settings().diferencial, respuestas_alumno_media, respuestas_pregunta_alumno_lista(tutoria.id, asignatura.id, stats['preguntas_con_respuesta_lista'])['respuestas_pregunta_media']) %}
+										{% if diferencial_check(settings().diferencial, respuestas_alumno_media, respuestas_pregunta_alumno_lista(tutoria.id, asignatura.id, stats['asignaturas_recibidas_lista'], stats['preguntas_con_respuesta_lista'])['respuestas_pregunta_media']) %}
 											<span class="badge badge-primary float-right mr-1">
 												actitud !
 											</span>
 										{% endif %}
-										{{highcharts_asignatura(char_id=asignatura.asignatura, asignatura=asignatura, alumno=alumno, grupo=grupo, tutoria_id=tutoria.id, stats=stats, grupo_stats=grupo_stats, resultados_pruebas_evaluables_alumno=resultados_pruebas_evaluables_alumno(tutoria.id, asignatura.id), resultados_pruebas_evaluables_grupo=resultados_pruebas_evaluables_grupo(tutoria.id, asignatura.id), respuestas_alumno_media=respuestas_alumno_media)}}
+										{{highcharts_asignatura(char_id=asignatura.asignatura, asignatura=asignatura, alumno=alumno, grupo=grupo, tutoria_id=tutoria.id, stats=stats, grupo_stats=grupo_stats, notas_pruebas_evaluables_alumno=notas_pruebas_evaluables_alumno(tutoria.id, asignatura.id), notas_pruebas_evaluables_grupo=notas_pruebas_evaluables_grupo(tutoria.id, asignatura.id), respuestas_alumno_media=respuestas_alumno_media)}}
 									</div>
 									{% if
 									informe_by_tutoria_id_by_asignatura_id(tutoria.id, asignatura.id).comentario %}
@@ -210,10 +209,8 @@
 						</button>
 					</div>
 				</div>
-					#}
 			</form>
 		</div>
-
 	{% else %}
 		<div class="padding_3 text-warning text-center">
 			Esta tutoría ha sido descartada.
