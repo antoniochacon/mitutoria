@@ -79,7 +79,7 @@
 							{
 								x: {{loop.index}}-1,
 								y:{% if notas_pruebas_evaluables_alumno(tutoria_id, asignatura.id)['notas_alumno_media'] != "sin_notas" %}
-									{% if notas_pruebas_evaluables_alumno(tutoria_id, asignatura.id)['notas_alumno_lista'] !=0 %}
+									{% if notas_pruebas_evaluables_alumno(tutoria_id, asignatura.id)['notas_alumno_lista'] | sum != 0 %}
 										{{notas_pruebas_evaluables_alumno(tutoria_id, asignatura.id)['notas_alumno_media'] | safe}}
 									{% else %}
 										1
@@ -89,7 +89,7 @@
 								{% endif %}
 							}
 						],
-						{% if notas_pruebas_evaluables_alumno(tutoria_id, asignatura.id)['notas_alumno_lista'] | sum !=0 %}
+						{% if notas_pruebas_evaluables_alumno(tutoria_id, asignatura.id)['notas_alumno_lista'] | sum != 0 %}
 							color: "{{color_2}}"
 						{% else %}
 							color: "#26c6da"
