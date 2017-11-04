@@ -1,4 +1,3 @@
-
 {% macro highcharts_evalucion(char_id, color_1, color_2, grupo, alumno, evolucion_stats) %}
 	<div id="{{char_id | safe}}" class="chart" style="height: 300px"></div>
 	<script>
@@ -88,7 +87,7 @@
 					animation: {
 						duration: 2000
 					},
-					data: {{evolucion_stats['evolucion_alumno_media_lista']}},
+					data: {{evolucion_stats['evolucion_alumno_media_lista'] | safe}},
 					tooltip: {
 						valueDecimals: 2
 					},
@@ -108,7 +107,8 @@
 					animation: {
 						duration: 2000
 					},
-					data: {{evolucion_stats['evalucion_notas'] | safe}},
+					// aqui esta el problema
+					data: {{evolucion_stats['evolucion_notas'] | safe}},
 					tooltip: {
 						valueDecimals: 2
 					},
@@ -125,7 +125,7 @@
 						duration: 2000
 					},
 					color: "#424242",
-					data: {{evolucion_stats['evolucion_grupo_media_lista']}},
+					data: {{evolucion_stats['evolucion_grupo_media_lista'] | safe}},
 					tooltip: {
 						valueDecimals: 2
 					},
@@ -141,9 +141,6 @@
 		});
 	</script>
 {% endmacro %}
-
-
-
 
 {% macro highcharts_asignaturas(char_id, color_1, color_2, grupo, tutoria_id, stats, grupo_stats) %}
 	<div id="{{char_id | safe}}" class="chart" style="height: 300px"></div>
@@ -281,7 +278,6 @@
 	</script>
 {% endmacro %}
 
-
 {% macro highcharts_cuestionario(char_id, color, grupo, tutoria_id, stats, grupo_stats=grupo_stats) %}
 	<div id="{{char_id | safe}}" class="chart" style="height: 300px"></div>
 	<script>
@@ -380,11 +376,6 @@
 		});
 	</script>
 {% endmacro %}
-
-
-
-
-
 
 {% macro highcharts_asignatura(char_id, asignatura, alumno, grupo, tutoria_id, stats, grupo_stats, notas_pruebas_evaluables_alumno, notas_pruebas_evaluables_grupo, respuestas_alumno_media) %}
 
@@ -648,9 +639,6 @@
 		});
 	</script>
 {% endmacro %}
-
-
-
 
 {% macro nav_tabs_admin(tab_active, params_args) %}
 	{{nav_tabs(tab_active, params_args=params_args, dic={'Cuestiones':'admin_cuestionario', 'Citas':'admin_citas', 'Users':'admin_usuarios', 'Stats':'admin_estadisticas'})}}
