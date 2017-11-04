@@ -29,7 +29,7 @@
 				</div>
 			</div>
 			<div>
-				{% for asignatura in asignaturas('asignatura', 'apellidos', 'nombre') %}
+				{% for asignatura in asignaturas_ordenadas(settings().asignaturas_orden) %}
 					{# TODO: asignaturas_listado #}
 					{% include 'asignaturas_block.html' %}
 				{% endfor %}

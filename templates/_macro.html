@@ -1034,8 +1034,8 @@
 				{% if url == "asignaturas" %}
 				<form action="/asignaturas" method="POST">
 					<input type="hidden" name="asignaturas_orden" value="{{settings().asignaturas_orden}}">
-						<button role="button" type="submit" name="selector_button" value="asignaturas_orden" class="btn btn-outline-dark btn-sm float-right" title="reordenar">
-							<i class="material-icons vertical-center">wrap_text</i>
+						<button role="button" type="submit" name="selector_button" value="asignaturas_orden_switch" class="btn btn-outline-dark btn-sm float-right" title="reordenar">
+							<i class="material-icons vertical-center">wrap_text</i>{{ asignaturas_orden_switch(settings().asignaturas_orden)}}
 						</button>
 				</form>
 				{% endif %}
