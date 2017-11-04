@@ -12,9 +12,18 @@ import config_gmail_api
 # *****************************************************************
 
 
+def asignaturas_orden(status):
+    if status == True:
+        orden = 'asignaturas'
+    else:
+        orden = 'participiacion'
+    return orden
+
 # ***********************************************************************
 # XXX: tutoria stats (SIN PANDA)
 # ***********************************************************************
+
+
 def tutoria_incoming(tutoria_id):
     stats = {}
     alumno = alumno_by_tutoria_id(tutoria_id)
@@ -42,21 +51,12 @@ def tutoria_incoming(tutoria_id):
 
 def analisis_tutoria(tutoria_id):
     stats = {}
-    # grupo = grupo_by_tutoria_id(tutoria_id)
-    tutoria = tutoria_by_id(tutoria_id)
     alumno = alumno_by_tutoria_id(tutoria_id)
-
-    # stats['grupo'] = grupo
-    stats['tutoria'] = tutoria
-    stats['alumno'] = alumno
-
-    stats['asignaturas_horario'] = alumno.asignaturas.order_by('asignatura')
-    # stats['asignaturas_grupo'] = grupo.asignaturas.order_by('asignatura')
 
     asignaturas_solicitadas_horario_lista = []
     asignaturas_solicitas_horario_asignatura_lista = []
     stats['asignaturas_solicitadas'] = session_sql.query(Asignatura).join(Association_Tutoria_Asignatura).filter(Tutoria.id == tutoria_id).order_by('asignatura').all()
-    for asignatura in stats['asignaturas_horario']:
+    for asignatura in alumno.asignaturas.order_by('asignatura'):
         if asignatura in stats['asignaturas_solicitadas']:
             asignaturas_solicitadas_horario_lista.append(asignatura)
             asignaturas_solicitas_horario_asignatura_lista.append(asignatura.asignatura)
@@ -596,14 +596,6 @@ def profesores_actividad_count():
 
 # *****************************************************************
 # XXX FIN admin stats
-# *****************************************************************
-
-
-# def arrow_fecha(texto):
-#     return arrow.get(texto, 'Spanish_Spain.1252')  # FIXME: supongo que habra que modificarlo para heroku
-
-# def arrow_datetime(texto):
-#     return arrow.get(texto, 'Europe/Madrid')
 
 
 def tutoria_calendar_undelete(event_id):
@@ -764,13 +756,11 @@ def allowed_file(fichero_nombre):
 
 
 def asignatura_informes_count(asignatura_id):
-    asignatura_informes_count = session_sql.query(Association_Tutoria_Asignatura).filter(Association_Tutoria_Asignatura.asignatura_id == asignatura_id).count()
-    return asignatura_informes_count
+    return session_sql.query(Association_Tutoria_Asignatura).filter(Association_Tutoria_Asignatura.asignatura_id == asignatura_id).count()
 
 
 def asignatura_informes_respondidos_count(asignatura_id):
-    asignatura_informes_respondidos_count = session_sql.query(Informe).filter(Informe.asignatura_id == asignatura_id).count()
-    return asignatura_informes_respondidos_count
+    return session_sql.query(Informe).filter(Informe.asignatura_id == asignatura_id).count()
 
 
 def connenction_check():

@@ -1,4 +1,7 @@
+{% with %}
 <a id="anchor_asi_{{hashids_encode(asignatura.id)}}"></a>
+{% set informes_enviados = asignatura_informes_count(asignatura.id) %}
+{% set profesor_porcentaje = cociente_porcentual(asignatura_informes_respondidos_count(asignatura.id), informes_enviados)%}
 <a data-toggle="collapse" data-parent="#parent_alumno" href="#asignatura_{{hashids_encode(asignatura.id)}}" class="collapse_header_1" aria-expanded="false" title="{{asignatura.asignatura}}">
 	<div class="media">
 		<span class="capital {% if not asignatura_alumnos(asignatura.id) %} capital-warning {% else %} capital-mutted {% endif %}">{{asignatura.asignatura | first | upper}}</span>
@@ -8,9 +11,9 @@
 				|
 				<span class="text-mutted">{{asignatura.nombre}}</span>
 				{# NOTE badge #}
-				{% if asignatura_informes_count(asignatura.id) %}
-					<span class="badge badge-secondary float-right" title="{{cociente_porcentual(asignatura_informes_respondidos_count(asignatura.id), asignatura_informes_count(asignatura.id))}}% de los informes enviados">
-						{{cociente_porcentual(asignatura_informes_respondidos_count(asignatura.id), asignatura_informes_count(asignatura.id))}}%
+				{% if informes_enviados %}
+					<span class="badge badge-secondary float-right" title="{{profesor_porcentaje}}% de los informes enviados">
+						{{profesor_porcentaje}}%
 					</span>
 				{% endif %}
 			</div>
@@ -18,7 +21,7 @@
 	</div>
 </a>
 <div class="progress rounded-0">
-	<div class="progress-bar bg-secondary" role="progressbar" aria-valuemin="0" aria-valuemax="100" style="height:2px; width: {{cociente_porcentual(asignatura_informes_respondidos_count(asignatura.id), asignatura_informes_count(asignatura.id))}}%;"></div>
+	<div class="progress-bar bg-secondary" role="progressbar" aria-valuemin="0" aria-valuemax="100" style="height:2px; width: {{profesor_porcentaje}}%;"></div>
 </div>
 <div id="asignatura_{{hashids_encode(asignatura.id)}}" class="collapse {% if equal_str(asignatura.id, params['current_asignatura_id'])%} show {% endif %}">
 	<br>
@@ -30,7 +33,7 @@
 						<input
 							type="text"
 							{% if not equal_str(asignatura.id, params['current_asignatura_id']) or not params['asignatura_edit_link'] %}
-							readonly
+							readonly="readonly"
 							{% endif %}
 							class="form-control {% if request.method=='POST' and params['collapse_asignatura_edit'] and equal_str(asignatura.id, params['current_asignatura_id']) %} {% if asignatura_edit.asignatura.errors %} is-invalid {% else %} is-valid {% endif %} {% endif %}"
 							name="{{asignatura_edit.asignatura.name}}"
@@ -45,7 +48,7 @@
 						<input
 							type="text"
 							{% if not equal_str(asignatura.id, params['current_asignatura_id']) or not params['asignatura_edit_link'] %}
-							readonly
+							readonly="readonly"
 							{% endif %}
 							class="form-control {% if request.method=='POST' and params['collapse_asignatura_edit'] and equal_str(asignatura.id, params['current_asignatura_id']) %} {% if asignatura_edit.email.errors %} is-invalid {% else %} is-valid {% endif %} {% endif %}"
 							name="{{asignatura_edit.email.name}}"
@@ -60,7 +63,7 @@
 						<input
 							type="text"
 							{% if not equal_str(asignatura.id, params['current_asignatura_id']) or not params['asignatura_edit_link'] %}
-							readonly
+							readonly="readonly"
 							{% endif %}
 							class="form-control {% if request.method=='POST' and params['collapse_asignatura_edit'] and equal_str(asignatura.id, params['current_asignatura_id']) %} {% if asignatura_edit.nombre.errors %} is-invalid {% else %} is-valid {% endif %} {% endif %}"
 							name="{{asignatura_edit.nombre.name}}"
@@ -75,7 +78,7 @@
 						<input
 							type="text"
 							{% if not equal_str(asignatura.id, params['current_asignatura_id']) or not params['asignatura_edit_link'] %}
-							readonly
+							readonly="readonly"
 							{% endif %}
 							class="form-control {% if request.method=='POST' and params['collapse_asignatura_edit'] and equal_str(asignatura.id, params['current_asignatura_id']) %} {% if asignatura_edit.apellidos.errors %} is-invalid {% else %} is-valid {% endif %} {% endif %}"
 							name="{{asignatura_edit.apellidos.name}}"
@@ -135,3 +138,4 @@
 	<br>
 	<div class="divider grueso bg-primary"></div>
 </div>
+{% endwith %}

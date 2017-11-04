@@ -1966,6 +1966,23 @@ def asignaturas_html(params={}):
         current_asignatura_id = current_id_request('current_asignatura_id')
         params['current_asignatura_id'] = current_asignatura_id
 
+        # XXX selector_asignaturas_orden
+        if request.form['selector_button'] == 'asignaturas_orden':
+            # sera un switch de Boolean en la base de datos
+            # sera una funcion en function.py que genera y retorna
+            # el listado de asignaturas por participiacion
+            # lista.sort(key=lambda x: x[1])
+            current_asignaturas_orden = request.form.get('asignaturas_orden')
+            if current_asignaturas_orden == 'True':
+                current_asignaturas_orden = False
+            else:
+                current_asignaturas_orden = True
+            settings_edit = settings()
+            settings_edit.asignaturas_orden = current_asignaturas_orden
+            session_sql.commit()
+            flash_toast('Asignaturas ordenadas por ' + asignaturas_orden(current_asignaturas_orden), 'success')
+            return redirect(url_for('asignaturas_html'))
+
         # XXX selector_asignatura_add
         if request.form['selector_button'] == 'selector_asignatura_add':
             params['anchor'] = 'anchor_asi_add'

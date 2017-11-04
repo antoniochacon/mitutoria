@@ -46,6 +46,7 @@ class Settings (Base):
     show_asignaturas_analisis = Column(Boolean, default=True)
     diferencial = Column(Integer, default=15)
     grupo_activo_id = Column(Integer)
+    asignaturas_orden = Column(Boolean, default=True)
     grupos = relationship('Grupo', backref='settings', lazy='dynamic', cascade='delete')
     preguntas = relationship('Association_Settings_Pregunta', cascade='delete')
     created_at = Column(DateTime, default=datetime.datetime.now())

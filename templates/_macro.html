@@ -1031,6 +1031,14 @@
 		{% endif %}
 		{% if subtitulo %}
 			<h6 class="{{text_color}}">
+				{% if url == "asignaturas" %}
+				<form action="/asignaturas" method="POST">
+					<input type="hidden" name="asignaturas_orden" value="{{settings().asignaturas_orden}}">
+						<button role="button" type="submit" name="selector_button" value="asignaturas_orden" class="btn btn-outline-dark btn-sm float-right" title="reordenar">
+							<i class="material-icons vertical-center">wrap_text</i>
+						</button>
+				</form>
+				{% endif %}
 				{{subtitulo}}
 				<div class="divider {{bg_color}} grueso"></div>
 			</h6>
