@@ -14,15 +14,18 @@ import config_gmail_api
 
 def asignaturas_ordenadas(status):
     asignaturas_porcentaje_lista = []
-    asignaturas_porcentaje_ordenadas_lista=[]
     asignaturas_lista = asignaturas('asignatura', 'apellidos', 'nombre')
     if status != True:
         for asignatura in asignaturas_lista:
             profesor_porcentaje = cociente_porcentual(asignatura_informes_respondidos_count(asignatura.id), asignatura_informes_count(asignatura.id))
             asignaturas_porcentaje_lista.append([profesor_porcentaje, asignatura])
-        for asignatura_lista in sorted(asignaturas_porcentaje_lista, reverse=True):
-            asignaturas_porcentaje_ordenadas_lista.append(asignatura_lista[1])
-        asignaturas_lista = asignaturas_porcentaje_ordenadas_lista
+
+        asignaturas_lista = sorted(asignaturas_porcentaje_lista, key=itemgetter(0), reverse=True)
+        asignaturas_porcentaje_lista = []
+        for asignatura_lista in asignaturas_lista:
+            asignaturas_porcentaje_lista.append(asignatura_lista[1])
+        asignaturas_lista = asignaturas_porcentaje_lista
+
     return asignaturas_lista
 
 
