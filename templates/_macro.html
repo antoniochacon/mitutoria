@@ -59,7 +59,7 @@
 						showInLegend: false,
 						maxPointWidth: 50,
 						color: "{{color_1}}",
-						name: "{{pregunta.enunciado}}",
+						name: "{{pregunta.enunciado_ticker}}",
 						data: {{respuestas_asignatura_alumno_lista(tutoria_id, pregunta.id, stats['asignaturas_recibidas_lista'], stats['preguntas_con_respuesta_lista'])['respuestas_asignatura_stacked'] | safe}}
 					},
 				{% endfor %}
