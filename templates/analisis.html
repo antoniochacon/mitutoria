@@ -161,7 +161,7 @@
 										</div>
 									</div>
 									<div class="card-body">
-										{% if diferencial_check(settings().diferencial, respuestas_tutoria_media_stats, notas_pruebas_evaluables_alumno(tutoria.id, asignatura.id)['notas_alumno_media']) %}
+										{% if diferencial_check(settings().diferencial, respuestas_pregunta_alumno_lista(tutoria.id, asignatura.id, stats['asignaturas_recibidas_lista'], stats['preguntas_con_respuesta_lista'])['respuestas_pregunta_media'], notas_pruebas_evaluables_alumno(tutoria.id, asignatura.id)['notas_alumno_media']) %}
 											<span class="badge text-white badge-secondary float-right">
 												resultados !
 											</span>
