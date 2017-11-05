@@ -1,8 +1,9 @@
 {% with %}
-<a id="anchor_asi_{{hashids_encode(asignatura.id)}}"></a>
+{% set hashids_encode_asignatura_id = hashids_encode(asignatura.id) %}
+<a id="anchor_asi_{{hashids_encode_asignatura_id}}"></a>
 {% set informes_enviados = asignatura_informes_count(asignatura.id) %}
 {% set profesor_porcentaje = cociente_porcentual(asignatura_informes_respondidos_count(asignatura.id), informes_enviados)%}
-<a data-toggle="collapse" data-parent="#parent_alumno" href="#asignatura_{{hashids_encode(asignatura.id)}}" class="collapse_header_1" aria-expanded="false" title="{{asignatura.asignatura}}">
+<a data-toggle="collapse" data-parent="#parent_alumno" href="#asignatura_{{hashids_encode_asignatura_id}}" class="collapse_header_1" aria-expanded="false" title="{{asignatura.asignatura}}">
 	<div class="media">
 		<span class="capital {% if not asignatura_alumnos(asignatura.id) %} capital-warning {% else %} capital-mutted {% endif %}">{{asignatura.asignatura | first | upper}}</span>
 		<div class="media-body">
@@ -23,7 +24,7 @@
 <div class="progress rounded-0">
 	<div class="progress-bar bg-secondary" role="progressbar" aria-valuemin="0" aria-valuemax="100" style="height:2px; width: {{profesor_porcentaje}}%;"></div>
 </div>
-<div id="asignatura_{{hashids_encode(asignatura.id)}}" class="collapse {% if equal_str(asignatura.id, params['current_asignatura_id'])%} show {% endif %}">
+<div id="asignatura_{{hashids_encode_asignatura_id}}" class="collapse {% if equal_str(asignatura.id, params['current_asignatura_id'])%} show {% endif %}">
 	<br>
 	<div class="padding_3">
 		<form action="/asignaturas" method="POST">
@@ -89,7 +90,7 @@
 					</div>
 				</div>
 			</div>
-			<input type="hidden" name="current_asignatura_id" value="{{hashids_encode(asignatura.id)}}">
+			<input type="hidden" name="current_asignatura_id" value="{{hashids_encode_asignatura_id}}">
 			{% include 'asignaturas_alumnos_block.html' %}
 			{% if equal_str(asignatura.id, params['current_asignatura_id'])and params['asignatura_edit_link'] %}
 				{% if params['asignatura_delete_link'] %}

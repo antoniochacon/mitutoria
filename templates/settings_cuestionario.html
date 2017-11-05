@@ -12,24 +12,30 @@
 			<form action="settings_cuestionario" method="POST">
 				{% if preguntas(True) %}
 					{% for categoria in categorias() %}
-						{% if preguntas_by_categoria_id(True, categoria.id) %}
+						{% with %}
+						{% set preguntas_by_categoria_id = preguntas_by_categoria_id(True, categoria.id) %}
+						{% if preguntas_by_categoria_id %}
 							<div class="bg-info pt-1 pl-2">
 								{{categoria.enunciado}}
 							</div>
 							<div class="divider bg-dark"></div>
 							<div class="row">
-								{% for pregunta in preguntas_by_categoria_id(True, categoria.id) %}
+								{% for pregunta in preguntas_by_categoria_id %}
+									{% with %}
+									{% set association_settings_pregunta_check = association_settings_pregunta_check(settings().id, pregunta.id) %}
 									<div class="col-md-6">
 										{# NOTE elminado el form-group para ajustar mejor #}
 										<label class="custom-control custom-checkbox check_box_1">
-											<input type="checkbox" class="custom-control-input" name="pregunta" value="{{hashids_encode(pregunta.id)}}" {% if association_settings_pregunta_check(settings().id,pregunta.id) %} checked {% endif %}>
+											<input type="checkbox" class="custom-control-input" name="pregunta" value="{{hashids_encode(pregunta.id)}}" {% if association_settings_pregunta_check %} checked="checked" {% endif %}>
 											<span class="custom-control-indicator"></span>
-											<span class="custom-control-description {% if not association_settings_pregunta_check(settings().id,pregunta.id) %} text-muted {% endif %}">{{pregunta.enunciado}}</span>
+											<span class="custom-control-description {% if not association_settings_pregunta_check %} text-muted {% endif %}">{{pregunta.enunciado}}</span>
 										</label>
 									</div>
+									{% endwith %}
 								{% endfor %}
 							</div>
 						{% endif %}
+						{% endwith %}
 					{% endfor %}
 					<button role="button" type="submit" name="selector_button" value="selector_settings_cuestionario" class="btn btn-outline-primary btn-sm" title="guardar cambios">
 						<i class="material-icons vertical-center">save</i>

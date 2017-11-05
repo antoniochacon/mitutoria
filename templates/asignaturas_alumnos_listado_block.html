@@ -1,4 +1,7 @@
-<div class="col-md-6 col-lg-4"> {# NOTE elminado el form-group para ajustar mejor #}
+{% with %}
+{% set association_alumno_asignatura_check = association_alumno_asignatura_check(alumno.id,asignatura.id) %}
+<div class="col-md-6 col-lg-4">
+	{# NOTE elminado el form-group para ajustar mejor #}
 	<label class="custom-control custom-checkbox check_box_1">
 		<input
 			type="checkbox"
@@ -8,11 +11,15 @@
 			class="custom-control-input"
 			name="alumno"
 			value="{{hashids_encode(alumno.id)}}"
-			{% if association_alumno_asignatura_check(alumno.id,asignatura.id) %}
+			{% if association_alumno_asignatura_check %}
 			checked
-			{% endif %}>
+			{% endif %}
+{# ************ ojo NO se puede hacer auto-indent ************ #}
+			>
+{# ************ ojo NO se puede hacer auto-indent ************ #}
 		<span class="custom-control-indicator"></span>
-		<span class="custom-control-description {% if not association_alumno_asignatura_check(alumno.id,asignatura.id) %}text-muted{% endif %}">{{alumno.apellidos}},
+		<span class="custom-control-description {% if not association_alumno_asignatura_check %}text-muted{% endif %}">{{alumno.apellidos}},
 			{{alumno.nombre}}</span>
 	</label>
 </div>
+{% endwith %}
