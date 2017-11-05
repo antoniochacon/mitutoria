@@ -1,4 +1,6 @@
-{% for categoria in categorias() %}
+{% with %}
+{% set categorias=categorias() %}
+{% for categoria in categorias %}
 	<div class="bg-info pt-1 pl-2 {% if not preguntas_by_categoria_id(True, categoria.id) %}text-warning{% endif %}">
 
 		{{categoria.enunciado}}
@@ -63,7 +65,7 @@
 										{% if equal_str(pregunta.id, params['current_pregunta_id'])and request.method == 'POST' and params['collpase_pregunta_edit'] %}{{categoria_by_id(pregunta_edit.categoria_id.data).enunciado}}
 										{% else %}{{categoria_by_id(pregunta.categoria_id).enunciado}}{% endif %}
 									</option>
-									{% for categoria in categorias() %}
+									{% for categoria in categorias %}
 										<option value="{{categoria.id}}">{{categoria.enunciado}}</option>
 									{% endfor %}
 								</select>
@@ -204,3 +206,4 @@
 		</div>
 	{% endfor %}
 {% endfor %}
+{% endwith %}

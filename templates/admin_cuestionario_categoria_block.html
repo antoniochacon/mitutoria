@@ -1,5 +1,5 @@
 {% for categoria in categorias() %}
-	<a id="anchor_pre_{{hashids_encode(categoria.id)}}"></a>
+	<a id="anchor_cat_{{hashids_encode(categoria.id)}}"></a>
 	<a data-toggle="collapse" data-parent="#parent_categoria" href="#categoria_{{hashids_encode(categoria.id)}}" class="collapse_header_1" aria-expanded="false" title="{{categoria.enunciado}}">
 		<div class="media">
 			<span class="capital {% if preguntas_by_categoria_id('', categoria.id) %}capital-mutted{% else %}capital-warning{% endif %}">{{categoria.orden}}</span>

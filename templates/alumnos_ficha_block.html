@@ -8,7 +8,7 @@
 					<input
 						type="text"
 						{% if not equal_str(alumno.id, params['current_alumno_id']) or not params['alumno_edit_link'] %}
-						readonly
+						readonly="readonly"
 						{% endif %}
 						class="form-control {% if request.method=='POST' and params['collpase_alumno_edit'] %} {% if alumno_edit.nombre.errors %} is-invalid {% else %} is-valid {% endif %}{% endif %}"
 						name="{{alumno_edit.nombre.name}}"
@@ -22,7 +22,7 @@
 					<input
 						type="text"
 						{% if not equal_str(alumno.id, params['current_alumno_id']) or not params['alumno_edit_link'] %}
-						readonly
+						readonly="readonly"
 						{% endif %}
 						class="form-control {% if request.method=='POST' and params['collpase_alumno_edit'] %} {% if alumno_edit.apellidos.errors %} is-invalid {% else %} is-valid {% endif %} {% endif %}"
 						name="{{alumno_edit.apellidos.name}}"
@@ -34,7 +34,6 @@
 		</div>
 		<input type="hidden" name="current_alumno_id" value="{{hashids_encode(alumno.id)}}">
 		{% include 'alumnos_ficha_asignaturas_block.html' %}
-		<!-- ********************* -->
 		{% if equal_str(alumno.id, params['current_alumno_id'])and params['alumno_edit_link'] %}
 			{% if params['alumno_delete_link'] %}
 				<div class="btn-group" role="group" aria-label="...">
@@ -53,7 +52,6 @@
 					<button role="button" type="submit" name="selector_button" value="selector_alumno_edit" class="btn btn-outline-primary btn-sm" title="guardar cambios">
 						<i class="material-icons vertical-center">save</i>
 						guardar</button>
-					{# <button role="button" type="submit" name="selector_button" value="selector_alumno_edit_rollback" class="btn btn-outline-dark btn-sm" title="deshacer cambios"> <i class="material-icons vertical-center">settings_backup_restore</i> </button> #}
 					<button role="button" type="submit" name="selector_button" value="selector_alumno_delete_link" class="btn btn-outline-dark btn-sm" title="eliminar alumno">
 						<i class="material-icons vertical-center">delete</i>
 					</button>
@@ -62,7 +60,6 @@
 					</button>
 				</div>
 			{% endif %}
-			<!-- ********************************* -->
 		{% else %}
 			<div class="btn-group" role="group" aria-label="...">
 				<button role="button" type="submit" name="selector_button" class="btn btn-outline-dark btn-sm" value="selector_alumno_edit_link" title="editar ficha">

@@ -5,8 +5,8 @@
 	<div class="container">
 		<div class="paper bg-white padding_contenido">
 			{{titulo_1(url='logout', bg_color='bg-dark', titulo='Sesión cerrada')}}
-			<span>
-				{% if cita_random() %}
+			{% if cita_random() %}
+				<span>
 					"{{cita_random().frase}}" .
 				</span>
 				<span class="text-info">

@@ -1,28 +1,31 @@
 {% extends "_layout.html" %}
 {% block body %}
+	{% with %}
+	{% set gupo_alumnos = alumnos("apellidos", "nombre")%}
 	{% from "_macro.html" import nav_bar_top,
 	titulo_1 %}
 	{{ nav_bar_top(link_active='alumnos',params=params, current_user=current_user) }}
-	{% if alumnos_not_sorted() %}
+	{% if gupo_alumnos %}
 		<div class="paper bg-white">
 			{% include 'alumnos_tutorias_incoming_block.html' %}
 		</div>
 		<br>
 	{% endif %}
-	{# XXX alumnos #}
 	<div class="paper bg-white padding_contenido">
-		{{titulo_1(url="alumnos",bg_color="bg-dark",titulo=grupo_activo().nombre, subtitulo=[ grupo_activo().centro, [ grupo_activo().curso_academico, grupo_activo().curso_academico +1 ]|join("-") ]|join(": "))}}
+		{% with %}
+		{% set grupo_activo = grupo_activo()%}
+		{{titulo_1(url="alumnos",bg_color="bg-dark",titulo=grupo_activo.nombre, subtitulo=[ grupo_activo.centro, [ grupo_activo.curso_academico, grupo_activo.curso_academico +1 ]|join("-") ]|join(": "))}}
+		{% endwith %}
 		<div id="parent_alumno">
 			<div>
-				{# TODO: alumnos_add #}
 				{% include 'alumnos_add_block.html' %}
 			</div>
 			<div>
-				{# TODO: alumnos_listado #}
-				{% for alumno in alumnos("apellidos", "nombre")%}
+				{% for alumno in gupo_alumnos%}
 					{% include 'alumnos_block.html' %}
 				{% endfor %}
 			</div>
 		</div>
 	</div>
+	{% endwith %}
 {% endblock %}

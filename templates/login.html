@@ -41,52 +41,53 @@
 			</form>
 			{% if cita_random()and not params['login_fail'] %}
 				<br>
-				"{{cita_random().frase}}" .
-			</span>
-			<span class="text-info">
-				-
-				{{cita_random().autor}}
-			</span>
-		{% endif %}
-		{% if params['login_fail'] and not params['ban'] %}
-			<br>
-			<div class="divider bg-primary grueso"></div>
-			<br>
-			<div class="text-center">
-				<div class="btn-group" role="group" aria-label="...">
-					<a href="/user_add" class="btn btn-outline-dark btn-sm" title="crear nueva cuenta">
-						<i class="material-icons vertical-center">person_add</i>
-						no tengo cuenta
-					</a>
-					<a href="/password_reset_request" class="btn btn-outline-mutted btn-sm" title="cambiar password">
-						no recuerdo password
-					</a>
+				<span class="small">
+					"{{cita_random().frase}}" .
+				</span>
+				<span class="text-gray small">
+					-
+					{{cita_random().autor}}
+				</span>
+			{% endif %}
+			{% if params['login_fail'] and not params['ban'] %}
+				<br>
+				<div class="divider bg-primary grueso"></div>
+				<br>
+				<div class="text-center">
+					<div class="btn-group" role="group" aria-label="...">
+						<a href="/user_add" class="btn btn-outline-dark btn-sm" title="crear nueva cuenta">
+							<i class="material-icons vertical-center">person_add</i>
+							no tengo cuenta
+						</a>
+						<a href="/password_reset_request" class="btn btn-outline-mutted btn-sm" title="cambiar password">
+							no recuerdo password
+						</a>
+					</div>
 				</div>
-			</div>
-			<br>
-		{% endif %}
-		{% if params['ban'] %}
-			<br>
-			<div class="divider bg-dark"></div>
-			<br>
-			<div class="text-center text-warning">
-				Su cuenta ha sido suspendida de servicio
 				<br>
-				Por favor pongase en contacto con nosotros
-			</div>
-			<br>
-		{% endif %}
-		{% if params['email_robinson'] %}
-			<br>
-			<div class="divider bg-dark"></div>
-			<br>
-			<div class="text-center text-warning">
-				Su cuenta se encuentra en nuestra lista Robinson
+			{% endif %}
+			{% if params['ban'] %}
 				<br>
-				Por favor pongase en contacto con nosotros
-			</div>
-			<br>
-		{% endif %}
+				<div class="divider bg-dark"></div>
+				<br>
+				<div class="text-center text-warning">
+					Su cuenta ha sido suspendida de servicio
+					<br>
+					Por favor pongase en contacto con nosotros
+				</div>
+				<br>
+			{% endif %}
+			{% if params['email_robinson'] %}
+				<br>
+				<div class="divider bg-dark"></div>
+				<br>
+				<div class="text-center text-warning">
+					Su cuenta se encuentra en nuestra lista Robinson
+					<br>
+					Por favor pongase en contacto con nosotros
+				</div>
+				<br>
+			{% endif %}
+		</div>
 	</div>
-</div>
 {% endblock %}

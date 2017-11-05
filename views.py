@@ -904,6 +904,7 @@ def admin_cuestionario_html(params={}):
         # XXX categoria_add
         if request.form['selector_button'] == 'selector_categoria_add':
             params['collapse_categoria_add'] = True
+            params['anchor'] = 'anchor_cat_add'
             categoria_add_form = Categoria_Add(request.form)
             if categoria_add_form.validate():
                 categoria_add = Categoria(enunciado=categoria_add_form.enunciado.data, orden=categoria_add_form.orden.data)
@@ -941,7 +942,7 @@ def admin_cuestionario_html(params={}):
         if request.form['selector_button'] == 'selector_categoria_edit_link':
             params['categoria_edit_link'] = True
             params['collapse_categoria_edit'] = True
-            params['anchor'] = 'anchor_pre_' + str(hashids_encode(current_categoria_id))
+            params['anchor'] = 'anchor_cat_' + str(hashids_encode(current_categoria_id))
             return redirect(url_for('admin_cuestionario_html', params=dic_encode(params)))
 
         # XXX categoria_edit
@@ -949,7 +950,7 @@ def admin_cuestionario_html(params={}):
             params['current_categoria_id'] = current_categoria_id
             params['collapse_categoria_edit'] = True
             params['categoria_edit_link'] = True
-            params['anchor'] = 'anchor_pre_' + str(hashids_encode(current_categoria_id))
+            params['anchor'] = 'anchor_cat_' + str(hashids_encode(current_categoria_id))
             move_up = False
             move_down = False
             categoria_edit_form = Categoria_Add(request.form)
@@ -1001,7 +1002,7 @@ def admin_cuestionario_html(params={}):
             current_categoria_id = current_id_request('current_categoria_id')
             params['current_categoria_id'] = current_categoria_id
             params['collapse_categoria_edit'] = True
-            params['anchor'] = 'anchor_pre_' + str(hashids_encode(current_categoria_id))
+            params['anchor'] = 'anchor_cat_' + str(hashids_encode(current_categoria_id))
             session_sql.rollback()
             return redirect(url_for('admin_cuestionario_html', params=dic_encode(params)))
 
@@ -1010,7 +1011,7 @@ def admin_cuestionario_html(params={}):
             current_categoria_id = current_id_request('current_categoria_id')
             params['current_categoria_id'] = current_categoria_id
             params['collapse_categoria_edit'] = True
-            params['anchor'] = 'anchor_pre_' + str(hashids_encode(current_categoria_id))
+            params['anchor'] = 'anchor_cat_' + str(hashids_encode(current_categoria_id))
             params['categoria_edit_link'] = True
             params['categoria_delete_link'] = True
             flash_toast('Debe confirmar la aliminacion', 'warning')
@@ -1031,12 +1032,13 @@ def admin_cuestionario_html(params={}):
             current_categoria_id = current_id_request('current_categoria_id')
             params['current_categoria_id'] = current_categoria_id
             params['collapse_categoria_edit'] = True
-            params['anchor'] = 'anchor_pre_' + str(hashids_encode(current_categoria_id))
+            params['anchor'] = 'anchor_cat_' + str(hashids_encode(current_categoria_id))
             return redirect(url_for('admin_cuestionario_html', params=dic_encode(params)))
 
         # XXX pregunta_add
         if request.form['selector_button'] == 'selector_pregunta_add':
             params['collapse_pregunta_add'] = True
+            params['anchor'] = 'anchor_pre_add'
             pregunta_add_form = Pregunta_Add(request.form)
             if pregunta_add_form.validate():
                 pregunta_add = Pregunta(enunciado=pregunta_add_form.enunciado.data, enunciado_ticker=pregunta_add_form.enunciado_ticker.data,
@@ -1119,8 +1121,8 @@ def admin_cuestionario_html(params={}):
                         pregunta.visible = visible
                     if pregunta.active_default != active_default:
                         pregunta.active_default = active_default
-
                     flash_toast('Pregunta actualizada', 'success')
+
                 if request.form['selector_button'] == 'selector_move_down_pregunta':
                     for k in range(1, 500):
                         pregunta_down = session_sql.query(Pregunta).filter(Pregunta.orden == (pregunta.orden + k)).first()

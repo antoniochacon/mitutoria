@@ -1,12 +1,15 @@
+{% with %}
+{% set categorias = categorias() %}
+{% set categorias_count = categorias | count %}
 <a data-toggle="collapse" data-parent="#parent_pregunta" href="#categoria_add" class="collapse_header_1" aria-expanded="true" aria-controls="collapse_categoria_add" title="Agregar categoria">
 	<div class="media">
 		&nbsp;<i class="material-icons vertical-center">view_list</i>&nbsp;
 		<div class="media-body">
 			<div class="padding_2">
 				agregar nueva categoria
-				<span class="badge float-right {% if categorias() %}badge-mutted{% else %}badge-warning text-white{% endif %}" title="activa por defecto">
-					{{categorias() | count}}
-					{{singular_plural('categoria','categorias', categorias() | count)}}
+				<span class="badge float-right {% if categorias %}badge-mutted{% else %}badge-warning text-white{% endif %}" title="activa por defecto">
+					{{categorias_count}}
+					{{singular_plural('categoria','categorias', categorias_count)}}
 				</span>
 			</div>
 		</div>
@@ -36,10 +39,8 @@
 							type="number"
 							class="form-control {% if request.method=='POST' and params['collapse_categoria_add'] %}{% if categoria_add.orden.errors %} is-invalid {% else %} is-valid {% endif %}{% endif %}"
 							name="{{categoria_add.orden.name}}"
-							{% if request.method=='POST' %}
-							value="{% if request.method=='POST' and params['collapse_categoria_add'] %}{{categoria_add.orden.data}}{% else %}{{categorias() | count +1}}{% endif %}"
-							{% endif %}
-							placeholder="{{categorias() | count +1}}">
+							value="{% if request.method=='POST' and params['collapse_categoria_add'] %}{{categoria_add.orden.data}}{% else %}{{categorias_count +1}}{% endif %}"
+							placeholder="{{categorias_count +1}}">
 						<span class="input-group-addon {% if request.method=='POST' and params['collapse_categoria_add'] %} {% if categoria_add.orden.errors %} form_addon-warning {% else %} form_addon-success {% endif %} {% endif %}">{{categoria_add.orden.label.text}}</span>
 					</div>
 				</div>
@@ -49,14 +50,14 @@
 					<i class="material-icons vertical-center">person</i>
 					agregar
 				</button>
-				{% if params['collapse_categoria_add']and request.method == 'POST' %}
+				{% if params['collapse_categoria_add'] and request.method == 'POST' %}
 					<button role="button" type="submit" name="selector_button" value="selector_categoria_add_close" class="btn btn-outline-dark btn-sm" title="cerrar">
 						<i class="material-icons vertical-center">close</i>
 					</button>
 				{% endif %}
 			</div>
 		</form>
-
 	</div>
 	<div class="divider grueso bg-primary"></div>
 </div>
+{% endwith %}

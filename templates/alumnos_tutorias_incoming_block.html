@@ -1,23 +1,25 @@
+{% with %}
+{% set grupo_tutorias = grupo_tutorias(grupo_activo().id, True) %}
 <a data-toggle="collapse" class="collpase-header-secondary" role="tab" data-parent="#parent_tutorias" href="#collapse_proxima_tutoria" aria-expanded="false">
-	{% if grupo_tutorias(grupo_activo().id, True) %}
-		{% for tutoria in grupo_tutorias(grupo_activo().id, True) %}
+	{% if grupo_tutorias %}
+		{% for tutoria in grupo_tutorias %}
 			<i class="material-icons vertical-center">cloud</i>
 		{% endfor %}
 		<strong>
 			&nbsp;
-			{{singular_plural("tutoria", "tutorias", grupo_tutorias(grupo_activo().id, True) | count)}}
-			{{singular_plural("solicitada", "solicitadas", grupo_tutorias(grupo_activo().id, True) | count)}}
+			{{singular_plural("tutoria", "tutorias", grupo_tutorias | count)}}
+			{{singular_plural("solicitada", "solicitadas", grupo_tutorias | count)}}
 		</strong>
 	{% else %}
 		<i class="material-icons vertical-center">wb_sunny</i>
 		&nbsp;Relax, no tienes tutorias
 	{% endif %}
 </a>
-<div id="collapse_proxima_tutoria" role="tabpanel" class="collapse {% if grupo_tutorias(grupo_activo().id, True) %} show {% endif %}">
-	{% if grupo_tutorias(grupo_activo().id, True) %}
+<div id="collapse_proxima_tutoria" role="tabpanel" class="collapse {% if grupo_tutorias %} show {% endif %}">
+	{% if grupo_tutorias %}
 		<div>
 			<div class="padding_contenido">
-				{% for tutoria in grupo_tutorias(grupo_activo().id, True) %}
+				{% for tutoria in grupo_tutorias %}
 					{% with %}
 					{% set tutoria_incoming = tutoria_incoming(tutoria.id) %}
 					<a href="/analisis/{{dic_encode_args({'current_tutoria_id': tutoria.id})}}" class="collapse_header_2" title="ver informe">
@@ -49,3 +51,4 @@
 		</div>
 	{% endif %}
 </div>
+{% endwith %}
