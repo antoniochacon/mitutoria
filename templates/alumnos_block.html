@@ -1,7 +1,7 @@
 {% with %}
 {% set alumno_tutorias_true = alumno_tutorias(alumno.id, True) | count %}
 {% set alumno_tutorias_all = alumno_tutorias(alumno.id, '') | count %}
-{% set hashids_encode_alumno_id = hashids_encode_alumno_id %}
+{% set hashids_encode_alumno_id = hashids_encode(alumno.id) %}
 <a id="anchor_alu_{{hashids_encode_alumno_id}}"></a>
 <a data-toggle="collapse" data-parent="#parent_alumno" href="#alumno_{{hashids_encode_alumno_id}}" class="collapse_header_1" aria-expanded="false" title="{{alumno.apellidos}}, {{alumno.nombre}}">
 	<div class="media">
