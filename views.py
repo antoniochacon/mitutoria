@@ -1291,8 +1291,6 @@ def analisis_html(params={}):
     grupo_stats = respuestas_grupo_stats(current_tutoria_id, stats['preguntas_con_respuesta_lista'], stats['asignaturas_recibidas_lista'])
     respuestas_tutoria_media_stats = respuestas_tutoria_media(current_tutoria_id)
     evolucion_stats = evolucion_tutorias(alumno.id)
-    print(respuestas_tutoria_media_stats)
-    # print(evolucion_stats)
     # abort(404)
 
     return render_template('analisis.html',
