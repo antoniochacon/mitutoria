@@ -69,6 +69,17 @@ def tutoria_incoming(tutoria_id):
 def analisis_tutoria(tutoria_id):
     stats = {}
     alumno = alumno_by_tutoria_id(tutoria_id)
+    grupo = grupo_by_tutoria_id(tutoria_id)
+
+    asignaturas_alumno_lista = []
+    for asignatura in alumno.asignaturas.order_by('asignatura', 'apellidos', 'nombre'):
+        asignaturas_alumno_lista.append(asignatura)
+    stats['asignaturas_alumno_lista'] = asignaturas_alumno_lista
+
+    asignaturas_grupo_lista = []
+    for asignatura in grupo.asignaturas.order_by('asignatura', 'apellidos', 'nombre'):
+        asignaturas_grupo_lista.append(asignatura)
+    stats['asignaturas_grupo_lista'] = asignaturas_grupo_lista
 
     asignaturas_solicitadas_horario_lista = []
     asignaturas_solicitas_horario_asignatura_lista = []
