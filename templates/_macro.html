@@ -1,3 +1,267 @@
+
+{% macro highcharts_asignatura(char_id, asignatura, alumno, grupo, tutoria_id, stats, grupo_stats, notas_pruebas_evaluables_alumno, notas_pruebas_evaluables_grupo, respuestas_tutoria_media_stats) %}
+
+	<div id="{{char_id | safe}}" class="chart" style="height: 200px"></div>
+	<script>
+		Highcharts.chart("{{char_id | safe }}", {
+			chart: {
+				plotBackgroundColor: null,
+				plotBorderWidth: 0,
+				plotShadow: false,
+				marginBottom: -130,
+				spacingBottom: 20
+			},
+			title: null,
+			plotOptions: {
+				pie: {
+					dataLabels: {
+						enabled: null
+					}
+				},
+				series: {
+					states: {
+						hover: {
+							halo: {
+								size: 0
+							}
+						}
+					}
+				}
+			},
+			series: [
+				{% if notas_pruebas_evaluables_grupo != "sin_notas" %}
+					{
+						type: "pie",
+						size: "32%",
+						innerSize: "55%",
+						tooltip: {
+							pointFormat: "Media: {point.y:.1f}"
+						},
+						startAngle: -90,
+						endAngle: 90,
+						data: [
+							{
+								name: "{{grupo.nombre}} | {{asignatura.asignatura}} | Notas",
+								y:{% if notas_pruebas_evaluables_grupo != 0 %}
+									{{notas_pruebas_evaluables_grupo}}
+								{% else %}
+									1
+								{% endif %},
+								{% if notas_pruebas_evaluables_grupo != 0 %}
+									color: "#e1bee7"
+								{% else %}
+									color: "#80deea"
+								{% endif %}
+							}, {
+								name: "{{grupo.nombre}} | {{asignatura.asignatura}} | Notas | Sin alcanzar",
+								y: 10 -{% if notas_pruebas_evaluables_grupo !=0 %}
+									{{notas_pruebas_evaluables_grupo}}
+								{% else %}
+									1
+								{% endif %},
+								color: "#f5f5f5",
+								states: {
+									hover: {
+										brightness: -0.3
+									}
+								}
+							}
+						]
+					},
+				{% else %}
+					{
+						type: "pie",
+						size: "32%",
+						innerSize: "55%",
+						tooltip: {
+							pointFormat: "Sin pruebas evaluables"
+						},
+						startAngle: -90,
+						endAngle: 90,
+						data: [
+							{
+								name: "{{grupo.nombre}} | {{asignatura.asignatura}}",
+								y: 100,
+								color: "#f5f5f5"
+							}
+						]
+					},
+				{% endif %}
+				{% if notas_pruebas_evaluables_alumno['notas_alumno_media'] != "sin_notas" %}
+					{
+						type: "pie",
+						size: "25%",
+						innerSize: "55%",
+						tooltip: {
+							pointFormat: "Media: {point.y:.1f}<br>Notas({{ notas_pruebas_evaluables_alumno['notas_alumno_lista'] | count }}): {{notas_pruebas_evaluables_alumno['notas_alumno_lista_asignatura'] | replace("(", "") | replace("''", "'X_X_X'") | replace(",", "") | replace(") ", " | ") | replace(")", " ") | replace("'X_X_X'", " ") | safe}}"
+						},
+						startAngle: -90,
+						endAngle: 90,
+						data: [
+							{
+								name: "{{alumno.nombre}} | {{asignatura.asignatura}} | Notas",
+								y:{% if notas_pruebas_evaluables_alumno['notas_alumno_media'] != 0 %}
+									{{ notas_pruebas_evaluables_alumno['notas_alumno_media'] | safe}}
+								{% else %}
+									1
+								{% endif %},
+								{% if notas_pruebas_evaluables_alumno['notas_alumno_media'] != 0 %}
+									color: "#ba68c8"
+								{% else %}
+									color: "#26c6da"
+								{% endif %}
+							}, {
+								name: "{{alumno.nombre}} | {{asignatura.asignatura}} | Notas | Sin alcanzar",
+								y: 10 -{% if notas_pruebas_evaluables_alumno['notas_alumno_media'] != 'sin_notas' %}
+									{{ notas_pruebas_evaluables_alumno['notas_alumno_media'] | safe}}
+								{% else %}
+									1
+								{% endif %},
+								color: "#f5f5f5",
+								states: {
+									hover: {
+										brightness: -0.3
+									}
+								}
+							}
+						]
+					},
+				{% else %}
+					{
+						type: "pie",
+						size: "25%",
+						innerSize: "55%",
+						tooltip: {
+							pointFormat: "Sin pruebas evaluables"
+						},
+						startAngle: -90,
+						endAngle: 90,
+						data: [
+							{
+								name: "{{alumno.nombre}} | {{asignatura.asignatura}}",
+								y: 100,
+								color: "#f5f5f5"
+							}
+						]
+					},
+				{% endif %}
+				{% if grupo_stats['respuestas_asignatura_grupo_media'] != 'sin_notas' %}
+					{
+						type: "pie",
+						size: "65%",
+						innerSize: "75%",
+						tooltip: {
+							pointFormat: "Media: {point.y:.1f}"
+						},
+						startAngle: -90,
+						endAngle: 90,
+						data: [
+							{
+								name: "{{grupo.nombre}} | Cuestionario | {{asignatura.asignatura}}",
+								y: {{grupo_stats['respuestas_asignatura_grupo_media'] | safe}},
+								color: "#f48fb1"
+							}, {
+								name: "{{grupo.nombre}} | Cuestionario | {{asignatura.asignatura}} | Sin alcanzar",
+								y: 10 - {{grupo_stats['respuestas_asignatura_grupo_media'] | safe}},
+								color: "#f5f5f5",
+								states: {
+									hover: {
+										brightness: -0.3
+									}
+								}
+							}
+						]
+					},
+				{% endif %}
+				{% if respuestas_pregunta_alumno_lista(tutoria_id, asignatura.id, stats['asignaturas_recibidas_lista'], stats['preguntas_con_respuesta_lista'])['respuestas_pregunta_media'] != 'sin_notas' %}
+					{
+						type: "pie",
+						size: "58%",
+						innerSize: "65%",
+						tooltip: {
+							pointFormat: "Media: {point.y:.1f}"
+						},
+						startAngle: -90,
+						endAngle: 90,
+						data: [
+							{
+								name: "{{alumno.nombre}} | Cuestionario | {{asignatura.asignatura}}",
+								y:{{respuestas_pregunta_alumno_lista(tutoria_id, asignatura.id, stats['asignaturas_recibidas_lista'], stats['preguntas_con_respuesta_lista'])['respuestas_pregunta_media'] | safe}},
+								color: "#ec407a"
+							}, {
+								name: "{{alumno.nombre}} | Cuestionario | {{asignatura.asignatura}} | Sin alcanzar",
+								y: 10 - {{respuestas_pregunta_alumno_lista(tutoria_id, asignatura.id, stats['asignaturas_recibidas_lista'], stats['preguntas_con_respuesta_lista'])['respuestas_pregunta_media'] | safe}},
+								color: "#f5f5f5",
+								states: {
+									hover: {
+										brightness: -0.3
+									}
+								}
+							}
+						]
+					},
+				{% endif %}
+				{% if grupo_stats['respuestas_pregunta_grupo_media']!='sin_notas' %}
+					{
+						type: "pie",
+						size: "100%",
+						innerSize: "75%",
+						tooltip: {
+							pointFormat: "Media: {point.y:.1f}"
+						},
+						startAngle: -90,
+						endAngle: 90,
+						data: [
+							{
+								name: "{{grupo.nombre}} | Cuestionario",
+								y: {{grupo_stats['respuestas_pregunta_grupo_media']}},
+								color: "#ffd54f"
+							}, {
+								name: "{{grupo.nombre}} | Cuestionario Sin alcanzar",
+								y: {{10-grupo_stats['respuestas_pregunta_grupo_media']}},
+								color: "#f5f5f5",
+								states: {
+									hover: {
+										brightness: -0.3
+									}
+								}
+							}
+						]
+					},
+				{% endif %}
+				{% if respuestas_tutoria_media_stats!='sin_notas' %}
+					{
+						type: "pie",
+						size: "93%",
+						innerSize: "75%",
+						tooltip: {
+							pointFormat: "Media: {point.y:.1f}"
+						},
+						startAngle: -90,
+						endAngle: 90,
+						data: [
+							{
+								name: "{{alumno.nombre}} | Cuestionario",
+								y: {{respuestas_tutoria_media_stats}},
+								color: "#ffa000"
+							}, {
+								name: "{{alumno.nombre}} | Cuestionario Sin alcanzar",
+								y: {{10-respuestas_tutoria_media_stats}},
+								color: "#f5f5f5",
+								states: {
+									hover: {
+										brightness: -0.3
+									}
+								}
+							}
+						]
+					}
+				{% endif %}
+			]
+		});
+	</script>
+{% endmacro %}
+
 {% macro highcharts_evalucion(char_id, color_1, color_2, grupo, alumno, evolucion_stats) %}
 	<div id="{{char_id | safe}}" class="chart" style="height: 300px"></div>
 	<script>
@@ -372,269 +636,6 @@
 						}
 					}
 				{% endfor %}
-			]
-		});
-	</script>
-{% endmacro %}
-
-{% macro highcharts_asignatura(char_id, asignatura, alumno, grupo, tutoria_id, stats, grupo_stats, notas_pruebas_evaluables_alumno, notas_pruebas_evaluables_grupo, respuestas_alumno_media) %}
-
-	<div id="{{char_id | safe}}" class="chart" style="height: 200px"></div>
-	<script>
-		Highcharts.chart("{{char_id | safe }}", {
-			chart: {
-				plotBackgroundColor: null,
-				plotBorderWidth: 0,
-				plotShadow: false,
-				marginBottom: -130,
-				spacingBottom: 20
-			},
-			title: null,
-			plotOptions: {
-				pie: {
-					dataLabels: {
-						enabled: null
-					}
-				},
-				series: {
-					states: {
-						hover: {
-							halo: {
-								size: 0
-							}
-						}
-					}
-				}
-			},
-			series: [
-				{% if notas_pruebas_evaluables_grupo != "sin_notas" %}
-					{
-						type: "pie",
-						size: "32%",
-						innerSize: "55%",
-						tooltip: {
-							pointFormat: "Media: {point.y:.1f}"
-						},
-						startAngle: -90,
-						endAngle: 90,
-						data: [
-							{
-								name: "{{grupo.nombre}} | {{asignatura.asignatura}} | Notas",
-								y:{% if notas_pruebas_evaluables_grupo != 0 %}
-									{{notas_pruebas_evaluables_grupo}}
-								{% else %}
-									1
-								{% endif %},
-								{% if notas_pruebas_evaluables_grupo != 0 %}
-									color: "#e1bee7"
-								{% else %}
-									color: "#80deea"
-								{% endif %}
-							}, {
-								name: "{{grupo.nombre}} | {{asignatura.asignatura}} | Notas | Sin alcanzar",
-								y: 10 -{% if notas_pruebas_evaluables_grupo !=0 %}
-									{{notas_pruebas_evaluables_grupo}}
-								{% else %}
-									1
-								{% endif %},
-								color: "#f5f5f5",
-								states: {
-									hover: {
-										brightness: -0.3
-									}
-								}
-							}
-						]
-					},
-				{% else %}
-					{
-						type: "pie",
-						size: "32%",
-						innerSize: "55%",
-						tooltip: {
-							pointFormat: "Sin pruebas evaluables"
-						},
-						startAngle: -90,
-						endAngle: 90,
-						data: [
-							{
-								name: "{{grupo.nombre}} | {{asignatura.asignatura}}",
-								y: 100,
-								color: "#f5f5f5"
-							}
-						]
-					},
-				{% endif %}
-				{% if notas_pruebas_evaluables_alumno['notas_alumno_media'] != "sin_notas" %}
-					{
-						type: "pie",
-						size: "25%",
-						innerSize: "55%",
-						tooltip: {
-							pointFormat: "Media: {point.y:.1f}<br>Notas({{ notas_pruebas_evaluables_alumno['notas_alumno_lista'] | count }}): {{notas_pruebas_evaluables_alumno['notas_alumno_lista_asignatura'] | replace("(", "") | replace("''", "'X_X_X'") | replace(",", "") | replace(") ", " | ") | replace(")", " ") | replace("'X_X_X'", " ") | safe}}"
-						},
-						startAngle: -90,
-						endAngle: 90,
-						data: [
-							{
-								name: "{{alumno.nombre}} | {{asignatura.asignatura}} | Notas",
-								y:{% if notas_pruebas_evaluables_alumno['notas_alumno_media'] != 0 %}
-									{{ notas_pruebas_evaluables_alumno['notas_alumno_media'] | safe}}
-								{% else %}
-									1
-								{% endif %},
-								{% if notas_pruebas_evaluables_alumno['notas_alumno_media'] != 0 %}
-									color: "#ba68c8"
-								{% else %}
-									color: "#26c6da"
-								{% endif %}
-							}, {
-								name: "{{alumno.nombre}} | {{asignatura.asignatura}} | Notas | Sin alcanzar",
-								y: 10 -{% if notas_pruebas_evaluables_alumno['notas_alumno_media'] != 'sin_notas' %}
-									{{ notas_pruebas_evaluables_alumno['notas_alumno_media'] | safe}}
-								{% else %}
-									1
-								{% endif %},
-								color: "#f5f5f5",
-								states: {
-									hover: {
-										brightness: -0.3
-									}
-								}
-							}
-						]
-					},
-				{% else %}
-					{
-						type: "pie",
-						size: "25%",
-						innerSize: "55%",
-						tooltip: {
-							pointFormat: "Sin pruebas evaluables"
-						},
-						startAngle: -90,
-						endAngle: 90,
-						data: [
-							{
-								name: "{{alumno.nombre}} | {{asignatura.asignatura}}",
-								y: 100,
-								color: "#f5f5f5"
-							}
-						]
-					},
-				{% endif %}
-				{% if grupo_stats['respuestas_asignatura_grupo_media'] != 'sin_notas' %}
-					{
-						type: "pie",
-						size: "65%",
-						innerSize: "75%",
-						tooltip: {
-							pointFormat: "Media: {point.y:.1f}"
-						},
-						startAngle: -90,
-						endAngle: 90,
-						data: [
-							{
-								name: "{{grupo.nombre}} | Cuestionario | {{asignatura.asignatura}}",
-								y: {{grupo_stats['respuestas_asignatura_grupo_media'] | safe}},
-								color: "#f48fb1"
-							}, {
-								name: "{{grupo.nombre}} | Cuestionario | {{asignatura.asignatura}} | Sin alcanzar",
-								y: 10 - {{grupo_stats['respuestas_asignatura_grupo_media'] | safe}},
-								color: "#f5f5f5",
-								states: {
-									hover: {
-										brightness: -0.3
-									}
-								}
-							}
-						]
-					},
-				{% endif %}
-				{% if grupo_stats['respuestas_pregunta_grupo_media'] != 'sin_notas' %}
-					{
-						type: "pie",
-						size: "58%",
-						innerSize: "65%",
-						tooltip: {
-							pointFormat: "Media: {point.y:.1f}"
-						},
-						startAngle: -90,
-						endAngle: 90,
-						data: [
-							{
-								name: "{{alumno.nombre}} | Cuestionario | {{asignatura.asignatura}}",
-								y: {{grupo_stats['respuestas_pregunta_grupo_media']}},
-								color: "#ec407a"
-							}, {
-								name: "{{alumno.nombre}} | Cuestionario | {{asignatura.asignatura}} | Sin alcanzar",
-								y: 10 - {{grupo_stats['respuestas_pregunta_grupo_media']}},
-								color: "#f5f5f5",
-								states: {
-									hover: {
-										brightness: -0.3
-									}
-								}
-							}
-						]
-					},
-				{% endif %}
-				{% if grupo_stats['respuestas_pregunta_grupo_media']!='sin_notas' %}
-					{
-						type: "pie",
-						size: "100%",
-						innerSize: "75%",
-						tooltip: {
-							pointFormat: "Media: {point.y:.1f}"
-						},
-						startAngle: -90,
-						endAngle: 90,
-						data: [
-							{
-								name: "{{grupo.nombre}} | Cuestionario",
-								y: {{grupo_stats['respuestas_pregunta_grupo_media']}},
-								color: "#ffd54f"
-							}, {
-								name: "{{grupo.nombre}} | Cuestionario Sin alcanzar",
-								y: {{10-grupo_stats['respuestas_pregunta_grupo_media']}},
-								color: "#f5f5f5",
-								states: {
-									hover: {
-										brightness: -0.3
-									}
-								}
-							}
-						]
-					},
-				{% endif %}
-				{% if respuestas_alumno_media!='sin_notas' %}
-					{
-						type: "pie",
-						size: "93%",
-						innerSize: "75%",
-						tooltip: {
-							pointFormat: "Media: {point.y:.1f}"
-						},
-						startAngle: -90,
-						endAngle: 90,
-						data: [
-							{
-								name: "{{alumno.nombre}} | Cuestionario",
-								y: {{respuestas_alumno_media}},
-								color: "#ffa000"
-							}, {
-								name: "{{alumno.nombre}} | Cuestionario Sin alcanzar",
-								y: {{10-respuestas_alumno_media}},
-								color: "#f5f5f5",
-								states: {
-									hover: {
-										brightness: -0.3
-									}
-								}
-							}
-						]
-					}
-				{% endif %}
 			]
 		});
 	</script>
