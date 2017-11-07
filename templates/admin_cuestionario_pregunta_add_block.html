@@ -74,34 +74,14 @@
 				</div>
 				<div class="form-group col-auto">
 					<label class="custom-control custom-checkbox check_box_1">
-						<input
-							type="checkbox"
-							class="custom-control-input"
-							name="visible"
-							value="True"
-							{% if request.method=='POST' and params['collapse_pregunta_add'] %}
-							{% if pregunta_add.visible.data%}
-							checked{% endif %}="checked{% endif %}"
-							{% else %}
-							checked="checked"
-							{% endif %}>
+						<input type="checkbox" class="custom-control-input" name="visible" value="True" {% if request.method=='POST' and params['collapse_pregunta_add'] and pregunta_add.visible.data %} checked="checked" {% endif %}>
 						<span class="custom-control-indicator"></span>
 						<span class="custom-control-description">visible</span>
 					</label>
 				</div>
 				<div class="form-group col-auto">
 					<label class="custom-control custom-checkbox check_box_1">
-						<input
-							type="checkbox"
-							class="custom-control-input"
-							name="active_default"
-							value="True"
-							{% if request.method=='POST' and params['collapse_pregunta_add'] %}
-							{% if pregunta_add.active_default.data%}
-							checked{% endif %}="checked{% endif %}"
-							{% else %}
-							checked="checked"
-							{% endif %}>
+						<input type="checkbox" class="custom-control-input" name="active_default" value="True" {% if request.method=='POST' and params['collapse_pregunta_add'] and pregunta_add.active_default.data %} checked="checked" {% endif %}>
 						<span class="custom-control-indicator"></span>
 						<span class="custom-control-description">default</span>
 					</label>
