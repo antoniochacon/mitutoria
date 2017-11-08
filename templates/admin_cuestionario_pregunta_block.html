@@ -44,7 +44,7 @@
 								<span class="input-group-addon {% if request.method=='POST' and params['collpase_pregunta_edit'] %} {% if pregunta_edit.enunciado.errors %} form_addon-warning {% else %} form_addon-success {% endif %} {% endif %}">{{pregunta_edit.enunciado.label.text}}</span>
 							</div>
 						</div>
-						<div class="form-group col-md-12">
+						<div class="form-group col-md-12 mb-3">
 							<div class="input-group">
 								<input
 									type="text"
@@ -58,8 +58,8 @@
 								<span class="input-group-addon {% if request.method=='POST' and params['collpase_pregunta_edit'] %} {% if pregunta_edit.enunciado_ticker.errors %} form_addon-warning {% else %} form_addon-success {% endif %} {% endif %}">{{pregunta_edit.enunciado_ticker.label.text}}</span>
 							</div>
 						</div>
-						<div class="form-group col-sm-12 col-md-8">
-							<div class="input-group">
+						<div class="media col-sm-12 col-md-8 mb-2">
+							<div class="input-group align-self-center">
 								<select name="{{pregunta_add.categoria_id.name}}" class="form-control" required {% if not equal_str(pregunta.id, params['current_pregunta_id']) or not params['pregunta_edit_link'] %} readonly {% endif %}>
 									<option value="{% if equal_str(pregunta.id,params['current_pregunta_id']) and request.method=='POST' and params['collpase_pregunta_edit'] %}{{pregunta_edit.categoria_id.data}}{% else %}{{pregunta.categoria_id}}{% endif %}">
 										{% if equal_str(pregunta.id, params['current_pregunta_id'])and request.method == 'POST' and params['collpase_pregunta_edit'] %}{{categoria_by_id(pregunta_edit.categoria_id.data).enunciado}}
@@ -72,8 +72,8 @@
 								<span class="input-group-addon {% if request.method=='POST' and params['collapse_pregunta_add'] %} {% if pregunta_add.categoria_id.errors %} form_addon-warning {% else %} form_addon-success {% endif %} {% endif %}">categoria</span>
 							</div>
 						</div>
-						<div class="form-group media col-sm-12 col-md-4">
-							<div class="form-group align-self-center mr-1">
+						<div class="media col-sm-12 col-md-4">
+							<div class="form-group align-self-center mb-1">
 								<div class="input-group">
 									<input
 										type="number"

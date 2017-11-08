@@ -37,6 +37,22 @@
 						</div>
 					</div>
 					<div class="media col-sm-12 col-md-6 col-lg-4">
+					<div class="form-group align-self-center mr-1">
+						<div class="input-group">
+							<input
+								type="text"
+								{% if not equal_str(categoria.id, params['current_categoria_id']) or not params['categoria_edit_link'] %}
+								readonly
+								{% endif %}
+								class="form-control {% if request.method=='POST' and params['collpase_categoria_edit'] %} {% if categoria_edit.color.errors %} is-invalid {% else %} is-valid {% endif %}{% endif %}"
+								name="{{categoria_edit.color.name}}"
+								value="{% if equal_str(categoria.id,params['current_categoria_id']) and request.method=='POST' and params['collpase_categoria_edit'] %}{{categoria_edit.color.data}}{% else %}{{categoria.color}}{% endif %}"
+								placeholder="{{categoria_edit.color.label.text}}">
+							<span class="input-group-addon {% if request.method=='POST' and params['collpase_categoria_edit'] %} {% if categoria_edit.color.errors %} form_addon-warning {% else %} form_addon-success {% endif %} {% endif %}">{{categoria_edit.color.label.text}}</span>
+						</div>
+					</div>
+					</div>
+					<div class="media col-sm-12 col-md-6 col-lg-4">
 						<div class="form-group align-self-center mr-1">
 							<div class="input-group">
 								<input

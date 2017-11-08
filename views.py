@@ -907,7 +907,7 @@ def admin_cuestionario_html(params={}):
             params['anchor'] = 'anchor_cat_add'
             categoria_add_form = Categoria_Add(request.form)
             if categoria_add_form.validate():
-                categoria_add = Categoria(enunciado=categoria_add_form.enunciado.data, orden=categoria_add_form.orden.data)
+                categoria_add = Categoria(enunciado=categoria_add_form.enunciado.data, orden=categoria_add_form.orden.data, color=categoria_add_form.color.data)
                 # NOTE checking unicidad de enunciado y orden
                 categoria_enunciado_sql = session_sql.query(Categoria).filter(Categoria.enunciado == categoria_add_form.enunciado.data).first()
                 categoria_orden_sql = session_sql.query(Categoria).filter(Categoria.orden == categoria_add_form.orden.data).first()
@@ -956,13 +956,15 @@ def admin_cuestionario_html(params={}):
             categoria_edit_form = Categoria_Add(request.form)
             if categoria_edit_form.validate():
                 categoria_edit = Categoria(enunciado=categoria_edit_form.enunciado.data,
-                                           orden=categoria_edit_form.orden.data)
+                                           orden=categoria_edit_form.orden.data, color=categoria_edit_form.color.data)
                 categoria = session_sql.query(Categoria).filter(Categoria.id == current_categoria_id).first()
-                if categoria.enunciado.lower() != categoria_edit.enunciado.lower() or categoria.orden != categoria_edit.orden:
+                if categoria.enunciado.lower() != categoria_edit.enunciado.lower() or categoria.orden != categoria_edit.orden or categoria.color != categoria_edit.color:
                     if categoria.enunciado.lower() != categoria_edit.enunciado.lower():
                         categoria.enunciado = categoria_edit.enunciado
                     if categoria.orden != categoria_edit.orden:
                         categoria.orden = categoria_edit.orden
+                    if categoria.color != categoria_edit.color:
+                        categoria.color = categoria_edit.color
                     flash_toast('Categoria actualizada', 'success')
                 if request.form['selector_button'] == 'selector_move_down_categoria':
                     for k in range(1, 500):

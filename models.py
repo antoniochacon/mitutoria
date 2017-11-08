@@ -91,6 +91,7 @@ class Categoria (Base):
     __tablename__ = 'categoria'
     id = Column(Integer, primary_key=True)
     enunciado = Column(String)
+    color = Column(String, default='#343a40')
     orden = Column(Integer)
     preguntas = relationship('Pregunta', backref='categoria', lazy='dynamic', cascade='delete')
 

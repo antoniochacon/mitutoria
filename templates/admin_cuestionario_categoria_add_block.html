@@ -36,6 +36,17 @@
 				<div class="form-group col-sm-12 col-md-4">
 					<div class="input-group">
 						<input
+							type="text"
+							class="form-control {% if request.method=='POST' and params['collapse_categoria_add'] %}{% if categoria_add.color.errors %} is-invalid {% else %} is-valid {% endif %}{% endif %}"
+							name="{{categoria_add.color.name}}"
+							value="{% if request.method=='POST' and params['collapse_categoria_add'] %}{{categoria_add.color.data}}{% else %}#343a40{% endif %}"
+							placeholder="#343a40">
+						<span class="input-group-addon {% if request.method=='POST' and params['collapse_categoria_add'] %} {% if categoria_add.color.errors %} form_addon-warning {% else %} form_addon-success {% endif %} {% endif %}">{{categoria_add.color.label.text}}</span>
+					</div>
+				</div>
+				<div class="form-group col-sm-12 col-md-4">
+					<div class="input-group">
+						<input
 							type="number"
 							class="form-control {% if request.method=='POST' and params['collapse_categoria_add'] %}{% if categoria_add.orden.errors %} is-invalid {% else %} is-valid {% endif %}{% endif %}"
 							name="{{categoria_add.orden.name}}"

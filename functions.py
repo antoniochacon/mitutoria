@@ -41,31 +41,6 @@ def asignaturas_orden_switch(status):
 # ***********************************************************************
 
 
-def tutoria_incoming(tutoria_id):
-    stats = {}
-    alumno = alumno_by_tutoria_id(tutoria_id)
-    asignaturas_horario = alumno.asignaturas.order_by('asignatura')
-    asignaturas_solicitadas = session_sql.query(Asignatura).join(Association_Tutoria_Asignatura).filter(Tutoria.id == tutoria_id).order_by('asignatura').all()
-
-    asignaturas_solicitadas_horario_lista = []
-    asignaturas_solicitas_horario_asignatura_lista = []
-    for asignatura in asignaturas_horario:
-        if asignatura in asignaturas_solicitadas:
-            asignaturas_solicitadas_horario_lista.append(asignatura)
-    stats['asignaturas_solicitadas_horario_lista_count'] = len(asignaturas_solicitadas_horario_lista)
-
-    asignaturas_recibidas_lista = []
-    for asignatura in asignaturas_solicitadas_horario_lista:
-        informe = session_sql.query(Informe).filter(Informe.tutoria_id == tutoria_id, Informe.asignatura_id == asignatura.id).first()
-        if informe and asignatura not in asignaturas_recibidas_lista:
-            asignaturas_recibidas_lista.append(asignatura)
-    stats['asignaturas_recibidas_lista_count'] = len(asignaturas_recibidas_lista)
-
-    stats['porcentaje'] = cociente_porcentual(stats['asignaturas_recibidas_lista_count'], stats['asignaturas_solicitadas_horario_lista_count'])
-
-    return stats
-
-
 def analisis_tutoria(tutoria_id):
     stats = {}
     alumno = alumno_by_tutoria_id(tutoria_id)
@@ -103,6 +78,7 @@ def analisis_tutoria(tutoria_id):
 
     preguntas_con_respuesta_lista = []
     preguntas_con_respuesta_lista_enunciado_ticker = []
+    label_color_dic = {}
     stats['categorias_pregunta'] = session_sql.query(Categoria).order_by('orden').all()
     stats['preguntas_settings'] = session_sql.query(Pregunta).join(Association_Settings_Pregunta).filter(Association_Settings_Pregunta.settings_id == settings().id).order_by('orden').all()
     for categoria in stats['categorias_pregunta']:
@@ -114,8 +90,36 @@ def analisis_tutoria(tutoria_id):
                     if respuesta and pregunta not in preguntas_con_respuesta_lista:
                         preguntas_con_respuesta_lista.append(pregunta)
                         preguntas_con_respuesta_lista_enunciado_ticker.append(pregunta.enunciado_ticker)
+                        label_color_dic[pregunta.enunciado_ticker]=categoria.color
     stats['preguntas_con_respuesta_lista'] = preguntas_con_respuesta_lista
     stats['preguntas_con_respuesta_lista_enunciado_ticker'] = preguntas_con_respuesta_lista_enunciado_ticker
+    stats['label_color_dic'] = json.dumps(json.dumps(label_color_dic))
+
+    return stats
+
+
+def tutoria_incoming(tutoria_id):
+    stats = {}
+    alumno = alumno_by_tutoria_id(tutoria_id)
+    asignaturas_horario = alumno.asignaturas.order_by('asignatura')
+    asignaturas_solicitadas = session_sql.query(Asignatura).join(Association_Tutoria_Asignatura).filter(Tutoria.id == tutoria_id).order_by('asignatura').all()
+
+    asignaturas_solicitadas_horario_lista = []
+    asignaturas_solicitas_horario_asignatura_lista = []
+    for asignatura in asignaturas_horario:
+        if asignatura in asignaturas_solicitadas:
+            asignaturas_solicitadas_horario_lista.append(asignatura)
+    stats['asignaturas_solicitadas_horario_lista_count'] = len(asignaturas_solicitadas_horario_lista)
+
+    asignaturas_recibidas_lista = []
+    for asignatura in asignaturas_solicitadas_horario_lista:
+        informe = session_sql.query(Informe).filter(Informe.tutoria_id == tutoria_id, Informe.asignatura_id == asignatura.id).first()
+        if informe and asignatura not in asignaturas_recibidas_lista:
+            asignaturas_recibidas_lista.append(asignatura)
+    stats['asignaturas_recibidas_lista_count'] = len(asignaturas_recibidas_lista)
+
+    stats['porcentaje'] = cociente_porcentual(stats['asignaturas_recibidas_lista_count'], stats['asignaturas_solicitadas_horario_lista_count'])
+
     return stats
 
 

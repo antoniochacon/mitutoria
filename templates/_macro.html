@@ -1,3 +1,107 @@
+{% macro highcharts_cuestionario(char_id, color, grupo, tutoria_id, stats, grupo_stats=grupo_stats) %}
+	<div id="{{char_id | safe}}" class="chart" style="height: 300px"></div>
+	<script>
+		var label_color=jQuery.parseJSON({{stats['label_color_dic'] | safe}});
+		Highcharts.chart("{{char_id | safe }}", {
+			chart: {
+				zoomType: "x",
+				panning: true,
+				panKey: "shift"
+			},
+			title: {
+				text: null
+			},
+			tooltip: {
+				shared: false,
+				formatter: function () {
+					var text = "";
+					if (this.series.type == "column") {
+						text = this.x + " | Media: " + Highcharts.numberFormat(this.total, 1) + "<br>" + this.series.name + ": " + Highcharts.numberFormat(this.y * {{stats['asignaturas_recibidas_lista'] | count}}, 1);
+					} else {
+						text = this.x + "<br>" + this.series.name + ": " + Highcharts.numberFormat(this.y, 1);
+					}
+					return text;
+				}
+			},
+			xAxis: {
+				crosshair: {
+					width: 1,
+					color: "#bdbdbd"
+				},
+				categories: {{stats['preguntas_con_respuesta_lista_enunciado_ticker'] | safe}},
+				labels: {
+					formatter: function () {
+						return `<span style="color: ${label_color[this.value]}">${this.value}</span>`
+					}
+				}
+			},
+			yAxis: {
+				gridLineColor: Highcharts.getOptions().colors_gray["gray-500"],
+				plotBands: [
+					{
+						color: Highcharts.getOptions().colors_gray["gray-200"],
+						from: 0,
+						to: 5
+					}
+				],
+				max: 10,
+				min: 1,
+				title: {
+					text: "Media"
+				}
+			},
+			series: [
+				{% for asignatura in stats['asignaturas_recibidas_lista'] %}
+					{
+						type: "column",
+						stacking: "normal",
+						showInLegend: false,
+						maxPointWidth: 50,
+						animation: {
+							duration: 2000
+						},
+						tooltip: {
+							pointFormat: "{{asignatura.asignatura}}"
+						},
+						color: "{{color}}",
+						name: "{{asignatura.asignatura}}",
+						data: {{respuestas_pregunta_alumno_lista(tutoria_id, asignatura.id, stats['asignaturas_recibidas_lista'], stats['preguntas_con_respuesta_lista'])['respuestas_pregunta_stacked'] | safe}}
+					},
+				{% endfor %}
+				{
+					type: "areaspline",
+					name: "{{grupo.nombre}} | Media",
+					data: {{grupo_stats['respuestas_pregunta_grupo_lista'] | safe}},
+					color: "#424242",
+					fillOpacity: 0.25,
+					visible: false,
+					marker: {
+						fillColor: "#e0e0e0",
+						lineWidth: 2,
+						lineColor: null // inherit from series
+					}
+				}{% for asignatura in stats['asignaturas_recibidas_lista'] %}, {
+						type: "spline",
+						name: "{{asignatura.asignatura}}",
+						data: {{respuestas_pregunta_alumno_lista(tutoria_id, asignatura.id, stats['asignaturas_recibidas_lista'], stats['preguntas_con_respuesta_lista'])['respuestas_pregunta_lista'] | safe}},
+						visible: false,
+						marker: {
+							fillColor: "#fff",
+							lineWidth: 2,
+							lineColor: null
+						},
+						shadow: {
+							color: "#616161",
+							width: 3,
+							offsetX: 2,
+							offsetY: 2
+						}
+					}
+				{% endfor %}
+			]
+		});
+	</script>
+{% endmacro %}
 
 {% macro highcharts_asignatura(char_id, asignatura, alumno, grupo, tutoria_id, stats, grupo_stats, notas_pruebas_evaluables_alumno, notas_pruebas_evaluables_grupo, respuestas_tutoria_media_stats) %}
 
@@ -528,105 +632,6 @@
 							fillColor: "#fff",
 							lineWidth: 2,
 							lineColor: null // inherit from series
-						},
-						shadow: {
-							color: "#616161",
-							width: 3,
-							offsetX: 2,
-							offsetY: 2
-						}
-					}
-				{% endfor %}
-			]
-		});
-	</script>
-{% endmacro %}
-
-{% macro highcharts_cuestionario(char_id, color, grupo, tutoria_id, stats, grupo_stats=grupo_stats) %}
-	<div id="{{char_id | safe}}" class="chart" style="height: 300px"></div>
-	<script>
-		Highcharts.chart("{{char_id | safe }}", {
-			chart: {
-				zoomType: "x",
-				panning: true,
-				panKey: "shift"
-			},
-			title: {
-				text: null
-			},
-			tooltip: {
-				shared: false,
-				formatter: function () {
-					var text = "";
-					if (this.series.type == "column") {
-						text = this.x + " | Media: " + Highcharts.numberFormat(this.total, 1) + "<br>" + this.series.name + ": " + Highcharts.numberFormat(this.y * {{stats['asignaturas_recibidas_lista'] | count}}, 1);
-					} else {
-						text = this.x + "<br>" + this.series.name + ": " + Highcharts.numberFormat(this.y, 1);
-					}
-					return text;
-				}
-			},
-			xAxis: {
-				crosshair: {
-					width: 1,
-					color: "#bdbdbd"
-				},
-				categories: {{stats['preguntas_con_respuesta_lista_enunciado_ticker'] | safe}}
-			},
-			yAxis: {
-				gridLineColor: Highcharts.getOptions().colors_gray["gray-500"],
-				plotBands: [
-					{
-						color: Highcharts.getOptions().colors_gray["gray-200"],
-						from: 0,
-						to: 5
-					}
-				],
-				max: 10,
-				min: 1,
-				title: {
-					text: "Media"
-				}
-			},
-			series: [
-				{% for asignatura in stats['asignaturas_recibidas_lista'] %}
-					{
-						type: "column",
-						stacking: "normal",
-						showInLegend: false,
-						maxPointWidth: 50,
-						animation: {
-							duration: 2000
-						},
-						tooltip: {
-							pointFormat: "{{asignatura.asignatura}}"
-						},
-						color: "{{color}}",
-						name: "{{asignatura.asignatura}}",
-						data: {{respuestas_pregunta_alumno_lista(tutoria_id, asignatura.id, stats['asignaturas_recibidas_lista'], stats['preguntas_con_respuesta_lista'])['respuestas_pregunta_stacked'] | safe}}
-					},
-				{% endfor %}
-				{
-					type: "areaspline",
-					name: "{{grupo.nombre}} | Media",
-					data: {{grupo_stats['respuestas_pregunta_grupo_lista'] | safe}},
-					color: "#424242",
-					fillOpacity: 0.25,
-					visible: false,
-					marker: {
-						fillColor: "#e0e0e0",
-						lineWidth: 2,
-						lineColor: null // inherit from series
-					}
-				}{% for asignatura in stats['asignaturas_recibidas_lista'] %}, {
-						type: "spline",
-						name: "{{asignatura.asignatura}}",
-						data: {{respuestas_pregunta_alumno_lista(tutoria_id, asignatura.id, stats['asignaturas_recibidas_lista'], stats['preguntas_con_respuesta_lista'])['respuestas_pregunta_lista'] | safe}},
-						visible: false,
-						marker: {
-							fillColor: "#fff",
-							lineWidth: 2,
-							lineColor: null
 						},
 						shadow: {
 							color: "#616161",

@@ -142,5 +142,6 @@ class Pregunta_Add (Form):
 
 class Categoria_Add (Form):
     enunciado = StringField('categoria', [validators.Required(message='categoria es obligatoria')])
+    color = StringField('color', [validators.Required(message='color es obligatorio')])
     orden = IntegerField('orden', [validators.Required(message='orden es obligatorio')])
     current_categoria_id = HiddenField('current_categoria_id')
