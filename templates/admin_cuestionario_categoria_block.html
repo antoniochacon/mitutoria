@@ -48,7 +48,7 @@
 								name="{{categoria_edit.color.name}}"
 								value="{% if equal_str(categoria.id,params['current_categoria_id']) and request.method=='POST' and params['collpase_categoria_edit'] %}{{categoria_edit.color.data}}{% else %}{{categoria.color}}{% endif %}"
 								placeholder="{{categoria_edit.color.label.text}}">
-							<span class="input-group-addon {% if request.method=='POST' and params['collpase_categoria_edit'] %} {% if categoria_edit.color.errors %} form_addon-warning {% else %} form_addon-success {% endif %} {% endif %}">{{categoria_edit.color.label.text}}</span>
+							<span class="input-group-addon text-white {% if request.method=='POST' and params['collpase_categoria_edit'] %} {% if categoria_edit.color.errors %} form_addon-warning {% else %} form_addon-success {% endif %} {% endif %}" style="background:{{categoria.color}};">{{categoria_edit.color.label.text}}</span>
 						</div>
 					</div>
 					</div>
