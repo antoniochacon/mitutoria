@@ -1,6 +1,7 @@
 import os
 from app import app
-from flask import flash, Markup, render_template, request, copy_current_request_context, session, redirect, url_for, g, Response, abort
+from flask import flash, Markup, render_template, request, copy_current_request_context, session, redirect, url_for, g, abort
+# from flask import Response
 import secrets
 from werkzeug.security import generate_password_hash, check_password_hash
 import datetime
