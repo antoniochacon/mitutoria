@@ -2,11 +2,18 @@
 	<div id="{{char_id | safe}}" class="chart" style="height: 300px"></div>
 	<script>
 		var label_color=jQuery.parseJSON({{stats['label_color_dic'] | safe}});
+		column_color={{stats['column_color'] | safe}},
 		Highcharts.chart("{{char_id | safe }}", {
 			chart: {
 				zoomType: "x",
 				panning: true,
 				panKey: "shift"
+			},
+			plotOptions:{
+				column:{
+					colors:{{stats['column_color'] | safe}},
+					colorByPoint:true
+				},
 			},
 			title: {
 				text: null
@@ -63,7 +70,7 @@
 						tooltip: {
 							pointFormat: "{{asignatura.asignatura}}"
 						},
-						color: "{{color}}",
+						// color: "{{color}}",
 						name: "{{asignatura.asignatura}}",
 						data: {{respuestas_pregunta_alumno_lista(tutoria_id, asignatura.id, stats['asignaturas_recibidas_lista'], stats['preguntas_con_respuesta_lista'])['respuestas_pregunta_stacked'] | safe}}
 					},
@@ -80,7 +87,9 @@
 						lineWidth: 2,
 						lineColor: null // inherit from series
 					}
-				}{% for asignatura in stats['asignaturas_recibidas_lista'] %}, {
+				},
+				{% for asignatura in stats['asignaturas_recibidas_lista'] %}
+				 {
 						type: "spline",
 						name: "{{asignatura.asignatura}}",
 						data: {{respuestas_pregunta_alumno_lista(tutoria_id, asignatura.id, stats['asignaturas_recibidas_lista'], stats['preguntas_con_respuesta_lista'])['respuestas_pregunta_lista'] | safe}},
@@ -96,7 +105,7 @@
 							offsetX: 2,
 							offsetY: 2
 						}
-					}
+					},
 				{% endfor %}
 			]
 		});

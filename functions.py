@@ -79,6 +79,7 @@ def analisis_tutoria(tutoria_id):
     preguntas_con_respuesta_lista = []
     preguntas_con_respuesta_lista_enunciado_ticker = []
     label_color_dic = {}
+    column_color = []
     stats['categorias_pregunta'] = session_sql.query(Categoria).order_by('orden').all()
     stats['preguntas_settings'] = session_sql.query(Pregunta).join(Association_Settings_Pregunta).filter(Association_Settings_Pregunta.settings_id == settings().id).order_by('orden').all()
     for categoria in stats['categorias_pregunta']:
@@ -90,10 +91,14 @@ def analisis_tutoria(tutoria_id):
                     if respuesta and pregunta not in preguntas_con_respuesta_lista:
                         preguntas_con_respuesta_lista.append(pregunta)
                         preguntas_con_respuesta_lista_enunciado_ticker.append(pregunta.enunciado_ticker)
-                        label_color_dic[pregunta.enunciado_ticker]=categoria.color
+                        column_color.append(categoria.color)
+                        label_color_dic[pregunta.enunciado_ticker] = categoria.color
+
     stats['preguntas_con_respuesta_lista'] = preguntas_con_respuesta_lista
     stats['preguntas_con_respuesta_lista_enunciado_ticker'] = preguntas_con_respuesta_lista_enunciado_ticker
+    stats['column_color']=column_color
     stats['label_color_dic'] = json.dumps(json.dumps(label_color_dic))
+
 
     return stats
 
