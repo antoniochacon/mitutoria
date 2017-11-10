@@ -18,16 +18,6 @@ Base = declarative_base()
 Session_SQL = sessionmaker()
 Session_SQL.configure(bind=engine)
 session_sql = Session_SQL()
-# **************************************
-# scoped_session para threading (asincrono)
-# create a configured Session_SQL class
-Session_SQL_Scoped = sessionmaker(bind=engine)
-# Base = declarative_base()
-# create a Session_SQL
-Session_SQL_Scoped = sessionmaker()
-Session_SQL.configure(bind=engine)
-session_sql_scoped = Session_SQL_Scoped()
-# session_sql_scoped = scoped_session(session_sql)
 
 
 class User (UserMixin, Base):
