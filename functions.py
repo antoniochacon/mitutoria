@@ -915,7 +915,7 @@ def re_send_email_tutoria(alumno, tutoria, asignaturas_id_lista):
         create_message_and_send(service, sender, to, subject, message_text)
         time.sleep(email_time_sleep)
     session_sql.commit()
-    session.close()
+    session_sql.close()
 
 
 def re_send_email_tutoria_asincrono(alumno, tutoria, asignaturas_id_lista):
