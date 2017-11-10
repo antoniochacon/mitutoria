@@ -914,8 +914,9 @@ def re_send_email_tutoria(alumno, tutoria, asignaturas_id_lista):
         message_text = render_template('email_tutoria.html', tutoria=tutoria, alumno=alumno, asignatura=asignatura, tutoria_email_link=tutoria_email_link, tutoria_asignatura_id=tutoria_asignatura_add.id, index_link=index_link)
         create_message_and_send(service, sender, to, subject, message_text)
         time.sleep(email_time_sleep)
-    session_sql.commit()
-    # session_sql.close()
+    # session_sql.commit()
+    session_sql_scoped()
+    session_sql_scoped.remove()
 
 
 def re_send_email_tutoria_asincrono(alumno, tutoria, asignaturas_id_lista):

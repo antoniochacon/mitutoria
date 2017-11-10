@@ -1,6 +1,6 @@
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy import Column, Integer, String, ForeignKey, create_engine, Date, text, desc, DateTime, Boolean, Time, desc, DECIMAL
-from sqlalchemy.orm import sessionmaker, relationship, backref
+from sqlalchemy.orm import sessionmaker, relationship, backref, scoped_session
 from sqlalchemy.sql import func, or_, and_
 from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
 from sqlalchemy.sql.functions import ReturnTypeFromArgs
@@ -18,6 +18,8 @@ Base = declarative_base()
 Session_SQL = sessionmaker()
 Session_SQL.configure(bind=engine)
 session_sql = Session_SQL()
+# scoped_session para threading (asincrono)
+session_sql_scoped = scoped_session(session_sql)
 
 
 class User (UserMixin, Base):
