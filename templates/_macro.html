@@ -1,19 +1,19 @@
-{% macro highcharts_cuestionario(char_id, color, grupo, tutoria_id, stats, grupo_stats = grupo_stats) %}
+{% macro highcharts_cuestionario(char_id, color, grupo, tutoria_id, stats, grupo_stats=grupo_stats) %}
 	<div id="{{char_id | safe}}" class="chart" style="height: 300px"></div>
 	<script>
-		var label_color = jQuery.parseJSON({{stats['label_color_dic'] | safe}});
-		column_color = {{stats['column_color'] | safe}},
+		var label_color=jQuery.parseJSON({{stats['label_color_dic'] | safe}});
+		column_color={{stats['column_color'] | safe}},
 		Highcharts.chart("{{char_id | safe }}", {
 			chart: {
 				zoomType: "x",
 				panning: true,
 				panKey: "shift"
 			},
-			plotOptions: {
-				column: {
-					colors: {{stats['column_color'] | safe}},
-					colorByPoint: true
-				}
+			plotOptions:{
+				column:{
+					colors:{{stats['column_color'] | safe}},
+					colorByPoint:true
+				},
 			},
 			title: {
 				text: null
@@ -89,7 +89,7 @@
 					}
 				},
 				{% for asignatura in stats['asignaturas_recibidas_lista'] %}
-					{
+				 {
 						type: "spline",
 						name: "{{asignatura.asignatura}}",
 						data: {{respuestas_pregunta_alumno_lista(tutoria_id, asignatura.id, stats['asignaturas_recibidas_lista'], stats['preguntas_con_respuesta_lista'])['respuestas_pregunta_lista'] | safe}},
@@ -111,7 +111,9 @@
 		});
 	</script>
 {% endmacro %}
+
 {% macro highcharts_asignatura(char_id, asignatura, alumno, grupo, tutoria_id, stats, grupo_stats, notas_pruebas_evaluables_alumno, notas_pruebas_evaluables_grupo, respuestas_tutoria_media_stats) %}
+
 	<div id="{{char_id | safe}}" class="chart" style="height: 200px"></div>
 	<script>
 		Highcharts.chart("{{char_id | safe }}", {
@@ -204,9 +206,7 @@
 						size: "25%",
 						innerSize: "55%",
 						tooltip: {
-							pointFormat: "Media: {point.y:.1f}<br>Notas({{ notas_pruebas_evaluables_alumno['notas_alumno_lista'] | count }}): {{notas_pruebas_evaluables_alumno['notas_alumno_lista_asignatura'] | replace("(", "") | replace("''", "'X_X_X'") | replace(",", "") | replace(") ", " +
-									"" +
-									"" | ") | replace(")", " ") | replace("'X_X_X'", " ") | safe}}"
+							pointFormat: "Media: {point.y:.1f}<br>Notas({{ notas_pruebas_evaluables_alumno['notas_alumno_lista'] | count }}): {{notas_pruebas_evaluables_alumno['notas_alumno_lista_asignatura'] | replace("(", "") | replace("''", "'X_X_X'") | replace(",", "") | replace(") ", " | ") | replace(")", " ") | replace("'X_X_X'", " ") | safe}}"
 						},
 						startAngle: -90,
 						endAngle: 90,
@@ -299,7 +299,7 @@
 						data: [
 							{
 								name: "{{alumno.nombre}} | Cuestionario | {{asignatura.asignatura}}",
-								y: {{respuestas_pregunta_alumno_lista(tutoria_id, asignatura.id, stats['asignaturas_recibidas_lista'], stats['preguntas_con_respuesta_lista'])['respuestas_pregunta_media'] | safe}},
+								y:{{respuestas_pregunta_alumno_lista(tutoria_id, asignatura.id, stats['asignaturas_recibidas_lista'], stats['preguntas_con_respuesta_lista'])['respuestas_pregunta_media'] | safe}},
 								color: "#ec407a"
 							}, {
 								name: "{{alumno.nombre}} | Cuestionario | {{asignatura.asignatura}} | Sin alcanzar",
@@ -374,6 +374,7 @@
 		});
 	</script>
 {% endmacro %}
+
 {% macro highcharts_evalucion(char_id, color_1, color_2, grupo, alumno, evolucion_stats) %}
 	<div id="{{char_id | safe}}" class="chart" style="height: 300px"></div>
 	<script>
@@ -517,6 +518,7 @@
 		});
 	</script>
 {% endmacro %}
+
 {% macro highcharts_asignaturas(char_id, color_1, color_2, grupo, tutoria_id, stats, grupo_stats) %}
 	<div id="{{char_id | safe}}" class="chart" style="height: 300px"></div>
 	<script>
@@ -532,6 +534,7 @@
 			tooltip: {
 				shared: false,
 				formatter: function () {
+
 					var text = "";
 					var cuestiones_lista = {{stats['preguntas_con_respuesta_lista_enunciado_ticker'] | safe}};
 					var cuestion = this.series.name;
@@ -585,16 +588,15 @@
 						data: {{respuestas_asignatura_alumno_lista(tutoria_id, pregunta.id, stats['asignaturas_recibidas_lista'], stats['preguntas_con_respuesta_lista'])['respuestas_asignatura_stacked'] | safe}}
 					},
 				{% endfor %}
+
 				{% for asignatura in stats['asignaturas_recibidas_lista'] %}
-					{% with %}
-					{% set notas_pruebas_evaluables_alumno = notas_pruebas_evaluables_alumno(tutoria_id, asignatura.id) %}
+				{% with %}
+				{% set notas_pruebas_evaluables_alumno = notas_pruebas_evaluables_alumno(tutoria_id, asignatura.id) %}
 					{
 						type: "column",
 						maxPointWidth: 20,
 						// FIXME posible problema con las comillas en la siguiente linea
-						name: "Notas({{notas_pruebas_evaluables_alumno['notas_alumno_lista'] | count}}):  {{notas_pruebas_evaluables_alumno['notas_alumno_lista_asignatura'] | replace("(", "") | replace("''", "'X_X_X'") | replace(",", "") | replace(") ", " | ") | replace(")", " "" +
-								"" +
-								") | replace("'X_X_X'", " ") | safe}}",
+						name: "Notas({{notas_pruebas_evaluables_alumno['notas_alumno_lista'] | count}}):  {{notas_pruebas_evaluables_alumno['notas_alumno_lista_asignatura'] | replace("(", "") | replace("''", "'X_X_X'") | replace(",", "") | replace(") ", " | ") | replace(")", " ") | replace("'X_X_X'", " ") | safe}}",
 						data: [
 							{
 								x: {{loop.index}}-1,
@@ -652,6 +654,7 @@
 		});
 	</script>
 {% endmacro %}
+
 {% macro nav_tabs_admin(tab_active, params_args) %}
 	{{nav_tabs(tab_active, params_args=params_args, dic={'Cuestiones':'admin_cuestionario', 'Citas':'admin_citas', 'Users':'admin_usuarios', 'Stats':'admin_estadisticas'})}}
 {% endmacro %}
@@ -704,6 +707,8 @@
 		</div>
 	</nav>
 {% endmacro %}
+
+
 {% macro highcharts_salud_tutores_equipo_educativo(char_id, color, df_data_1, df_data_2, stats) %}
 	<div id="{{char_id | safe}}" class="chart" style="height: 200px"></div>
 	<script>
@@ -954,6 +959,7 @@
 		});
 	</script>
 {% endmacro %}
+
 {% macro highcharts_admin_profesores_activos_evolucion_frecuencia(char_id, color, df_data) %}
 	<div id="{{char_id | safe}}" class="chart" style="height: 300px"></div>
 	<script>
@@ -1041,12 +1047,12 @@
 		{% if subtitulo %}
 			<h6 class="{{text_color}}">
 				{% if url == "asignaturas" %}
-					<form action="/asignaturas" method="POST">
-						<input type="hidden" name="asignaturas_orden" value="{{settings().asignaturas_orden}}">
+				<form action="/asignaturas" method="POST">
+					<input type="hidden" name="asignaturas_orden" value="{{settings().asignaturas_orden}}">
 						<button role="button" type="submit" name="selector_button" value="asignaturas_orden_switch" class="btn btn-outline-dark btn-sm float-right" title="reordenar">
 							<i class="material-icons vertical-center">wrap_text</i>{{ asignaturas_orden_switch(settings().asignaturas_orden)}}
 						</button>
-					</form>
+				</form>
 				{% endif %}
 				{{subtitulo}}
 				<div class="divider {{bg_color}} grueso"></div>
