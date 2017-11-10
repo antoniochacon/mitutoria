@@ -1508,6 +1508,8 @@ def settings_opciones_html(params={}):
             settings_edit_calendar = request.form.get('settings_edit_calendar')
             settings_tutoria_duracion = request.form.get('settings_tutoria_duracion')
             settings_diferencial = request.form.get('settings_diferencial')
+            settings_show_analisis_asignaturas_splines = request.form.get('settings_show_analisis_asignaturas_splines')
+            settings_show_analisis_preguntas_splines = request.form.get('settings_show_analisis_preguntas_splines')
 
             if not settings_edit_tutoria_timeout:
                 settings_edit_tutoria_timeout = False
@@ -1515,12 +1517,19 @@ def settings_opciones_html(params={}):
                 settings_show_asignaturas_analisis = False
             if not settings_edit_calendar:
                 settings_edit_calendar = False
+            if not settings_show_analisis_asignaturas_splines:
+                settings_show_analisis_asignaturas_splines = False
+            if not settings_show_analisis_preguntas_splines:
+                settings_show_analisis_preguntas_splines = False
 
             settings().tutoria_timeout = settings_edit_tutoria_timeout
             settings().show_asignaturas_analisis = settings_show_asignaturas_analisis
             settings().tutoria_duracion = settings_tutoria_duracion
             settings().diferencial = settings_diferencial
             settings().calendar = settings_edit_calendar
+            settings().show_analisis_asignaturas_splines = settings_show_analisis_asignaturas_splines
+            settings().show_analisis_preguntas_splines = settings_show_analisis_preguntas_splines
+
             flash_toast('Configuracion actualizada', 'success')
             session_sql.commit()
 

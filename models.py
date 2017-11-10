@@ -18,8 +18,16 @@ Base = declarative_base()
 Session_SQL = sessionmaker()
 Session_SQL.configure(bind=engine)
 session_sql = Session_SQL()
+# **************************************
 # scoped_session para threading (asincrono)
-session_sql_scoped = scoped_session(session_sql)
+# create a configured Session_SQL class
+Session_SQL_Scoped = sessionmaker(bind=engine)
+# Base = declarative_base()
+# create a Session_SQL
+Session_SQL_Scoped = sessionmaker()
+Session_SQL.configure(bind=engine)
+session_sql_scoped = Session_SQL_Scoped()
+# session_sql_scoped = scoped_session(session_sql)
 
 
 class User (UserMixin, Base):
@@ -47,6 +55,8 @@ class Settings (Base):
     tutoria_timeout = Column(Boolean, default=True)
     show_asignaturas_analisis = Column(Boolean, default=True)
     diferencial = Column(Integer, default=15)
+    show_analisis_preguntas_splines = Column(Boolean, default=False)
+    show_analisis_asignaturas_splines = Column(Boolean, default=False)
     grupo_activo_id = Column(Integer)
     asignaturas_orden = Column(Boolean, default=True)
     grupos = relationship('Grupo', backref='settings', lazy='dynamic', cascade='delete')

@@ -49,7 +49,7 @@ class Usuario_Edit (Form):
                                  validators.length(max=120, message='email debe tener maximo 120 caracteres')])
     email_validated = BooleanField('email validado')
     email_robinson = BooleanField('lista Robinson')
-    show_asignaturas_analisis = BooleanField('lista Robinson')
+    show_asignaturas_analisis = BooleanField('evolucion asignaturas')
     role = StringField('role', [validators.length(min=3, message='role debe tener minimo 3 caracteres'),
                                 validators.length(max=80, message='role debe tener maximo 25 caracteres')])
     ban = BooleanField('ban')

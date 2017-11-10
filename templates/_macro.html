@@ -88,6 +88,7 @@
 						lineColor: null // inherit from series
 					}
 				},
+				{% if settings().show_analisis_asignaturas_splines %}
 				{% for asignatura in stats['asignaturas_recibidas_lista'] %}
 				 {
 						type: "spline",
@@ -107,6 +108,7 @@
 						}
 					},
 				{% endfor %}
+				{% endif %}
 			]
 		});
 	</script>
@@ -588,7 +590,6 @@
 						data: {{respuestas_asignatura_alumno_lista(tutoria_id, pregunta.id, stats['asignaturas_recibidas_lista'], stats['preguntas_con_respuesta_lista'])['respuestas_asignatura_stacked'] | safe}}
 					},
 				{% endfor %}
-
 				{% for asignatura in stats['asignaturas_recibidas_lista'] %}
 				{% with %}
 				{% set notas_pruebas_evaluables_alumno = notas_pruebas_evaluables_alumno(tutoria_id, asignatura.id) %}
@@ -632,7 +633,9 @@
 						lineWidth: 2,
 						lineColor: null // inherit from series
 					}
-				}{% for pregunta in stats['preguntas_con_respuesta_lista'] %}, {
+				}
+				{% if settings().show_analisis_preguntas_splines %}
+				{% for pregunta in stats['preguntas_con_respuesta_lista'] %}, {
 						type: "spline",
 						name: "{{pregunta.enunciado_ticker}}",
 						data: {{respuestas_asignatura_alumno_lista(tutoria_id, pregunta.id, stats['asignaturas_recibidas_lista'], stats['preguntas_con_respuesta_lista'])['respuestas_asignatura_lista'] | safe}},
@@ -650,6 +653,7 @@
 						}
 					}
 				{% endfor %}
+				{% endif %}
 			]
 		});
 	</script>
