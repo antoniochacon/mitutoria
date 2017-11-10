@@ -87,10 +87,7 @@
 							</div>
 						{% endif %}
 						{# NOTE badge #}
-
-						<span
-							class="badge {% if tutoria.activa %}badge-secondary{% else %}badge-info text-white{% endif %} float-right"
-							title="{{tutoria_incoming['porcentaje']}}% de los informes recibidos">
+						<span class="badge {% if tutoria.activa %}badge-secondary{% else %}badge-info text-white{% endif %} float-right" title="{{tutoria_incoming['porcentaje']}}% de los informes recibidos">
 							<span class="align-middle pr-1 {% if tutoria.activa %}color_secondary_lighten{% else %}badge-info text-mutted{% endif %}">{{stats['asignaturas_recibidas_lista'] | count}}
 								|
 								{{stats['asignaturas_solicitadas_horario_lista'] | count}}
@@ -98,7 +95,6 @@
 							<span class="h4 align-middle">{{tutoria_incoming['porcentaje']}}
 								%</span>
 						</span>
-
 					</div>
 				</div>
 				<div class="progress rounded-0 mb-3">
@@ -161,7 +157,10 @@
 										</div>
 									</div>
 									<div class="card-body">
-										{% if diferencial_check(settings().diferencial, respuestas_pregunta_alumno_lista(tutoria.id, asignatura.id, stats['asignaturas_recibidas_lista'], stats['preguntas_con_respuesta_lista'])['respuestas_pregunta_media'], notas_pruebas_evaluables_alumno(tutoria.id, asignatura.id)['notas_alumno_media']) %}
+										{% if diferencial_check(settings().diferencial, respuestas_pregunta_alumno_lista(tutoria.id, asignatura.id, stats['asignaturas_recibidas_lista'], stats['preguntas_con_respuesta_lista'])['respuestas_pregunta_media'], notas_pruebas_evaluables_alumno(
+											tutoria.id,
+											asignatura.id
+										)['notas_alumno_media']) %}
 											<span class="badge text-white badge-secondary float-right">
 												resultados !
 											</span>
@@ -200,13 +199,13 @@
 					<i class="material-icons vertical-center">expand_more</i>
 					Acuerdos
 				</a>
-				<div class="collapse {% if tutoria.acuerdo %}show {% endif %}" id="analisis_acuerdo">
-					<div class="col pt-4 pb-2">
-						<div class="form-group">
-							<textarea class="form-control" name="acuerdo" placeholder="Escriba aqui sus acuerdo">
-								{{-tutoria.acuerdo-}}
-							</textarea>
-						</div>
+				<div class="collapse {% if tutoria.acuerdo %}show{% endif %}" id="analisis_acuerdo">
+					<div class="form-group col pt-4 pb-2">
+						{% if tutoria.acuerdo %}
+							<textarea class="form-control" name="acuerdo" placeholder="Escriba aqui sus acuerdo">{{-tutoria.acuerdo-}}</textarea>
+						{% else %}
+							<textarea class="form-control" name="acuerdo" placeholder="Escriba aqui sus acuerdo"></textarea>
+						{% endif %}
 					</div>
 					<div class="col">
 						<button role="button" type="submit" name="selector_button" value="selector_acuerdo_save" class="btn btn-outline-dark btn-sm" title="guardar acuerdo">

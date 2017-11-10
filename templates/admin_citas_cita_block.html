@@ -27,7 +27,7 @@
 							<input
 								type="text"
 								{% if not equal_str(cita.id, params['current_cita_id']) or not params['cita_edit_link'] %}
-								readonly
+								readonly="readonly"
 								{% endif %}
 								class="form-control {% if request.method=='POST' and params['collpase_cita_edit'] %} {% if cita_edit.frase.errors %} is-invalid {% else %} is-valid {% endif %}{% endif %}"
 								name="{{cita_edit.frase.name}}"
@@ -41,7 +41,7 @@
 							<input
 								type="text"
 								{% if not equal_str(cita.id, params['current_cita_id']) or not params['cita_edit_link'] %}
-								readonly
+								readonly="readonly"
 								{% endif %}
 								class="form-control {% if request.method=='POST' and params['collpase_cita_edit'] %} {% if cita_edit.autor.errors %} is-invalid {% else %} is-valid {% endif %}{% endif %}"
 								name="{{cita_edit.autor.name}}"
