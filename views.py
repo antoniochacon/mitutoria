@@ -496,7 +496,12 @@ def pagina_2_html():
 
     return redirect(url_for('pagina_1_html', params=params))
 
-# XXX alumnos
+
+@app.route('/pagina_pdf')
+def pagina_pdf_html():
+    params = {}
+    params['nombre'] = 'Antonio'
+    return render_template('pagina_pdf.html', params=params)
 
 
 @app.route('/alumnos', methods=['GET', 'POST'])
