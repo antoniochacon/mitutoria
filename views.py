@@ -1264,6 +1264,41 @@ def user_grupos_html():
 
 # XXX analisis
 
+@app.route('/analisis_paper', methods=['GET', 'POST'])
+@app.route('/analisis_paper/<params>', methods=['GET', 'POST'])
+@login_required
+def analisis_paper_html(params={}):
+    try:
+        params_old = dic_decode(params)
+    except:
+        params_old = {}
+        abort(404)
+    params = {}
+
+    params['current_tutoria_id'] = params_old.get('current_tutoria_id', 0)
+    current_tutoria_id = params['current_tutoria_id']
+    params['tutoria_delete_link'] = params_old.get('tutoria_delete_link', False)
+    params['tutoria_re_enviar_link'] = params_old.get('tutoria_re_enviar_link', False)
+    params['tutoria_edit_link'] = params_old.get('tutoria_edit_link', False)
+
+    grupo = grupo_by_tutoria_id(current_tutoria_id)
+    tutoria = tutoria_by_id(current_tutoria_id)
+    alumno = alumno_by_tutoria_id(current_tutoria_id)
+
+    if not tutoria or not alumno:
+        return redirect(url_for('analisis_tutoria_no_disponible_html'))
+
+    stats = analisis_tutoria(current_tutoria_id)
+    stats['analisis_paper'] = True
+    grupo_stats = respuestas_grupo_stats(current_tutoria_id, stats['preguntas_con_respuesta_lista'], stats['asignaturas_recibidas_lista'])
+    respuestas_tutoria_media_stats = respuestas_tutoria_media(current_tutoria_id)
+    evolucion_stats = evolucion_tutorias(alumno.id)
+
+    return render_template('analisis_paper.html',
+                           params=params, tutoria=tutoria, alumno=alumno, grupo=grupo,
+                           stats=stats, grupo_stats=grupo_stats,
+                           respuestas_tutoria_media_stats=respuestas_tutoria_media_stats, evolucion_stats=evolucion_stats)
+
 
 @app.route('/analisis_tutoria_no_disponible')
 @login_required
@@ -1458,7 +1493,7 @@ def analisis_tutoria_edit_html(params={}):
                         else:
                             return redirect(url_for('oauth2callback'))
 
-                    # YYYYYYYYYYYYYYYYYYYYY tutoria_edit
+                    # tutoria_edit
                     tutoria_edit_form_hora = datetime.datetime.strptime(tutoria_edit_form.hora.data, '%H:%M')
                     calendar_datetime_utc_start = (datetime.datetime.strptime(tutoria_edit_form.fecha.data, '%A-%d-%B-%Y') + datetime.timedelta(hours=(tutoria_edit_form_hora.hour)) + datetime.timedelta(minutes=tutoria_edit_form_hora.minute)).timestamp()
                     calendar_datetime_utc_start_arrow = str(arrow.get(calendar_datetime_utc_start).replace(tzinfo='Europe/Madrid'))

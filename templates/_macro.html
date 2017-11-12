@@ -65,7 +65,7 @@
 						showInLegend: false,
 						maxPointWidth: 50,
 						animation: {
-							duration: 2000
+							duration: {% if stats['analisis_paper'] %} 0 {% else %} 2000 {% endif %},
 						},
 						tooltip: {
 							pointFormat: "{{asignatura.asignatura}}"
@@ -116,7 +116,7 @@
 
 {% macro highcharts_asignatura(char_id, asignatura, alumno, grupo, tutoria_id, stats, grupo_stats, notas_pruebas_evaluables_alumno, notas_pruebas_evaluables_grupo, respuestas_tutoria_media_stats) %}
 
-	<div id="{{char_id | safe}}" class="chart" style="height: 200px"></div>
+	<div id="{{char_id | safe}}" class="chart" style="height: 200px; weight:300px;"></div>
 	<script>
 		Highcharts.chart("{{char_id | safe }}", {
 			chart: {
@@ -354,6 +354,11 @@
 						},
 						startAngle: -90,
 						endAngle: 90,
+						{% if stats['analisis_paper'] %}
+							animation: {
+								duration: 0
+							},
+							{% endif %}
 						data: [
 							{
 								name: "{{alumno.nombre}} | Cuestionario",
