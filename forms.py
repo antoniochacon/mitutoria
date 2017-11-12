@@ -69,13 +69,12 @@ class User_Login (Form):
 
 
 class Grupo_Add (Form):
-    nombre = StringField('nombre del grupo', [validators.Required(message='el nombre grupo es obligatorio'),
+    nombre = StringField('grupo', [validators.Required(message='el nombre grupo es obligatorio'),
                                               validators.length(min=3, message='el nombre grupo debe tener minimo 3 caracteres'),
                                               validators.length(max=80, message='el nombre grupo debe tener maximo 80 caracteres')])
 
-    tutor = StringField('tutor', [validators.Required(message='el nombre del tutor es obligatorio'),
-                                  validators.length(min=3, message='el nombre del tutor debe tener minimo 3 caracteres'),
-                                  validators.length(max=80, message='el nombre del tutor debe tener maximo 25 caracteres')])
+    tutor_nombre = StringField('tutor nombre', [validators.Required(message='el nombre del tutor es obligatorio')])
+    tutor_apellidos = StringField('tutor apellidos', [validators.Required(message='los apellidos del tutor son obligatorios')])
 
     centro = StringField('centro', [validators.length(min=3, message='centro debe tener minimo 3 caracteres'),
                                     validators.length(max=80, message='centro debe tener maximo 25 caracteres')])

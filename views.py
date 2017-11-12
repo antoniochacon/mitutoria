@@ -1618,7 +1618,7 @@ def settings_grupos_html(params={}):
             grupo_add_form = Grupo_Add(request.form)
             grupo_add_grupo_activo = request.form.get('grupo_add_grupo_activo')
             if grupo_add_form.validate():
-                grupo_add = Grupo(settings_id=settings().id, nombre=grupo_add_form.nombre.data, tutor=grupo_add_form.tutor.data,
+                grupo_add = Grupo(settings_id=settings().id, nombre=grupo_add_form.nombre.data, tutor_nombre=grupo_add_form.tutor_nombre.data.title(), tutor_apellidos=grupo_add_form.tutor_apellidos.data.title(),
                                   centro=grupo_add_form.centro.data, curso_academico=grupo_add_form.curso_academico.data)
                 # NOTE checking unicidad de nombre, centro, fecha y usuario
                 unicidad_de_grupo_sql = session_sql.query(Settings).filter(Settings.id == settings().id).join(Grupo).filter(Grupo.nombre == grupo_add_form.nombre.data, Grupo.curso_academico == grupo_add_form.curso_academico.data, Grupo.centro == grupo_add_form.centro.data).first()
@@ -1631,7 +1631,6 @@ def settings_grupos_html(params={}):
                     # NOTE set grupo_activo
                     session_sql.add(grupo_add)
                     session_sql.flush()
-                    # session_sql.refresh(grupo_add)
                     if grupo_add_grupo_activo:
                         settings().grupo_activo_id = grupo_add.id
                         flash_toast(Markup('Grupo <strong>') + grupo_add_form.nombre.data + Markup('</strong>') + ' agregado' + Markup('<br>Ahora este tu grupo activo'), 'success')
@@ -1670,13 +1669,15 @@ def settings_grupos_html(params={}):
             if not grupo_edit_grupo_activo_switch:
                 grupo_edit_grupo_activo_switch = False
             if grupo_edit_form.validate():
-                grupo_edit = Grupo(nombre=grupo_edit_form.nombre.data, tutor=grupo_edit_form.tutor.data, centro=grupo_edit_form.centro.data)
+                grupo_edit = Grupo(nombre=grupo_edit_form.nombre.data, tutor_nombre=grupo_edit_form.tutor_nombre.data.title(), tutor_apellidos=grupo_edit_form.tutor_apellidos.data.title(), centro=grupo_edit_form.centro.data)
                 grupo_sql = session_sql.query(Grupo).filter(Grupo.id == current_grupo_id).first()
-                if grupo_sql.nombre.lower() != grupo_edit.nombre.lower() or grupo_sql.tutor.lower() != grupo_edit.tutor.lower() or grupo_sql.centro.lower() != grupo_edit.centro.lower() or str(settings().grupo_activo_id) != str(grupo_edit_grupo_activo_switch):
+                if grupo_sql.nombre.lower() != grupo_edit.nombre.lower() or grupo_sql.tutor_nombre.lower() != grupo_edit.tutor_nombre.lower() or grupo_sql.tutor_apellidos.lower() != grupo_edit.tutor_apellidos.lower() or grupo_sql.centro.lower() != grupo_edit.centro.lower() or str(settings().grupo_activo_id) != str(grupo_edit_grupo_activo_switch):
                     if grupo_sql.nombre.lower() != grupo_edit.nombre.lower():
                         grupo_sql.nombre = grupo_edit.nombre
-                    if grupo_sql.tutor.lower() != grupo_edit.tutor.lower():
-                        grupo_sql.tutor = grupo_edit.tutor
+                    if grupo_sql.tutor_nombre.lower() != grupo_edit.tutor_nombre.lower():
+                        grupo_sql.tutor_nombre = grupo_edit.tutor_nombre
+                    if grupo_sql.tutor_apellidos.lower() != grupo_edit.tutor_apellidos.lower():
+                        grupo_sql.tutor_apellidos = grupo_edit.tutor_apellidos
                     if grupo_sql.centro.lower() != grupo_edit.centro.lower():
                         grupo_sql.centro = grupo_edit.centro
                     if grupo_edit_grupo_activo_switch:

@@ -41,31 +41,38 @@
 			<!-- Each sheet element should have the class "sheet" -->
 			<!-- "padding-**mm" is optional: you can set 10, 15, 20 or 25 -->
 			<section class="sheet padding-15mm">
-				{{titulo_1(bg_color='bg-dark', titulo='Análisis gráfico de la tutoría [Tutor/a: xxx | Grupo: xxx]')}}
-				<div class="row align-items-center pb-2">
+				{{titulo_1(bg_color='bg-dark', titulo='Análisis gráfico de la tutoría')}}
+				<div class="row">
 					<div class="col">
-						<span class="text-mutted">Alumno/a:
-						</span>
-						<h5 class="strong">
+						<span class="text-mutted">Alumno/a:</span>
+						<span class="strong">
 							{{alumno.apellidos}},
 							{{alumno.nombre}}
-						</h5>
-					</div>
-					<div class="col pb-2">
-						<span class="text-mutted">Fecha:
+						</span>
+						<span class="text-mutted pl-2">Grupo:</span>
+						<span class="strong">
+							{{grupo.nombre}}
+						</span>
+							<span class="text-mutted pl-2">Tutor:</span>
+							<span class="strong">
+								{{grupo.tutor_apellidos}}, {{grupo.tutor_nombre}}
+							</span>
+						<span class="text-mutted pl-2">Fecha:
 						</span>
 						<span class="strong">
 							{{tutoria.fecha.strftime('%b') | capitalize}}
 							{{tutoria.fecha.strftime('%A') | capitalize}}
 							{{tutoria.fecha.strftime('%d')}}
 						</span>
-						<br>
-						<span class="text-mutted">Hora:
+						<span class="text-mutted pl-3">
+							Hora:
 						</span>
 						<span class="strong">{{tutoria.hora.strftime('%H:%M')}}</span>
 					</div>
 				</div>
+				<h6>Analisis del cuestionario</h6>
 				{{highcharts_cuestionario(char_id='cuestionario', color='#ffa000', grupo=grupo, tutoria_id=tutoria.id, stats=stats,grupo_stats=grupo_stats)}}
+				<h6>Analisis comparativo de asignaturas</h6>
 				{{highcharts_asignaturas(char_id='asignaturas', color_1='#ec407a',color_2='#f48fb1', grupo=grupo, tutoria_id=tutoria.id, stats=stats, grupo_stats=grupo_stats)}}
 			</section>
 			<!-- The second sheet -->

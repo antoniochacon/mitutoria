@@ -4,7 +4,7 @@
 		<span class="curso_academico {% if grupo_activo_check(grupo.id) %} curso_academico-primary {% else %} curso_academico-mutted {% endif %}">{{grupo.curso_academico}}
 			|
 			{{grupo.curso_academico+1}}</span>
-		
+
 		<div class="media-body">
 			<div class="padding_2">
 				{{grupo.nombre}}
@@ -39,21 +39,7 @@
 							name="{{grupo_edit.nombre.name}}"
 							value="{% if equal_str(grupo.id,params['current_grupo_id']) and request.method=='POST' and params['collpase_grupo_edit'] %}{{grupo_edit.nombre.data}}{% else %}{{grupo.nombre}}{% endif %}"
 							placeholder="{{grupo_edit.nombre.label.text}}">
-						<span class="input-group-addon {% if request.method=='POST' and params['collpase_grupo_edit'] %} {% if grupo_edit.nombre.errors %} form_addon-warning {% else %} form_addon-success {% endif %} {% endif %}">nombre</span>
-					</div>
-				</div>
-				<div class="form-group col-md-6 mb-3">
-					<div class="input-group">
-						<input
-							type="text"
-							{% if not equal_str(grupo.id, params['current_grupo_id']) or not params['grupo_edit_link'] %}
-							readonly
-							{% endif %}
-							class="form-control {% if request.method=='POST' and params['collpase_grupo_edit'] %} {% if grupo_edit.tutor.errors %} is-invalid {% else %} is-valid {% endif %}{% endif %}"
-							name="{{grupo_edit.tutor.name}}"
-							value="{% if equal_str(grupo.id,params['current_grupo_id']) and request.method=='POST' and params['collpase_grupo_edit'] %}{{grupo_edit.tutor.data}}{% else %}{{grupo.tutor}}{% endif %}"
-							placeholder="{{grupo_edit.tutor.label.text}}">
-						<span class="input-group-addon {% if request.method=='POST' and params['collpase_grupo_edit'] %} {% if grupo_edit.tutor.errors %} form_addon-warning {% else %} form_addon-success {% endif %} {% endif %}">tutor</span>
+						<span class="input-group-addon {% if request.method=='POST' and params['collpase_grupo_edit'] %} {% if grupo_edit.nombre.errors %} form_addon-warning {% else %} form_addon-success {% endif %} {% endif %}">{{grupo_edit.nombre.label.text}}</span>
 					</div>
 				</div>
 				<div class="form-group col-md-6 mb-3">
@@ -67,9 +53,38 @@
 							name="{{grupo_edit.centro.name}}"
 							value="{% if equal_str(grupo.id,params['current_grupo_id']) and request.method=='POST' and params['collpase_grupo_edit'] %}{{grupo_edit.centro.data}}{% else %}{{grupo.centro}}{% endif %}"
 							placeholder="{{grupo_edit.centro.label.text}}">
-						<span class="input-group-addon {% if request.method=='POST' and params['collpase_grupo_edit'] %} {% if grupo_edit.centro.errors %} form_addon-warning {% else %} form_addon-success {% endif %} {% endif %}">centro</span>
+						<span class="input-group-addon {% if request.method=='POST' and params['collpase_grupo_edit'] %} {% if grupo_edit.centro.errors %} form_addon-warning {% else %} form_addon-success {% endif %} {% endif %}">{{grupo_edit.centro.label.text}}</span>
 					</div>
 				</div>
+				<div class="form-group col-md-6 mb-3">
+					<div class="input-group">
+						<input
+							type="text"
+							{% if not equal_str(grupo.id, params['current_grupo_id']) or not params['grupo_edit_link'] %}
+							readonly
+							{% endif %}
+							class="form-control {% if request.method=='POST' and params['collpase_grupo_edit'] %} {% if grupo_edit.tutor_nombre.errors %} is-invalid {% else %} is-valid {% endif %}{% endif %}"
+							name="{{grupo_edit.tutor_nombre.name}}"
+							value="{% if equal_str(grupo.id,params['current_grupo_id']) and request.method=='POST' and params['collpase_grupo_edit'] %}{{grupo_edit.tutor_nombre.data}}{% else %}{{grupo.tutor_nombre}}{% endif %}"
+							placeholder="{{grupo_edit.tutor_nombre.label.text}}">
+						<span class="input-group-addon {% if request.method=='POST' and params['collpase_grupo_edit'] %} {% if grupo_edit.tutor_nombre.errors %} form_addon-warning {% else %} form_addon-success {% endif %} {% endif %}">{{grupo_edit.tutor_nombre.label.text}}</span>
+					</div>
+				</div>
+				<div class="form-group col-md-6 mb-3">
+					<div class="input-group">
+						<input
+							type="text"
+							{% if not equal_str(grupo.id, params['current_grupo_id']) or not params['grupo_edit_link'] %}
+							readonly
+							{% endif %}
+							class="form-control {% if request.method=='POST' and params['collpase_grupo_edit'] %} {% if grupo_edit.tutor_apellidos.errors %} is-invalid {% else %} is-valid {% endif %}{% endif %}"
+							name="{{grupo_edit.tutor_apellidos.name}}"
+							value="{% if equal_str(grupo.id,params['current_grupo_id']) and request.method=='POST' and params['collpase_grupo_edit'] %}{{grupo_edit.tutor_apellidos.data}}{% else %}{{grupo.tutor_apellidos}}{% endif %}"
+							placeholder="{{grupo_edit.tutor_apellidos.label.text}}">
+						<span class="input-group-addon {% if request.method=='POST' and params['collpase_grupo_edit'] %} {% if grupo_edit.tutor_apellidos.errors %} form_addon-warning {% else %} form_addon-success {% endif %} {% endif %}">{{grupo_edit.tutor_apellidos.label.text}}</span>
+					</div>
+				</div>
+
 				<input type="hidden" name="curso_academico" value="{{curso()}}">
 				{% if not params['login'] %}
 					<div class="form-group col-md-6 mb-3">
