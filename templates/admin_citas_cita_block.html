@@ -5,13 +5,13 @@
 			<span class="capital capital-mutted">{{loop.index}}</span>
 			<div class="media-body">
 				<div class="padding_2">
-					{{cita.frase}}
-					{# NOTE badge #}
-					{% if cita.active_default %}
-						<span class="badge badge-info float-right" title="activa por defecto">
-							default
-						</span>
-					{% endif %}
+					<span>
+						"{{cita.frase}}" .
+					</span>
+					<span class="text-info">
+						-
+						{{cita.autor}}
+					</span>
 				</div>
 			</div>
 		</div>
