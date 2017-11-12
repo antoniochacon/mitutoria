@@ -26,39 +26,27 @@
 		</head>
 		<!-- Set also "landscape" if you need -->
 		<body class="A4 landscape">
-			{%from '_macro.html' import titulo_1, highcharts_cuestionario, highcharts_asignaturas, highcharts_asignatura%}
+			{%from '_macro.html' import highcharts_cuestionario, highcharts_asignaturas, highcharts_asignatura%}
 			<!-- Each sheet element should have the class "sheet" -->
 			<!-- "padding-**mm" is optional: you can set 10, 15, 20 or 25 -->
 			<section class="sheet padding-15mm">
-				{{titulo_1(bg_color='bg-dark', titulo='Análisis gráfico de la tutoría')}}
-				<div class="row">
-					<div class="col">
-						<span class="text-mutted">Alumno/a:</span>
-						<span class="strong">
-							{{alumno.apellidos}},
-							{{alumno.nombre}}
-						</span>
-						<span class="text-mutted pl-2">Grupo:</span>
-						<span class="strong">
-							{{grupo.nombre}}
-						</span>
-							<span class="text-mutted pl-2">Tutor:</span>
-							<span class="strong">
-								{{grupo.tutor_apellidos}}, {{grupo.tutor_nombre}}
-							</span>
-						<span class="text-mutted pl-2">Fecha:
-						</span>
-						<span class="strong">
-							{{tutoria.fecha.strftime('%b') | capitalize}}
-							{{tutoria.fecha.strftime('%A') | capitalize}}
-							{{tutoria.fecha.strftime('%d')}}
-						</span>
-						<span class="text-mutted pl-3">
-							Hora:
-						</span>
-						<span class="strong">{{tutoria.hora.strftime('%H:%M')}}</span>
-					</div>
-				</div>
+				<h5 class="strong">
+					Análisis gráfico de la tutoría de
+					{{alumno.apellidos}},
+					{{alumno.nombre}}
+					<div class="divider bg-dark grueso line-height-1"></div>
+				</h5>
+				<span class="text-mutted">Grupo:&nbsp;</span>
+				{{grupo.nombre}}
+				<span class="text-mutted pl-3">Tutor:&nbsp;</span>
+				{{grupo.tutor_apellidos}},
+				{{grupo.tutor_nombre}}
+				<span class="text-mutted pl-3">Fecha:&nbsp;</span>
+				{{tutoria.fecha.strftime('%b') | capitalize}}
+				{{tutoria.fecha.strftime('%A') | capitalize}}
+				{{tutoria.fecha.strftime('%d')}}
+				<span class="text-mutted pl-3">Hora:&nbsp;</span>
+				{{tutoria.hora.strftime('%H:%M')}}
 				<h6>Analisis del cuestionario</h6>
 				{{highcharts_cuestionario(char_id='cuestionario', color='#ffa000', grupo=grupo, tutoria_id=tutoria.id, stats=stats,grupo_stats=grupo_stats)}}
 				<h6>Analisis comparativo de asignaturas</h6>
@@ -66,7 +54,8 @@
 			</section>
 			<!-- The second sheet -->
 			<section class="sheet padding-15mm">
-				<br><br>
+				<h6>Analisis detallado por asignatura</h6>
+				<br>
 				<div class="row">
 					{% for asignatura in stats['asignaturas_recibidas_lista'][: 8] %}
 						<div class="col-3 pb-4">
@@ -100,39 +89,42 @@
 					{% endfor %}
 				</div>
 			</section>
-			<section class="sheet padding-15mm">
-				<div class="row">
-					{% for asignatura in stats['asignaturas_recibidas_lista'][9 : 18] %}
-						<div class="col-3 pb-4">
-							<div class="card border-mutted">
-								<div class="card-header text-center strong bg-info text-dark">
-									<div class="text-truncate">
-										{{asignatura.asignatura}}
-										<span class="small">
-											|
-											{{asignatura.nombre}}</span>
+			{% if stats['asignaturas_recibidas_lista'] | count > 8 %}
+				<section class="sheet padding-15mm">
+					<br><br>
+					<div class="row">
+						{% for asignatura in stats['asignaturas_recibidas_lista'][9 : 18] %}
+							<div class="col-3 pb-4">
+								<div class="card border-mutted">
+									<div class="card-header text-center strong bg-info text-dark">
+										<div class="text-truncate">
+											{{asignatura.asignatura}}
+											<span class="small">
+												|
+												{{asignatura.nombre}}</span>
+										</div>
+									</div>
+									<div class="card-body">
+										{% if diferencial_check(settings().diferencial, respuestas_pregunta_alumno_lista(tutoria.id, asignatura.id, stats['asignaturas_recibidas_lista'], stats['preguntas_con_respuesta_lista'])['respuestas_pregunta_media'], notas_pruebas_evaluables_alumno(
+											tutoria.id,
+											asignatura.id
+										)['notas_alumno_media']) %}
+											<span class="badge text-white badge-secondary float-right">
+												resultados !
+											</span>
+										{% endif %}
+										{% if diferencial_check(settings().diferencial, respuestas_tutoria_media_stats, respuestas_pregunta_alumno_lista(tutoria.id, asignatura.id, stats['asignaturas_recibidas_lista'], stats['preguntas_con_respuesta_lista'])['respuestas_pregunta_media']) %}
+											<span class="badge badge-primary float-right mr-1">
+												actitud !
+											</span>
+										{% endif %}
+										{{highcharts_asignatura(char_id=asignatura.asignatura, asignatura=asignatura, alumno=alumno, grupo=grupo, tutoria_id=tutoria.id, stats=stats, grupo_stats=grupo_stats, notas_pruebas_evaluables_alumno=notas_pruebas_evaluables_alumno(tutoria.id, asignatura.id), notas_pruebas_evaluables_grupo=notas_pruebas_evaluables_grupo(tutoria.id, asignatura.id), respuestas_tutoria_media_stats=respuestas_tutoria_media_stats)}}
 									</div>
 								</div>
-								<div class="card-body">
-									{% if diferencial_check(settings().diferencial, respuestas_pregunta_alumno_lista(tutoria.id, asignatura.id, stats['asignaturas_recibidas_lista'], stats['preguntas_con_respuesta_lista'])['respuestas_pregunta_media'], notas_pruebas_evaluables_alumno(
-										tutoria.id,
-										asignatura.id
-									)['notas_alumno_media']) %}
-										<span class="badge text-white badge-secondary float-right">
-											resultados !
-										</span>
-									{% endif %}
-									{% if diferencial_check(settings().diferencial, respuestas_tutoria_media_stats, respuestas_pregunta_alumno_lista(tutoria.id, asignatura.id, stats['asignaturas_recibidas_lista'], stats['preguntas_con_respuesta_lista'])['respuestas_pregunta_media']) %}
-										<span class="badge badge-primary float-right mr-1">
-											actitud !
-										</span>
-									{% endif %}
-									{{highcharts_asignatura(char_id=asignatura.asignatura, asignatura=asignatura, alumno=alumno, grupo=grupo, tutoria_id=tutoria.id, stats=stats, grupo_stats=grupo_stats, notas_pruebas_evaluables_alumno=notas_pruebas_evaluables_alumno(tutoria.id, asignatura.id), notas_pruebas_evaluables_grupo=notas_pruebas_evaluables_grupo(tutoria.id, asignatura.id), respuestas_tutoria_media_stats=respuestas_tutoria_media_stats)}}
-								</div>
 							</div>
-						</div>
-					{% endfor %}
-				</div>
-			</section>
+						{% endfor %}
+					</div>
+				</section>
+			{% endif %}
 		</body>
 	</html>

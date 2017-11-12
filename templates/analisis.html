@@ -22,7 +22,7 @@
 			document.body.appendChild(oHiddFrame);
 		}
 	</script>
-	{%from '_macro.html' import nav_bar_top, titulo_1, highcharts_asignatura, highcharts_cuestionario, highcharts_asignaturas, highcharts_evalucion%}
+	{%from '_macro.html' import nav_bar_top, titulo_1, highcharts_asignatura, highcharts_cuestionario, highcharts_asignaturas, highcharts_evolucion%}
 	{{ nav_bar_top(link_active='alumnos',params=params, current_user=current_user) }}
 	<div class="paper bg-white padding_contenido">
 		{% if grupo and alumno and tutoria %}
@@ -219,7 +219,7 @@
 					</a>
 					<div class="collapse" id="analisis_evoluacion">
 						<div class="col pt-4 pb-3">
-							{{highcharts_evalucion(char_id='evalucion', color_1='#ec407a',color_2='#f48fb1', grupo=grupo, alumno=alumno, evolucion_stats=evolucion_stats)}}
+							{{highcharts_evolucion(char_id='evalucion', color_1='#ec407a',color_2='#f48fb1', grupo=grupo, alumno=alumno, evolucion_stats=evolucion_stats)}}
 						</div>
 					</div>
 					<a data-toggle="collapse" href="#analisis_acuerdo" class="collapse_header_1" aria-expanded="false" title="acuerdo">

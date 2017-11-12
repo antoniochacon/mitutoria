@@ -79,17 +79,23 @@
 				{
 					type: "areaspline",
 					name: "{{grupo.nombre}} | Media",
+					{% if stats['analisis_paper'] %}
+					showInLegend: false,
+					{% endif %}
 					data: {{grupo_stats['respuestas_pregunta_grupo_lista'] | safe}},
 					color: "#424242",
 					fillOpacity: 0.25,
-					visible: false,
+					visible: {% if stats['analisis_paper'] %} true {% else %}false {% endif %},
+					animation: {
+						duration: {% if stats['analisis_paper'] %} 0 {% else %} 2000 {% endif %},
+					},
 					marker: {
 						fillColor: "#e0e0e0",
 						lineWidth: 2,
 						lineColor: null // inherit from series
 					}
 				},
-				{% if settings().show_analisis_asignaturas_splines %}
+				{% if settings().show_analisis_asignaturas_splines and not stats['analisis_paper'] %}
 				{% for asignatura in stats['asignaturas_recibidas_lista'] %}
 				 {
 						type: "spline",
@@ -382,7 +388,7 @@
 	</script>
 {% endmacro %}
 
-{% macro highcharts_evalucion(char_id, color_1, color_2, grupo, alumno, evolucion_stats) %}
+{% macro highcharts_evolucion(char_id, color_1, color_2, grupo, alumno, evolucion_stats) %}
 	<div id="{{char_id | safe}}" class="chart" style="height: 300px"></div>
 	<script>
 		Highcharts.stockChart("{{char_id | safe }}", {
@@ -505,16 +511,13 @@
 				}, {
 					type: "areaspline",
 					name: "{{grupo.nombre}} | Cuestionario",
-					animation: {
-						duration: 2000
-					},
 					color: "#424242",
 					data: {{evolucion_stats['evolucion_grupo_media_lista'] | safe}},
 					tooltip: {
 						valueDecimals: 2
 					},
 					fillOpacity: 0.25,
-					visible: false,
+					visible: false
 					marker: {
 						fillColor: "#dee2e6",
 						lineWidth: 2,
@@ -633,17 +636,23 @@
 				{
 					type: "areaspline",
 					name: "{{grupo.nombre}} | Media",
+					{% if stats['analisis_paper'] %}
+					showInLegend: false,
+					{% endif %}
 					data: {{grupo_stats['respuestas_asignatura_grupo_lista']}},
 					color: "#424242",
 					fillOpacity: 0.25,
-					visible: false,
+					visible: {% if stats['analisis_paper'] %} true {% else %}false {% endif %},
+					animation: {
+						duration: {% if stats['analisis_paper'] %} 0 {% else %} 2000 {% endif %},
+					},
 					marker: {
 						fillColor: "#fff",
 						lineWidth: 2,
 						lineColor: null // inherit from series
 					}
 				}
-				{% if settings().show_analisis_preguntas_splines %}
+				{% if settings().show_analisis_preguntas_splines and not stats['analisis_paper']%}
 				{% for pregunta in stats['preguntas_con_respuesta_lista'] %}, {
 						type: "spline",
 						name: "{{pregunta.enunciado_ticker}}",
