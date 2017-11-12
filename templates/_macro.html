@@ -7,10 +7,14 @@
 			chart: {
 				zoomType: "x",
 				panning: true,
-				panKey: "shift"
+				panKey: "shift",
 			},
 			plotOptions:{
 				column:{
+					animation: {
+						duration: {% if stats['analisis_paper'] %} 0 {% else %} 2000 {% endif %},
+					},
+
 					colors:{{stats['column_color'] | safe}},
 					colorByPoint:true
 				},
@@ -64,10 +68,7 @@
 						stacking: "normal",
 						showInLegend: false,
 						maxPointWidth: 50,
-						animation: {
-							duration: {% if stats['analisis_paper'] %} 0 {% else %} 2000 {% endif %},
-						},
-						tooltip: {
+											tooltip: {
 							pointFormat: "{{asignatura.asignatura}}"
 						},
 						// color: "{{color}}",
@@ -124,11 +125,15 @@
 				plotBorderWidth: 0,
 				plotShadow: false,
 				marginBottom: -130,
-				spacingBottom: 20
+				spacingBottom: 20,
+
 			},
 			title: null,
 			plotOptions: {
 				pie: {
+					animation: {
+						duration: {% if stats['analisis_paper'] %} 0 {% else %} 2000 {% endif %},
+					},
 					dataLabels: {
 						enabled: null
 					}
@@ -354,11 +359,6 @@
 						},
 						startAngle: -90,
 						endAngle: 90,
-						{% if stats['analisis_paper'] %}
-							animation: {
-								duration: 0
-							},
-							{% endif %}
 						data: [
 							{
 								name: "{{alumno.nombre}} | Cuestionario",
@@ -578,7 +578,11 @@
 				}
 			},
 			plotOptions: {
+
 				column: {
+					animation: {
+						duration: {% if stats['analisis_paper'] %} 0 {% else %} 2000 {% endif %},
+					},
 					grouping: false
 				}
 			},

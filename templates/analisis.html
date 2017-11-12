@@ -103,15 +103,6 @@
 								<button role="button" type="submit" name="selector_button" value="selector_tutoria_delete_link" class="btn btn-sm {% if tutoria.activa %} btn-outline-dark{% else %} btn-outline-mutted{% endif %}" title="eliminar tutoria">
 									<i class="material-icons vertical-center{% if tutoria.activa %} color-gray-darken-1 {% endif %}">delete</i>
 								</button>
-								{#
-								<button role="button" type="submit" name="selector_button" value="selector_tutoria_regresar_alumno" class="btn btn-sm {% if tutoria.activa %} btn-outline-dark{% else %} btn-outline-mutted{% endif %}" title="ver ficha de {{alumno.nombre}}">
-									<i class="material-icons vertical-center {% if tutoria.activa %} color-gray-darken-1 {% endif %}">person</i>
-								</button>
-								#}
-								<!-- <a href="#" onclick="print_function()" role="button" class="link_without_pointer btn btn-sm {% if tutoria.activa %} btn-outline-dark{% else %} btn-outline-mutted{% endif %}" title="imprimir"> <i class="material-icons vertical-center {% if
-								tutoria.activa %} color-gray-darken-1 {% endif %}">print</i> </a> -->
-								<!-- <a href="/analisis_paper/{{dic_encode_args({'current_tutoria_id': tutoria.id})}}" role="button" class="link_without_pointer btn btn-sm {% if tutoria.activa %} btn-outline-dark{% else %} btn-outline-mutted{% endif %}" title="version papel"> <i
-								class="material-icons vertical-center {% if tutoria.activa %} color-gray-darken-1 {% endif %}">print</i> </a> -->
 								<span
 									onclick="printPage('/analisis_paper/{{dic_encode_args({'current_tutoria_id': tutoria.id})}}');"
 									role="button"

@@ -1321,6 +1321,7 @@ def analisis_html(params={}):
     params['tutoria_delete_link'] = params_old.get('tutoria_delete_link', False)
     params['tutoria_re_enviar_link'] = params_old.get('tutoria_re_enviar_link', False)
     params['tutoria_edit_link'] = params_old.get('tutoria_edit_link', False)
+    # params['analisis_paper'] = params_old.get('analisis_paper', False)
 
     grupo = grupo_by_tutoria_id(current_tutoria_id)
     tutoria = tutoria_by_id(current_tutoria_id)
@@ -1333,6 +1334,7 @@ def analisis_html(params={}):
     grupo_stats = respuestas_grupo_stats(current_tutoria_id, stats['preguntas_con_respuesta_lista'], stats['asignaturas_recibidas_lista'])
     respuestas_tutoria_media_stats = respuestas_tutoria_media(current_tutoria_id)
     evolucion_stats = evolucion_tutorias(alumno.id)
+    # stats['analisis_paper'] = params['analisis_paper']
     # abort(404)
 
     return render_template('analisis.html',
