@@ -109,7 +109,7 @@
 					{% if stats['analisis_paper'] %}
 					showInLegend: false,
 					{% endif %}
-					data: {{grupo_stats['respuestas_asignatura_grupo_lista']}},
+					data: {{grupo_stats['respuestas_asignatura_grupo_lista'] | safe}},
 					color: "#424242",
 					fillOpacity: 0.25,
 					visible: {% if stats['analisis_paper'] %} true {% else %}false {% endif %},
@@ -119,7 +119,7 @@
 					marker: {
 						fillColor: "#fff",
 						lineWidth: 2,
-						lineColor: null // inherit from series
+						lineColor: null
 					}
 				}
 				{% if settings().show_analisis_preguntas_splines and not stats['analisis_paper']%}
@@ -131,7 +131,7 @@
 						marker: {
 							fillColor: "#fff",
 							lineWidth: 2,
-							lineColor: null // inherit from series
+							lineColor: null
 						},
 						shadow: {
 							color: "#616161",
@@ -242,7 +242,7 @@
 					marker: {
 						fillColor: "#e0e0e0",
 						lineWidth: 2,
-						lineColor: null // inherit from series
+						lineColor: null
 					}
 				},
 				{% if settings().show_analisis_asignaturas_splines and not stats['analisis_paper'] %}
@@ -671,7 +671,7 @@
 					marker: {
 						fillColor: "#dee2e6",
 						lineWidth: 2,
-						lineColor: null // inherit from series
+						lineColor: null
 					}
 				}
 			]
