@@ -1,3 +1,153 @@
+
+{% macro highcharts_asignaturas(char_id, color_1, color_2, grupo, tutoria_id, stats, grupo_stats) %}
+	<div id="{{char_id | safe}}" class="chart" style="height: 300px"></div>
+	<script>
+		Highcharts.chart("{{char_id | safe }}", {
+			chart: {
+				zoomType: "x",
+				panning: true,
+				panKey: "shift"
+			},
+			title: {
+				text: null
+			},
+			tooltip: {
+				shared: false,
+				formatter: function () {
+
+					var text = "";
+					var cuestiones_lista = {{stats['preguntas_con_respuesta_lista_enunciado_ticker'] | safe}};
+					var cuestion = this.series.name;
+					if (this.series.type == "column" && cuestiones_lista.indexOf(cuestion) >= 0) {
+						text = this.x + " | Cuestionario | Media: " + Highcharts.numberFormat(this.total, 1) + "<br>" + this.series.name + ": " + Highcharts.numberFormat(this.y * {{stats['preguntas_con_respuesta_lista'] | count}}, 1);
+					} else if (this.series.type == "column") {
+						text = this.x + " | Notas | Media: " + Highcharts.numberFormat(this.y, 1) + "<br>" + this.series.name;
+					} else {
+						text = this.x + " | " + this.series.name + ": " + Highcharts.numberFormat(this.y, 1);
+					}
+					return text;
+				}
+			},
+			xAxis: {
+				crosshair: {
+					width: 1,
+					color: "#343a40"
+				},
+				categories: {{stats['asignaturas_recibidas_lista_asignatura'] | safe}}
+			},
+			yAxis: {
+				gridLineColor: Highcharts.getOptions().colors_gray["gray-500"],
+				plotBands: [
+					{
+						color: Highcharts.getOptions().colors_gray["gray-200"],
+						from: 0,
+						to: 5
+					}
+				],
+				max: 10,
+				min: 1,
+				title: {
+					text: "Media"
+				}
+			},
+			plotOptions: {
+
+				column: {
+					animation: {
+						duration: {% if stats['analisis_paper'] %} 0 {% else %} 2000 {% endif %},
+					},
+					grouping: false
+				}
+			},
+			series: [
+				{% for pregunta in stats['preguntas_con_respuesta_lista'] %}
+					{
+						type: "column",
+						stack: "cuestion",
+						stacking: "normal",
+						showInLegend: false,
+						maxPointWidth: 50,
+						color: "{{color_1}}",
+						name: "{{pregunta.enunciado_ticker}}",
+						data: {{respuestas_asignatura_alumno_lista(tutoria_id, pregunta.id, stats['asignaturas_recibidas_lista'], stats['preguntas_con_respuesta_lista'])['respuestas_asignatura_stacked'] | safe}}
+					},
+				{% endfor %}
+				{% for asignatura in stats['asignaturas_recibidas_lista'] %}
+				{% with %}
+				{% set notas_pruebas_evaluables_alumno = notas_pruebas_evaluables_alumno(tutoria_id, asignatura.id) %}
+					{
+						type: "column",
+						maxPointWidth: 20,
+						// FIXME posible problema con las comillas en la siguiente linea
+						name: "Notas({{notas_pruebas_evaluables_alumno['notas_alumno_lista'] | count}}):  {{notas_pruebas_evaluables_alumno['notas_alumno_lista_asignatura'] | replace("(", "") | replace("''", "'X_X_X'") | replace(",", "") | replace(") ", " | ") | replace(")", " ") | replace("'X_X_X'", " ") | safe}}",
+						data: [
+							{
+								x: {{loop.index}}-1,
+								y:{% if notas_pruebas_evaluables_alumno['notas_alumno_media'] != "sin_notas" %}
+									{% if notas_pruebas_evaluables_alumno['notas_alumno_lista'] | sum != 0 %}
+										{{notas_pruebas_evaluables_alumno['notas_alumno_media'] | safe}}
+									{% else %}
+										1
+									{% endif %}
+								{% else %}
+									["sin_notas"]
+								{% endif %}
+							}
+						],
+						{% if notas_pruebas_evaluables_alumno['notas_alumno_lista'] | sum != 0 %}
+							color: "{{color_2}}"
+						{% else %}
+							color: "#26c6da"
+						{% endif %},
+						showInLegend: false
+					},
+					{% endwith %}
+				{% endfor %}
+				{
+					type: "areaspline",
+					name: "{{grupo.nombre}} | Media",
+					{% if stats['analisis_paper'] %}
+					showInLegend: false,
+					{% endif %}
+					data: {{grupo_stats['respuestas_asignatura_grupo_lista']}},
+					color: "#424242",
+					fillOpacity: 0.25,
+					visible: {% if stats['analisis_paper'] %} true {% else %}false {% endif %},
+					animation: {
+						duration: {% if stats['analisis_paper'] %} 0 {% else %} 2000 {% endif %},
+					},
+					marker: {
+						fillColor: "#fff",
+						lineWidth: 2,
+						lineColor: null // inherit from series
+					}
+				}
+				{% if settings().show_analisis_preguntas_splines and not stats['analisis_paper']%}
+				{% for pregunta in stats['preguntas_con_respuesta_lista'] %}, {
+						type: "spline",
+						name: "{{pregunta.enunciado_ticker}}",
+						data: {{respuestas_asignatura_alumno_lista(tutoria_id, pregunta.id, stats['asignaturas_recibidas_lista'], stats['preguntas_con_respuesta_lista'])['respuestas_asignatura_lista'] | safe}},
+						visible: false,
+						marker: {
+							fillColor: "#fff",
+							lineWidth: 2,
+							lineColor: null // inherit from series
+						},
+						shadow: {
+							color: "#616161",
+							width: 3,
+							offsetX: 2,
+							offsetY: 2
+						}
+					}
+				{% endfor %}
+				{% endif %}
+			]
+		});
+	</script>
+{% endmacro %}
+
+
 {% macro highcharts_cuestionario(char_id, color, grupo, tutoria_id, stats, grupo_stats=grupo_stats) %}
 	<div id="{{char_id | safe}}" class="chart" style="height: 300px"></div>
 	<script>
@@ -402,7 +552,7 @@
 				buttonBackgroundColor: "#212529",
 				buttonBorderWidth: 0,
 				buttonBorderRadius: 7,
-				trackBackgroundColor: "#212529", //"none",
+				trackBackgroundColor: "#212529",
 				trackBorderWidth: 1,
 				trackBorderRadius: 8,
 				trackBorderColor: "#212529",
@@ -506,7 +656,7 @@
 					marker: {
 						fillColor: "#fff",
 						lineWidth: 2,
-						lineColor: null // inherit from series
+						lineColor: null
 					}
 				}, {
 					type: "areaspline",
@@ -517,161 +667,13 @@
 						valueDecimals: 2
 					},
 					fillOpacity: 0.25,
-					visible: false
+					visible: false,
 					marker: {
 						fillColor: "#dee2e6",
 						lineWidth: 2,
 						lineColor: null // inherit from series
 					}
 				}
-			]
-		});
-	</script>
-{% endmacro %}
-
-{% macro highcharts_asignaturas(char_id, color_1, color_2, grupo, tutoria_id, stats, grupo_stats) %}
-	<div id="{{char_id | safe}}" class="chart" style="height: 300px"></div>
-	<script>
-		Highcharts.chart("{{char_id | safe }}", {
-			chart: {
-				zoomType: "x",
-				panning: true,
-				panKey: "shift"
-			},
-			title: {
-				text: null
-			},
-			tooltip: {
-				shared: false,
-				formatter: function () {
-
-					var text = "";
-					var cuestiones_lista = {{stats['preguntas_con_respuesta_lista_enunciado_ticker'] | safe}};
-					var cuestion = this.series.name;
-					if (this.series.type == "column" && cuestiones_lista.indexOf(cuestion) >= 0) {
-						text = this.x + " | Cuestionario | Media: " + Highcharts.numberFormat(this.total, 1) + "<br>" + this.series.name + ": " + Highcharts.numberFormat(this.y * {{stats['preguntas_con_respuesta_lista'] | count}}, 1);
-					} else if (this.series.type == "column") {
-						text = this.x + " | Notas | Media: " + Highcharts.numberFormat(this.y, 1) + "<br>" + this.series.name;
-					} else {
-						text = this.x + " | " + this.series.name + ": " + Highcharts.numberFormat(this.y, 1);
-					}
-					return text;
-				}
-			},
-			xAxis: {
-				crosshair: {
-					width: 1,
-					color: "#343a40"
-				},
-				categories: {{stats['asignaturas_recibidas_lista_asignatura'] | safe}}
-			},
-			yAxis: {
-				gridLineColor: Highcharts.getOptions().colors_gray["gray-500"],
-				plotBands: [
-					{
-						color: Highcharts.getOptions().colors_gray["gray-200"],
-						from: 0,
-						to: 5
-					}
-				],
-				max: 10,
-				min: 1,
-				title: {
-					text: "Media"
-				}
-			},
-			plotOptions: {
-
-				column: {
-					animation: {
-						duration: {% if stats['analisis_paper'] %} 0 {% else %} 2000 {% endif %},
-					},
-					grouping: false
-				}
-			},
-			series: [
-				{% for pregunta in stats['preguntas_con_respuesta_lista'] %}
-					{
-						type: "column",
-						stack: "cuestion",
-						stacking: "normal",
-						showInLegend: false,
-						maxPointWidth: 50,
-						color: "{{color_1}}",
-						name: "{{pregunta.enunciado_ticker}}",
-						data: {{respuestas_asignatura_alumno_lista(tutoria_id, pregunta.id, stats['asignaturas_recibidas_lista'], stats['preguntas_con_respuesta_lista'])['respuestas_asignatura_stacked'] | safe}}
-					},
-				{% endfor %}
-				{% for asignatura in stats['asignaturas_recibidas_lista'] %}
-				{% with %}
-				{% set notas_pruebas_evaluables_alumno = notas_pruebas_evaluables_alumno(tutoria_id, asignatura.id) %}
-					{
-						type: "column",
-						maxPointWidth: 20,
-						// FIXME posible problema con las comillas en la siguiente linea
-						name: "Notas({{notas_pruebas_evaluables_alumno['notas_alumno_lista'] | count}}):  {{notas_pruebas_evaluables_alumno['notas_alumno_lista_asignatura'] | replace("(", "") | replace("''", "'X_X_X'") | replace(",", "") | replace(") ", " | ") | replace(")", " ") | replace("'X_X_X'", " ") | safe}}",
-						data: [
-							{
-								x: {{loop.index}}-1,
-								y:{% if notas_pruebas_evaluables_alumno['notas_alumno_media'] != "sin_notas" %}
-									{% if notas_pruebas_evaluables_alumno['notas_alumno_lista'] | sum != 0 %}
-										{{notas_pruebas_evaluables_alumno['notas_alumno_media'] | safe}}
-									{% else %}
-										1
-									{% endif %}
-								{% else %}
-									["sin_notas"]
-								{% endif %}
-							}
-						],
-						{% if notas_pruebas_evaluables_alumno['notas_alumno_lista'] | sum != 0 %}
-							color: "{{color_2}}"
-						{% else %}
-							color: "#26c6da"
-						{% endif %},
-						showInLegend: false
-					},
-					{% endwith %}
-				{% endfor %}
-				{
-					type: "areaspline",
-					name: "{{grupo.nombre}} | Media",
-					{% if stats['analisis_paper'] %}
-					showInLegend: false,
-					{% endif %}
-					data: {{grupo_stats['respuestas_asignatura_grupo_lista']}},
-					color: "#424242",
-					fillOpacity: 0.25,
-					visible: {% if stats['analisis_paper'] %} true {% else %}false {% endif %},
-					animation: {
-						duration: {% if stats['analisis_paper'] %} 0 {% else %} 2000 {% endif %},
-					},
-					marker: {
-						fillColor: "#fff",
-						lineWidth: 2,
-						lineColor: null // inherit from series
-					}
-				}
-				{% if settings().show_analisis_preguntas_splines and not stats['analisis_paper']%}
-				{% for pregunta in stats['preguntas_con_respuesta_lista'] %}, {
-						type: "spline",
-						name: "{{pregunta.enunciado_ticker}}",
-						data: {{respuestas_asignatura_alumno_lista(tutoria_id, pregunta.id, stats['asignaturas_recibidas_lista'], stats['preguntas_con_respuesta_lista'])['respuestas_asignatura_lista'] | safe}},
-						visible: false,
-						marker: {
-							fillColor: "#fff",
-							lineWidth: 2,
-							lineColor: null // inherit from series
-						},
-						shadow: {
-							color: "#616161",
-							width: 3,
-							offsetX: 2,
-							offsetY: 2
-						}
-					}
-				{% endfor %}
-				{% endif %}
 			]
 		});
 	</script>
