@@ -33,8 +33,9 @@ def asignaturas_orden_switch(status):
     if status == True:
         orden = 'asignaturas'
     else:
-        orden = 'participiacion'
+        orden = 'participacion'
     return orden
+
 
 # ***********************************************************************
 # XXX: tutoria stats (SIN PANDA)
@@ -172,9 +173,9 @@ def respuestas_asignatura_alumno_lista(tutoria_id, pregunta_id, asignaturas_list
 
 def respuestas_grupo_stats(tutoria_id, preguntas_lista, asignaturas_lista):
     respuestas_pregunta_grupo_spline = []
-    respuestas_pregunta_grupo_spline_without_NaN=[]
+    respuestas_pregunta_grupo_spline_without_NaN = []
     respuestas_asignatura_grupo_spline = []
-    respuestas_asignatura_grupo_spline_without_NaN=[]
+    respuestas_asignatura_grupo_spline_without_NaN = []
     pruebas_evaluables_lista = []
     respuestas_pregunta_grupo_media = 'sin_notas'
     respuestas_asignatura_grupo_media = 'sin_notas'
@@ -216,7 +217,6 @@ def respuestas_grupo_stats(tutoria_id, preguntas_lista, asignaturas_lista):
 
     if respuestas_asignatura_grupo_spline_without_NaN:
         respuestas_asignatura_grupo_media = round(mean(respuestas_asignatura_grupo_spline_without_NaN), 1)
-
 
     stats['respuestas_pregunta_grupo_lista'] = respuestas_pregunta_grupo_spline
     stats['respuestas_pregunta_grupo_media'] = respuestas_pregunta_grupo_media

@@ -45,6 +45,7 @@ class Settings (Base):
     tutoria_timeout = Column(Boolean, default=True)
     show_asignaturas_analisis = Column(Boolean, default=True)
     diferencial = Column(Integer, default=15)
+    show_analisis_detalles = Column(Boolean, default=False)
     show_analisis_preguntas_splines = Column(Boolean, default=False)
     show_analisis_asignaturas_splines = Column(Boolean, default=False)
     grupo_activo_id = Column(Integer)

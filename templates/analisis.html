@@ -30,6 +30,7 @@
 			<form action="/analisis_tutoria_edit" method="POST">
 				{% with %}
 				{% set tutoria_incoming = tutoria_incoming(tutoria.id) %}
+				{% set settings_sql = settings() %}
 				<div class="row align-items-center pb-2">
 					<div class="col-sm-12 col-md-6 col-lg-4">
 						<span class="{% if tutoria.activa %}text-mutted{% else %}text-info{% endif %}">Alumno:
@@ -131,30 +132,67 @@
 						aria-valuemax="100"
 						style="{% if not tutoria.activa %} height:2px; {% endif %} width: {{tutoria_incoming['porcentaje']}}%;"></div>
 				</div>
-				{% endwith %}
 				{% if params['tutoria_re_enviar_link']%}
 					{% include 'analisis_re_enviar_a_block.html' %}
 				{% endif %}
 				{% if params['tutoria_edit_link'] %}
 					{% include 'analisis_tutoria_edit_block.html' %}
 				{% endif %}
+				<a id="anchor_cues"></a>
 				<a data-toggle="collapse" href="#analisis_cuestionario" class="collapse_header_1 " aria-expanded="true" title="Analisis del cuestionario">
 					<i class="material-icons vertical-center">expand_more</i>
 					Analisis del cuestionario
 				</a>
-				<div class="collapse {% if tutoria.activa %}show{% endif %}" id="analisis_cuestionario">
-					<div class="col pt-4 pb-3">
+				<div class="collapse {% if tutoria.activa and not params['show_analisis_preguntas_splines'] %}show{% endif %}" id="analisis_cuestionario">
+					<div class="col pt-4">
 						{{highcharts_cuestionario(char_id='cuestionario', color='#ffa000', grupo=grupo, tutoria_id=tutoria.id, stats=stats,grupo_stats=grupo_stats)}}
 					</div>
+					{% if settings_sql.show_analisis_detalles %}
+						<div class="col float-right">
+							<input type="hidden" name="settings_show_analisis_asignaturas_splines" value="{{settings_sql.show_analisis_asignaturas_splines}}">
+							<button
+								role="button"
+								type="submit"
+								name="selector_button"
+								value="settings_show_analisis_asignaturas_splines"
+								class="btn btn-outline-dark btn-sm float-right"
+								title="{% if settings_sql.show_analisis_asignaturas_splines %}ocultar detalles{% else %}mostrar detalles{% endif %}">
+								<i class="material-icons vertical-center">
+									{% if settings_sql.show_analisis_asignaturas_splines %}visibility_off{% else %}visibility{% endif %}
+								</i>
+								{% if settings_sql.show_analisis_asignaturas_splines %}ocultar detalles{% else %}mostrar detalles{% endif %}
+							</button>
+						</div>
+						<div class="row pt-4 pb-4"></div>
+					{% endif %}
 				</div>
-				<a data-toggle="collapse" href="#analisis_general_asignaturas" class="collapse_header_1" aria-expanded="false" title="Analisis comparativo de asignaturas">
+				<a id="anchor_comp"></a>
+				<a data-toggle="collapse" href="#analisis_comparativo_asignaturas" class="collapse_header_1" aria-expanded="false" title="Analisis comparativo de asignaturas">
 					<i class="material-icons vertical-center">expand_more</i>
 					Analisis comparativo de asignaturas
 				</a>
-				<div class="collapse" id="analisis_general_asignaturas">
-					<div class="col pt-4 pb-3">
+				<div class="collapse {% if params['show_analisis_preguntas_splines'] %} show {% endif %}" id="analisis_comparativo_asignaturas">
+					<div class="col pt-4">
 						{{highcharts_asignaturas(char_id='asignaturas', color_1='#ec407a',color_2='#f48fb1', grupo=grupo, tutoria_id=tutoria.id, stats=stats, grupo_stats=grupo_stats)}}
 					</div>
+					{% if settings_sql.show_analisis_detalles %}
+						<div class="col float-right">
+							<input type="hidden" name="settings_show_analisis_preguntas_splines" value="{{settings_sql.show_analisis_preguntas_splines}}">
+							<button
+								role="button"
+								type="submit"
+								name="selector_button"
+								value="settings_show_analisis_preguntas_splines"
+								class="btn btn-outline-dark btn-sm float-right"
+								title="{% if settings_sql.show_analisis_preguntas_splines %}ocultar detalles{% else %}mostrar detalles{% endif %}">
+								<i class="material-icons vertical-center">
+									{% if settings_sql.show_analisis_preguntas_splines %}visibility_off{% else %}visibility{% endif %}
+								</i>
+								{% if settings_sql.show_analisis_preguntas_splines %}ocultar detalles{% else %}mostrar detalles{% endif %}
+							</button>
+						</div>
+						<div class="row pt-4 pb-4"></div>
+					{% endif %}
 				</div>
 				<a data-toggle="collapse" href="#analisis_detallado_asignaturas" class="collapse_header_1" aria-expanded="false" title="Analisis detallado por asignaturas">
 					<i class="material-icons vertical-center">expand_more</i>
@@ -183,7 +221,7 @@
 										</div>
 									</div>
 									<div class="card-body">
-										{% if diferencial_check(settings().diferencial, respuestas_pregunta_alumno_lista(tutoria.id, asignatura.id, stats['asignaturas_recibidas_lista'], stats['preguntas_con_respuesta_lista'])['respuestas_pregunta_media'], notas_pruebas_evaluables_alumno(
+										{% if diferencial_check(settings_sql.diferencial, respuestas_pregunta_alumno_lista(tutoria.id, asignatura.id, stats['asignaturas_recibidas_lista'], stats['preguntas_con_respuesta_lista'])['respuestas_pregunta_media'], notas_pruebas_evaluables_alumno(
 											tutoria.id,
 											asignatura.id
 										)['notas_alumno_media']) %}
@@ -191,7 +229,7 @@
 												resultados !
 											</span>
 										{% endif %}
-										{% if diferencial_check(settings().diferencial, respuestas_tutoria_media_stats, respuestas_pregunta_alumno_lista(tutoria.id, asignatura.id, stats['asignaturas_recibidas_lista'], stats['preguntas_con_respuesta_lista'])['respuestas_pregunta_media']) %}
+										{% if diferencial_check(settings_sql.diferencial, respuestas_tutoria_media_stats, respuestas_pregunta_alumno_lista(tutoria.id, asignatura.id, stats['asignaturas_recibidas_lista'], stats['preguntas_con_respuesta_lista'])['respuestas_pregunta_media']) %}
 											<span class="badge badge-primary float-right mr-1">
 												actitud !
 											</span>
@@ -241,6 +279,7 @@
 						</div>
 					</div>
 				</div>
+				{% endwith %}
 			</form>
 		</div>
 	{% else %}

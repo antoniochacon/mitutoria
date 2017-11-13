@@ -1316,11 +1316,13 @@ def analisis_html(params={}):
         params_old = {}
         abort(404)
     params = {}
+    params['anchor'] = params_old.get('anchor', 'anchor_top')
     params['current_tutoria_id'] = params_old.get('current_tutoria_id', 0)
     current_tutoria_id = params['current_tutoria_id']
     params['tutoria_delete_link'] = params_old.get('tutoria_delete_link', False)
     params['tutoria_re_enviar_link'] = params_old.get('tutoria_re_enviar_link', False)
     params['tutoria_edit_link'] = params_old.get('tutoria_edit_link', False)
+    params['show_analisis_preguntas_splines'] = params_old.get('show_analisis_preguntas_splines', False)
 
     grupo = grupo_by_tutoria_id(current_tutoria_id)
     tutoria = tutoria_by_id(current_tutoria_id)
@@ -1350,6 +1352,31 @@ def analisis_tutoria_edit_html(params={}):
         current_tutoria_id = current_id_request('current_tutoria_id')
         params['current_tutoria_id'] = current_tutoria_id
 
+        # XXX settings_show_analisis_asignaturas_splines
+        if request.form['selector_button'] == 'settings_show_analisis_asignaturas_splines':
+            settings_show_analisis_asignaturas_splines = str(request.form.get('settings_show_analisis_asignaturas_splines'))
+            if settings_show_analisis_asignaturas_splines == 'True':
+                settings_show_analisis_asignaturas_splines = False
+            else:
+                settings_show_analisis_asignaturas_splines = True
+            settings().show_analisis_asignaturas_splines = settings_show_analisis_asignaturas_splines
+            session_sql.commit()
+            params['anchor'] = 'anchor_cues'
+            return redirect(url_for('analisis_html', params=dic_encode(params)))
+
+        # XXX settings_show_analisis_preguntas_splines
+        if request.form['selector_button'] == 'settings_show_analisis_preguntas_splines':
+            settings_show_analisis_preguntas_splines = str(request.form.get('settings_show_analisis_preguntas_splines'))
+            if settings_show_analisis_preguntas_splines == 'True':
+                settings_show_analisis_preguntas_splines = False
+            else:
+                settings_show_analisis_preguntas_splines = True
+            settings().show_analisis_preguntas_splines = settings_show_analisis_preguntas_splines
+            session_sql.commit()
+            params['anchor'] = 'anchor_comp'
+            params['show_analisis_preguntas_splines'] = True
+            return redirect(url_for('analisis_html', params=dic_encode(params)))
+
         # XXX tutoria_acuerdo_save
         if request.form['selector_button'] == 'selector_acuerdo_save':
             acuerdo = request.form.get('acuerdo')
@@ -1363,18 +1390,18 @@ def analisis_tutoria_edit_html(params={}):
             return redirect(url_for('analisis_html', params=dic_encode(params)))
 
         # XXX tutoria_regresar_alumno
-        if request.form['selector_button'] == 'selector_tutoria_regresar_alumno':
-            current_tutoria = tutoria_by_id(current_tutoria_id)
-            alumno = alumno_by_id(current_tutoria.alumno_id)
-            current_alumno_id = alumno.id
-            params['current_alumno_id'] = current_alumno_id
-            params['current_tutoria_id'] = current_tutoria_id
-            params['collapse_alumno'] = True
-            params['collapse_tutorias'] = True
-            if not current_tutoria.activa:
-                params['collapse_tutoria_no_activas'] = True
-            params['anchor'] = 'anchor_alu_' + str(hashids_encode(current_alumno_id))
-            return redirect(url_for('alumnos_html', params=dic_encode(params)))
+        # if request.form['selector_button'] == 'selector_tutoria_regresar_alumno':
+        #     current_tutoria = tutoria_by_id(current_tutoria_id)
+        #     alumno = alumno_by_id(current_tutoria.alumno_id)
+        #     current_alumno_id = alumno.id
+        #     params['current_alumno_id'] = current_alumno_id
+        #     params['current_tutoria_id'] = current_tutoria_id
+        #     params['collapse_alumno'] = True
+        #     params['collapse_tutorias'] = True
+        #     if not current_tutoria.activa:
+        #         params['collapse_tutoria_no_activas'] = True
+        #     params['anchor'] = 'anchor_alu_' + str(hashids_encode(current_alumno_id))
+        #     return redirect(url_for('alumnos_html', params=dic_encode(params)))
 
         # XXX tutoria_re_enviar_link
         if request.form['selector_button'] == 'selector_tutoria_re_enviar_link':
@@ -1548,8 +1575,7 @@ def settings_opciones_html(params={}):
             settings_edit_calendar = request.form.get('settings_edit_calendar')
             settings_tutoria_duracion = request.form.get('settings_tutoria_duracion')
             settings_diferencial = request.form.get('settings_diferencial')
-            settings_show_analisis_asignaturas_splines = request.form.get('settings_show_analisis_asignaturas_splines')
-            settings_show_analisis_preguntas_splines = request.form.get('settings_show_analisis_preguntas_splines')
+            settings_show_analisis_detalles = request.form.get('settings_show_analisis_detalles')
 
             if not settings_edit_tutoria_timeout:
                 settings_edit_tutoria_timeout = False
@@ -1557,18 +1583,16 @@ def settings_opciones_html(params={}):
                 settings_show_asignaturas_analisis = False
             if not settings_edit_calendar:
                 settings_edit_calendar = False
-            if not settings_show_analisis_asignaturas_splines:
-                settings_show_analisis_asignaturas_splines = False
-            if not settings_show_analisis_preguntas_splines:
-                settings_show_analisis_preguntas_splines = False
+            if not settings_show_analisis_detalles:
+                settings_show_analisis_detalles = False
+
 
             settings().tutoria_timeout = settings_edit_tutoria_timeout
             settings().show_asignaturas_analisis = settings_show_asignaturas_analisis
             settings().tutoria_duracion = settings_tutoria_duracion
             settings().diferencial = settings_diferencial
             settings().calendar = settings_edit_calendar
-            settings().show_analisis_asignaturas_splines = settings_show_analisis_asignaturas_splines
-            settings().show_analisis_preguntas_splines = settings_show_analisis_preguntas_splines
+            settings().show_analisis_detalles = settings_show_analisis_detalles
 
             flash_toast('Configuracion actualizada', 'success')
             session_sql.commit()
@@ -2021,9 +2045,6 @@ def asignaturas_html(params={}):
 
         # XXX selector_asignaturas_orden_switch
         if request.form['selector_button'] == 'asignaturas_orden_switch':
-            # sera una funcion en function.py que genera y retorna
-            # el listado de asignaturas por participiacion
-            # lista.sort(key=lambda x: x[1])
             current_asignaturas_orden = request.form.get('asignaturas_orden')
             if current_asignaturas_orden == 'True':
                 current_asignaturas_orden = False
