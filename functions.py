@@ -172,6 +172,7 @@ def respuestas_asignatura_alumno_lista(tutoria_id, pregunta_id, asignaturas_list
 
 def respuestas_grupo_stats(tutoria_id, preguntas_lista, asignaturas_lista):
     respuestas_pregunta_grupo_spline = []
+    respuestas_pregunta_grupo_spline_without_NaN=[]
     respuestas_asignatura_grupo_spline = []
     respuestas_asignatura_grupo_spline_without_NaN=[]
     pruebas_evaluables_lista = []
@@ -192,8 +193,12 @@ def respuestas_grupo_stats(tutoria_id, preguntas_lista, asignaturas_lista):
                     respuestas_pregunta_lista.append(int(respuesta.resultado))
         if respuestas_pregunta_lista:
             respuestas_pregunta_grupo_spline.append(round(mean(respuestas_pregunta_lista), 1))
-    if respuestas_pregunta_grupo_spline:
-        respuestas_pregunta_grupo_media = round(mean(respuestas_pregunta_grupo_spline), 1)
+            respuestas_pregunta_grupo_spline_without_NaN.append(round(mean(respuestas_pregunta_lista), 1))
+        else:
+            respuestas_pregunta_grupo_spline.append('NaN')
+
+    if respuestas_pregunta_grupo_spline_without_NaN:
+        respuestas_pregunta_grupo_media = round(mean(respuestas_pregunta_grupo_spline_without_NaN), 1)
 
     for asignatura in asignaturas:
         respuestas_asignatura_lista = []
