@@ -175,6 +175,7 @@
 					<div class="col pt-4">
 						{{highcharts_asignaturas(char_id='asignaturas', color_1='#ec407a',color_2='#f48fb1', grupo=grupo, tutoria_id=tutoria.id, stats=stats, grupo_stats=grupo_stats)}}
 					</div>
+					
 					{% if settings_sql.show_analisis_detalles %}
 						<div class="col float-right">
 							<input type="hidden" name="settings_show_analisis_preguntas_splines" value="{{settings_sql.show_analisis_preguntas_splines}}">
