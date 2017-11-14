@@ -53,47 +53,15 @@
 				{{highcharts_asignaturas(char_id='asignaturas', color_1='#ec407a',color_2='#f48fb1', grupo=grupo, tutoria_id=tutoria.id, stats=stats, grupo_stats=grupo_stats)}}
 			</section>
 			<!-- The second sheet -->
-			<section class="sheet padding-15mm">
-				<h6>Analisis detallado por asignatura</h6>
-				<br>
-				<div class="row">
-					{% for asignatura in stats['asignaturas_recibidas_lista'][: 8] %}
-						<div class="col-3 pb-4">
-							<div class="card border-mutted">
-								<div class="card-header text-center strong bg-info text-dark">
-									<div class="text-truncate">
-										{{asignatura.asignatura}}
-										<span class="small">
-											|
-											{{asignatura.nombre}}</span>
-									</div>
-								</div>
-								<div class="card-body">
-									{% if diferencial_check(settings().diferencial, respuestas_pregunta_alumno_lista(tutoria.id, asignatura.id, stats['asignaturas_recibidas_lista'], stats['preguntas_con_respuesta_lista'])['respuestas_pregunta_media'], notas_pruebas_evaluables_alumno(
-										tutoria.id,
-										asignatura.id
-									)['notas_alumno_media']) %}
-										<span class="badge text-white badge-secondary float-right">
-											resultados !
-										</span>
-									{% endif %}
-									{% if diferencial_check(settings().diferencial, respuestas_tutoria_media_stats, respuestas_pregunta_alumno_lista(tutoria.id, asignatura.id, stats['asignaturas_recibidas_lista'], stats['preguntas_con_respuesta_lista'])['respuestas_pregunta_media']) %}
-										<span class="badge badge-primary float-right mr-1">
-											actitud !
-										</span>
-									{% endif %}
-									{{highcharts_asignatura(char_id=asignatura.asignatura, asignatura=asignatura, alumno=alumno, grupo=grupo, tutoria_id=tutoria.id, stats=stats, grupo_stats=grupo_stats, notas_pruebas_evaluables_alumno=notas_pruebas_evaluables_alumno(tutoria.id, asignatura.id), notas_pruebas_evaluables_grupo=notas_pruebas_evaluables_grupo(tutoria.id, asignatura.id), respuestas_tutoria_media_stats=respuestas_tutoria_media_stats)}}
-								</div>
-							</div>
-						</div>
-					{% endfor %}
-				</div>
-			</section>
-			{% if stats['asignaturas_recibidas_lista'] | count > 8 %}
+			{% if stats['asignaturas_recibidas_lista'] %}
 				<section class="sheet padding-15mm">
-					<br><br>
+					<h6>
+						Analisis detallado por asignatura
+						<div class="divider bg-dark line-height-1"></div>
+					</h6>
+					<br>
 					<div class="row">
-						{% for asignatura in stats['asignaturas_recibidas_lista'][9 : 18] %}
+						{% for asignatura in stats['asignaturas_recibidas_lista'][: 8] %}
 							<div class="col-3 pb-4">
 								<div class="card border-mutted">
 									<div class="card-header text-center strong bg-info text-dark">
@@ -125,6 +93,65 @@
 						{% endfor %}
 					</div>
 				</section>
+				{% if stats['asignaturas_recibidas_lista'] | count > 8 %}
+					<section class="sheet padding-15mm">
+						<h6>
+							Analisis detallado por asignatura
+							<div class="divider bg-dark line-height-1"></div>
+						</h6>
+						<br>
+						<div class="row">
+							{% for asignatura in stats['asignaturas_recibidas_lista'][9 : 18] %}
+								<div class="col-3 pb-4">
+									<div class="card border-mutted">
+										<div class="card-header text-center strong bg-info text-dark">
+											<div class="text-truncate">
+												{{asignatura.asignatura}}
+												<span class="small">
+													|
+													{{asignatura.nombre}}</span>
+											</div>
+										</div>
+										<div class="card-body">
+											{% if diferencial_check(settings().diferencial, respuestas_pregunta_alumno_lista(tutoria.id, asignatura.id, stats['asignaturas_recibidas_lista'], stats['preguntas_con_respuesta_lista'])['respuestas_pregunta_media'], notas_pruebas_evaluables_alumno(
+												tutoria.id,
+												asignatura.id
+											)['notas_alumno_media']) %}
+												<span class="badge text-white badge-secondary float-right">
+													resultados !
+												</span>
+											{% endif %}
+											{% if diferencial_check(settings().diferencial, respuestas_tutoria_media_stats, respuestas_pregunta_alumno_lista(tutoria.id, asignatura.id, stats['asignaturas_recibidas_lista'], stats['preguntas_con_respuesta_lista'])['respuestas_pregunta_media']) %}
+												<span class="badge badge-primary float-right mr-1">
+													actitud !
+												</span>
+											{% endif %}
+											{{highcharts_asignatura(char_id=asignatura.asignatura, asignatura=asignatura, alumno=alumno, grupo=grupo, tutoria_id=tutoria.id, stats=stats, grupo_stats=grupo_stats, notas_pruebas_evaluables_alumno=notas_pruebas_evaluables_alumno(tutoria.id, asignatura.id), notas_pruebas_evaluables_grupo=notas_pruebas_evaluables_grupo(tutoria.id, asignatura.id), respuestas_tutoria_media_stats=respuestas_tutoria_media_stats)}}
+										</div>
+									</div>
+								</div>
+							{% endfor %}
+						</div>
+					</section>
+				{% endif %}
+				{% if comentarios_stats %}
+					<section class="sheet padding-15mm">
+						<h6>
+							Observaciones
+							<div class="divider bg-dark line-height-1"></div>
+						</h6>
+						{% for asignatura in comentarios_stats.keys() %}
+							<div class="col">
+								<span class="strong">{{asignatura}}</span>
+								<span class="small">
+									|
+									{{comentarios_stats[asignatura]['docente']}}:&nbsp;</span>
+								{{comentarios_stats[asignatura]['comentario']}}
+							</div>
+						{% endfor %}
+					</div>
+				</section>
 			{% endif %}
-		</body>
-	</html>
+		{% endif %}
+	</body>
+</html>

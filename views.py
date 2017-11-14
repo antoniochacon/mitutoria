@@ -1294,10 +1294,13 @@ def analisis_paper_html(params={}):
     respuestas_tutoria_media_stats = respuestas_tutoria_media(current_tutoria_id)
     evolucion_stats = evolucion_tutorias(alumno.id)
 
+    comentarios_stats =tutoria_comentarios(current_tutoria_id,stats['asignaturas_recibidas_lista'])
+    print(comentarios_stats)
+
     return render_template('analisis_paper.html',
                            params=params, tutoria=tutoria, alumno=alumno, grupo=grupo,
                            stats=stats, grupo_stats=grupo_stats,
-                           respuestas_tutoria_media_stats=respuestas_tutoria_media_stats, evolucion_stats=evolucion_stats)
+                           respuestas_tutoria_media_stats=respuestas_tutoria_media_stats, evolucion_stats=evolucion_stats, comentarios_stats=comentarios_stats)
 
 
 @app.route('/analisis_tutoria_no_disponible')

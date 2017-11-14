@@ -99,7 +99,16 @@ def analisis_tutoria(tutoria_id):
     stats['preguntas_con_respuesta_lista_enunciado_ticker'] = preguntas_con_respuesta_lista_enunciado_ticker
     stats['column_color'] = column_color
     stats['label_color_dic'] = json.dumps(json.dumps(label_color_dic))
+    return stats
 
+
+def tutoria_comentarios(tutoria_id, asignaturas_lista):
+    stats = {}
+    for asignatura in asignaturas_lista:
+        informe = session_sql.query(Informe).filter(Informe.tutoria_id == tutoria_id, Informe.asignatura_id == asignatura.id).first()
+        if informe.comentario:
+            # stats[asignatura.asignatura] = informe.comentario
+            stats[asignatura.asignatura] = {'docente': asignatura.nombre, 'comentario':informe.comentario}
     return stats
 
 
