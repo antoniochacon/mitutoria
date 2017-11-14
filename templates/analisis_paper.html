@@ -141,12 +141,12 @@
 							<div class="divider bg-dark line-height-1"></div>
 						</h6>
 						{% for asignatura in comentarios_stats.keys() %}
-							<div class="col">
-								<span class="strong">{{asignatura}}</span>
+							<div class="col pb-1">
+								{{loop.index}}.&nbsp;<span class="strong">{{asignatura}}</span>
 								<span class="small">
 									|
 									{{comentarios_stats[asignatura]['docente']}}:&nbsp;</span>
-								{{comentarios_stats[asignatura]['comentario']}}
+									<span class="text-justify">	{{comentarios_stats[asignatura]['comentario']}}</span>
 							</div>
 						{% endfor %}
 					</div>
