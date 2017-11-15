@@ -1,8 +1,7 @@
 {% with %}
 {% set categorias=categorias() %}
 {% for categoria in categorias %}
-	<div class="bg-info pt-1 pl-2 {% if not preguntas_by_categoria_id(True, categoria.id) %}text-warning{% endif %}">
-
+	<div class="text-white pl-3 pt-2 pb-2 {% if not preguntas_by_categoria_id(True, categoria.id) %}text-warning{% endif %}" style="background:{{categoria.color}};">
 		{{categoria.enunciado}}
 	</div>
 	<div class="divider bg-dark"></div>

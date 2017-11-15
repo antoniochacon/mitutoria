@@ -15,7 +15,7 @@
 						{% with %}
 						{% set preguntas_by_categoria_id = preguntas_by_categoria_id(True, categoria.id) %}
 						{% if preguntas_by_categoria_id %}
-							<div class="text-white pt-1 pl-2" style="background:{{categoria.color}};">
+							<div class="text-white pl-3 pt-2 pb-2" style="background:{{categoria.color}};">
 								{{categoria.enunciado}}
 							</div>
 							<div class="divider bg-dark"></div>
