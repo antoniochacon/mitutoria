@@ -1,7 +1,7 @@
 {% with %}
 {% set categorias=categorias() %}
 {% for categoria in categorias %}
-	<div class="text-white pl-3 pt-2 pb-2 {% if not preguntas_by_categoria_id(True, categoria.id) %}text-warning{% endif %}" style="background:{{categoria.color}};">
+	<div class="bg-gray pl-3 pt-2 pb-2 {% if not preguntas_by_categoria_id(True, categoria.id) %}text-warning{% else %}text-white{% endif %}">
 		{{categoria.enunciado}}
 	</div>
 	<div class="divider bg-dark"></div>
@@ -12,7 +12,8 @@
 				<span class="capital {% if pregunta.visible %}capital-mutted{% else %}capital-warning{% endif %}">{{pregunta.orden}}</span>
 				<div class="media-body">
 					<div class="padding_2">
-						{{pregunta.enunciado}}
+						<span style="color:{{categoria.color}};">{{pregunta.enunciado}}</span>
+
 						{# NOTE badge #}
 						{% if pregunta.active_default %}
 							<span class="badge badge-info float-right" title="activa por defecto">
