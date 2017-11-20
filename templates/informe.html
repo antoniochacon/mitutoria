@@ -36,16 +36,27 @@
 			</div>
 		</div>
 		<form action="/informe/{{hashids_encode(current_tutoria_asignatura_id)}}/" method="POST">
-			<div class="row">
-				{% if not invitado_preguntas(invitado_settings(tutoria.id).id) %}
+			{% with %}
+			{% set invitado_settings_sql = invitado_settings(tutoria.id) %}
+				{% if not invitado_preguntas(invitado_settings_sql.id) %}
 					<div class="text-warning">
 						Las preguntas de este cuestionario han sido descartadas.
 						<br>
 						Póngase en contacto con el tutor de este alumno/a para resolver sus dudas.
 					</div>
 				{% endif %}
-				{% for pregunta in invitado_preguntas(invitado_settings(tutoria.id).id) %}
-					<div class="col-sm-12 col-md-6 col-lg-4 pt-3 pb-3 pl-4">
+
+				{% for categoria in categorias() %}
+				{% with %}
+				{% set invitado_preguntas_by_categoria_id_sql =invitado_preguntas_by_categoria_id(invitado_settings_sql.id, categoria.id) %}
+					{% if invitado_preguntas_by_categoria_id_sql %}
+
+
+					<div class="bg-dark text-white pl-3 pt-2 pb-2">
+						{{categoria.enunciado}}
+					</div>
+				{% for pregunta in invitado_preguntas_by_categoria_id_sql %}
+						<div class="col-sm-12 pt-3 pb-3 pl-4">
 						{{pregunta.enunciado}}:
 						<div class="range-slider_cualitativo">
 							<div class="range-slider-value_cualitativo">0</div>
@@ -66,17 +77,22 @@
 						<input type="hidden" name="pregunta_id" value={{hashids_encode(pregunta.id)}}>
 						<br>
 					</div>
+						{% endfor %}
+						{% endif %}
+					{% endwith %}
 				{% endfor %}
+				<div class="row">
 				{% if informe %}
-					{% if invitado_pruebas_evaluables(informe.id) %}
+				{% with %}
+				{% set invitado_pruebas_evaluables_sql = invitado_pruebas_evaluables(informe.id) %}
+					{% if invitado_pruebas_evaluables_sql %}
 						<div class="col-sm-12 strong">
-							{{singular_plural('Prueba evaluable', 'Pruebas evaluables', invitado_pruebas_evaluables(informe.id))}}
+							{{singular_plural('Prueba evaluable', 'Pruebas evaluables', invitado_pruebas_evaluables_sql)}}
 							<div class="divider bg-gray-5"></div>
 						</div>
 					{% endif %}
-				{% endif %}
-				{% if informe %}
-					{% for prueba_evaluable in invitado_pruebas_evaluables(informe.id) %}
+
+					{% for prueba_evaluable in invitado_pruebas_evaluables_sql %}
 						<div class="col-sm-12 col-md-6 col-lg-4 pt-3 pb-3 pl-4">
 							<div class="text-mutted">
 								{% if prueba_evaluable.nombre %}
@@ -93,6 +109,7 @@
 							<br>
 						</div>
 					{% endfor %}
+					{% endwith %}
 				{% endif %}
 				<a id="anchor_pru_eva"></a>
 				<div class="btn-group col-sm-12 pt-3 pb-3 pl-4" role="group" aria-label="...">
@@ -104,11 +121,14 @@
 								notas
 							</button>
 							{% if informe %}
-								{% if invitado_pruebas_evaluables(informe.id) %}
+							{% with %}
+							{% set invitado_pruebas_evaluables_sql = invitado_pruebas_evaluables(informe.id) %}
+								{% if invitado_pruebas_evaluables_sql %}
 									<button role="button" type="submit" name="selector_button" value="selector_prueba_evaluable_delete" class="btn btn-outline-dark" title="eliminar prueba evaluable">
 										<i class="material-icons vertical-center">delete</i>
 									</button>
 								{% endif %}
+								{% endwith %}
 							{% endif %}
 						</span>
 					</div>
@@ -126,5 +146,6 @@
 				</div>
 			</form>
 		</div>
+		{% endwith %}
 	</div>
 {% endblock %}
