@@ -1293,9 +1293,7 @@ def analisis_paper_html(params={}):
     grupo_stats = respuestas_grupo_stats(current_tutoria_id, stats['preguntas_con_respuesta_lista'], stats['asignaturas_recibidas_lista'])
     respuestas_tutoria_media_stats = respuestas_tutoria_media(current_tutoria_id)
     evolucion_stats = evolucion_tutorias(alumno.id)
-
     comentarios_stats =tutoria_comentarios(current_tutoria_id,stats['asignaturas_recibidas_lista'])
-    print(comentarios_stats)
 
     return render_template('analisis_paper.html',
                            params=params, tutoria=tutoria, alumno=alumno, grupo=grupo,

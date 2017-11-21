@@ -101,6 +101,25 @@ def analisis_tutoria(tutoria_id):
     stats['label_color_dic'] = json.dumps(json.dumps(label_color_dic))
     return stats
 
+# def preguntas_by_categoria(tutoria_id, categoria):
+#     preguntas_con_respuesta_lista=[]
+#     preguntas_con_respuesta_lista_enunciado_ticker=[]
+#     stats={}
+#     stats['preguntas_settings'] = session_sql.query(Pregunta).join(Association_Settings_Pregunta).filter(Association_Settings_Pregunta.settings_id == settings().id).order_by('orden').all()
+#
+#     for pregunta in categoria.preguntas.order_by('orden'):
+#         if pregunta in stats['preguntas_settings']:
+#             informes = session_sql.query(Informe).filter(Informe.tutoria_id == tutoria_id).all()
+#             for informe in informes:
+#                 respuesta = session_sql.query(Respuesta).filter(Respuesta.pregunta_id == pregunta.id, Respuesta.informe_id == informe.id).first()
+#                 if respuesta and pregunta not in preguntas_con_respuesta_lista:
+#                     preguntas_con_respuesta_lista.append(pregunta)
+#                     preguntas_con_respuesta_lista_enunciado_ticker.append(pregunta.enunciado_ticker)
+#                     # column_color.append(categoria.color)
+#                     # label_color_dic[pregunta.enunciado_ticker] = categoria.color
+#     stats['preguntas_con_respuesta_lista_enunciado_ticker'] = preguntas_con_respuesta_lista_enunciado_ticker
+#     print(stats['preguntas_con_respuesta_lista_enunciado_ticker'])
+#     return stats
 
 def tutoria_comentarios(tutoria_id, asignaturas_lista):
     stats = {}
