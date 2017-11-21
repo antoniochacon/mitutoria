@@ -32,7 +32,7 @@
 		<div class="row">
 			<div class="col-sm-12 strong pt-3 pb-3">
 				Cuestionario
-				<div class="divider bg-mutted"></div>
+				<div class="divider bg-dark"></div>
 			</div>
 		</div>
 		<form action="/informe/{{hashids_encode(current_tutoria_asignatura_id)}}/" method="POST">
@@ -50,11 +50,11 @@
 				{% with %}
 				{% set invitado_preguntas_by_categoria_id_sql =invitado_preguntas_by_categoria_id(invitado_settings_sql.id, categoria.id) %}
 					{% if invitado_preguntas_by_categoria_id_sql %}
-					<div class="bg-dark text-white pl-3 pt-2 pb-2">
+					<div class="bg-dark text-white pl-2 pt-2 pb-2">
 						{{categoria.enunciado}}
 					</div>
 				{% for pregunta in invitado_preguntas_by_categoria_id_sql %}
-						<div class="col-sm-12 {% if loop.first %} pt-3 {% else %} pt-1 {% endif %}">
+						<div class="col-sm-12 pl-2 {% if loop.first %} pt-3 {% else %} pt-1 {% endif %}">
 						{{pregunta.enunciado}}:
 						<div class="range-slider_cualitativo">
 							<div class="range-slider-value_cualitativo">0</div>
@@ -83,13 +83,13 @@
 				{% if informe %}
 				{% with %}
 				{% set invitado_pruebas_evaluables_sql = invitado_pruebas_evaluables(informe.id) %}
-				<div class="col-sm-12 bg-dark text-white pl-3 pt-2 pb-2">
+				<div class="col-sm-12 bg-dark text-white pl-2 pt-2 pb-2">
 					{% if invitado_pruebas_evaluables_sql %}
 							{{singular_plural('Prueba evaluable', 'Pruebas evaluables', invitado_pruebas_evaluables_sql)}}
 					{% else %}
 					Agregar notas
 					{% endif %}
-					</div>
+				</div>
 				<div class="row">
 					{% for prueba_evaluable in invitado_pruebas_evaluables_sql %}
 						<div class="col-sm-12 {% if invitado_pruebas_evaluables_sql | count > 1 %} col-md-6 {% if invitado_pruebas_evaluables_sql | count > 2 %} col-lg-4 {% endif %} {% endif %} pt-3 pb-3 pl-4">
@@ -132,19 +132,21 @@
 						</span>
 					</div>
 				</div>
-				<div class="col-sm-12 pt-3 pb-4">
-					<span class="strong">Comentario</span>
-					<div class="form-group">
+			</div>
+			{% endwith %}
+				<div class="col-sm-12 bg-dark text-white pl-2 pt-2 pb-2 mt-3">
+					Comentario
+					</div>
+					<div class="col-sm-12 pt-3 pb-3 pl-1 pr-1">
 						<textarea class="form-control vresize" rows="3" name="comentario" id="comentario">{{informe.comentario}}</textarea>
 					</div>
-				</div>
+
 				<div class="col">
 					<button role="button" type="submit" name="selector_button" value="selector_informe_add" class="btn btn-outline-primary" title="enviar informe">
 						<i class="material-icons vertical-center">local_post_office</i>&nbsp; enviar informe
 					</button>
 				</div>
 			</form>
-		</div>
-		{% endwith %}
+
 	</div>
 {% endblock %}

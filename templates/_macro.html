@@ -37,8 +37,8 @@
 			},
 			xAxis: {
 				crosshair: {
-					width: 1,
-					color: "#bdbdbd"
+					width: 2,
+					color: "#26c6da"
 				},
 				categories: {{stats['preguntas_con_respuesta_lista_enunciado_ticker'] | safe}},
 				labels: {
@@ -48,6 +48,10 @@
 				}
 			},
 			yAxis: {
+				crosshair: {
+					width: 2,
+					color: "#26c6da"
+				},
 				gridLineColor: Highcharts.getOptions().colors_gray["gray-500"],
 				plotBands: [
 					{
@@ -153,12 +157,16 @@
 			},
 			xAxis: {
 				crosshair: {
-					width: 1,
-					color: "#343a40"
+					width: 2,
+					color: "#26c6da"
 				},
 				categories: {{stats['asignaturas_recibidas_lista_asignatura'] | safe}}
 			},
 			yAxis: {
+				crosshair: {
+					width: 2,
+					color: "#26c6da"
+				},
 				gridLineColor: Highcharts.getOptions().colors_gray["gray-500"],
 				plotBands: [
 					{
@@ -577,6 +585,10 @@
 				shared: false
 			},
 			xAxis: {
+				crosshair: {
+					width: 2,
+					color: "#26c6da"
+				},
 				type: "datetime",
 				startOfWeek: 2,
 				dateTimeLabelFormats: {
@@ -590,6 +602,10 @@
 				}
 			},
 			yAxis: {
+				crosshair: {
+					width: 2,
+					color: "#26c6da"
+				},
 				gridLineColor: Highcharts.getOptions().colors_gray["gray-500"],
 				plotBands: [
 					{
@@ -647,7 +663,6 @@
 					animation: {
 						duration: 2000
 					},
-					// aqui esta el problema
 					data: {{evolucion_stats['evolucion_notas'] | safe}},
 					tooltip: {
 						valueDecimals: 2
@@ -857,8 +872,8 @@
 			},
 			xAxis: {
 				crosshair: {
-					width: 1,
-					color: "#bdbdbd"
+					width: 2,
+					color: "#26c6da"
 				},
 				type: "datetime",
 				startOfWeek: 2,
@@ -873,6 +888,10 @@
 				}
 			},
 			yAxis: {
+				crosshair: {
+					width: 2,
+					color: "#26c6da"
+				},
 				gridLineColor: Highcharts.getOptions().colors_gray["gray-500"],
 				labels: {
 					format: "{value} %"
@@ -938,17 +957,21 @@
 				text: null
 			},
 			xAxis: {
+				crosshair: {
+					width: 2,
+					color: "#26c6da"
+				},
 				// labels: { 	format: "{value}" },
 				type: "category",
 				title: {
 					text: "cuestionario"
-				},
-				crosshair: {
-					width: 1,
-					color: "#bdbdbd"
 				}
 			},
 			yAxis: {
+				crosshair: {
+					width: 2,
+					color: "#26c6da"
+				},
 				gridLineColor: Highcharts.getOptions().colors_gray["gray-500"],
 				min: 0,
 				title: {
@@ -997,18 +1020,22 @@
 				text: null
 			},
 			xAxis: {
+				crosshair: {
+					width: 2,
+					color: "#26c6da"
+				},
 				labels: {
 					format: "{value} %"
 				},
 				title: {
 					text: "% de éxito de una tutoría"
-				},
-				crosshair: {
-					width: 1,
-					color: "#bdbdbd"
 				}
 			},
 			yAxis: {
+				crosshair: {
+					width: 2,
+					color: "#26c6da"
+				},
 				labels: {
 					format: "{value} %"
 				},
