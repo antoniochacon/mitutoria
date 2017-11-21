@@ -79,17 +79,18 @@
 						{% endif %}
 					{% endwith %}
 				{% endfor %}
-				<div class="row">
+
 				{% if informe %}
 				{% with %}
 				{% set invitado_pruebas_evaluables_sql = invitado_pruebas_evaluables(informe.id) %}
+				<div class="col-sm-12 bg-dark text-white pl-3 pt-2 pb-2">
 					{% if invitado_pruebas_evaluables_sql %}
-						<div class="col-sm-12 strong">
-						<div class="bg-dark text-white pl-3 pt-2 pb-2">
 							{{singular_plural('Prueba evaluable', 'Pruebas evaluables', invitado_pruebas_evaluables_sql)}}
-						</div>
-						</div>
+					{% else %}
+					Agregar notas
 					{% endif %}
+					</div>
+				<div class="row">
 					{% for prueba_evaluable in invitado_pruebas_evaluables_sql %}
 						<div class="col-sm-12 {% if invitado_pruebas_evaluables_sql | count > 1 %} col-md-6 {% if invitado_pruebas_evaluables_sql | count > 2 %} col-lg-4 {% endif %} {% endif %} pt-3 pb-3 pl-4">
 							<div class="text-mutted">
