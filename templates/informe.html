@@ -53,9 +53,8 @@
 					<div class="bg-dark text-white pl-3 pt-2 pb-2">
 						{{categoria.enunciado}}
 					</div>
-
 				{% for pregunta in invitado_preguntas_by_categoria_id_sql %}
-						<div class="col-sm-12 pl-4 {% if loop.first %} pt-3 {% else %} pt-1 {% endif %}">
+						<div class="col-sm-12 {% if loop.first %} pt-3 {% else %} pt-1 {% endif %}">
 						{{pregunta.enunciado}}:
 						<div class="range-slider_cualitativo">
 							<div class="range-slider-value_cualitativo">0</div>
