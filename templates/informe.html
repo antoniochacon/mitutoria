@@ -80,6 +80,7 @@
 					{% endwith %}
 				{% endfor %}
 
+				<!-- <div class="row"> -->
 				{% if informe %}
 				{% with %}
 				{% set invitado_pruebas_evaluables_sql = invitado_pruebas_evaluables(informe.id) %}
@@ -108,6 +109,7 @@
 							<br>
 						</div>
 					{% endfor %}
+					</div>
 					{% endwith %}
 				{% endif %}
 				<a id="anchor_pru_eva"></a>
@@ -132,21 +134,19 @@
 						</span>
 					</div>
 				</div>
-			</div>
+			<!-- </div> -->
 			{% endwith %}
 				<div class="col-sm-12 bg-dark text-white pl-2 pt-2 pb-2 mt-3">
 					Comentario
 				</div>
-					<div class="col-sm-12 pt-3 pb-3 pl-1 pr-1">
-						<textarea class="form-control vresize" rows="3" name="comentario" id="comentario">{{informe.comentario}}</textarea>
-					</div>
-
+				<div class="col-sm-12 pt-3 pb-3 pl-1 pr-1">
+					<textarea class="form-control vresize" rows="3" name="comentario" id="comentario">{{informe.comentario}}</textarea>
+				</div>
 				<div class="col">
 					<button role="button" type="submit" name="selector_button" value="selector_informe_add" class="btn btn-outline-primary" title="enviar informe">
 						<i class="material-icons vertical-center">local_post_office</i>&nbsp; enviar informe
 					</button>
 				</div>
 			</form>
-
 	</div>
 {% endblock %}
