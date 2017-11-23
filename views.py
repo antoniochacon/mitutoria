@@ -190,8 +190,11 @@ def admin_estadisticas_html(params={}):
     informes_con_pruebas_evalubles_count_sql = informes_con_pruebas_evalubles_count()
     stats['informes_con_pruebas_evalubles'] = informes_con_pruebas_evalubles_count_sql[0]
     stats['informes_con_pruebas_evalubles_percent'] = informes_con_pruebas_evalubles_count_sql[1]
+    stats['pruebas_evaluables_evolucion']=informes_con_pruebas_evalubles_count_sql[2]
 
     stats['diferencial_media'] = diferencial_media()
+
+
 
     stats['tutores_over_all'] = (20 * stats['emails_validados_percent'] + 20 * stats['emails_no_ban_percent'] + 10 * stats['emails_no_robinson_percent'] + 40 * stats['preguntas_por_cuestionario_percent'] + 10 * stats['evolucion_equipo_educativo_percent']) / 100
     stats['profesores_over_all'] = (50 * stats['tutorias_con_respuesta_percent'] + 30 * stats['profesores_actividad_percent'] + 10 * stats['informes_con_pruebas_evalubles_percent'] + 10 * stats['informes_con_comentario_percent']) / 100

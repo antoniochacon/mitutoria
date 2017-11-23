@@ -832,7 +832,7 @@
 		});
 	</script>
 {% endmacro %}
-{% macro highcharts_admin_profesores_activos_evolucion(char_id, color, df_data, df_media) %}
+{% macro highcharts_admin_profesores_activos_evolucion(char_id, color, y_axe_titulo, tooltip_text, df_data, df_media) %}
 	<div id="{{char_id | safe}}" class="chart" style="height: 300px"></div>
 	<script>
 		Highcharts.stockChart("{{char_id | safe }}", {
@@ -899,7 +899,7 @@
 				min: 0,
 				max: 100,
 				title: {
-					text: "% profesores"
+					text: "% {{y_axe_titulo}}"
 				},
 				opposite: false,
 				plotLines: [
@@ -925,7 +925,7 @@
 					color: "{{color}}",
 					name: "tutorias",
 					tooltip: {
-						pointFormat: "participacion: {point.y}%"
+						pointFormat: "{{tooltip_text}}: {point.y}%"
 					},
 					data: {{df_data | safe}},
 					marker: {

@@ -208,18 +208,27 @@
 		</div>
 	</div>
 </div>
+
+<a data-toggle="collapse" href="#pruebas_evaluables_evolucion" class="collapse_header_1" aria-expanded="false" title="Evolucion pruebas evaluables">
+	<i class="material-icons vertical-center">expand_more</i>
+	Evolucion pruebas evaluables
+</a>
+<div class="collapse" id="pruebas_evaluables_evolucion">
+	<div class="pt-3 pb-3">
+		{{highcharts_admin_profesores_activos_evolucion(char_id='pruebas_evaluables_evolucion', y_axe_titulo='informes', tooltip_text='informes con notas', color='#BA5FD3', df_data=stats['pruebas_evaluables_evolucion'], df_media=stats['informes_con_pruebas_evalubles_percent'])}}
+	</div>
+</div>
+
 <a data-toggle="collapse" href="#tutorias_evolucion" class="collapse_header_1" aria-expanded="false" title="Evolucion equipo educativo">
 	<i class="material-icons vertical-center">expand_more</i>
 	Evolucion equipo educativo
 </a>
 <div class="collapse" id="tutorias_evolucion">
 	<div class="pt-3 pb-3">
-		{{highcharts_admin_profesores_activos_evolucion(char_id='actividad_equpipo_educativo', color='#BA5FD3', df_data=stats['profesores_activos_evolucion'], df_media=stats['profesores_activos_evolucion_media'])}}
+		{{highcharts_admin_profesores_activos_evolucion(char_id='actividad_equpipo_educativo', y_axe_titulo='profesores', tooltip_text='participacion', color='#BA5FD3', df_data=stats['profesores_activos_evolucion'], df_media=stats['profesores_activos_evolucion_media'])}}
 	</div>
 </div>
-{# <a data-toggle="collapse" href="#tutorias_frecuencias_absolutas" class="collapse_header_1" aria-expanded="false" title="frecuencias acumuladas"> <i class="material-icons vertical-center">expand_more</i> Participacion frecuencias acumuladas </a>
-<div class="collapse" id="tutorias_frecuencias_absolutas"> <div class="pt-3 pb-3"> {{highcharts_admin_profesores_activos_evolucion_frecuencia(char_id='profesores_activos_evolucion_frecuencia_absoluta', color='#BA5FD3',
-df_data=stats['profesores_activos_evolucion_frecuencia_absoluta'])}} </div> </div> #}
+
 <a data-toggle="collapse" href="#tutorias_cuestionario" class="collapse_header_1" aria-expanded="false" title="Actividad cuestionario">
 	<i class="material-icons vertical-center">expand_more</i>
 	Actividad cuestionario
