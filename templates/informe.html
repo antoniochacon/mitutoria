@@ -53,7 +53,7 @@
 					<div class="bg-dark text-white pl-2 pt-2 pb-2">
 						{{categoria.enunciado}}
 					</div>
-				{% for pregunta in invitado_preguntas_by_categoria_id_sql %}
+					{% for pregunta in invitado_preguntas_by_categoria_id_sql %}
 						<div class="col-sm-12 pl-2 {% if loop.first %} pt-3 {% else %} pt-1 {% endif %}">
 						{{pregunta.enunciado}}:
 						<div class="range-slider_cualitativo">
@@ -75,18 +75,18 @@
 						<input type="hidden" name="pregunta_id" value={{hashids_encode(pregunta.id)}}>
 						<br>
 					</div>
-						{% endfor %}
-						{% endif %}
-					{% endwith %}
+
+					{% endfor %}
+					{% endif %}
+				{% endwith %}
 				{% endfor %}
 
-				<!-- <div class="row"> -->
-				{% if informe %}
 				{% with %}
+				{% if informe %}
 				{% set invitado_pruebas_evaluables_sql = invitado_pruebas_evaluables(informe.id) %}
 				<div class="col-sm-12 bg-dark text-white pl-2 pt-2 pb-2">
 					{% if invitado_pruebas_evaluables_sql %}
-							{{singular_plural('Prueba evaluable', 'Pruebas evaluables', invitado_pruebas_evaluables_sql)}}
+						{{singular_plural('Prueba evaluable', 'Pruebas evaluables', invitado_pruebas_evaluables_sql)}}
 					{% else %}
 					Agregar notas
 					{% endif %}
@@ -109,8 +109,11 @@
 							<br>
 						</div>
 					{% endfor %}
-					</div>
-					{% endwith %}
+				</div>
+				{% else %}
+				<div class="col-sm-12 bg-dark text-white pl-2 pt-2 pb-2">
+					Agregar notas
+				</div>
 				{% endif %}
 				<a id="anchor_pru_eva"></a>
 				<div class="btn-group col-sm-12 pt-3 pb-3 pl-4" role="group" aria-label="...">
@@ -122,20 +125,17 @@
 								notas
 							</button>
 							{% if informe %}
-							{% with %}
-							{% set invitado_pruebas_evaluables_sql = invitado_pruebas_evaluables(informe.id) %}
 								{% if invitado_pruebas_evaluables_sql %}
 									<button role="button" type="submit" name="selector_button" value="selector_prueba_evaluable_delete" class="btn btn-outline-dark" title="eliminar prueba evaluable">
 										<i class="material-icons vertical-center">delete</i>
 									</button>
 								{% endif %}
-								{% endwith %}
+
 							{% endif %}
 						</span>
 					</div>
 				</div>
-			<!-- </div> -->
-			{% endwith %}
+
 				<div class="col-sm-12 bg-dark text-white pl-2 pt-2 pb-2 mt-3">
 					Comentario
 				</div>
@@ -147,6 +147,8 @@
 						<i class="material-icons vertical-center">local_post_office</i>&nbsp; enviar informe
 					</button>
 				</div>
+				{% endwith %}
+				{% endwith %}
 			</form>
 	</div>
 {% endblock %}
