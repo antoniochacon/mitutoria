@@ -45,7 +45,6 @@
 						Póngase en contacto con el tutor de este alumno/a para resolver sus dudas.
 					</div>
 				{% endif %}
-
 				{% for categoria in categorias() %}
 				{% with %}
 				{% set invitado_preguntas_by_categoria_id_sql =invitado_preguntas_by_categoria_id(invitado_settings_sql.id, categoria.id) %}
@@ -57,7 +56,7 @@
 						<div class="col-sm-12 pl-2 {% if loop.first %} pt-3 {% else %} pt-1 {% endif %}">
 						{{pregunta.enunciado}}:
 						<div class="range-slider_cualitativo">
-							<div class="range-slider-value_cualitativo">0</div>
+							<div id="range-slider-value_cualitativo" class="range-slider-value_cualitativo">0</div>
 							<input
 								name="pregunta_{{hashids_encode(pregunta.id)}}"
 								class="range-slider-range_cualitativo"
@@ -102,7 +101,6 @@
 					</div>
 				<div class="row">
 					{% for prueba_evaluable in invitado_pruebas_evaluables_sql %}
-
 						<div class="col-sm-12 {% if invitado_pruebas_evaluables_sql | count > 1 %} col-md-6 {% if invitado_pruebas_evaluables_sql | count > 2 %} col-lg-4 {% endif %} {% endif %} pt-3 pb-3 pl-4">
 										<div class="input-group">
 											<a href="/informe/{{hashids_encode(current_tutoria_asignatura_id)}}/{{dic_encode_args({'current_prueba_evaluable_id': prueba_evaluable.id, 'prueba_evaluable_delete': True})}}" class="btn btn-outline-dark btn-sm border border-info border-top-0 border-right-0 border-left-0" title="eliminar {{prueba_evaluable.nombre}}"><i class="material-icons vertical-center">delete</i></a>
@@ -112,16 +110,12 @@
 												name="prueba_evaluable_nombre_{{hashids_encode(prueba_evaluable.id)}}"
 												value="{% if prueba_evaluable.nombre %}{{prueba_evaluable.nombre}}{% endif %}"
 												placeholder="Prueba evaluable {{loop.index}}">
-
 										</div>
-
 							<div class="range-slider">
 								<div class="range-slider-value">0</div>
 								<input name="prueba_evaluable_nota_{{hashids_encode(prueba_evaluable.id)}}" class="range-slider-range" type="range" step="0.1" {% if prueba_evaluable.nota %} value="{{prueba_evaluable.nota}}" {% endif %} value="0" min="0" max="10">
 							</div>
 						</div>
-
-
 					{% endfor %}
 				</div>
 
