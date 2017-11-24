@@ -1,30 +1,27 @@
 <div id="prueba_evaluable_add" class="collapse{% if params['collapse_prueba_evaluable_add_XXX'] %} show {% endif %}">
-	<!-- <div class="divider grueso bg-primary"></div> -->
-	<div class="padding_2">
-		<div class="row">
-			<div class="form-group col-sm-12 mt-3">
-				<div class="input-group">
-					<input
-						type="text"
-						class="form-control"
-						name="prueba_evaluable_nombre"
-						placeholder="nombre prueba evaluable">
-					<span class="input-group-addon">nombre</span>
+	<div class="row">
+		<div class="col-sm-12">
+			<div class="border border-gray rounded pt-3">
+				<div class="form-group col-sm-12">
+					<div class="input-group">
+						<input type="text" class="form-control" name="prueba_evaluable_nombre" placeholder="nombre prueba evaluable">
+						<span class="input-group-addon">nombre</span>
+					</div>
+				</div>
+				<div class="col-sm-12 range-slider">
+					<div class="range-slider-value">0</div>
+					<input name="prueba_evaluable_nota" class="range-slider-range" type="range" step="0.1" value="0" min="0" max="10">
 				</div>
 			</div>
-			<div class="col-sm-12 range-slider mb-3">
-				<div class="range-slider-value">0</div>
-				<input name="prueba_evaluable_nota" class="range-slider-range" type="range" step="0.1" value="0" min="0" max="10">
-			</div>
-			<div class="btn-group col-auto mb-4" role="group">
-				<button class="btn btn-outline-primary btn-sm" type="submit" name="selector_button" value="selector_prueba_evaluable_add" title="agregar alumno">
-					<i class="material-icons vertical-center">person</i>
-					agregar
-				</button>
-				<a data-toggle="collapse" href="#prueba_evaluable_add" class="btn btn-outline-dark btn-sm" aria-expanded="false" title="Agregar prueba evaluable">
-					<i class="material-icons vertical-center">close</i>
-				</a>
-			</div>
+		</div>
+		<div class="btn-group col-auto mt-3 mb-3" role="group">
+			<button class="btn btn-outline-primary btn-sm" type="submit" name="selector_button" value="selector_prueba_evaluable_add" title="agregar alumno">
+				<i class="material-icons vertical-center">person</i>
+				agregar
+			</button>
+			<a data-toggle="collapse" href="#prueba_evaluable_add" class="btn btn-outline-dark btn-sm" aria-expanded="false" title="Agregar prueba evaluable">
+				<i class="material-icons vertical-center">close</i>
+			</a>
 		</div>
 	</div>
 	<div class="divider grueso bg-primary mb-3"></div>
