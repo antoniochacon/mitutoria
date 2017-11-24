@@ -190,11 +190,9 @@ def admin_estadisticas_html(params={}):
     informes_con_pruebas_evalubles_count_sql = informes_con_pruebas_evalubles_count()
     stats['informes_con_pruebas_evalubles'] = informes_con_pruebas_evalubles_count_sql[0]
     stats['informes_con_pruebas_evalubles_percent'] = informes_con_pruebas_evalubles_count_sql[1]
-    stats['pruebas_evaluables_evolucion']=informes_con_pruebas_evalubles_count_sql[2]
+    stats['pruebas_evaluables_evolucion'] = informes_con_pruebas_evalubles_count_sql[2]
 
     stats['diferencial_media'] = diferencial_media()
-
-
 
     stats['tutores_over_all'] = (20 * stats['emails_validados_percent'] + 20 * stats['emails_no_ban_percent'] + 10 * stats['emails_no_robinson_percent'] + 40 * stats['preguntas_por_cuestionario_percent'] + 10 * stats['evolucion_equipo_educativo_percent']) / 100
     stats['profesores_over_all'] = (50 * stats['tutorias_con_respuesta_percent'] + 30 * stats['profesores_actividad_percent'] + 10 * stats['informes_con_pruebas_evalubles_percent'] + 10 * stats['informes_con_comentario_percent']) / 100
@@ -1296,7 +1294,7 @@ def analisis_paper_html(params={}):
     grupo_stats = respuestas_grupo_stats(current_tutoria_id, stats['preguntas_con_respuesta_lista'], stats['asignaturas_recibidas_lista'])
     respuestas_tutoria_media_stats = respuestas_tutoria_media(current_tutoria_id)
     evolucion_stats = evolucion_tutorias(alumno.id)
-    comentarios_stats =tutoria_comentarios(current_tutoria_id,stats['asignaturas_recibidas_lista'])
+    comentarios_stats = tutoria_comentarios(current_tutoria_id, stats['asignaturas_recibidas_lista'])
 
     return render_template('analisis_paper.html',
                            params=params, tutoria=tutoria, alumno=alumno, grupo=grupo,
@@ -1589,7 +1587,6 @@ def settings_opciones_html(params={}):
                 settings_edit_calendar = False
             if not settings_show_analisis_detalles:
                 settings_show_analisis_detalles = False
-
 
             settings().tutoria_timeout = settings_edit_tutoria_timeout
             settings().show_asignaturas_analisis = settings_show_asignaturas_analisis
@@ -1908,6 +1905,18 @@ def informe_html(current_tutoria_asignatura_id, params={}):
         abort(404)
     params = {}
     params['anchor'] = params_old.get('anchor', 'anchor_top')
+    params['collapse_prueba_evaluable_add'] = params_old.get('collapse_prueba_evaluable_add', False)
+    params['current_prueba_evaluable_id'] = params_old.get('current_prueba_evaluable_id', 0)
+    current_prueba_evaluable_id = params['current_prueba_evaluable_id']
+    params['prueba_evaluable_delete'] = params_old.get('prueba_evaluable_delete', False)
+
+    if params['prueba_evaluable_delete']:
+        params['anchor'] = 'anchor_pru_eva_add'
+        params['prueba_evaluable_delete'] = False
+        prueba_evaluable_delete_sql = session_sql.query(Prueba_Evaluable).filter(Prueba_Evaluable.id == current_prueba_evaluable_id).first()
+        session_sql.delete(prueba_evaluable_delete_sql)
+        session_sql.commit()
+        return redirect(url_for('informe_html', current_tutoria_asignatura_id=hashids_encode(current_tutoria_asignatura_id), params=dic_encode(params)))
 
     if request.method == 'POST':
         tutoria_id = current_tutoria_asignatura.tutoria_id
@@ -1938,21 +1947,16 @@ def informe_html(current_tutoria_asignatura_id, params={}):
         session_sql.commit()  # NOTE (NO BORRAR ESTA NOTA) este era el problema de no generar los graficos, era un problema de identado
 
         for prueba_evaluable in invitado_pruebas_evaluables(informe.id):
+            prueba_evaluable.nombre = request.form.get('prueba_evaluable_nombre_' + str(hashids_encode(prueba_evaluable.id)))
             prueba_evaluable.nota = request.form.get('prueba_evaluable_nota_' + str(hashids_encode(prueba_evaluable.id)))
 
         if request.form['selector_button'] == 'selector_prueba_evaluable_add':
-            params['anchor'] = 'anchor_pru_eva'
+            params['anchor'] = 'anchor_pru_eva_add'
+            params['collapse_prueba_evaluable_add'] = True
             prueba_evaluable_nombre = request.form.get('prueba_evaluable_nombre')
-            if not prueba_evaluable_nombre or prueba_evaluable_nombre == 'agregar prueba evaluable':
-                prueba_evaluable = False
-            prueba_evaluable_add = Prueba_Evaluable(informe_id=informe.id, nombre=prueba_evaluable_nombre, nota=0)
+            prueba_evaluable_nota = request.form.get('prueba_evaluable_nota')
+            prueba_evaluable_add = Prueba_Evaluable(informe_id=informe.id, nombre=prueba_evaluable_nombre, nota=prueba_evaluable_nota)
             session_sql.add(prueba_evaluable_add)
-            return redirect(url_for('informe_html', current_tutoria_asignatura_id=hashids_encode(current_tutoria_asignatura_id), params=dic_encode(params)))
-
-        if request.form['selector_button'] == 'selector_prueba_evaluable_delete':
-            params['anchor'] = 'anchor_pru_eva'
-            prueba_evaluable_delete = invitado_pruebas_evaluables(informe.id)[-1]
-            session_sql.delete(prueba_evaluable_delete)
             session_sql.commit()
             return redirect(url_for('informe_html', current_tutoria_asignatura_id=hashids_encode(current_tutoria_asignatura_id), params=dic_encode(params)))
 
@@ -1984,8 +1988,10 @@ def informe_html(current_tutoria_asignatura_id, params={}):
         informe = invitado_informe(tutoria_id, asignatura_id)
         return render_template(
             'informe.html', tutoria=tutoria, asignatura=asignatura,
-            alumno=alumno, grupo=grupo, informe=informe, current_tutoria_asignatura_id=current_tutoria_asignatura_id,
+            alumno=alumno, grupo=grupo, informe=informe,
+            current_tutoria_asignatura_id=current_tutoria_asignatura_id,
             params=params)
+
 
 # XXX informe_success
 
