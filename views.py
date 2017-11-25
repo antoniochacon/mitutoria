@@ -1916,6 +1916,7 @@ def informe_html(current_tutoria_asignatura_id, params={}):
         prueba_evaluable_delete_sql = session_sql.query(Prueba_Evaluable).filter(Prueba_Evaluable.id == current_prueba_evaluable_id).first()
         session_sql.delete(prueba_evaluable_delete_sql)
         session_sql.commit()
+        flash_toast('Prueba evaluable eliminada', 'warning')
         return redirect(url_for('informe_html', current_tutoria_asignatura_id=hashids_encode(current_tutoria_asignatura_id), params=dic_encode(params)))
 
     if request.method == 'POST':
@@ -1958,6 +1959,7 @@ def informe_html(current_tutoria_asignatura_id, params={}):
             prueba_evaluable_add = Prueba_Evaluable(informe_id=informe.id, nombre=prueba_evaluable_nombre, nota=prueba_evaluable_nota)
             session_sql.add(prueba_evaluable_add)
             session_sql.commit()
+            flash_toast('Prueba evaluable agregada', 'success')
             return redirect(url_for('informe_html', current_tutoria_asignatura_id=hashids_encode(current_tutoria_asignatura_id), params=dic_encode(params)))
 
         if request.form['selector_button'] == 'selector_informe_add':
