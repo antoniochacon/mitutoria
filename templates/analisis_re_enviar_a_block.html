@@ -1,7 +1,5 @@
-<div class="list_group_item_1 pt-3">
-	Selecciona las asignaturas a las que reenviar esta tutoría:
-	{# NOTE badge #}
-	<span class="badge badge-mutted float-right">{{ stats['asignaturas_alumno_lista']|count }}/{{stats['asignaturas_grupo_lista']|count}}</span>
+<div class="list_group_item_1 mt-2">
+	Asignaturas a las que reenviar email:
 </div>
 <div class="padding_contenido">
 	{% if not stats['asignaturas_grupo_lista'] %}
@@ -16,19 +14,16 @@
 			</span>
 		{% endif %}
 		<div class="row">
-			{% for asignatura in stats['asignaturas_grupo_lista'] %}
-				{% with %}
-				{% set association_alumno_asignatura_check = association_alumno_asignatura_check(alumno.id, asignatura.id) %}
-				<div class="form-group col-md-6 col-lg-4">
+			{% for asignatura in stats['asignaturas_alumno_lista'] %}
+				<div class="form-group col-md-6 col-lg-4 mb-0">
 					<label class="custom-control custom-checkbox check_box_1">
-						<input type="checkbox" class="custom-control-input" name="asignatura" value="{{hashids_encode(asignatura.id)}}" {% if association_alumno_asignatura_check and asignatura not in stats['asignaturas_recibidas_lista'] %} checked="checked" {% endif %}>
+						<input type="checkbox" class="custom-control-input" name="asignatura" value="{{hashids_encode(asignatura.id)}}" {% if asignatura not in stats['asignaturas_recibidas_lista'] %} checked="checked" {% endif %}>
 						<span class="custom-control-indicator"></span>
-						<span class="custom-control-description {% if not association_alumno_asignatura_check %}text-info {% else %} {% if asignatura not in stats['asignaturas_recibidas_lista'] %} text-warning {% endif %}{% endif %}">{{asignatura.asignatura}}
+						<span class="custom-control-description {% if asignatura not in stats['asignaturas_recibidas_lista'] %} text-warning {% endif %}">{{asignatura.asignatura}}
 							|
 							{{asignatura.nombre}}</span>
 					</label>
 				</div>
-				{% endwith %}
 			{% endfor %}
 		</div>
 	{% endif %}
