@@ -147,8 +147,11 @@ def respuestas_pregunta_alumno_lista(tutoria_id, asignatura_id, asignaturas_list
         respuestas = session_sql.query(Respuesta).join(Informe).join(Tutoria).filter(Respuesta.pregunta_id == pregunta.id, Informe.asignatura_id == asignatura_id, Informe.tutoria_id == tutoria_id).all()
         for respuesta in respuestas:
             if respuesta:
-                respuestas_pregunta_spline.append(int(respuesta.resultado))
-                respuestas_pregunta_stacked.append(int(respuesta.resultado) / len(asignaturas_lista))
+                resultado = respuesta.resultado
+                if int(respuesta.resultado) == 0:
+                    resultado = 1
+                respuestas_pregunta_spline.append(int(resultado))
+                respuestas_pregunta_stacked.append(int(resultado) / len(asignaturas_lista))
 
     if respuestas_pregunta_spline:
         respuestas_pregunta_media = round(mean(respuestas_pregunta_spline), 1)
@@ -169,8 +172,11 @@ def respuestas_asignatura_alumno_lista(tutoria_id, pregunta_id, asignaturas_list
         respuestas = session_sql.query(Respuesta).join(Informe).join(Tutoria).filter(Respuesta.pregunta_id == pregunta_id, Informe.asignatura_id == asignatura.id, Informe.tutoria_id == tutoria_id).all()
         for respuesta in respuestas:
             if respuesta:
-                respuestas_asignatura_spline.append(int(respuesta.resultado))
-                respuestas_asignatura_stacked.append(int(respuesta.resultado) / len(preguntas_lista))
+                resultado = respuesta.resultado
+                if int(respuesta.resultado) == 0:
+                    resultado = 1
+                respuestas_asignatura_spline.append(int(resultado))
+                respuestas_asignatura_stacked.append(int(resultado) / len(preguntas_lista))
         if respuestas_asignatura_spline:
             respuestas_asignatura_media = round(mean(respuestas_asignatura_spline), 1)
     stats['respuestas_asignatura_lista'] = respuestas_asignatura_spline
@@ -200,7 +206,10 @@ def respuestas_grupo_stats(tutoria_id, preguntas_lista, asignaturas_lista):
             respuestas = session_sql.query(Respuesta).join(Informe).join(Tutoria).join(Alumno).join(Grupo).filter(Respuesta.pregunta_id == pregunta.id, Informe.asignatura_id == asignatura.id, Informe.tutoria_id != tutoria_id, Grupo.id == grupo.id).all()
             for respuesta in respuestas:
                 if respuesta:
-                    respuestas_pregunta_lista.append(int(respuesta.resultado))
+                    resultado = respuesta.resultado
+                    if int(respuesta.resultado) == 0:
+                        resultado = 1
+                    respuestas_pregunta_lista.append(int(resultado))
         if respuestas_pregunta_lista:
             respuestas_pregunta_grupo_spline.append(round(mean(respuestas_pregunta_lista), 1))
             respuestas_pregunta_grupo_spline_without_NaN.append(round(mean(respuestas_pregunta_lista), 1))
@@ -216,7 +225,10 @@ def respuestas_grupo_stats(tutoria_id, preguntas_lista, asignaturas_lista):
             respuestas = session_sql.query(Respuesta).join(Informe).join(Tutoria).join(Alumno).join(Grupo).filter(Respuesta.pregunta_id == pregunta.id, Informe.asignatura_id == asignatura.id, Informe.tutoria_id != tutoria_id, Grupo.id == grupo.id).all()
             for respuesta in respuestas:
                 if respuesta:
-                    respuestas_asignatura_lista.append(int(respuesta.resultado))
+                    resultado = respuesta.resultado
+                    if int(respuesta.resultado) == 0:
+                        resultado = 1
+                    respuestas_asignatura_lista.append(int(resultado))
 
         if respuestas_asignatura_lista:
             respuestas_asignatura_grupo_spline.append(round(mean(respuestas_asignatura_lista), 1))
@@ -241,7 +253,10 @@ def respuestas_tutoria_media(tutoria_id):
     respuestas = session_sql.query(Respuesta).join(Informe).join(Tutoria).filter(Tutoria.id == tutoria_id).all()
     for respuesta in respuestas:
         if respuesta:
-            repuestas_tutoria_lista.append(int(respuesta.resultado))
+            resultado = respuesta.resultado
+            if int(respuesta.resultado) == 0:
+                resultado = 1
+            repuestas_tutoria_lista.append(int(resultado))
     if repuestas_tutoria_lista:
         repuestas_tutoria_media = round(mean(repuestas_tutoria_lista), 1)
 
@@ -300,7 +315,10 @@ def evolucion_tutorias(alumno_id):
         for informe in tutoria.informes:
             for respuesta in informe.respuestas:
                 if respuesta:
-                    evolucion_grupo_lista.append(int(respuesta.resultado))
+                    resultado = respuesta.resultado
+                    if int(respuesta.resultado) == 0:
+                        resultado = 1
+                    evolucion_grupo_lista.append(int(resultado))
         if evolucion_grupo_lista:
             evolucion_grupo_media_lista.append([arrow.get(tutoria.fecha).timestamp * 1000, round(mean(evolucion_grupo_lista), 1)])
         evolucion_grupo_lista = []
@@ -310,7 +328,10 @@ def evolucion_tutorias(alumno_id):
         for informe in tutoria.informes:
             for respuesta in informe.respuestas:
                 if respuesta:
-                    evolucion_alumno_lista.append(int(respuesta.resultado))
+                    resultado = respuesta.resultado
+                    if int(respuesta.resultado) == 0:
+                        resultado = 1
+                    evolucion_alumno_lista.append(int(resultado))
             for prueba_evaluable in informe.pruebas_evaluables:
                 evolucion_notas_serie.append(float(prueba_evaluable.nota))
 

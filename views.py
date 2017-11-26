@@ -1909,6 +1909,7 @@ def informe_html(current_tutoria_asignatura_id, params={}):
     params['current_prueba_evaluable_id'] = params_old.get('current_prueba_evaluable_id', 0)
     current_prueba_evaluable_id = params['current_prueba_evaluable_id']
     params['prueba_evaluable_delete'] = params_old.get('prueba_evaluable_delete', False)
+    params['pregunta_sin_respuesta'] = params_old.get('pregunta_sin_respuesta', False)
 
     if params['prueba_evaluable_delete']:
         params['anchor'] = 'anchor_pru_eva_add'
@@ -1933,18 +1934,24 @@ def informe_html(current_tutoria_asignatura_id, params={}):
             informe = Informe(tutoria_id=tutoria_id, asignatura_id=asignatura_id, comentario=request.form.get('comentario'))
             session_sql.add(informe)
             for pregunta in invitado_preguntas(settings.id):
-                respuesta = Respuesta(informe_id=informe.id, pregunta_id=pregunta.id, resultado=request.form.get('pregunta_' + str(hashids_encode(pregunta.id))))
+                resultado = request.form.get('pregunta_' + str(hashids_encode(pregunta.id)))
+                if int(resultado) == -2:
+                    params['pregunta_sin_respuesta']=True
+                respuesta = Respuesta(informe_id=informe.id, pregunta_id=pregunta.id, resultado=resultado)
                 session_sql.add(respuesta)
         else:
             informe = informe_sql
             informe.comentario = comentario = request.form.get('comentario')
             for pregunta in invitado_preguntas(settings.id):
                 respuesta = invitado_respuesta(informe.id, pregunta.id)
+                resultado = request.form.get('pregunta_' + str(hashids_encode(pregunta.id)))
+                if int(resultado) == -2:
+                    params['pregunta_sin_respuesta']=True
                 if not respuesta:
-                    respuesta_add = Respuesta(informe_id=informe.id, pregunta_id=pregunta.id, resultado=request.form.get('pregunta_' + str(hashids_encode(pregunta.id))))
+                    respuesta_add = Respuesta(informe_id=informe.id, pregunta_id=pregunta.id, resultado=resultado)
                     session_sql.add(respuesta_add)
                 else:
-                    respuesta.resultado = request.form.get('pregunta_' + str(hashids_encode(pregunta.id)))
+                    respuesta.resultado = resultado
         session_sql.commit()  # NOTE (NO BORRAR ESTA NOTA) este era el problema de no generar los graficos, era un problema de identado
 
         for prueba_evaluable in invitado_pruebas_evaluables(informe.id):
@@ -1964,17 +1971,22 @@ def informe_html(current_tutoria_asignatura_id, params={}):
 
         if request.form['selector_button'] == 'selector_informe_add':
             session_sql.commit()
-            flash_toast('Infome de ' + Markup('<strong>') + alumno.nombre + Markup('</strong>') + ' enviado', 'success')
-            params = {}
-            params['current_tutoria_asignatura_id'] = current_tutoria_asignatura_id
-            params['alumno'] = alumno.nombre + ' ' + alumno.apellidos
-            params['grupo'] = grupo.nombre
-            params['fecha'] = tutoria.fecha
-            params['hora'] = tutoria.hora
-            params['asignatura'] = asignatura.asignatura
-            params['docente'] = asignatura.nombre + ' ' + asignatura.apellidos
-            params['invitado'] = True
-            return redirect(url_for('informe_success_html', params=dic_encode(params)))
+            if params['pregunta_sin_respuesta']:
+                flash_toast('Preguntas sin evaluar', 'warning')
+                return redirect(url_for('informe_html', current_tutoria_asignatura_id=hashids_encode(current_tutoria_asignatura_id), params=dic_encode(params)))
+            else:
+                flash_toast('Infome de ' + Markup('<strong>') + alumno.nombre + Markup('</strong>') + ' enviado', 'success')
+                params = {}
+                params['current_tutoria_asignatura_id'] = current_tutoria_asignatura_id
+                params['alumno'] = alumno.nombre + ' ' + alumno.apellidos
+                params['grupo'] = grupo.nombre
+                params['fecha'] = tutoria.fecha
+                params['hora'] = tutoria.hora
+                params['asignatura'] = asignatura.asignatura
+                params['docente'] = asignatura.nombre + ' ' + asignatura.apellidos
+                params['invitado'] = True
+                return redirect(url_for('informe_success_html', params=dic_encode(params)))
+
         return render_template(
             'informe.html', tutoria=tutoria, asignatura=asignatura,
             alumno=alumno, grupo=grupo, informe=informe, params=params)
