@@ -34,32 +34,22 @@
 		</div>
 		<input type="hidden" name="current_alumno_id" value="{{hashids_encode(alumno.id)}}">
 		{% include 'alumnos_ficha_asignaturas_block.html' %}
-		{% if equal_str(alumno.id, params['current_alumno_id'])and params['alumno_edit_link'] %}
-			{% if params['alumno_delete_link'] %}
-				<div class="btn-group" role="group" aria-label="...">
-					<button role="button" type="submit" name="selector_button" value="selector_alumno_delete" class="btn btn-outline-warning btn-sm" title="confirmar eliminar alumno">
-						<i class="material-icons vertical-center">delete</i>
-						confirmar eliminar</button>
-					<button role="button" type="submit" name="selector_button" value="selector_alumno_delete_close" class="btn btn-outline-dark btn-sm" title="cancelar eliminar">
-						<i class="material-icons vertical-center">close</i>
-					</button>
-				</div>
-				<br>
-				<span class="text-warning small">
-					Una vez elminado no podra ser recuperado.</span>
-			{% else %}
+		{% if equal_str(alumno.id, params['current_alumno_id']) and params['alumno_edit_link'] %}
 				<div class="btn-group" role="group" aria-label="...">
 					<button role="button" type="submit" name="selector_button" value="selector_alumno_edit" class="btn btn-outline-primary btn-sm" title="guardar cambios">
 						<i class="material-icons vertical-center">save</i>
 						guardar</button>
-					<button role="button" type="submit" name="selector_button" value="selector_alumno_delete_link" class="btn btn-outline-dark btn-sm" title="eliminar alumno">
-						<i class="material-icons vertical-center">delete</i>
-					</button>
+
+					<a data-toggle="collapse" href="#alumno_delete_confirmar_{{hashids_encode(alumno.id)}}" class="btn btn-outline-dark btn-sm link_without_pointer" aria-expanded="false" title="Eliminar alumno">
+					<i class="material-icons vertical-center">delete</i></a>
+
+					{% include 'alumnos_delete_confirmar.html' %}
+
 					<button role="button" type="submit" name="selector_button" value="selector_alumno_edit_link_close" class="btn btn-outline-dark btn-sm" title="cerrar edición">
 						<i class="material-icons vertical-center">close</i>
 					</button>
 				</div>
-			{% endif %}
+
 		{% else %}
 			<div class="btn-group" role="group" aria-label="...">
 				<button role="button" type="submit" name="selector_button" class="btn btn-outline-dark btn-sm" value="selector_alumno_edit_link" title="editar ficha">

@@ -525,16 +525,27 @@ def alumnos_html(params={}):
     params['collapse_alumno_edit_asignaturas'] = params_old.get('collapse_alumno_edit_asignaturas', False)
     params['current_alumno_id'] = params_old.get('current_alumno_id', 0)
     params['from_url'] = params_old.get('from_url', False)
-    params['alumno_delete_link'] = params_old.get('alumno_delete_link', False)
     params['collapse_tutorias'] = params_old.get('collapse_tutorias', False)
     params['collapse_tutoria_no_activas'] = params_old.get('collapse_tutoria_no_activas', False)
     params['current_tutoria_id'] = params_old.get('current_tutoria_id', 0)
     params['invitado'] = params_old.get('invitado', False)
 
+    params['alumno_delete_confirmar'] = params_old.get('alumno_delete_confirmar', False)
+    params['current_alumno_id'] = params_old.get('current_alumno_id', 0)
+    current_alumno_id = params['current_alumno_id']
+
     if not settings().grupo_activo_id:
         if not grupos():
             params['collapse_grupo_add'] = True
         return redirect(url_for('settings_grupos_html', params=dic_encode(params)))
+
+    if params['alumno_delete_confirmar']:
+        params['alumno_delete_confirmar']=False
+        alumno_delete_sql = alumno_by_id(current_alumno_id)
+        session_sql.delete(alumno_delete_sql)
+        session_sql.commit()
+        flash_toast(Markup('<strong>') + alumno_delete_sql.nombre + Markup('</strong>') + ' elminado', 'success')
+        return redirect(url_for('alumnos_html', params=dic_encode(params)))
 
     if request.method == 'POST':
         # NOTE almacena current_alumno_id para el resto de situacones
@@ -714,23 +725,6 @@ def alumnos_html(params={}):
             params['alumno_edit_link'] = True
             params['anchor'] = 'anchor_tut_add_' + str(hashids_encode(current_alumno_id))
             session_sql.rollback()
-            return redirect(url_for('alumnos_html', params=dic_encode(params)))
-
-        # XXX alumno_delete_link
-        if request.form['selector_button'] == 'selector_alumno_delete_link':
-            params['collapse_alumno'] = True
-            params['collapse_alumno_edit'] = True
-            params['alumno_edit_link'] = True
-            params['alumno_delete_link'] = True
-            params['anchor'] = 'anchor_ficha_' + str(hashids_encode(current_alumno_id))
-            flash_toast('Debe confirmar la aliminacion', 'warning')
-            return redirect(url_for('alumnos_html', params=dic_encode(params)))
-
-        # XXX alumno_delete
-        if request.form['selector_button'] == 'selector_alumno_delete':
-            alumno_delete_form = Alumno_Add(request.form)
-            alumno_delete(current_alumno_id)
-            flash_toast(Markup('<strong>') + alumno_delete_form.nombre.data + Markup('</strong>') + ' elminado', 'success')
             return redirect(url_for('alumnos_html', params=dic_encode(params)))
 
         # XXX alumno_delete_close
@@ -1936,7 +1930,7 @@ def informe_html(current_tutoria_asignatura_id, params={}):
             for pregunta in invitado_preguntas(settings.id):
                 resultado = request.form.get('pregunta_' + str(hashids_encode(pregunta.id)))
                 if int(resultado) == -2:
-                    params['pregunta_sin_respuesta']=True
+                    params['pregunta_sin_respuesta'] = True
                 respuesta = Respuesta(informe_id=informe.id, pregunta_id=pregunta.id, resultado=resultado)
                 session_sql.add(respuesta)
         else:
@@ -1946,7 +1940,7 @@ def informe_html(current_tutoria_asignatura_id, params={}):
                 respuesta = invitado_respuesta(informe.id, pregunta.id)
                 resultado = request.form.get('pregunta_' + str(hashids_encode(pregunta.id)))
                 if int(resultado) == -2:
-                    params['pregunta_sin_respuesta']=True
+                    params['pregunta_sin_respuesta'] = True
                 if not respuesta:
                     respuesta_add = Respuesta(informe_id=informe.id, pregunta_id=pregunta.id, resultado=resultado)
                     session_sql.add(respuesta_add)

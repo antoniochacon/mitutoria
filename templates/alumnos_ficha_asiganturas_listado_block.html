@@ -17,8 +17,11 @@
 
 		<span class="custom-control-indicator"></span>
 		<span class="custom-control-description {% if not association_alumno_asignatura_check %}text-muted{% endif %}">{{asignatura.asignatura}}
-			|
-			{{asignatura.nombre}} </span>
+			<span class="text-gray small">
+				|
+				{{asignatura.nombre}}
+			</span>
+			 </span>
 	</label>
 </div>
 {% endwith %}

@@ -9,8 +9,10 @@
 		<div class="media-body">
 			<div class="padding_2">
 				{{asignatura.asignatura}}
-				|
-				<span class="text-mutted">{{asignatura.nombre}}</span>
+				<span class="text-gray small">
+					|
+					{{asignatura.nombre}}
+				</span>
 				{# NOTE badge #}
 				{% if informes_enviados %}
 					<span class="badge badge-secondary float-right" title="{{profesor_porcentaje}}% de los informes enviados">
