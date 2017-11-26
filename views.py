@@ -540,7 +540,7 @@ def alumnos_html(params={}):
         return redirect(url_for('settings_grupos_html', params=dic_encode(params)))
 
     if params['alumno_delete_confirmar']:
-        params['alumno_delete_confirmar']=False
+        params['alumno_delete_confirmar'] = False
         alumno_delete_sql = alumno_by_id(current_alumno_id)
         session_sql.delete(alumno_delete_sql)
         session_sql.commit()
@@ -719,13 +719,13 @@ def alumnos_html(params={}):
             return render_template('alumnos.html', alumno_add=Alumno_Add(), alumno_edit=alumno_edit_form,
                                    grupo_add=Grupo_Add(), tutoria_add=Tutoria_Add(), params=params)
         # XXX alumno_edit_rollback
-        if request.form['selector_button'] == 'selector_alumno_edit_rollback':
-            params['collapse_alumno'] = True
-            params['collapse_alumno_edit'] = True
-            params['alumno_edit_link'] = True
-            params['anchor'] = 'anchor_tut_add_' + str(hashids_encode(current_alumno_id))
-            session_sql.rollback()
-            return redirect(url_for('alumnos_html', params=dic_encode(params)))
+        # if request.form['selector_button'] == 'selector_alumno_edit_rollback':
+        #     params['collapse_alumno'] = True
+        #     params['collapse_alumno_edit'] = True
+        #     params['alumno_edit_link'] = True
+        #     params['anchor'] = 'anchor_tut_add_' + str(hashids_encode(current_alumno_id))
+        #     session_sql.rollback()
+        #     return redirect(url_for('alumnos_html', params=dic_encode(params)))
 
         # XXX alumno_delete_close
         if request.form['selector_button'] == 'selector_alumno_delete_close':
@@ -1320,12 +1320,24 @@ def analisis_html(params={}):
     params['tutoria_edit_link'] = params_old.get('tutoria_edit_link', False)
     params['show_analisis_preguntas_splines'] = params_old.get('show_analisis_preguntas_splines', False)
 
+    params['tutoria_delete_confirmar'] = params_old.get('tutoria_delete_confirmar', False)
+
     grupo = grupo_by_tutoria_id(current_tutoria_id)
     tutoria = tutoria_by_id(current_tutoria_id)
     alumno = alumno_by_tutoria_id(current_tutoria_id)
 
     if not tutoria or not alumno:
         return redirect(url_for('analisis_tutoria_no_disponible_html'))
+
+    if params['tutoria_delete_confirmar']:
+        params['tutoria_delete_confirmar'] = False
+        tutoria_delete_sql = tutoria_by_id(current_tutoria_id)
+        alumno_sql = alumno_by_id(tutoria_delete_sql.alumno_id)
+        flash_toast('Tutoria de ' + Markup('<strong>') + alumno_sql.nombre + Markup('</strong>') + ' eliminada', 'success')
+        tutoria_calendar_delete(event_id=tutoria_delete_sql.calendar_event_id)
+        session_sql.delete(tutoria_delete_sql)
+        session_sql.commit()
+        return redirect(url_for('alumnos_html'))
 
     stats = analisis_tutoria(current_tutoria_id)
     grupo_stats = respuestas_grupo_stats(current_tutoria_id, stats['preguntas_con_respuesta_lista'], stats['asignaturas_recibidas_lista'])
@@ -1456,22 +1468,6 @@ def analisis_tutoria_edit_html(params={}):
                 tutoria_calendar_undelete(event_id=tutoria_to_move.calendar_event_id)
                 flash_toast('Tutoria activada', 'success')
             return redirect(url_for('analisis_html', params=dic_encode(params)))
-
-        # XXX tutoria_delete_link
-        if request.form['selector_button'] == 'selector_tutoria_delete_link':
-            params['tutoria_delete_link'] = True
-            flash_toast('Debe confirmar la aliminacion', 'warning')
-            return redirect(url_for('analisis_html', params=dic_encode(params)))
-
-        # XXX tutoria_delete
-        if request.form['selector_button'] == 'selector_tutoria_delete':
-            tutoria_delete = tutoria_by_id(current_tutoria_id)
-            alumno = alumno_by_id(tutoria_delete.alumno_id)
-            flash_toast('Tutoria de ' + Markup('<strong>') + alumno.nombre + Markup('</strong>') + ' eliminada', 'success')
-            tutoria_calendar_delete(event_id=tutoria_delete.calendar_event_id)
-            session_sql.delete(tutoria_delete)
-            session_sql.commit()
-            return redirect(url_for('alumnos_html'))
 
         # XXX selector_tutoria_delete_archivar
         if request.form['selector_button'] == 'selector_tutoria_delete_archivar':
@@ -2045,8 +2041,19 @@ def asignaturas_html(params={}):
     params['collapse_asignatura_add'] = params_old.get('collapse_asignatura_add', False)
     params['collapse_asignatura_edit'] = params_old.get('collapse_asignatura_edit', False)
     params['current_asignatura_id'] = params_old.get('current_asignatura_id', 0)
-    params['asignatura_delete_link'] = params_old.get('asignatura_delete_link', False)
     params['asignatura_edit_link'] = params_old.get('asignatura_edit_link', False)
+
+    params['asignatura_delete_confirmar'] = params_old.get('asignatura_delete_confirmar', False)
+    params['current_asignatura_id'] = params_old.get('current_asignatura_id', 0)
+    current_asignatura_id = params['current_asignatura_id']
+
+    if params['asignatura_delete_confirmar']:
+        params['asignatura_delete_confirmar'] = False
+        asignatura_delete_sql = asignatura_by_id(current_asignatura_id)
+        session_sql.delete(asignatura_delete_sql)
+        session_sql.commit()
+        flash_toast(Markup('<strong>') + asignatura_delete_sql.nombre + Markup('</strong>') + ' elminado', 'success')
+        return redirect(url_for('asignaturas_html', params=dic_encode(params)))
 
     stats = {}
     stats['evolucion_tutorias_exito_grupo'] = evolucion_tutorias_exito_grupo(settings().grupo_activo_id)[0]
@@ -2082,16 +2089,6 @@ def asignaturas_html(params={}):
             if asignatura_add_form.validate():
                 asignatura_asignatura = session_sql.query(Asignatura).filter(Asignatura.grupo_id == settings().grupo_activo_id, unaccent(func.lower(Asignatura.asignatura)) == unaccent(func.lower(asignatura_add_form.asignatura.data))).first()
                 asignatura_email = session_sql.query(Asignatura).filter(Asignatura.grupo_id == settings().grupo_activo_id, func.lower(Asignatura.email) == func.lower(asignatura_add_form.email.data)).first()
-                # if asignatura_asignatura:
-                #     flash_toast('Esta asignatura ya existe', 'warning')
-                # elif asignatura_email:
-                #     flash_toast('Este email ya esta asignado a otra asignatura', 'warning')
-                # else:
-                #     asignatura_add = Asignatura(grupo_id=settings().grupo_activo_id, nombre=asignatura_add_form.nombre.data.title(), apellidos=asignatura_add_form.apellidos.data.title(), asignatura=asignatura_add_form.asignatura.data.title(), email=asignatura_add_form.email.data.lower())
-                #     session_sql.add(asignatura_add)
-                #     session_sql.commit()
-                #     flash_toast('Asignatura agregada', 'success')
-                #     return redirect(url_for('asignaturas_html'))
                 asignatura_add = Asignatura(grupo_id=settings().grupo_activo_id, nombre=asignatura_add_form.nombre.data.title(), apellidos=asignatura_add_form.apellidos.data.title(), asignatura=asignatura_add_form.asignatura.data.title(), email=asignatura_add_form.email.data.lower())
                 session_sql.add(asignatura_add)
                 session_sql.commit()
@@ -2165,28 +2162,6 @@ def asignaturas_html(params={}):
             if asignatura_edit_form.validate():
                 params['collapse_asignatura_edit'] = True
                 params['anchor'] = 'anchor_asi_' + str(hashids_encode(current_asignatura_id))
-
-                # # NOTE unicidad del nombre de asignatura
-                # asignatura_asignatura_unicidad = session_sql.query(Asignatura).filter(Asignatura.grupo_id == settings().grupo_activo_id, unaccent(func.lower(Asignatura.asignatura)) == unaccent(func.lower(asignatura_edit_form.asignatura.data))).all()
-                # asignatura_asignatura_unicidad_lista = []
-                # for asignatura in asignatura_asignatura_unicidad:
-                #     if asignatura.id != current_asignatura_id:
-                #         asignatura_asignatura_unicidad_lista.append(asignatura.id)
-                # if len(asignatura_asignatura_unicidad_lista) != 0:
-                #     asignatura_edit_form.asignatura.errors = ['ya existe como asignatura.']
-                #     flash_toast(Markup('<strong>') + asignatura_edit_form.asignatura.data + Markup('</strong>') + ' ya existe como asignatura.', 'warning')
-
-                # NOTE unicidad del email
-                # asignatura_email_unicidad = session_sql.query(Asignatura).filter(Asignatura.grupo_id == settings().grupo_activo_id, unaccent(func.lower(Asignatura.email)) == unaccent(func.lower(asignatura_edit_form.email.data))).all()
-                # if asignatura_email_unicidad:
-                #     asignatura_email_unicidad_lista = []
-                #     for asignatura in asignatura_email_unicidad:
-                #         if asignatura.id != current_asignatura_id:
-                #             asignatura_email_unicidad_lista.append(asignatura.id)
-                #     if len(asignatura_email_unicidad_lista) != 0:
-                #         asignatura_edit_form.email.errors = ['email asignado a otra asignatura.']
-                #         flash_toast('Este email ya esta asignado a otra asignatura.', 'warning')
-
                 asignatura_edit = Asignatura(grupo_id=settings().grupo_activo_id, nombre=asignatura_edit_form.nombre.data.title(), apellidos=asignatura_edit_form.apellidos.data.title(), asignatura=asignatura_edit_form.asignatura.data.title(), email=asignatura_edit_form.email.data)
                 asignatura_sql = session_sql.query(Asignatura).filter(Asignatura.id == current_asignatura_id).first()
                 if asignatura_sql.asignatura.lower() != asignatura_edit_form.asignatura.data.lower() or asignatura_sql.nombre.lower() != asignatura_edit_form.nombre.data.lower() or asignatura_sql.apellidos.lower() != asignatura_edit_form.apellidos.data.lower() or asignatura_sql.email.lower() != asignatura_edit_form.email.data.lower():
@@ -2212,26 +2187,11 @@ def asignaturas_html(params={}):
                 params=params, stats=stats)
 
         # XXX asignatura_edit_rollback
-        if request.form['selector_button'] == 'selector_asignatura_edit_rollback':
-            params['asignatura_edit_link'] = True
-            params['anchor'] = 'anchor_asi_' + str(hashids_encode(current_asignatura_id))
-            session_sql.rollback()
-            return redirect(url_for('asignaturas_html', params=dic_encode(params)))
-
-        # XXX asignatura_delete_link
-        if request.form['selector_button'] == 'selector_asignatura_delete_link':
-            params['anchor'] = 'anchor_asi_' + str(hashids_encode(current_asignatura_id))
-            params['asignatura_edit_link'] = True
-            params['asignatura_delete_link'] = True
-            flash_toast('Debe confirmar la aliminacion', 'warning')
-            return redirect(url_for('asignaturas_html', params=dic_encode(params)))
-
-        # XXX asignatura_delete
-        if request.form['selector_button'] == 'selector_asignatura_delete':
-            asignatura_delete_form = Asignatura_Add(request.form)
-            asignatura_delete(current_asignatura_id)
-            flash_toast('Asignatura elminada', 'success')
-            return redirect(url_for('asignaturas_html'))
+        # if request.form['selector_button'] == 'selector_asignatura_edit_rollback':
+        #     params['asignatura_edit_link'] = True
+        #     params['anchor'] = 'anchor_asi_' + str(hashids_encode(current_asignatura_id))
+        #     session_sql.rollback()
+        #     return redirect(url_for('asignaturas_html', params=dic_encode(params)))
 
         # XXX asignatura_delete_close
         if request.form['selector_button'] == 'selector_asignatura_delete_close':

@@ -95,35 +95,21 @@
 			<input type="hidden" name="current_asignatura_id" value="{{hashids_encode_asignatura_id}}">
 			{% include 'asignaturas_alumnos_block.html' %}
 			{% if equal_str(asignatura.id, params['current_asignatura_id'])and params['asignatura_edit_link'] %}
-				{% if params['asignatura_delete_link'] %}
-					<div class="btn-group" role="group" aria-label="...">
-						<button role="button" type="submit" name="selector_button" value="selector_asignatura_delete" class="btn btn-outline-warning btn-sm" title="confirmar eliminar asginatura">
-							<i class="material-icons vertical-center">delete</i>
-							confirmar eliminar</button>
-						<button role="button" type="submit" name="selector_button" value="selector_asignatura_delete_close" class="btn btn-outline-dark btn-sm" title="cancelar eliminar">
-							<i class="material-icons vertical-center">close</i>
-						</button>
-					</div>
-					<br>
-					<span class="text-warning small">
-						Una vez elminada no podra ser recuperada.</span>
-				{% else %}
 					<div class="btn-group" role="group" aria-label="...">
 						<button role="button" type="submit" name="selector_button" value="selector_asignatura_edit" class="btn btn-outline-primary btn-sm" title="guardar cambios">
 							<i class="material-icons vertical-center">save</i>
-							guardar
+							guardar</button>
+
+						<a data-toggle="collapse" href="#asignatura_delete_confirmar_{{hashids_encode(asignatura.id)}}" class="btn btn-outline-dark btn-sm link_without_pointer" aria-expanded="false" title="Eliminar asignatura">
+						<i class="material-icons vertical-center">delete</i></a>
+
+						{% include 'asignaturas_delete_confirmar_block.html' %}
+
+						<button role="button" type="submit" name="selector_button" value="selector_asignatura_edit_link_close" class="btn btn-outline-dark btn-sm" title="cerrar edición">
+							<i class="material-icons vertical-center">close</i>
 						</button>
-						{# <button role="button" type="submit" name="selector_button" value="selector_asignatura_edit_rollback" class="btn btn-outline-dark btn-sm" title="deshacer cambios"> <i class="material-icons vertical-center">settings_backup_restore</i> </button> #}
-						<button role="button" type="submit" name="selector_button" value="selector_asignatura_delete_link" class="btn btn-outline-dark btn-sm" title="eliminar asignatura">
-							<i class="material-icons vertical-center">delete</i>
-						</button>
-						{% if params['collapse_asignatura_edit'] %}
-							<button role="button" type="submit" name="selector_button" value="selector_asignatura_edit_link_close" class="btn btn-outline-dark btn-sm" title="cerrar">
-								<i class="material-icons vertical-center">close</i>
-							</button>
-						{% endif %}
 					</div>
-				{% endif %}
+
 			{% else %}
 				<div class="btn-group" role="group" aria-label="...">
 					<button role="button" type="submit" name="selector_button" value="selector_asignatura_edit_link" class="btn btn-outline-dark btn-sm" title="editar ficha">

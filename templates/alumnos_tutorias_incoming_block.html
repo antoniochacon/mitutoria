@@ -27,7 +27,10 @@
 						{{tutoria.fecha.strftime('%A') | capitalize}}
 						{{tutoria.fecha.strftime('%d')}}
 						[{{tutoria.hora.strftime('%H:%M')}}]
+
+						<span class="text-gray small">
 						{{alumno_by_id(tutoria.alumno_id).nombre}}
+						</span>
 						<span class="badge badge-secondary float-right" title="{{tutoria_incoming['porcentaje']}}% de los informes recibidos">
 							{{tutoria_incoming['porcentaje']}}%
 						</span>

@@ -14,16 +14,9 @@
 		{{titulo_1(url='asignaturas',bg_color='bg-dark',titulo=grupo_activo_sql.nombre, subtitulo=[ grupo_activo_sql.centro, [ grupo_activo_sql.curso_academico, grupo_activo_sql.curso_academico +1 ]|join("-") ]|join(": "))}}
 		<div id="parent_alumno">
 			<a id="anchor_asi_add"></a>
-			<div>
+			<div class="mt-4">
 				<a data-toggle="collapse" data-parent="#parent_alumno" href="#asignatura_add" class="collapse_header_1" aria-expanded="false" title="Agregar asignatura">
-					<div class="media">
-						&nbsp;<i class="material-icons vertical-center">import_contacts</i>&nbsp;
-						<div class="media-body">
-							<div class="padding_2">
-								agregar nueva asignatura
-							</div>
-						</div>
-					</div>
+				<span class="pl-1"><i class="material-icons vertical-center">import_contacts</i><span class="padding_2">agregar nueva asignatura</span></span>
 				</a>
 				<div id="asignatura_add" class="collapse {% if params['collapse_asignatura_add'] %} show {% endif %}">
 					{# TODO: asignaturas_add #}

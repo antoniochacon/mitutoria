@@ -1,3 +1,4 @@
+<div id="tutoria_reenviar_{{hashids_encode(tutoria.id)}}" class="collapse">
 <div class="list_group_item_1 mt-2">
 	Asignaturas a las que reenviar email:
 </div>
@@ -32,12 +33,12 @@
 			<i class="material-icons vertical-center">mail</i>
 			Reenviar
 		</button>
-		<button type="submit" name="selector_button" value="selector_tutoria_re_enviar_close" class="btn btn-outline-dark btn-sm" title="Cerrar">
-			<i class="material-icons vertical-center">close</i>
-		</button>
+		<a data-toggle="collapse" href="#tutoria_reenviar_{{hashids_encode(tutoria.id)}}" class="btn btn-outline-dark btn-sm link_without_pointer" aria-expanded="false" title="Reenviar tutoria">
+		<i class="material-icons vertical-center">close</i></a>
 	</div>
 	<div class="text-mutted small pt-2">
 		No modifica el equipo educativo del alumno, solo es efectivo para el envio temporal
 	</div>
 </div>
 <div class="divider bg-primary grueso"></div>
+</div>
