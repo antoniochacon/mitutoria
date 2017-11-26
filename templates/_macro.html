@@ -625,9 +625,15 @@
 				enabled: true
 			},
 			plotOptions: {
-				series: {
-					pointIntervalUnit: "week"
-				},
+			series: {
+					dataGrouping: {
+			 						forced: true,
+									units: [['week', [1]]]
+						}
+					},
+				// series: {
+				// 	pointIntervalUnit: "week"
+				// },
 				column: {
 					grouping: false
 				}
