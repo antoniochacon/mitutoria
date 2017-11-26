@@ -560,7 +560,7 @@
 				buttonBackgroundColor: "#212529",
 				buttonBorderWidth: 0,
 				buttonBorderRadius: 7,
-				trackBackgroundColor: "#212529",
+				trackBackgroundColor: "none",
 				trackBorderWidth: 1,
 				trackBorderRadius: 8,
 				trackBorderColor: "#212529",
@@ -568,7 +568,7 @@
 				showFull: true
 			},
 			navigator: {
-				enabled: false
+				enabled: true
 			},
 			rangeSelector: {
 				allButtonsEnabled: false,
@@ -583,6 +583,23 @@
 			},
 			tooltip: {
 				shared: false
+			},
+			xAxis: {
+				crosshair: {
+					width: 2,
+					color: "#26c6da"
+				},
+				type: "datetime",
+				startOfWeek: 2,
+				dateTimeLabelFormats: {
+					second: "%Y-%m-%d<br/>%H:%M:%S",
+					minute: "%Y-%m-%d<br/>%H:%M",
+					hour: "%Y-%m-%d<br/>%H:%M",
+					day: "%d-%m",
+					week: "%d-%m",
+					month: "%m-%Y",
+					year: "%Y"
+				}
 			},
 			xAxis: {
 				crosshair: {
@@ -629,12 +646,12 @@
 					 dataGrouping: {
 						 forced: true,
 						 units: [
-							 ['week', [1]]
+							 ['day', [1]]
 						 ]
 					 }
 				 },
 				series: {
-					pointIntervalUnit: "week"
+					pointIntervalUnit: "day"
 				},
 				column: {
 					grouping: false
