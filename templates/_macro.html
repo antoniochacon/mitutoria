@@ -568,7 +568,7 @@
 				showFull: true
 			},
 			navigator: {
-				enabled: true
+				enabled: false
 			},
 			rangeSelector: {
 				allButtonsEnabled: false,
@@ -583,23 +583,6 @@
 			},
 			tooltip: {
 				shared: false
-			},
-			xAxis: {
-				crosshair: {
-					width: 2,
-					color: "#26c6da"
-				},
-				type: "datetime",
-				startOfWeek: 2,
-				dateTimeLabelFormats: {
-					second: "%Y-%m-%d<br/>%H:%M:%S",
-					minute: "%Y-%m-%d<br/>%H:%M",
-					hour: "%Y-%m-%d<br/>%H:%M",
-					day: "%d-%m",
-					week: "%d-%m",
-					month: "%m-%Y",
-					year: "%Y"
-				}
 			},
 			xAxis: {
 				crosshair: {
@@ -638,6 +621,7 @@
 				},
 				opposite: false
 			},
+
 			legend: {
 				enabled: true
 			},
@@ -646,12 +630,12 @@
 					 dataGrouping: {
 						 forced: true,
 						 units: [
-							 ['day', [1]]
+							 ['week', [1]]
 						 ]
 					 }
 				 },
 				series: {
-					pointIntervalUnit: "day"
+					pointIntervalUnit: "week"
 				},
 				column: {
 					grouping: false
