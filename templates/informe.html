@@ -73,9 +73,16 @@
 											value="-2"
 											min="0"
 											max="10"
-											oninput="this.form.pregunta_{{hashids_encode(pregunta.id)}}.value=this.value">
+											oninput="this.form.pregunta_{{hashids_encode(pregunta.id)}}.value=this.value"/>
 									</div>
-								<input type="hidden" name="pregunta_{{hashids_encode(pregunta.id)}}" min="-2" max="10" value="-2" oninput="this.form.amountRange.value=this.value">
+								<input type="hidden" name="pregunta_{{hashids_encode(pregunta.id)}}" min="-2" max="10"
+								{% if informe %}
+								{% if invitado_respuesta(informe.id,pregunta.id).resultado %}
+								value="{{invitado_respuesta(informe.id,pregunta.id).resultado}}"
+								{% endif %}
+								{% endif %}
+								value="-2"
+								oninput="this.form.pregunta_input_{{hashids_encode(pregunta.id)}}.value=this.value"/>
 								<input type="hidden" name="pregunta_id" value={{hashids_encode(pregunta.id)}}>
 							</div>
 						</div>
