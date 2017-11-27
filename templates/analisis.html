@@ -57,13 +57,11 @@
 					<div class="col">
 
 							<div class="btn-group mb-1" role="group" aria-label="...">
-								<button role="button" type="submit" name="selector_button" value="selector_tutoria_edit_link" class="btn btn-sm{% if tutoria.activa %} btn-outline-dark{% else %} btn-outline-mutted{% endif %}" title="cambiar fecha y hora">
-									<i class="material-icons vertical-center {% if tutoria.activa %} color-gray-darken-1 {% endif %}">edit</i>
-								</button>
+								<a data-toggle="collapse" href="#tutoria_edit_{{hashids_encode(tutoria.id)}}" class="btn {% if tutoria.activa %} btn-outline-dark{% else %} btn-outline-mutted{% endif %} btn-sm link_without_pointer" aria-expanded="false" title="cambiar fecha y hora">
+								<i class="material-icons vertical-center {% if tutoria.activa %} color-gray-darken-1 {% endif %}">edit</i></a>
 
-								<a data-toggle="collapse" href="#tutoria_reenviar_{{hashids_encode(tutoria.id)}}" class="btn {% if tutoria.activa %} btn-outline-dark{% else %} btn-outline-mutted{% endif %} btn-sm link_without_pointer" aria-expanded="false" title="Reenviar tutoria">
+								<a data-toggle="collapse" href="#tutoria_reenviar_{{hashids_encode(tutoria.id)}}" class="btn {% if tutoria.activa %} btn-outline-dark{% else %} btn-outline-mutted{% endif %} btn-sm link_without_pointer" aria-expanded="false" title="reenviar tutoria">
 								<i class="material-icons vertical-center {% if tutoria.activa %} color-gray-darken-1 {% endif %}">email</i></a>
-
 
 								{% if tutoria.activa %}
 									<button role="button" type="submit" name="selector_button" value="selector_tutoria_archivar" class="btn btn-sm {% if tutoria.activa %} btn-outline-dark{% else %} btn-outline-mutted{% endif %}" title="archivar tutoria">
@@ -74,7 +72,7 @@
 										<i class="material-icons vertical-center">file_upload</i>
 									</button>
 								{% endif %}
-								<a data-toggle="collapse" href="#tutoria_delete_confirmar_{{hashids_encode(tutoria.id)}}" class="btn {% if tutoria.activa %} btn-outline-dark{% else %} btn-outline-mutted{% endif %} btn-sm link_without_pointer" aria-expanded="false" title="Eliminar tutoria">
+								<a data-toggle="collapse" href="#tutoria_delete_confirmar_{{hashids_encode(tutoria.id)}}" class="btn {% if tutoria.activa %} btn-outline-dark{% else %} btn-outline-mutted{% endif %} btn-sm link_without_pointer" aria-expanded="false" title="eliminar tutoria">
 								<i class="material-icons vertical-center">delete</i></a>
 								{% include 'analisis_tutoria_delete_confirmar_block.html' %}
 								<span
@@ -105,8 +103,8 @@
 						aria-valuemax="100"
 						style="{% if not tutoria.activa %} height:2px; {% endif %} width: {{tutoria_incoming['porcentaje']}}%;"></div>
 				</div>
-
-					{% include 'analisis_re_enviar_a_block.html' %}
+					{% include 'analisis_tutoria_edit_block.html' %}
+					{% include 'analisis_re_enviar_block.html' %}
 
 				{% if params['tutoria_edit_link'] %}
 					{% include 'analisis_tutoria_edit_block.html' %}
