@@ -57,11 +57,11 @@
 						<div class="col-sm-12 mb-3">
 						<div class="card border-gray mb-2">
 							<div class="card-header p-2">{{pregunta.enunciado}}</div>
-								<div class="card-body_xxx text-dark_xxx">
+								<div>
 									<div class="range-slider_cualitativo">
 										<div id="range-slider-value_cualitativo" class="range-slider-value_cualitativo">0</div>
 										<input
-											name="pregunta_{{hashids_encode(pregunta.id)}}"
+											name="pregunta_input_{{hashids_encode(pregunta.id)}}"
 											class="range-slider-range_cualitativo"
 											type="range"
 											step="2"
@@ -71,9 +71,11 @@
 											{% endif %}
 											{% endif %}
 											value="-2"
-											min="-2"
-											max="10">
+											min="0"
+											max="10"
+											oninput="this.form.pregunta_{{hashids_encode(pregunta.id)}}.value=this.value">
 									</div>
+								<input type="hidden" name="pregunta_{{hashids_encode(pregunta.id)}}" min="-2" max="10" value="-2" oninput="this.form.amountRange.value=this.value">
 								<input type="hidden" name="pregunta_id" value={{hashids_encode(pregunta.id)}}>
 							</div>
 						</div>
