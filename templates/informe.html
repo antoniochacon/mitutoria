@@ -56,7 +56,6 @@
 					{% for pregunta in invitado_preguntas_by_categoria_id_sql %}
 					{% with %}
 					{% set hashids_encode_pregunta_id = hashids_encode(pregunta.id)%}
-
 						<div class="col-sm-12 mb-3">
 						<a id="anchor_pregunta_{{hashids_encode_pregunta_id}}"></a>
 						<div class="card border-gray z-depth-1-1-less mb-2">
@@ -103,11 +102,7 @@
 				{% endif %}
 				<a id="anchor_pru_eva_add"></a>
 				<div class="col-sm-12 bg-dark text-white pl-2 pt-2 pb-2 mb-3">
-					{% if invitado_pruebas_evaluables_sql %}
-						{{singular_plural('Prueba evaluable', 'Pruebas evaluables', invitado_pruebas_evaluables_sql)}}
-					{% else %}
-					Agregar notas
-					{% endif %}
+					Pruebas evaluables
 					<span>
 						<a data-toggle="collapse" href="#prueba_evaluable_add" class="badge badge-info float-right pt-0 pb-0" aria-expanded="false" title="Agregar prueba evaluable">
 							<i class="material-icons vertical-center">add</i>nueva prueba
