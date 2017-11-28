@@ -1962,6 +1962,7 @@ def informe_html(current_tutoria_asignatura_id, params={}):
                 params['fecha'] = tutoria.fecha
                 params['hora'] = tutoria.hora
                 params['asignatura'] = asignatura.asignatura
+                params['asignatura_id']= asignatura.id
                 params['docente'] = asignatura.nombre + ' ' + asignatura.apellidos
                 params['invitado'] = True
                 return redirect(url_for('informe_success_html', params=dic_encode(params)))
@@ -2005,6 +2006,7 @@ def informe_success_html(params={}):
     params['fecha'] = params_old.get('fecha', False)
     params['hora'] = params_old.get('hora', False)
     params['asignatura'] = params_old.get('asignatura', False)
+    params['asignatura_id']=params_old.get('asignatura_id', False)
     params['docente'] = params_old.get('docente', False)
     return render_template(
         'informe_success.html', params=params)

@@ -2,6 +2,11 @@
 {% block body %}
 	{%from '_macro.html' import nav_bar_top, titulo_1%}
 	{{nav_bar_top(current_user=current_user)}}
+	{% with %}
+
+	{% set informes_enviados = asignatura_informes_count(params['asignatura_id']) %}
+	{% set profesor_porcentaje = cociente_porcentual(asignatura_informes_respondidos_count(params['asignatura_id']), informes_enviados)%}
+
 	<div class="container">
 		<div class="paper bg-white padding_contenido">
 			{{titulo_1(bg_color='bg-dark', titulo='Informe de '+ params['alumno'], subtitulo=params['grupo'])}}
@@ -22,12 +27,15 @@
 			{{params['docente']}}
 			<h6></h6>
 			<div class="divider bg-mutted"></div>
-			<div class="text-center pt-3">
-				Gracias por enviar su informe
+			<div class="text-center mt-3">
+				Informe enviado correctamente
+				<br>
+				Enhorabuena su participación subió al {{profesor_porcentaje }} %.
 				<br><br>
 				<a class="btn btn-outline-dark" href="/informe/{{hashids_encode(params['current_tutoria_asignatura_id'])}}" role="button">Consultar o editar informe</a>
 			</div>
 			<br>
 		</div>
 	</div>
+	{% endwith %}
 {% endblock %}
