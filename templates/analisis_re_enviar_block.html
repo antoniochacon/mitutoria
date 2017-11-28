@@ -1,5 +1,5 @@
 <div id="tutoria_reenviar_{{hashids_encode(tutoria.id)}}" class="collapse">
-<div class="list_group_item_1 mt-2">
+<div class="list_group_item_1">
 	Asignaturas a las que reenviar email:
 </div>
 <div class="padding_contenido">
@@ -21,19 +21,21 @@
 						<input type="checkbox" class="custom-control-input" name="asignatura" value="{{hashids_encode(asignatura.id)}}" {% if asignatura not in stats['asignaturas_recibidas_lista'] %} checked="checked" {% endif %}>
 						<span class="custom-control-indicator"></span>
 						<span class="custom-control-description {% if asignatura not in stats['asignaturas_recibidas_lista'] %} text-warning {% endif %}">{{asignatura.asignatura}}
-							|
-							{{asignatura.nombre}}</span>
+							<span class="text-gray small">
+								|
+								{{asignatura.nombre}}
+							</span></span>
 					</label>
 				</div>
 			{% endfor %}
 		</div>
 	{% endif %}
 	<div class="btn-group mt-2" role="group" aria-label="...">
-		<button type="submit" name="selector_button" value="selector_tutoria_re_enviar" class="btn btn-outline-primary btn-sm" title="Reenvair emails">
+		<button type="submit" name="selector_button" value="selector_tutoria_re_enviar" class="btn btn-outline-primary btn-sm" title="re-enviar emails">
 			<i class="material-icons vertical-center">mail</i>
-			Reenviar
+			Re-enviar
 		</button>
-		<a data-toggle="collapse" href="#tutoria_reenviar_{{hashids_encode(tutoria.id)}}" class="btn btn-outline-dark btn-sm link_without_pointer" aria-expanded="false" title="Reenviar tutoria">
+		<a data-toggle="collapse" href="#tutoria_reenviar_{{hashids_encode(tutoria.id)}}" class="btn btn-outline-dark btn-sm link_without_pointer" aria-expanded="false" title="cerrar">
 		<i class="material-icons vertical-center">close</i></a>
 	</div>
 	<div class="text-mutted small pt-2">

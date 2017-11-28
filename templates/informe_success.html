@@ -20,12 +20,23 @@
 			<span class="text-mutted">Docente:
 			</span>
 			{{params['docente']}}
-			<h6></h6>
-			<div class="divider bg-mutted"></div>
-			<div class="text-center pt-3">
-				Gracias por enviar su informe
-				<br><br>
-				<a class="btn btn-outline-dark" href="/informe/{{hashids_encode(params['current_tutoria_asignatura_id'])}}" role="button">Consultar o editar informe</a>
+			<div class="divider bg-mutted mt-2"></div>
+			<div class="text-center mt-3">
+				<div class="h4 text-secondary mb-0">
+					{% if params['participacion_porcentaje_recent'] < 50 %}
+						Ánimo
+					{% elif params['participacion_porcentaje_recent'] > 50 and params['participacion_porcentaje_recent'] < 75 %}
+						Buen trabajo
+					{% else %}
+						Enhorabuena
+					{% endif %}
+				</div>
+				<div class="small text-secondary mb-2">participación reciente</div>
+				<span class="badge badge-secondary align-middle pl-2 pr-2">
+					<span class="h3 align-middle">{{params['participacion_porcentaje_recent']}}%</span>
+				</span>
+				<div class="divider bg-mutted mt-3 mb-3"></div>
+				<a class="btn btn-outline-dark btn-sm" href="/informe/{{hashids_encode(params['current_tutoria_asignatura_id'])}}" role="button">Consultar o editar informe</a>
 			</div>
 			<br>
 		</div>

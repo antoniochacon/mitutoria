@@ -4,7 +4,7 @@
 	{{nav_bar_top(current_user=current_user)}}
 	<div class="paper bg-white padding_contenido">
 		{% if alumno and asignatura and tutoria %}
-			{{titulo_1(bg_color='bg-dark', titulo='Informe de '+ alumno.nombre+' '+alumno.apellidos, subtitulo=grupo.nombre)}}
+			{{titulo_1(bg_color='bg-dark', titulo='Informe de '+alumno.apellidos+', '+alumno.nombre, subtitulo=grupo.nombre)}}
 			<span class="text-mutted">Fecha de la tutoria:
 			</span>
 			{{tutoria.fecha.strftime('%A') | capitalize}}
@@ -54,14 +54,17 @@
 					</div>
 					<div class="row">
 					{% for pregunta in invitado_preguntas_by_categoria_id_sql %}
+					{% with %}
+					{% set hashids_encode_pregunta_id = hashids_encode(pregunta.id)%}
 						<div class="col-sm-12 mb-3">
-						<div class="card border-gray mb-2">
+						<a id="anchor_pregunta_{{hashids_encode_pregunta_id}}"></a>
+						<div class="card border-gray z-depth-1-1-less mb-2">
 							<div class="card-header p-2">{{pregunta.enunciado}}</div>
 								<div>
 									<div class="range-slider_cualitativo">
 										<div id="range-slider-value_cualitativo" class="range-slider-value_cualitativo"></div>
 										<input
-											name="pregunta_input_{{hashids_encode(pregunta.id)}}"
+											name="pregunta_input_{{hashids_encode_pregunta_id}}"
 											class="range-slider-range_cualitativo"
 											type="range"
 											step="2"
@@ -73,20 +76,21 @@
 											value="-2"
 											min="0"
 											max="10"
-											oninput="this.form.pregunta_{{hashids_encode(pregunta.id)}}.value=this.value">
+											oninput="this.form.pregunta_{{hashids_encode_pregunta_id}}.value=this.value">
 									</div>
-								<input type="hidden" name="pregunta_{{hashids_encode(pregunta.id)}}" min="-2" max="10"
+								<input type="hidden" name="pregunta_{{hashids_encode_pregunta_id}}" min="-2" max="10"
 								{% if informe %}
 								{% if invitado_respuesta(informe.id,pregunta.id).resultado %}
 								value="{{invitado_respuesta(informe.id,pregunta.id).resultado}}"
 								{% endif %}
 								{% endif %}
 								value="-2"
-								oninput="this.form.pregunta_input_{{hashids_encode(pregunta.id)}}.value=this.value">
-								<input type="hidden" name="pregunta_id" value="{{hashids_encode(pregunta.id)}}">
+								oninput="this.form.pregunta_input_{{hashids_encode_pregunta_id}}.value=this.value">
+								<input type="hidden" name="pregunta_id" value="{{hashids_encode_pregunta_id}}">
 							</div>
 						</div>
 					</div>
+					{% endwith %}
 					{% endfor %}
 					</div>
 					{% endif %}
@@ -98,11 +102,7 @@
 				{% endif %}
 				<a id="anchor_pru_eva_add"></a>
 				<div class="col-sm-12 bg-dark text-white pl-2 pt-2 pb-2 mb-3">
-					{% if invitado_pruebas_evaluables_sql %}
-						{{singular_plural('Prueba evaluable', 'Pruebas evaluables', invitado_pruebas_evaluables_sql)}}
-					{% else %}
-					Agregar notas
-					{% endif %}
+					Pruebas evaluables
 					<span>
 						<a data-toggle="collapse" href="#prueba_evaluable_add" class="badge badge-info float-right pt-0 pb-0" aria-expanded="false" title="Agregar prueba evaluable">
 							<i class="material-icons vertical-center">add</i>nueva prueba
@@ -115,7 +115,7 @@
 				<div class="row">
 					{% for prueba_evaluable in invitado_pruebas_evaluables_sql %}
 						<div class="col-sm-12 {% if invitado_pruebas_evaluables_sql | count > 1 %} col-md-6 {% if invitado_pruebas_evaluables_sql | count > 2 %} col-lg-4 {% endif %} {% endif %} mb-4">
-								<div class="card border-gray mb-2">
+								<div class="card border-gray z-depth-1-1-less mb-2">
 									<div class="card-header p-1">
 										<div class="input-group">
 											<input

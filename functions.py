@@ -389,7 +389,7 @@ def invitado_preguntas(settings_id):  # [Preguntas] by settings_id
 
 
 def invitado_preguntas_by_categoria_id(settings_id, categoria_id):  # [Preguntas] by settings_id
-    invitado_preguntas = session_sql.query(Pregunta).join(Association_Settings_Pregunta).filter(Association_Settings_Pregunta.settings_id == settings_id).join(Categoria).filter(Categoria.id == categoria_id).order_by('orden').all()
+    invitado_preguntas = session_sql.query(Pregunta).join(Association_Settings_Pregunta).filter(Association_Settings_Pregunta.settings_id == settings_id).join(Categoria).filter(Categoria.id == categoria_id).order_by(Pregunta.orden).all()
     return invitado_preguntas
 
 
@@ -844,6 +844,14 @@ def asignatura_informes_count(asignatura_id):
 
 def asignatura_informes_respondidos_count(asignatura_id):
     return session_sql.query(Informe).filter(Informe.asignatura_id == asignatura_id).count()
+
+
+def asignatura_informes_recent_count(asignatura_id):
+    return session_sql.query(Association_Tutoria_Asignatura).filter(Association_Tutoria_Asignatura.asignatura_id == asignatura_id, Association_Tutoria_Asignatura.created_at > g.current_date - datetime.timedelta(days=settings_admin().periodo_recent)).count()
+
+
+def asignatura_informes_respondidos_recent_count(asignatura_id):
+    return session_sql.query(Informe).filter(Informe.asignatura_id == asignatura_id, Informe.created_at > g.current_date - datetime.timedelta(days=settings_admin().periodo_recent)).count()
 
 
 def connenction_check():

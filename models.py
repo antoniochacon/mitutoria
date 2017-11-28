@@ -62,6 +62,7 @@ class Settings_Admin (Base):
     __tablename__ = 'settings_admin'
     id = Column(Integer, primary_key=True)
     diferencial = Column(Integer, default=25)
+    periodo_recent = Column(Integer, default=30)
 
 
 class Grupo (Base):

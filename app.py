@@ -14,7 +14,7 @@ if __name__ == '__main__':
         Base.metadata.create_all(engine)
 
         if not settings_admin():
-            settings_admin_add = Settings_Admin(diferencial=20)
+            settings_admin_add = Settings_Admin(diferencial=20, participacion_recent=30)
             session_sql.add(settings_admin_add)
             session_sql.commit()
 
