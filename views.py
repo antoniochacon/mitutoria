@@ -1312,8 +1312,6 @@ def analisis_html(params={}):
     params['anchor'] = params_old.get('anchor', 'anchor_top')
     params['current_tutoria_id'] = params_old.get('current_tutoria_id', 0)
     current_tutoria_id = params['current_tutoria_id']
-    params['tutoria_delete_link'] = params_old.get('tutoria_delete_link', False)
-    params['tutoria_re_enviar_link'] = params_old.get('tutoria_re_enviar_link', False)
     params['show_analisis_preguntas_splines'] = params_old.get('show_analisis_preguntas_splines', False)
 
     params['tutoria_delete_confirmar'] = params_old.get('tutoria_delete_confirmar', False)
@@ -1471,17 +1469,7 @@ def analisis_tutoria_edit_html(params={}):
             tutoria_to_move.activa = False
             session_sql.commit()
             flash_toast('Tutoria archivada', 'success')
-            params['tutoria_delete_link'] = False
             return redirect(url_for('analisis_html', params=dic_encode(params)))
-
-        # XXX tutoria_delete_link_close
-        if request.form['selector_button'] == 'selector_tutoria_delete_link_close':
-            return redirect(url_for('analisis_html', params=dic_encode(params)))
-
-        # XXX tutoria_edit_link
-        # if request.form['selector_button'] == 'selector_tutoria_edit_link':
-        #     params['tutoria_edit_link'] = True
-        #     return redirect(url_for('analisis_html', params=dic_encode(params)))
 
         # XXX tutoria_edit
         if request.form['selector_button'] == 'selector_tutoria_edit':

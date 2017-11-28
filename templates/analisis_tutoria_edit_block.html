@@ -29,14 +29,12 @@
 				</div>
 			</div>
 			<div class="btn-group col-md-12 mb-3" role="group">
-				<button type="submit" class="btn btn-sm {% if tutoria.activa %} btn-outline-primary {% else %} btn-outline-primary{% endif %}" name="selector_button" value="selector_tutoria_edit" title="guardar cambios">
+				<button type="submit" class="btn btn-sm btn-outline-primary" name="selector_button" value="selector_tutoria_edit" title="guardar cambios">
 					<i class="material-icons vertical-center">save</i>
 					Guardar
 				</button>
-
-				<a data-toggle="collapse" href="#tutoria_edit_{{hashids_encode(tutoria.id)}}" class="btn {% if tutoria.activa %} btn-outline-dark {% else %} btn-outline-mutted {% endif %} btn-sm link_without_pointer" aria-expanded="false" title="cerrar">
-				<i class="material-icons vertical-center {% if tutoria.activa %} color-gray-darken-1 {% endif %}">close</i></a>
-
+				<a data-toggle="collapse" href="#tutoria_edit_{{hashids_encode(tutoria.id)}}" class="btn btn-outline-dark btn-sm link_without_pointer" aria-expanded="false" title="cerrar">
+				<i class="material-icons vertical-center">close</i></a>
 			</div>
 		</div>
 	</div>
