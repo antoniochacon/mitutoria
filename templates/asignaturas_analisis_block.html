@@ -8,7 +8,7 @@
 	{% if grupo_tutorias%}
 		<div>
 			<div class="padding_contenido">
-				{{highcharts_admin_profesores_activos_evolucion(char_id='analisis_evolucion', y_axe_titulo='profesores', tooltip_text='participacion', color='#BA5FD3', df_data=stats['evolucion_tutorias_exito_grupo'], df_media=stats['evolucion_tutorias_exito_grupo_media'])}}
+				{{highcharts_admin_profesores_activos_evolucion(char_id='analisis_evolucion', color='#BA5FD3', df_data=stats['evolucion_tutorias_exito_grupo'], df_media=stats['evolucion_tutorias_exito_grupo_media'])}}
 			</div>
 		</div>
 	{% else %}

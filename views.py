@@ -1272,6 +1272,9 @@ def analisis_paper_html(params={}):
 
     params['current_tutoria_id'] = params_old.get('current_tutoria_id', 0)
     current_tutoria_id = params['current_tutoria_id']
+    params['tutoria_delete_link'] = params_old.get('tutoria_delete_link', False)
+    params['tutoria_re_enviar_link'] = params_old.get('tutoria_re_enviar_link', False)
+    params['tutoria_edit_link'] = params_old.get('tutoria_edit_link', False)
 
     grupo = grupo_by_tutoria_id(current_tutoria_id)
     tutoria = tutoria_by_id(current_tutoria_id)
@@ -1312,6 +1315,9 @@ def analisis_html(params={}):
     params['anchor'] = params_old.get('anchor', 'anchor_top')
     params['current_tutoria_id'] = params_old.get('current_tutoria_id', 0)
     current_tutoria_id = params['current_tutoria_id']
+    params['tutoria_delete_link'] = params_old.get('tutoria_delete_link', False)
+    params['tutoria_re_enviar_link'] = params_old.get('tutoria_re_enviar_link', False)
+    params['tutoria_edit_link'] = params_old.get('tutoria_edit_link', False)
     params['show_analisis_preguntas_splines'] = params_old.get('show_analisis_preguntas_splines', False)
 
     params['tutoria_delete_confirmar'] = params_old.get('tutoria_delete_confirmar', False)
@@ -1469,6 +1475,16 @@ def analisis_tutoria_edit_html(params={}):
             tutoria_to_move.activa = False
             session_sql.commit()
             flash_toast('Tutoria archivada', 'success')
+            params['tutoria_delete_link'] = False
+            return redirect(url_for('analisis_html', params=dic_encode(params)))
+
+        # XXX tutoria_delete_link_close
+        if request.form['selector_button'] == 'selector_tutoria_delete_link_close':
+            return redirect(url_for('analisis_html', params=dic_encode(params)))
+
+        # XXX tutoria_edit_link
+        if request.form['selector_button'] == 'selector_tutoria_edit_link':
+            params['tutoria_edit_link'] = True
             return redirect(url_for('analisis_html', params=dic_encode(params)))
 
         # XXX tutoria_edit
@@ -1903,29 +1919,24 @@ def informe_html(current_tutoria_asignatura_id, params={}):
         alumno = invitado_alumno(tutoria_id)
         settings = invitado_settings(tutoria_id)
         informe_sql = invitado_informe(tutoria.id, asignatura.id)
-        preguntas_orden_desc= session_sql.query(Pregunta).join(Association_Settings_Pregunta).filter(Association_Settings_Pregunta.settings_id == settings.id).join(Categoria).order_by(desc(Categoria.orden), desc(Pregunta.orden)).all()
-
 
         if not informe_sql:
             informe = Informe(tutoria_id=tutoria_id, asignatura_id=asignatura_id, comentario=request.form.get('comentario'))
             session_sql.add(informe)
-            for pregunta in preguntas_orden_desc:
+            for pregunta in invitado_preguntas(settings.id):
                 resultado = request.form.get('pregunta_' + str(hashids_encode(pregunta.id)))
                 if int(resultado) == -2:
-                    params['anchor'] = 'anchor_pregunta_'+ str(hashids_encode(pregunta.id))
                     params['pregunta_sin_respuesta'] = True
                 respuesta = Respuesta(informe_id=informe.id, pregunta_id=pregunta.id, resultado=resultado)
                 session_sql.add(respuesta)
         else:
             informe = informe_sql
             informe.comentario = comentario = request.form.get('comentario')
-            for pregunta in preguntas_orden_desc:
+            for pregunta in invitado_preguntas(settings.id):
                 respuesta = invitado_respuesta(informe.id, pregunta.id)
                 resultado = request.form.get('pregunta_' + str(hashids_encode(pregunta.id)))
                 if int(resultado) == -2:
-                    params['anchor'] = 'anchor_pregunta_'+ str(hashids_encode(pregunta.id))
                     params['pregunta_sin_respuesta'] = True
-                    print('pregunta_id: ' + str(pregunta.id))
                 if not respuesta:
                     respuesta_add = Respuesta(informe_id=informe.id, pregunta_id=pregunta.id, resultado=resultado)
                     session_sql.add(respuesta_add)
@@ -1962,7 +1973,6 @@ def informe_html(current_tutoria_asignatura_id, params={}):
                 params['fecha'] = tutoria.fecha
                 params['hora'] = tutoria.hora
                 params['asignatura'] = asignatura.asignatura
-                params['asignatura_id']= asignatura.id
                 params['docente'] = asignatura.nombre + ' ' + asignatura.apellidos
                 params['invitado'] = True
                 return redirect(url_for('informe_success_html', params=dic_encode(params)))
@@ -2006,7 +2016,6 @@ def informe_success_html(params={}):
     params['fecha'] = params_old.get('fecha', False)
     params['hora'] = params_old.get('hora', False)
     params['asignatura'] = params_old.get('asignatura', False)
-    params['asignatura_id']=params_old.get('asignatura_id', False)
     params['docente'] = params_old.get('docente', False)
     return render_template(
         'informe_success.html', params=params)

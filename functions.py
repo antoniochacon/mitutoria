@@ -389,7 +389,7 @@ def invitado_preguntas(settings_id):  # [Preguntas] by settings_id
 
 
 def invitado_preguntas_by_categoria_id(settings_id, categoria_id):  # [Preguntas] by settings_id
-    invitado_preguntas = session_sql.query(Pregunta).join(Association_Settings_Pregunta).filter(Association_Settings_Pregunta.settings_id == settings_id).join(Categoria).filter(Categoria.id == categoria_id).order_by(Pregunta.orden).all()
+    invitado_preguntas = session_sql.query(Pregunta).join(Association_Settings_Pregunta).filter(Association_Settings_Pregunta.settings_id == settings_id).join(Categoria).filter(Categoria.id == categoria_id).order_by('orden').all()
     return invitado_preguntas
 
 
