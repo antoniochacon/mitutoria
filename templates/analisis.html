@@ -208,8 +208,7 @@
 										{% endif %}
 										{{highcharts_asignatura(char_id=asignatura.asignatura, asignatura=asignatura, alumno=alumno, grupo=grupo, tutoria_id=tutoria.id, stats=stats, grupo_stats=grupo_stats, notas_pruebas_evaluables_alumno=notas_pruebas_evaluables_alumno(tutoria.id, asignatura.id), notas_pruebas_evaluables_grupo=notas_pruebas_evaluables_grupo(tutoria.id, asignatura.id), respuestas_tutoria_media_stats=respuestas_tutoria_media_stats)}}
 									</div>
-									{% if
-									informe_by_tutoria_id_by_asignatura_id(tutoria.id, asignatura.id).comentario %}
+									{% if informe_by_tutoria_id_by_asignatura_id(tutoria.id, asignatura.id).comentario %}
 										<div class="card-footer">
 											<div class="strong">Observaciones:</div>
 											<div class="line_break page_break_before_avoid">
