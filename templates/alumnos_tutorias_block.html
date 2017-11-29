@@ -16,7 +16,7 @@
 					{{tutoria.fecha.strftime('%d')}}
 					[{{tutoria.hora.strftime('%H:%M')}}]
 				</span>
-				<span class="badge float-right {% if tutoria.activa %} badge-secondary {% else %} badge-info{% endif %}" title="{{tutoria_incoming['porcentaje']}}% de los informes recibidos">
+				<span class="badge float-right mt-1 {% if tutoria.activa %} badge-secondary {% else %} badge-info{% endif %}" title="{{tutoria_incoming['porcentaje']}}% de los informes recibidos">
 					{{tutoria_incoming['porcentaje']}}%
 				</span>
 			</a>

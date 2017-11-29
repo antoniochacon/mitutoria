@@ -104,15 +104,14 @@
 				<div class="col-sm-12 bg-dark text-white pl-2 pt-2 pb-2 mb-3">
 					Pruebas evaluables
 				</div>
-					<div>
-						{% include 'informe_prueba_evaluable_add_block.html' %}
-					</div>
+				{% include 'informe_prueba_evaluable_add_block.html' %}
 				<div class="row">
 					{% for prueba_evaluable in invitado_pruebas_evaluables_sql %}
 						<div class="col-sm-12 {% if invitado_pruebas_evaluables_sql | count > 1 %} col-md-6 {% if invitado_pruebas_evaluables_sql | count > 2 %} col-lg-4 {% endif %} {% endif %} mb-4">
 								<div class="card border-gray z-depth-1-1-less mb-2">
 									<div class="card-header p-1">
 										<div class="input-group">
+											<span class="input-group-addon bg-light border border-0"><i class="material-icons vertical-center">edit</i></span>
 											<input
 												type="text"
 												class="form-control bg-light border border-0"

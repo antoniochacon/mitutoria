@@ -1891,7 +1891,7 @@ def informe_html(current_tutoria_asignatura_id, params={}):
         prueba_evaluable_delete_sql = session_sql.query(Prueba_Evaluable).filter(Prueba_Evaluable.id == current_prueba_evaluable_id).first()
         session_sql.delete(prueba_evaluable_delete_sql)
         session_sql.commit()
-        flash_toast('Prueba evaluable eliminada', 'warning')
+        flash_toast('Prueba evaluable eliminada', 'success')
         return redirect(url_for('informe_html', current_tutoria_asignatura_id=hashids_encode(current_tutoria_asignatura_id), params=dic_encode(params)))
 
     if request.method == 'POST':

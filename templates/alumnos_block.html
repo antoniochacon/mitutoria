@@ -15,7 +15,7 @@
 					{{alumno.nombre}}
 				</span>
 				{% if alumno_tutorias_true %}
-					<span class="badge badge-primary float-right" title="{{alumno_tutorias_true}} {{singular_plural('tutoria','tutorias', alumno_tutorias_true)}} {{singular_plural('solicitada','solicitadas', alumno_tutorias_true)}}">
+					<span class="badge badge-primary float-right mt-1" title="{{alumno_tutorias_true}} {{singular_plural('tutoria','tutorias', alumno_tutorias_true)}} {{singular_plural('solicitada','solicitadas', alumno_tutorias_true)}}">
 						{{alumno_tutorias_true}}
 						{{singular_plural('tutoria','tutorias', alumno_tutorias_true)}}
 					</span>
@@ -41,7 +41,7 @@
 			<a data-toggle="collapse" class="collapse_header_1" role="tab" data-parent="#alumno_set_{{hashids_encode_alumno_id}}" href="#tutorias_listado_{{hashids_encode_alumno_id}}" aria-expanded="false">
 				<i class="material-icons vertical-center">expand_more</i>Tutorias
 				{% if alumno_tutorias_all %}
-					<span class="badge badge-info float-right" title="{{alumno_tutorias_all}} {{singular_plural('tutoria','tutorias', alumno_tutorias_all)}} en total">
+					<span class="badge badge-info float-right mt-1" title="{{alumno_tutorias_all}} {{singular_plural('tutoria','tutorias', alumno_tutorias_all)}} en total">
 						{{alumno_tutorias_all}}
 					</span>
 				{% endif %}
