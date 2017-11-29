@@ -1908,6 +1908,7 @@ def informe_html(current_tutoria_asignatura_id, params={}):
         if not informe_sql:
             informe = Informe(tutoria_id=tutoria_id, asignatura_id=asignatura_id, comentario=request.form.get('comentario'))
             session_sql.add(informe)
+            session_sql.commit()
             for pregunta in preguntas_orden_desc:
                 resultado = request.form.get('pregunta_' + str(hashids_encode(pregunta.id)))
                 if int(resultado) == -2:
@@ -1924,7 +1925,6 @@ def informe_html(current_tutoria_asignatura_id, params={}):
                 if int(resultado) == -2:
                     params['anchor'] = 'anchor_pregunta_' + str(hashids_encode(pregunta.id))
                     params['pregunta_sin_respuesta'] = True
-                    print('pregunta_id: ' + str(pregunta.id))
                 if not respuesta:
                     respuesta_add = Respuesta(informe_id=informe.id, pregunta_id=pregunta.id, resultado=resultado)
                     session_sql.add(respuesta_add)
