@@ -1,4 +1,4 @@
-<div id="prueba_evaluable_add" class="collapse">
+<div id="prueba_evaluable_add" class="collapse {% if informe %}{% if not invitado_pruebas_evaluables(informe.id) %} show {% endif %}{% else %} show {% endif %}">
 
 	<div class="row">
 		<div class="col-sm-12">
