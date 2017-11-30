@@ -1931,6 +1931,7 @@ def informe_html(current_tutoria_asignatura_id, params={}):
         session_sql.commit()  # NOTE (NO BORRAR ESTA NOTA) este era el problema de no generar los graficos, era un problema de identado
 
         if request.form['selector_button'] in prueba_evaluable_dic.keys():
+            params['anchor'] = 'anchor_pru_eva_add'
             prueba_evaluable_delete_id=prueba_evaluable_dic[request.form['selector_button']]
             prueba_evaluable_delete_sql=session_sql.query(Prueba_Evaluable).filter(Prueba_Evaluable.id==prueba_evaluable_delete_id).first()
             session_sql.delete(prueba_evaluable_delete_sql)
