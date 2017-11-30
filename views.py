@@ -1928,6 +1928,7 @@ def informe_html(current_tutoria_asignatura_id, params={}):
             prueba_evaluable.nombre = request.form.get('prueba_evaluable_nombre_' + str(hashids_encode(prueba_evaluable.id)))
             prueba_evaluable.nota = request.form.get('prueba_evaluable_nota_' + str(hashids_encode(prueba_evaluable.id)))
             prueba_evaluable_dic['selector_prueba_evaluable_delete_'+str(prueba_evaluable.id)]=int(prueba_evaluable.id)
+
         session_sql.commit()  # NOTE (NO BORRAR ESTA NOTA) este era el problema de no generar los graficos, era un problema de identado
 
         if request.form['selector_button'] in prueba_evaluable_dic.keys():
@@ -1937,8 +1938,6 @@ def informe_html(current_tutoria_asignatura_id, params={}):
             session_sql.delete(prueba_evaluable_delete_sql)
             session_sql.commit()
             return redirect(url_for('informe_html', current_tutoria_asignatura_id=hashids_encode(current_tutoria_asignatura_id), params=dic_encode(params)))
-
-
 
         if request.form['selector_button'] == 'selector_prueba_evaluable_add':
             params['anchor'] = 'anchor_pru_eva_add'
