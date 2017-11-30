@@ -1882,17 +1882,8 @@ def informe_html(current_tutoria_asignatura_id, params={}):
     params['collapse_prueba_evaluable_add'] = params_old.get('collapse_prueba_evaluable_add', False)
     params['current_prueba_evaluable_id'] = params_old.get('current_prueba_evaluable_id', 0)
     current_prueba_evaluable_id = params['current_prueba_evaluable_id']
-    params['prueba_evaluable_delete'] = params_old.get('prueba_evaluable_delete', False)
     params['pregunta_sin_respuesta'] = params_old.get('pregunta_sin_respuesta', False)
-
-    if params['prueba_evaluable_delete']:
-        params['anchor'] = 'anchor_pru_eva_add'
-        params['prueba_evaluable_delete'] = False
-        prueba_evaluable_delete_sql = session_sql.query(Prueba_Evaluable).filter(Prueba_Evaluable.id == current_prueba_evaluable_id).first()
-        session_sql.delete(prueba_evaluable_delete_sql)
-        session_sql.commit()
-        flash_toast('Prueba evaluable eliminada', 'success')
-        return redirect(url_for('informe_html', current_tutoria_asignatura_id=hashids_encode(current_tutoria_asignatura_id), params=dic_encode(params)))
+    prueba_evaluable_dic={}
 
     if request.method == 'POST':
         tutoria_id = current_tutoria_asignatura.tutoria_id
@@ -1911,30 +1902,42 @@ def informe_html(current_tutoria_asignatura_id, params={}):
             session_sql.commit()
             for pregunta in preguntas_orden_desc:
                 resultado = request.form.get('pregunta_' + str(hashids_encode(pregunta.id)))
-                if int(resultado) == -2:
-                    params['anchor'] = 'anchor_pregunta_' + str(hashids_encode(pregunta.id))
-                    params['pregunta_sin_respuesta'] = True
-                respuesta = Respuesta(informe_id=informe.id, pregunta_id=pregunta.id, resultado=resultado)
-                session_sql.add(respuesta)
+                if resultado:
+                    if int(resultado) == -2:
+                        params['anchor'] = 'anchor_pregunta_' + str(hashids_encode(pregunta.id))
+                        params['pregunta_sin_respuesta'] = True
+                    respuesta = Respuesta(informe_id=informe.id, pregunta_id=pregunta.id, resultado=resultado)
+                    session_sql.add(respuesta)
         else:
             informe = informe_sql
             informe.comentario = comentario = request.form.get('comentario')
             for pregunta in preguntas_orden_desc:
                 respuesta = invitado_respuesta(informe.id, pregunta.id)
                 resultado = request.form.get('pregunta_' + str(hashids_encode(pregunta.id)))
-                if int(resultado) == -2:
-                    params['anchor'] = 'anchor_pregunta_' + str(hashids_encode(pregunta.id))
-                    params['pregunta_sin_respuesta'] = True
-                if not respuesta:
-                    respuesta_add = Respuesta(informe_id=informe.id, pregunta_id=pregunta.id, resultado=resultado)
-                    session_sql.add(respuesta_add)
-                else:
-                    respuesta.resultado = resultado
-        session_sql.commit()  # NOTE (NO BORRAR ESTA NOTA) este era el problema de no generar los graficos, era un problema de identado
+                if resultado:
+                    if int(resultado) == -2:
+                        params['anchor'] = 'anchor_pregunta_' + str(hashids_encode(pregunta.id))
+                        params['pregunta_sin_respuesta'] = True
+                    if not respuesta:
+                        respuesta_add = Respuesta(informe_id=informe.id, pregunta_id=pregunta.id, resultado=resultado)
+                        session_sql.add(respuesta_add)
+                    else:
+                        respuesta.resultado = resultado
 
         for prueba_evaluable in invitado_pruebas_evaluables(informe.id):
             prueba_evaluable.nombre = request.form.get('prueba_evaluable_nombre_' + str(hashids_encode(prueba_evaluable.id)))
             prueba_evaluable.nota = request.form.get('prueba_evaluable_nota_' + str(hashids_encode(prueba_evaluable.id)))
+            prueba_evaluable_dic['selector_prueba_evaluable_delete_'+str(prueba_evaluable.id)]=int(prueba_evaluable.id)
+        session_sql.commit()  # NOTE (NO BORRAR ESTA NOTA) este era el problema de no generar los graficos, era un problema de identado
+
+        if request.form['selector_button'] in prueba_evaluable_dic.keys():
+            prueba_evaluable_delete_id=prueba_evaluable_dic[request.form['selector_button']]
+            prueba_evaluable_delete_sql=session_sql.query(Prueba_Evaluable).filter(Prueba_Evaluable.id==prueba_evaluable_delete_id).first()
+            session_sql.delete(prueba_evaluable_delete_sql)
+            session_sql.commit()
+            return redirect(url_for('informe_html', current_tutoria_asignatura_id=hashids_encode(current_tutoria_asignatura_id), params=dic_encode(params)))
+
+
 
         if request.form['selector_button'] == 'selector_prueba_evaluable_add':
             params['anchor'] = 'anchor_pru_eva_add'
