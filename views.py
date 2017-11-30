@@ -1967,7 +1967,7 @@ def informe_html(current_tutoria_asignatura_id, params={}):
                 params['asignatura_id'] = asignatura.id
                 params['docente'] = asignatura.nombre + ' ' + asignatura.apellidos
                 params['invitado'] = True
-                params['participacion_porcentaje_recent'] = cociente_porcentual(asignatura_informes_respondidos_recent_count(asignatura.id), asignatura_informes_recent_count(asignatura.id))
+                params['participacion_porcentaje_recent'] = cociente_porcentual(asignatura_informes_respondidos_recent_count(asignatura.id), asignatura_informes_solicitados_recent_count(asignatura.id))
                 return redirect(url_for('informe_success_html', params=dic_encode(params)))
 
         return render_template(

@@ -1,3 +1,60 @@
+{% macro highcharts_participacion_recent(char_id, titulo, height, weight, tooltip_x, tooltip_y, color_1, color_2, participacion_recent) %}
+	<div id='{{char_id | safe}}' class='chart' style='height: {{height}}px; weight:{{weight}}px'></div>
+	<script>
+		Highcharts.chart('{{char_id | safe }}', {
+			title: {
+				text: '{{titulo | safe}}'
+			},
+			chart: {
+				type: 'pie',
+				margin: [0, 0, 0, 0]
+			},
+			plotOptions: {
+				pie: {
+					startAngle: 0,
+					endAngle: 360,
+					// borderWidth: 1,
+					dataLabels: {
+						enabled: null
+					}
+				},
+				series: {
+					states: {
+						hover: {
+							enabled: false
+						}
+					}
+				}
+			},
+			tooltip: {
+				enabled: false,
+			},
+			series: [
+				{
+					type: 'pie',
+					size: '100%',
+					innerSize: '92%',
+					name: 'Participacion',
+					animation: {
+						duration: 2000
+					},
+					data: [
+						{
+							name: 'recibidos',
+							y: {{participacion_recent}},
+							color: '{{color_1}}'
+						}, {
+							name: 'sin recibir',
+							y: {{100 - participacion_recent}},
+							color: '{{color_2}}',
+						}
+					],
+				}
+			]
+		});
+	</script>
+{% endmacro %}
+
 
 {% macro highcharts_cuestionario(char_id, color, grupo, tutoria_id, stats, grupo_stats=grupo_stats) %}
 	<div id="{{char_id | safe}}" class="chart" style="height: 300px"></div>
@@ -1121,88 +1178,4 @@
 			<div class="divider {{bg_color}} grueso line-height-1"></div>
 		{% endif %}
 	</h5>
-{% endmacro %}
-{% macro highcharts_tutoria_stats(char_id, height, weight, tooltip_x, tooltip_y, font_size, color_1, color_2, tutoria_stats) %}
-	<div id="{{char_id | safe}}" class="chart" style="height: {{height}}px; weight:{{weight}}px"></div>
-	<script>
-		Highcharts.chart("{{char_id | safe }}", {
-			title: {
-				text: null
-			},
-			chart: {
-				type: "pie",
-				margin: [0, 0, 0, 0]
-			},
-			plotOptions: {
-				pie: {
-					startAngle: 0,
-					endAngle: 360,
-					dataLabels: {
-						enabled: null
-					}
-				},
-				series: {
-					// animation: false,
-					states: {
-						hover: {
-							halo: {
-								size: 5
-							}
-						}
-					}
-				}
-			},
-			tooltip: {
-				borderWidth: 0,
-				backgroundColor: "none",
-				shadow: false,
-				formatter: function () {
-					var text = "";
-					text = "<span style=" font - size : {{font_size}}em;
-					font - weight : bold;
-					color : {{color_1}}">" + {{tutoria_stats[0]}} + "<span style=" font - size : 1.5e m;
-					font - weight : bold;
-					color : #999999 "> | <span style=" font - size : {{font_size}}em;
-					font - weight : bold;
-					color : #616161 ">" + {{tutoria_stats[1]}} + "</span>";
-					return text;
-				},
-				positioner: function () {
-					return {x: {{tooltip_x}}, y: {{tooltip_y}}};
-				}
-			},
-			series: [
-				{
-					type: "pie",
-					size: "100%",
-					innerSize: "50%",
-					name: "Informes",
-					borderWidth: 1,
-					animation: {
-						// duration: 3000
-					},
-					data: [
-						{
-							name: "recibidos",
-							y: {{tutoria_stats[0]}},
-							color: "{{color_1}}"
-						}, {
-							name: "sin recibir",
-							y: {{tutoria_stats[1] - tutoria_stats[0]}},
-							color: "{{color_2}}",
-							states: {
-								hover: {
-									brightness: -0.15
-								}
-							}
-						}
-					],
-					tooltip: {
-						valueDecimals: 0
-					},
-					fillOpacity: 0.25
-				}
-			]
-		});
-	</script>
 {% endmacro %}

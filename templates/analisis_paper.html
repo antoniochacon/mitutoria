@@ -29,6 +29,7 @@
 			{%from '_macro.html' import highcharts_cuestionario, highcharts_asignaturas, highcharts_asignatura%}
 			<!-- Each sheet element should have the class "sheet" -->
 			<!-- "padding-**mm" is optional: you can set 10, 15, 20 or 25 -->
+			<!-- HOJA 01 -->
 			<section class="sheet padding-15mm">
 				<h5 class="strong">
 					Análisis gráfico de la tutoría de
@@ -52,8 +53,9 @@
 				<h6>Analisis comparativo de asignaturas</h6>
 				{{highcharts_asignaturas(char_id='asignaturas', color_1='#ec407a',color_2='#f48fb1', grupo=grupo, tutoria_id=tutoria.id, stats=stats, grupo_stats=grupo_stats)}}
 			</section>
-			<!-- The second sheet -->
+			<!-- HOJA 02 -->
 			{% if stats['asignaturas_recibidas_lista'] %}
+			{#
 				<section class="sheet padding-15mm">
 					<h6>
 						Analisis detallado por asignatura
@@ -93,6 +95,7 @@
 						{% endfor %}
 					</div>
 				</section>
+				<!-- HOJA 03 -->
 				{% if stats['asignaturas_recibidas_lista'] | count > 8 %}
 					<section class="sheet padding-15mm">
 						<h6>
@@ -134,6 +137,8 @@
 						</div>
 					</section>
 				{% endif %}
+				#}
+				<!-- HOJA 04 -->
 				{% if comentarios_stats %}
 					<section class="sheet padding-15mm">
 						<h6>

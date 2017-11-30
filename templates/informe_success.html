@@ -1,6 +1,6 @@
 {% extends '_layout.html' %}
 {% block body %}
-	{%from '_macro.html' import nav_bar_top, titulo_1%}
+	{%from '_macro.html' import nav_bar_top, titulo_1, highcharts_participacion_recent%}
 	{{nav_bar_top(current_user=current_user)}}
 	<div class="container">
 		<div class="paper bg-white padding_contenido">
@@ -22,6 +22,8 @@
 			{{params['docente']}}
 			<div class="divider bg-mutted mt-2"></div>
 			<div class="text-center mt-3">
+				{{highcharts_participacion_recent(char_id='tutoria_stats', height='225', weight='225', tooltip_x='33', tooltip_y='45', color_1='#BA5FD3', color_2='#f5f5f5', participacion_recent=params['participacion_porcentaje_recent'])}}
+				<div class="circle_interior">
 				<div class="h4 text-secondary mb-0">
 					{% if params['participacion_porcentaje_recent'] < 50 %}
 						Ánimo
@@ -35,7 +37,8 @@
 				<span class="badge badge-secondary align-middle pl-2 pr-2">
 					<span class="h3 align-middle">{{params['participacion_porcentaje_recent']}}%</span>
 				</span>
-				<div class="divider bg-mutted mt-3 mb-3"></div>
+				</div>
+				<div class="divider bg-mutted mb-3"></div>
 				<a class="btn btn-outline-dark btn-sm" href="/informe/{{hashids_encode(params['current_tutoria_asignatura_id'])}}" role="button">Consultar o editar informe</a>
 			</div>
 			<br>

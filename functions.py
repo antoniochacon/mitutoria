@@ -12,12 +12,18 @@ import config_gmail_api
 # *****************************************************************
 
 
+def tutoria_stats(tutoria_id):
+    informes_recibidos_by_tutoria_id_count = session_sql.query(Informe).filter(Informe.tutoria_id == tutoria_id).count()
+    tutoria_asignaturas_count = session_sql.query(Association_Tutoria_Asignatura).filter_by(tutoria_id=tutoria_id).count()
+    return informes_recibidos_by_tutoria_id_count, tutoria_asignaturas_count
+
+
 def asignaturas_ordenadas(status):
     asignaturas_porcentaje_lista = []
     asignaturas_lista = asignaturas('asignatura', 'apellidos', 'nombre')
     if status != True:
         for asignatura in asignaturas_lista:
-            profesor_porcentaje = cociente_porcentual(asignatura_informes_respondidos_count(asignatura.id), asignatura_informes_count(asignatura.id))
+            profesor_porcentaje = cociente_porcentual(asignatura_informes_respondidos_count(asignatura.id), asignatura_informes_solicitados_count(asignatura.id))
             asignaturas_porcentaje_lista.append([profesor_porcentaje, asignatura])
 
         asignaturas_lista = sorted(asignaturas_porcentaje_lista, key=itemgetter(0), reverse=True)
@@ -838,7 +844,7 @@ def allowed_file(fichero_nombre):
            fichero_nombre.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 
-def asignatura_informes_count(asignatura_id):
+def asignatura_informes_solicitados_count(asignatura_id):
     return session_sql.query(Association_Tutoria_Asignatura).filter(Association_Tutoria_Asignatura.asignatura_id == asignatura_id).count()
 
 
@@ -846,7 +852,7 @@ def asignatura_informes_respondidos_count(asignatura_id):
     return session_sql.query(Informe).filter(Informe.asignatura_id == asignatura_id).count()
 
 
-def asignatura_informes_recent_count(asignatura_id):
+def asignatura_informes_solicitados_recent_count(asignatura_id):
     return session_sql.query(Association_Tutoria_Asignatura).filter(Association_Tutoria_Asignatura.asignatura_id == asignatura_id, Association_Tutoria_Asignatura.created_at > g.current_date - datetime.timedelta(days=settings_admin().periodo_recent)).count()
 
 
@@ -982,13 +988,6 @@ def re_send_email_tutoria_asincrono(alumno, tutoria, asignaturas_id_lista):
 
 
 # *****************************************************************
-
-
-def tutoria_stats(tutoria_id):
-    informes_recibidos_by_tutoria_id_count = session_sql.query(Informe).filter(Informe.tutoria_id == tutoria_id).count()
-    tutoria_asignaturas_count = session_sql.query(Association_Tutoria_Asignatura).filter_by(tutoria_id=tutoria_id).count()
-    return informes_recibidos_by_tutoria_id_count, tutoria_asignaturas_count
-
 
 def pregunta_delete(pregunta_delete_id):  # Delete pregunta
     pregunta_delete = session_sql.query(Pregunta).filter_by(id=pregunta_delete_id).first()
@@ -1133,7 +1132,10 @@ def tutoria_asignaturas(tutoria_id, order_by_1):  # [Asignaturas] de una tutoria
 
 def cociente_porcentual(a, b):
     if b != 0:
-        cociente_porcentual = int((a / b) * 100)
+        if b < a:
+            cociente_porcentual=100
+        else:
+            cociente_porcentual = int((a / b) * 100)
     else:
         cociente_porcentual = 0
     return cociente_porcentual
@@ -1362,4 +1364,4 @@ def cita_random():
 
 
 app.jinja_env.globals.update(settings=settings, cita_random=cita_random,  singular_plural=singular_plural, grupo_activo=grupo_activo, curso=curso, alumnos_not_sorted=alumnos_not_sorted, alumnos=alumnos, alumno_tutorias=alumno_tutorias, equal_str=equal_str, asignaturas=asignaturas, asignatura_alumnos=asignatura_alumnos, association_alumno_asignatura_check=association_alumno_asignatura_check,
-                             tutoria_asignaturas_count=tutoria_asignaturas_count, string_to_date=string_to_date, association_settings_pregunta_check=association_settings_pregunta_check, preguntas=preguntas, informe_preguntas=informe_preguntas, invitado_settings=invitado_settings, invitado_preguntas=invitado_preguntas, invitado_settings_by_id=invitado_settings_by_id, invitado_respuesta=invitado_respuesta, invitado_pruebas_evaluables=invitado_pruebas_evaluables, invitado_informe=invitado_informe, cociente_porcentual=cociente_porcentual, tutoria_asignaturas=tutoria_asignaturas, pregunta_active_default_check=pregunta_active_default_check, pregunta_visible_check=pregunta_visible_check, grupo_activo_check=grupo_activo_check, user_by_id=user_by_id, tutoria_stats=tutoria_stats, asignatura_informes_count=asignatura_informes_count, asignatura_informes_respondidos_count=asignatura_informes_respondidos_count, asignaturas_not_sorted=asignaturas_not_sorted, grupo_tutorias=grupo_tutorias, alumno_by_id=alumno_by_id, hashids_encode=hashids_encode, hashids_decode=hashids_decode, f_encode=f_encode, f_decode=f_decode, dic_encode_args=dic_encode_args, dic_try=dic_try, settings_by_id=settings_by_id, usuario_grupos=usuario_grupos, usuarios=usuarios, usuarios_mas_activos=usuarios_mas_activos, grupo_alumnos_count=grupo_alumnos_count, diferencial_check=diferencial_check, categoria_by_id=categoria_by_id, categorias=categorias, preguntas_by_categoria_id=preguntas_by_categoria_id, asignatura_by_id=asignatura_by_id, informe_by_tutoria_id_by_asignatura_id=informe_by_tutoria_id_by_asignatura_id, asignaturas_alumno_by_alumno_id=asignaturas_alumno_by_alumno_id, respuestas_pregunta_alumno_lista=respuestas_pregunta_alumno_lista, respuestas_asignatura_alumno_lista=respuestas_asignatura_alumno_lista, notas_pruebas_evaluables_grupo=notas_pruebas_evaluables_grupo, notas_pruebas_evaluables_alumno=notas_pruebas_evaluables_alumno, analisis_tutoria=analisis_tutoria, tutoria_incoming=tutoria_incoming, asignaturas_orden_switch=asignaturas_orden_switch, asignaturas_ordenadas=asignaturas_ordenadas, invitado_preguntas_by_categoria_id=invitado_preguntas_by_categoria_id)
+                             tutoria_asignaturas_count=tutoria_asignaturas_count, string_to_date=string_to_date, association_settings_pregunta_check=association_settings_pregunta_check, preguntas=preguntas, informe_preguntas=informe_preguntas, invitado_settings=invitado_settings, invitado_preguntas=invitado_preguntas, invitado_settings_by_id=invitado_settings_by_id, invitado_respuesta=invitado_respuesta, invitado_pruebas_evaluables=invitado_pruebas_evaluables, invitado_informe=invitado_informe, cociente_porcentual=cociente_porcentual, tutoria_asignaturas=tutoria_asignaturas, pregunta_active_default_check=pregunta_active_default_check, pregunta_visible_check=pregunta_visible_check, grupo_activo_check=grupo_activo_check, user_by_id=user_by_id, asignatura_informes_solicitados_count=asignatura_informes_solicitados_count, asignatura_informes_respondidos_count=asignatura_informes_respondidos_count, asignaturas_not_sorted=asignaturas_not_sorted, grupo_tutorias=grupo_tutorias, alumno_by_id=alumno_by_id, hashids_encode=hashids_encode, hashids_decode=hashids_decode, f_encode=f_encode, f_decode=f_decode, dic_encode_args=dic_encode_args, dic_try=dic_try, settings_by_id=settings_by_id, usuario_grupos=usuario_grupos, usuarios=usuarios, usuarios_mas_activos=usuarios_mas_activos, grupo_alumnos_count=grupo_alumnos_count, diferencial_check=diferencial_check, categoria_by_id=categoria_by_id, categorias=categorias, preguntas_by_categoria_id=preguntas_by_categoria_id, asignatura_by_id=asignatura_by_id, informe_by_tutoria_id_by_asignatura_id=informe_by_tutoria_id_by_asignatura_id, asignaturas_alumno_by_alumno_id=asignaturas_alumno_by_alumno_id, respuestas_pregunta_alumno_lista=respuestas_pregunta_alumno_lista, respuestas_asignatura_alumno_lista=respuestas_asignatura_alumno_lista, notas_pruebas_evaluables_grupo=notas_pruebas_evaluables_grupo, notas_pruebas_evaluables_alumno=notas_pruebas_evaluables_alumno, analisis_tutoria=analisis_tutoria, tutoria_incoming=tutoria_incoming, asignaturas_orden_switch=asignaturas_orden_switch, asignaturas_ordenadas=asignaturas_ordenadas, invitado_preguntas_by_categoria_id=invitado_preguntas_by_categoria_id, tutoria_stats=tutoria_stats)
