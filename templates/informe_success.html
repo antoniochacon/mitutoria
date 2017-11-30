@@ -5,24 +5,21 @@
 	<div class="container">
 		<div class="paper bg-white padding_contenido">
 			{{titulo_1(bg_color='bg-dark', titulo='Informe de '+ params['alumno'], subtitulo=params['grupo'])}}
-			<span class="text-mutted">Fecha de la tutoria:
-			</span>
+			<div class="small">
+			<span class="text-mutted">Tutoria:</span>
 			{{params['fecha'].strftime('%A') | capitalize}}
 			{{params['fecha'].strftime('%d')}}
-			de
-			{{params['fecha'].strftime('%B') | capitalize}}&nbsp; | &nbsp;{{params['hora'].strftime('%H:%M')}}
-			horas
+			{{params['fecha'].strftime('%b') | capitalize}} [{{params['hora'].strftime('%H:%M')}}]
 			<br>
-			<span class="text-mutted">Asignatura:
-			</span>
+			<span class="text-mutted">Asignatura:</span>
 			{{params['asignatura']}}
 			<br>
-			<span class="text-mutted">Docente:
-			</span>
+			<span class="text-mutted">Docente:</span>
 			{{params['docente']}}
+			</div>
 			<div class="divider bg-mutted mt-2"></div>
-			<div class="text-center mt-3">
-				{{highcharts_participacion_recent(char_id='tutoria_stats', height='225', weight='225', tooltip_x='33', tooltip_y='45', color_1='#BA5FD3', color_2='#f5f5f5', participacion_recent=params['participacion_porcentaje_recent'])}}
+			<div class="text-center mt-1 mb-1">
+				{{highcharts_participacion_recent(char_id='tutoria_stats', height='210', weight='210', tooltip_x='33', tooltip_y='45', color_1='#BA5FD3', color_2='#f5f5f5', participacion_recent=params['participacion_porcentaje_recent'])}}
 				<div class="circle_interior">
 				<div class="h4 text-secondary mb-0">
 					{% if params['participacion_porcentaje_recent'] < 50 %}
@@ -38,7 +35,7 @@
 					<span class="h3 align-middle">{{params['participacion_porcentaje_recent']}}%</span>
 				</span>
 				</div>
-				<div class="divider bg-mutted mb-3"></div>
+				<!-- <div class="divider bg-mutted mb-2"></div> -->
 				<a class="btn btn-outline-dark btn-sm" href="/informe/{{hashids_encode(params['current_tutoria_asignatura_id'])}}" role="button">Consultar o editar informe</a>
 			</div>
 			<br>
