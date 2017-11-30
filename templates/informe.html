@@ -5,22 +5,19 @@
 	<div class="paper bg-white padding_contenido">
 		{% if alumno and asignatura and tutoria %}
 			{{titulo_1(bg_color='bg-dark', titulo='Informe de '+alumno.apellidos+', '+alumno.nombre, subtitulo=grupo.nombre)}}
-			<span class="text-mutted">Fecha de la tutoria:
-			</span>
+			<div class="small">
+			<span class="text-mutted">Tutoria:</span>
 			{{tutoria.fecha.strftime('%A') | capitalize}}
 			{{tutoria.fecha.strftime('%d')}}
-			de
-			{{tutoria.fecha.strftime('%B') | capitalize}}&nbsp; | &nbsp;{{tutoria.hora.strftime('%H:%M')}}
-			horas
+			{{tutoria.fecha.strftime('%b') | capitalize}} [{{tutoria.hora.strftime('%H:%M')}}]
 			<br>
-			<span class="text-mutted">Asignatura:
-			</span>
+			<span class="text-mutted">Asignatura:</span>
 			{{asignatura.asignatura}}
 			<br>
-			<span class="text-mutted">Docente:
-			</span>
+			<span class="text-mutted">Docente:</span>
 			{{asignatura.nombre}}
 			{{asignatura.apellidos}}
+			</div>
 		{% else %}
 			<div class="text-warning text-center">
 				No disponible el informe de su materia.
@@ -28,9 +25,8 @@
 				Consulte con el tutor/a correspodiente.
 			</div>
 		{% endif %}
-		<br>
 		<div class="row">
-			<div class="col-sm-12 strong pt-3 pb-3">
+			<div class="col-sm-12 strong pt-2 pb-3">
 				Cuestionario
 				<div class="divider bg-dark"></div>
 			</div>
