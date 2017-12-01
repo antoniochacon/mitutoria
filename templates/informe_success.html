@@ -4,12 +4,15 @@
 	{{nav_bar_top(current_user=current_user)}}
 	<div class="container">
 		<div class="paper bg-white padding_contenido">
-			{{titulo_1(bg_color='bg-dark', titulo='Informe de '+ params['alumno'], subtitulo=params['grupo'])}}
+			{{titulo_1(bg_color='bg-dark', titulo='Informe de '+ params['alumno'])}}
 			<div class="small">
 			<span class="text-mutted">Tutoria:</span>
 			{{params['fecha'].strftime('%A') | capitalize}}
 			{{params['fecha'].strftime('%d')}}
 			{{params['fecha'].strftime('%b') | capitalize}} [{{params['hora'].strftime('%H:%M')}}]
+			<br>
+			<span class="text-mutted">Grupo:</span>
+			{{params['grupo']}}
 			<br>
 			<span class="text-mutted">Asignatura:</span>
 			{{params['asignatura']}}
@@ -35,10 +38,9 @@
 					<span class="h3 align-middle">{{params['participacion_porcentaje_recent']}}%</span>
 				</span>
 				</div>
-				<!-- <div class="divider bg-mutted mb-2"></div> -->
-				<a class="btn btn-outline-dark btn-sm" href="/informe/{{hashids_encode(params['current_tutoria_asignatura_id'])}}" role="button">Consultar o editar informe</a>
+				<a class="btn btn-outline-dark btn-sm mb-2" href="/informe/{{hashids_encode(params['current_tutoria_asignatura_id'])}}" role="button">Consultar o editar informe</a>
 			</div>
-			<br>
+			<div class="divider bg-mutted"></div>
 		</div>
 	</div>
 {% endblock %}
