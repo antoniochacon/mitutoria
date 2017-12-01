@@ -4,12 +4,15 @@
 	{{nav_bar_top(current_user=current_user)}}
 	<div class="paper bg-white padding_contenido">
 		{% if alumno and asignatura and tutoria %}
-			{{titulo_1(bg_color='bg-dark', titulo='Informe de '+alumno.apellidos+', '+alumno.nombre, subtitulo=grupo.nombre)}}
+			{{titulo_1(bg_color='bg-dark', titulo='Informe de '+alumno.apellidos+', '+alumno.nombre)}}
 			<div class="small">
 			<span class="text-mutted">Tutoria:</span>
 			{{tutoria.fecha.strftime('%A') | capitalize}}
 			{{tutoria.fecha.strftime('%d')}}
-			{{tutoria.fecha.strftime('%b') | capitalize}} [{{tutoria.hora.strftime('%H:%M')}}]
+			{{tutoria.fecha.strftime('%b') | capitalize}} [{{tutoria.hora.strftime('%H:%M')}} h]
+			<br>
+			<span class="text-mutted">Grupo:</span>
+			{{grupo.nombre}}
 			<br>
 			<span class="text-mutted">Asignatura:</span>
 			{{asignatura.asignatura}}
