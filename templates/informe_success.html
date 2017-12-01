@@ -34,8 +34,8 @@
 					{% endif %}
 				</div>
 				<div class="small text-secondary mb-2">participación reciente</div>
-				<span class="badge badge-secondary align-middle pl-2 pr-2">
-					<span class="h3 align-middle">{{params['participacion_porcentaje_recent']}}%</span>
+				<span class="contador_animado align-middle h3 pl-2 pr-2">
+					<span class="timer" data-to="{{params['participacion_porcentaje_recent']}}" data-speed="3000"></span>%
 				</span>
 				</div>
 				<a class="btn btn-outline-dark btn-sm mb-2" href="/informe/{{hashids_encode(params['current_tutoria_asignatura_id'])}}" role="button">Consultar o editar informe</a>
