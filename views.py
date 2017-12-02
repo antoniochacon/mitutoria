@@ -756,7 +756,6 @@ def alumnos_html(params={}):
             # NOTE check si hay asignaturas asignadas al grupo
             if not asignaturas_not_sorted():
                 params['collapse_asignatura_add'] = True
-                # params['from_url'] = 'from_tutoria_add' # FIXME lo aparco aqui de momento
                 flash_toast('Tutoria no solicitada' + Markup('<br>') + 'Debes asignar alguna asignatura', 'warning')
                 return redirect(url_for('asignaturas_html', params=dic_encode(params)))
 
@@ -765,15 +764,12 @@ def alumnos_html(params={}):
                 params['collapse_alumno_edit'] = True
                 params['alumno_edit_link'] = True
                 params['collapse_alumno_edit_asignaturas'] = True
-                # params['anchor'] = 'anchor_alu_asig_' + str(hashids_encode(current_alumno_id))
-                # params['from_url'] = 'from_tutoria_add'  # FIXME revisar si es necesario
                 flash_toast('Tutoria no solicitada' + Markup('<br>') + 'Debes asignar alguna asignatura', 'warning')
                 return redirect(url_for('alumnos_html', params=dic_encode(params)))
 
             # NOTE check si hay preguntas asignadas en el cuestionario
             if not informe_preguntas():
                 params['current_alumno_id'] = current_alumno_id
-                # params['from_url'] = 'from_tutoria_add' # FIXME lo aparco aqui de momento
                 flash_toast('Tutoria no solicitada' + Markup('<br>') + 'Debes asignar preguntas al cuestionario', 'warning')
                 return redirect(url_for('settings_cuestionario_html', params=dic_encode(params)))
 
@@ -797,7 +793,7 @@ def alumnos_html(params={}):
                         else:
                             session_sql.add(tutoria_add)
                             session_sql.commit()
-                            send_email_tutoria_asincrono(alumno, tutoria_add)  # NOTE anulado temporalemente para pruebas el envio de mails.
+                            send_email_tutoria_asincrono(alumno, tutoria_add)  # NOTE anular temporalemente para pruebas de envio de mails.
                             flash_toast('Enviando emails al equipo educativo de ' + Markup('<strong>') + alumno.nombre + Markup('</strong>'), 'info')
                             params['current_alumno_id'] = current_alumno_id
                             params['collapse_alumno'] = True
@@ -816,35 +812,16 @@ def alumnos_html(params={}):
                                 else:
                                     return redirect(url_for('oauth2callback'))
                                # NOTE agregar eventos a la agenda
-                               # XXXXXXXXXXXXXXXXXXXXXXX tutoria_add
-                                tutoria_add_form_hora = datetime.datetime.strptime(tutoria_add_form.hora.data, '%H:%M')
-                                calendar_datetime_utc_start = (datetime.datetime.strptime(tutoria_add_form.fecha.data, '%A-%d-%B-%Y') + datetime.timedelta(hours=tutoria_add_form_hora.hour) + datetime.timedelta(minutes=tutoria_add_form_hora.minute)).timestamp()
-                                calendar_datetime_utc_start_arrow = str(arrow.get(calendar_datetime_utc_start).replace(tzinfo='Europe/Madrid'))
+                                tutoria_hora = datetime.datetime.strptime(tutoria_add_form.hora.data, '%H:%M')
+                                tutoria_fecha = tutoria_add_form.fecha.data
+                                alumno_nombre = alumno.nombre
 
-                                calendar_datetime_utc_end = (datetime.datetime.strptime(tutoria_add_form.fecha.data, '%A-%d-%B-%Y') + datetime.timedelta(hours=tutoria_add_form_hora.hour) + datetime.timedelta(minutes=(tutoria_add_form_hora.minute + settings().tutoria_duracion))).timestamp()
+                                calendar_datetime_utc_start = (datetime.datetime.strptime(tutoria_fecha, '%A-%d-%B-%Y') + datetime.timedelta(hours=tutoria_hora.hour) + datetime.timedelta(minutes=tutoria_hora.minute)).timestamp()
+                                calendar_datetime_utc_start_arrow = str(arrow.get(calendar_datetime_utc_start).replace(tzinfo='Europe/Madrid'))
+                                calendar_datetime_utc_end = (datetime.datetime.strptime(tutoria_fecha, '%A-%d-%B-%Y') + datetime.timedelta(hours=tutoria_hora.hour) + datetime.timedelta(minutes=(tutoria_hora.minute + settings().tutoria_duracion))).timestamp()
                                 calendar_datetime_utc_end_arrow = str(arrow.get(calendar_datetime_utc_end).replace(tzinfo='Europe/Madrid'))
 
-                                event = {
-                                    'summary': 'Tutoria de ' + alumno.nombre,
-                                    'location': grupo_activo().centro,
-                                    'description': 'Evento creado por https://mitutoria.herokuapp.com/',
-                                    'colorId': '3',
-                                    'start': {
-                                        'dateTime': calendar_datetime_utc_start_arrow,
-                                        'timeZone': 'Europe/London',
-                                    },
-                                    'end': {
-                                        'dateTime': calendar_datetime_utc_end_arrow,
-                                        'timeZone': 'Europe/London',
-                                    }
-                                }
-                                event = service.events().insert(calendarId='primary', body=event).execute()
-                                session_sql.flush()
-                                session_sql.refresh(tutoria_add)
-                                tutoria_add_id = tutoria_add.id
-                                tutoria_sql = tutoria_by_id(tutoria_add_id)
-                                tutoria_sql.calendar_event_id = event['id']
-                                session_sql.commit()
+                                tutoria_calendar_add(service, tutoria_add, calendar_datetime_utc_start_arrow, calendar_datetime_utc_end_arrow, alumno_nombre)
                             return redirect(url_for('alumnos_html', params=dic_encode(params)))
                 else:
                     flash_wtforms(tutoria_add_form, flash_toast, 'warning')
@@ -1447,7 +1424,7 @@ def analisis_tutoria_edit_html(params={}):
             tutoria_to_move = tutoria_by_id(current_tutoria_id)
             tutoria_to_move.activa = False
             session_sql.commit()
-            tutoria_calendar_delete(event_id=tutoria_to_move.calendar_event_id)
+            # tutoria_calendar_delete(event_id=tutoria_to_move.calendar_event_id)
             flash_toast('Tutoria archivada', 'success')
             return redirect(url_for('analisis_html', params=dic_encode(params)))
 
@@ -1459,7 +1436,7 @@ def analisis_tutoria_edit_html(params={}):
             else:
                 tutoria_to_move.activa = True
                 session_sql.commit()
-                tutoria_calendar_undelete(event_id=tutoria_to_move.calendar_event_id)
+                # tutoria_calendar_undelete(event_id=tutoria_to_move.calendar_event_id)
                 flash_toast('Tutoria activada', 'success')
             return redirect(url_for('analisis_html', params=dic_encode(params)))
 
@@ -1883,7 +1860,7 @@ def informe_html(current_tutoria_asignatura_id, params={}):
     params['current_prueba_evaluable_id'] = params_old.get('current_prueba_evaluable_id', 0)
     current_prueba_evaluable_id = params['current_prueba_evaluable_id']
     params['pregunta_sin_respuesta'] = params_old.get('pregunta_sin_respuesta', False)
-    prueba_evaluable_dic={}
+    prueba_evaluable_dic = {}
 
     if request.method == 'POST':
         tutoria_id = current_tutoria_asignatura.tutoria_id
@@ -1927,14 +1904,14 @@ def informe_html(current_tutoria_asignatura_id, params={}):
         for prueba_evaluable in invitado_pruebas_evaluables(informe.id):
             prueba_evaluable.nombre = request.form.get('prueba_evaluable_nombre_' + str(hashids_encode(prueba_evaluable.id)))
             prueba_evaluable.nota = request.form.get('prueba_evaluable_nota_' + str(hashids_encode(prueba_evaluable.id)))
-            prueba_evaluable_dic['selector_prueba_evaluable_delete_'+str(prueba_evaluable.id)]=int(prueba_evaluable.id)
+            prueba_evaluable_dic['selector_prueba_evaluable_delete_' + str(prueba_evaluable.id)] = int(prueba_evaluable.id)
 
         session_sql.commit()  # NOTE (NO BORRAR ESTA NOTA) este era el problema de no generar los graficos, era un problema de identado
 
         if request.form['selector_button'] in prueba_evaluable_dic.keys():
             params['anchor'] = 'anchor_pru_eva_add'
-            prueba_evaluable_delete_id=prueba_evaluable_dic[request.form['selector_button']]
-            prueba_evaluable_delete_sql=session_sql.query(Prueba_Evaluable).filter(Prueba_Evaluable.id==prueba_evaluable_delete_id).first()
+            prueba_evaluable_delete_id = prueba_evaluable_dic[request.form['selector_button']]
+            prueba_evaluable_delete_sql = session_sql.query(Prueba_Evaluable).filter(Prueba_Evaluable.id == prueba_evaluable_delete_id).first()
             session_sql.delete(prueba_evaluable_delete_sql)
             session_sql.commit()
             return redirect(url_for('informe_html', current_tutoria_asignatura_id=hashids_encode(current_tutoria_asignatura_id), params=dic_encode(params)))

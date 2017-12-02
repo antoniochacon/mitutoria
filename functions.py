@@ -729,6 +729,31 @@ def tutoria_calendar_delete(event_id):
             pass
 
 
+def tutoria_calendar_add(service, tutoria_add, calendar_datetime_utc_start_arrow, calendar_datetime_utc_end_arrow, alumno_nombre):
+
+    event = {
+        'summary': 'Tutoria de ' + alumno_nombre,
+        'location': grupo_activo().centro,
+        'description': 'Evento creado por https://mitutoria.herokuapp.com/',
+        'colorId': '3',
+        'start': {
+            'dateTime': calendar_datetime_utc_start_arrow,
+            'timeZone': 'Europe/London',
+        },
+        'end': {
+            'dateTime': calendar_datetime_utc_end_arrow,
+            'timeZone': 'Europe/London',
+        }
+    }
+    event = service.events().insert(calendarId='primary', body=event).execute()
+    session_sql.flush()
+    session_sql.refresh(tutoria_add)
+    tutoria_add_id = tutoria_add.id
+    tutoria_sql = tutoria_by_id(tutoria_add_id)
+    tutoria_sql.calendar_event_id = event['id']
+    session_sql.commit()
+
+
 def tutoria_calendar_sync():
     if settings().calendar:
         if settings().oauth2_credentials:
@@ -741,21 +766,18 @@ def tutoria_calendar_sync():
                 return redirect(url_for('oauth2callback'))
         else:
             return redirect(url_for('oauth2callback'))
+
         for tutoria in grupo_tutorias(settings().grupo_activo_id, ''):
             try:
                 event = service.events().get(calendarId='primary', eventId=tutoria.calendar_event_id).execute()
                 calendar_datetime_utc_start_arrow = str(arrow.get(tutoria.fecha).shift(hours=tutoria.hora.hour, minutes=tutoria.hora.minute).replace(tzinfo='Europe/Madrid'))
                 # XXX checkea cambios a sincronizar
-                if event['status'] == 'confirmed':
-                    event_status = True
-                else:
-                    event_status = False
-                if event_status != tutoria.activa or event['start']['dateTime'] != calendar_datetime_utc_start_arrow:
-                    if event_status != tutoria.activa:
-                        tutoria.activa = event_status
-                    if event['start']['dateTime'] != calendar_datetime_utc_start_arrow:
+                if event['status'] != 'confirmed' or event['start']['dateTime'] != calendar_datetime_utc_start_arrow:
+                    if event['status'] == 'confirmed' and event['start']['dateTime'] != calendar_datetime_utc_start_arrow:
                         tutoria.fecha = arrow.get(event['start']['dateTime']).date()
                         tutoria.hora = arrow.get(event['start']['dateTime']).time()
+                    else:
+                        session_sql.delete(tutoria)
                     flash_toast('Tutorias y Agenda sincronizadas', 'success')
                     session_sql.commit()
             except:
@@ -1133,7 +1155,7 @@ def tutoria_asignaturas(tutoria_id, order_by_1):  # [Asignaturas] de una tutoria
 def cociente_porcentual(a, b):
     if b != 0:
         if b < a:
-            cociente_porcentual=100
+            cociente_porcentual = 100
         else:
             cociente_porcentual = int((a / b) * 100)
     else:
