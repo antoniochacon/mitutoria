@@ -6,7 +6,7 @@
 		{{titulo_1(bg_color='bg-dark', titulo='Opciones')}}
 		{{nav_tabs(tab_active='Cuestionario', dic={'Cuestionario':'settings_cuestionario', 'Grupos':'settings_grupos', 'Opciones':'settings_opciones'})}}
 		<div class="padding_3">
-			<div class="pb-2">
+			<div class="pb-1">
 				Selecciona las preguntas que desee que formen su cuestionario.
 			</div>
 			<form action="settings_cuestionario" method="POST">
@@ -15,10 +15,10 @@
 						{% with %}
 						{% set preguntas_by_categoria_id = preguntas_by_categoria_id(True, categoria.id) %}
 						{% if preguntas_by_categoria_id %}
-							<div class="bg-gray text-white pl-3 pt-2 pb-2">
+							<div class="bg-dark text-white pl-3 pt-2 pb-2 mt-3">
 								{{categoria.enunciado}}
 							</div>
-							<div class="divider bg-dark"></div>
+							<!-- <div class="divider bg-dark"></div> -->
 							{% for pregunta in preguntas_by_categoria_id %}
 								{% with %}
 								{% set association_settings_pregunta_check = association_settings_pregunta_check(settings().id, pregunta.id) %}
@@ -33,7 +33,7 @@
 						{% endif %}
 						{% endwith %}
 					{% endfor %}
-					<button role="button" type="submit" name="selector_button" value="selector_settings_cuestionario" class="btn btn-outline-primary btn-sm" title="guardar cambios">
+					<button role="button" type="submit" name="selector_button" value="selector_settings_cuestionario" class="btn btn-outline-primary btn-sm mt-3" title="guardar cambios">
 						<i class="material-icons vertical-center">save</i>
 						guardar
 					</button>
