@@ -1,15 +1,13 @@
 {% with %}
 {% set grupo_activo = grupo_activo() %}
 {% set grupo_tutorias = grupo_tutorias(grupo_activo.id, '') %}
-<a data-toggle="collapse" class="collpase-header-secondary" role="tab" data-parent="#parent_analisis" href="#analisis_evolucion" aria-expanded="false">
+<a data-toggle="collapse" class="collpase-header-secondary" href="#analisis_evolucion" aria-expanded="false">
 	Evolución participación equipo educativo.
 </a>
-<div id="analisis_evolucion" role="tabpanel" class="collapse {% if grupo_tutorias%} show_XXX {% endif %}">
+<div id="analisis_evolucion" class="collapse">
 	{% if grupo_tutorias%}
-		<div>
-			<div class="padding_contenido">
-				{{highcharts_admin_profesores_activos_evolucion(char_id='analisis_evolucion', y_axe_titulo='profesores', tooltip_text='participacion', color='#BA5FD3', df_data=stats['evolucion_tutorias_exito_grupo'], df_media=stats['evolucion_tutorias_exito_grupo_media'])}}
-			</div>
+		<div class="padding_contenido">
+			{{highcharts_admin_profesores_activos_evolucion(char_id='analisis_evolucion_participacion', y_axe_titulo='profesores', tooltip_text='participacion', color='#BA5FD3', df_data=stats['evolucion_tutorias_exito_grupo'], df_media=stats['evolucion_tutorias_exito_grupo_media'])}}
 		</div>
 	{% else %}
 		<div class="padding_contenido text-mutted">

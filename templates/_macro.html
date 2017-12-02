@@ -897,6 +897,7 @@
 		});
 	</script>
 {% endmacro %}
+
 {% macro highcharts_admin_profesores_activos_evolucion(char_id, color, y_axe_titulo, tooltip_text, df_data, df_media) %}
 	<div id="{{char_id | safe}}" class="chart" style="height: 300px"></div>
 	<script>
@@ -1009,6 +1010,7 @@
 		});
 	</script>
 {% endmacro %}
+
 {% macro highcharts_admin_cuestionario_actividad(char_id, color, df_data) %}
 	<div id="{{char_id | safe}}" class="chart" style="height: 300px"></div>
 	<script>
@@ -1026,7 +1028,6 @@
 					width: 2,
 					color: "#26c6da"
 				},
-				// labels: { 	format: "{value}" },
 				type: "category",
 				title: {
 					text: "cuestionario"
