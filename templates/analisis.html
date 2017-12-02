@@ -167,15 +167,12 @@
 					Analisis detallado por asignatura
 				</a>
 				<div class="collapse" id="analisis_detallado_asignaturas">
-					<div class="row">
-						<div class="padding_3">
-							<div class="padding_contenido">
-								{% if not stats['asignaturas_recibidas_lista'] %}
-									<span class="text-info">No se han recibido ningun informe para esta tutoría.</span>
-								{% endif %}
-							</div>
-						</div>
+					<div class="padding_contenido">
+						{% if not stats['asignaturas_recibidas_lista'] %}
+							<div class="text-mutted small">No se han recibido informes para esta tutoría.</div>
+						{% endif %}
 					</div>
+
 					<div class="row">
 						{% for asignatura in stats['asignaturas_recibidas_lista'] %}
 							<div class="col-sm-12 col-md-4 col-lg-4 pb-4 grafico_asignatura">
