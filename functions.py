@@ -738,11 +738,11 @@ def tutoria_calendar_add(service, tutoria_add, calendar_datetime_utc_start_arrow
         'colorId': '3',
         'start': {
             'dateTime': calendar_datetime_utc_start_arrow,
-            'timeZone': 'Europe/London',
+            # 'timeZone': 'Europe/London',
         },
         'end': {
             'dateTime': calendar_datetime_utc_end_arrow,
-            'timeZone': 'Europe/London',
+            # 'timeZone': 'Europe/London',
         }
     }
     event = service.events().insert(calendarId='primary', body=event).execute()
@@ -767,21 +767,43 @@ def tutoria_calendar_sync():
         else:
             return redirect(url_for('oauth2callback'))
 
-        for tutoria in grupo_tutorias(settings().grupo_activo_id, ''):
-            try:
-                event = service.events().get(calendarId='primary', eventId=tutoria.calendar_event_id).execute()
-                calendar_datetime_utc_start_arrow = str(arrow.get(tutoria.fecha).shift(hours=tutoria.hora.hour, minutes=tutoria.hora.minute).replace(tzinfo='Europe/Madrid'))
-                # XXX checkea cambios a sincronizar
-                if event['status'] != 'confirmed' or event['start']['dateTime'] != calendar_datetime_utc_start_arrow:
-                    if event['status'] == 'confirmed' and event['start']['dateTime'] != calendar_datetime_utc_start_arrow:
-                        tutoria.fecha = arrow.get(event['start']['dateTime']).date()
-                        tutoria.hora = arrow.get(event['start']['dateTime']).time()
-                    else:
+        if settings().calendar_sincronizado:
+            for tutoria in grupo_tutorias(settings().grupo_activo_id, ''):
+                try:
+                    event = service.events().get(calendarId='primary', eventId=tutoria.calendar_event_id).execute()
+                    # calendar_datetime_utc_start_arrow = str(arrow.get(tutoria.fecha).shift(hours=tutoria.hora.hour, minutes=tutoria.hora.minute).replace(tzinfo='Europe/Madrid'))
+                    calendar_datetime_utc_start_arrow = str(arrow.get(tutoria.fecha).shift(hours=tutoria.hora.hour, minutes=tutoria.hora.minute))
+
+                    # XXX checkea cambios a sincronizar
+                    if event['status'] == 'confirmed': # Sincroniza fechas de eventos en la agenda
+                        if event['start']['dateTime'] != calendar_datetime_utc_start_arrow:
+                            tutoria.fecha = arrow.get(event['start']['dateTime']).date()
+                            tutoria.hora = arrow.get(event['start']['dateTime']).time()
+                            flash_toast('Google Calendar sincronizado', 'success')
+                    else: # Elimina tutoria si ha sido eliminado desde la agenda
                         session_sql.delete(tutoria)
-                    flash_toast('Tutorias y Agenda sincronizadas', 'success')
-                    session_sql.commit()
-            except:
-                pass
+                        flash_toast('Google Calendar sincronizado', 'success')
+                except:  # Elimina tutoria si no esta en la agenda
+                    session_sql.delete(tutoria)
+                    flash_toast('Google Calendar sincronizado', 'success')
+        else:
+            for tutoria in grupo_tutorias(settings().grupo_activo_id, ''):
+                # NOTE agregar eventos a la agenda
+                tutoria_hora = datetime.datetime.strptime(tutoria.hora, '%H:%M')
+                print(tutoria_hora)
+                tutoria_fecha = tutoria.fecha
+                alumno_nombre = alumno.nombre
+
+                calendar_datetime_utc_start = (datetime.datetime.strptime(tutoria_fecha, '%A-%d-%B-%Y') + datetime.timedelta(hours=tutoria_hora.hour) + datetime.timedelta(minutes=tutoria_hora.minute)).timestamp()
+                calendar_datetime_utc_start_arrow = str(arrow.get(calendar_datetime_utc_start).replace(tzinfo='Europe/Madrid'))
+                calendar_datetime_utc_end = (datetime.datetime.strptime(tutoria_fecha, '%A-%d-%B-%Y') + datetime.timedelta(hours=tutoria_hora.hour) + datetime.timedelta(minutes=(tutoria_hora.minute + settings().tutoria_duracion))).timestamp()
+                calendar_datetime_utc_end_arrow = str(arrow.get(calendar_datetime_utc_end).replace(tzinfo='Europe/Madrid'))
+
+                tutoria_calendar_add(service, tutoria, calendar_datetime_utc_start_arrow, calendar_datetime_utc_end_arrow, alumno_nombre)
+                flash_toast('Google Calendar sincronizado', 'success')
+
+        # flash_toast('Google Calendar sincronizado', 'success')
+        session_sql.commit()
 
 
 def settings_admin():

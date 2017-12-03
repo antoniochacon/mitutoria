@@ -41,6 +41,7 @@ class Settings (Base):
     role = Column(String(80), default='user')
     ban = Column(Boolean, default=False)
     calendar = Column(Boolean, default=False)
+    calendar_sincronizado = Column(Boolean, default=False)
     tutoria_duracion = Column(Integer, default=20)
     tutoria_timeout = Column(Boolean, default=True)
     show_asignaturas_analisis = Column(Boolean, default=True)

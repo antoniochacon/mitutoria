@@ -793,7 +793,7 @@ def alumnos_html(params={}):
                         else:
                             session_sql.add(tutoria_add)
                             session_sql.commit()
-                            send_email_tutoria_asincrono(alumno, tutoria_add)  # NOTE anular temporalemente para pruebas de envio de mails.
+                            # send_email_tutoria_asincrono(alumno, tutoria_add)  # NOTE anular temporalemente para pruebas de envio de mails.
                             flash_toast('Enviando emails al equipo educativo de ' + Markup('<strong>') + alumno.nombre + Markup('</strong>'), 'info')
                             params['current_alumno_id'] = current_alumno_id
                             params['collapse_alumno'] = True
@@ -817,9 +817,11 @@ def alumnos_html(params={}):
                                 alumno_nombre = alumno.nombre
 
                                 calendar_datetime_utc_start = (datetime.datetime.strptime(tutoria_fecha, '%A-%d-%B-%Y') + datetime.timedelta(hours=tutoria_hora.hour) + datetime.timedelta(minutes=tutoria_hora.minute)).timestamp()
-                                calendar_datetime_utc_start_arrow = str(arrow.get(calendar_datetime_utc_start).replace(tzinfo='Europe/Madrid'))
+                                # calendar_datetime_utc_start_arrow = str(arrow.get(calendar_datetime_utc_start).replace(tzinfo='Europe/Madrid'))
+                                calendar_datetime_utc_start_arrow = str(arrow.get(calendar_datetime_utc_start))
                                 calendar_datetime_utc_end = (datetime.datetime.strptime(tutoria_fecha, '%A-%d-%B-%Y') + datetime.timedelta(hours=tutoria_hora.hour) + datetime.timedelta(minutes=(tutoria_hora.minute + settings().tutoria_duracion))).timestamp()
-                                calendar_datetime_utc_end_arrow = str(arrow.get(calendar_datetime_utc_end).replace(tzinfo='Europe/Madrid'))
+                                # calendar_datetime_utc_end_arrow = str(arrow.get(calendar_datetime_utc_end).replace(tzinfo='Europe/Madrid'))
+                                calendar_datetime_utc_end_arrow = str(arrow.get(calendar_datetime_utc_end))
 
                                 tutoria_calendar_add(service, tutoria_add, calendar_datetime_utc_start_arrow, calendar_datetime_utc_end_arrow, alumno_nombre)
                             return redirect(url_for('alumnos_html', params=dic_encode(params)))
@@ -1529,6 +1531,7 @@ def settings_opciones_html(params={}):
             settings_tutoria_duracion = request.form.get('settings_tutoria_duracion')
             settings_diferencial = request.form.get('settings_diferencial')
             settings_show_analisis_detalles = request.form.get('settings_show_analisis_detalles')
+            # settings_calendar_sincronizado = False
 
             if not settings_edit_tutoria_timeout:
                 settings_edit_tutoria_timeout = False
@@ -1536,6 +1539,7 @@ def settings_opciones_html(params={}):
                 settings_show_asignaturas_analisis = False
             if not settings_edit_calendar:
                 settings_edit_calendar = False
+
             if not settings_show_analisis_detalles:
                 settings_show_analisis_detalles = False
 
@@ -1544,6 +1548,7 @@ def settings_opciones_html(params={}):
             settings().tutoria_duracion = settings_tutoria_duracion
             settings().diferencial = settings_diferencial
             settings().calendar = settings_edit_calendar
+            # settings().calendar_sincronizado = settings_calendar_sincronizado
             settings().show_analisis_detalles = settings_show_analisis_detalles
 
             flash_toast('Configuracion actualizada', 'success')
