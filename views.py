@@ -1494,7 +1494,7 @@ def analisis_tutoria_edit_html(params={}):
                     tutoria_sql.activa = True
                     session_sql.commit()
                     flash_toast('Tutoria actualizada', 'success')
-                    flash_toast('Goole Calendar sincronizado', 'success')
+                    flash_toast('Google Calendar sincronizado', 'success')
                     return redirect(url_for('analisis_html', params=dic_encode(params)))
             else:
                 flash_wtforms(tutoria_edit_form, flash_toast, 'warning')
