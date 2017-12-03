@@ -817,11 +817,11 @@ def alumnos_html(params={}):
                                 alumno_nombre = alumno.nombre
 
                                 calendar_datetime_utc_start = (datetime.datetime.strptime(tutoria_fecha, '%A-%d-%B-%Y') + datetime.timedelta(hours=tutoria_hora.hour) + datetime.timedelta(minutes=tutoria_hora.minute)).timestamp()
-                                # calendar_datetime_utc_start_arrow = str(arrow.get(calendar_datetime_utc_start).replace(tzinfo='Europe/Madrid'))
-                                calendar_datetime_utc_start_arrow = str(arrow.get(calendar_datetime_utc_start))
+                                calendar_datetime_utc_start_arrow = str(arrow.get(calendar_datetime_utc_start).replace(tzinfo='Europe/Madrid'))
+                                # calendar_datetime_utc_start_arrow = str(arrow.get(calendar_datetime_utc_start))
                                 calendar_datetime_utc_end = (datetime.datetime.strptime(tutoria_fecha, '%A-%d-%B-%Y') + datetime.timedelta(hours=tutoria_hora.hour) + datetime.timedelta(minutes=(tutoria_hora.minute + settings().tutoria_duracion))).timestamp()
-                                # calendar_datetime_utc_end_arrow = str(arrow.get(calendar_datetime_utc_end).replace(tzinfo='Europe/Madrid'))
-                                calendar_datetime_utc_end_arrow = str(arrow.get(calendar_datetime_utc_end))
+                                calendar_datetime_utc_end_arrow = str(arrow.get(calendar_datetime_utc_end).replace(tzinfo='Europe/Madrid'))
+                                # calendar_datetime_utc_end_arrow = str(arrow.get(calendar_datetime_utc_end))
 
                                 tutoria_calendar_add(service, tutoria_add, calendar_datetime_utc_start_arrow, calendar_datetime_utc_end_arrow, alumno_nombre)
                             return redirect(url_for('alumnos_html', params=dic_encode(params)))
