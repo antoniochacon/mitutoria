@@ -793,7 +793,7 @@ def alumnos_html(params={}):
                         else:
                             session_sql.add(tutoria_add)
                             session_sql.commit()
-                            # send_email_tutoria_asincrono(alumno, tutoria_add)  # NOTE anular temporalemente para pruebas de envio de mails.
+                            send_email_tutoria_asincrono(alumno, tutoria_add)  # NOTE anular temporalemente para pruebas de envio de mails.
                             flash_toast('Enviando emails al equipo educativo de ' + Markup('<strong>') + alumno.nombre + Markup('</strong>'), 'info')
                             params['current_alumno_id'] = current_alumno_id
                             params['collapse_alumno'] = True
@@ -1424,7 +1424,6 @@ def analisis_tutoria_edit_html(params={}):
             tutoria_to_move = tutoria_by_id(current_tutoria_id)
             tutoria_to_move.activa = False
             session_sql.commit()
-            # tutoria_calendar_delete(event_id=tutoria_to_move.calendar_event_id)
             flash_toast('Tutoria archivada', 'success')
             return redirect(url_for('analisis_html', params=dic_encode(params)))
 
@@ -1436,7 +1435,6 @@ def analisis_tutoria_edit_html(params={}):
             else:
                 tutoria_to_move.activa = True
                 session_sql.commit()
-                # tutoria_calendar_undelete(event_id=tutoria_to_move.calendar_event_id)
                 flash_toast('Tutoria activada', 'success')
             return redirect(url_for('analisis_html', params=dic_encode(params)))
 
@@ -1473,7 +1471,7 @@ def analisis_tutoria_edit_html(params={}):
                         else:
                             return redirect(url_for('oauth2callback'))
 
-                    # tutoria_edit
+                    # Actualiza google calendar
                     tutoria_edit_form_hora = datetime.datetime.strptime(tutoria_edit_form.hora.data, '%H:%M')
                     calendar_datetime_utc_start = (datetime.datetime.strptime(tutoria_edit_form.fecha.data, '%A-%d-%B-%Y') + datetime.timedelta(hours=(tutoria_edit_form_hora.hour)) + datetime.timedelta(minutes=tutoria_edit_form_hora.minute)).timestamp()
                     calendar_datetime_utc_start_arrow = str(arrow.get(calendar_datetime_utc_start).replace(tzinfo='Europe/Madrid'))
@@ -1496,6 +1494,7 @@ def analisis_tutoria_edit_html(params={}):
                     tutoria_sql.activa = True
                     session_sql.commit()
                     flash_toast('Tutoria actualizada', 'success')
+                    flash_toast('Goole Calendar sincronizado', 'success')
                     return redirect(url_for('analisis_html', params=dic_encode(params)))
             else:
                 flash_wtforms(tutoria_edit_form, flash_toast, 'warning')
@@ -2401,8 +2400,6 @@ def login_html(params={}):
                         return redirect(url_for('login_validacion_email_html', params=dic_encode(params)))
                     else:
                         pass
-                    # NOTE sincronizar con google calendar (ahora esta en /alumnos)
-                    # tutoria_calendar_sync()
                     flash_toast('Bienvenido ' + Markup('<strong>') + login_form.username.data + Markup('</strong>'), 'success')
                     if not settings.grupo_activo_id:
                         params['login'] = True  # NOTE Para activar como activo el primer grupo creado y redirect a alumnos (por facilidad para un nuevo usuario)
