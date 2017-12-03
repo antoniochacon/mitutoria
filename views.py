@@ -1529,7 +1529,6 @@ def settings_opciones_html(params={}):
             settings_tutoria_duracion = request.form.get('settings_tutoria_duracion')
             settings_diferencial = request.form.get('settings_diferencial')
             settings_show_analisis_detalles = request.form.get('settings_show_analisis_detalles')
-            # settings_calendar_sincronizado = False
 
             if not settings_edit_tutoria_timeout:
                 settings_edit_tutoria_timeout = False
@@ -1537,7 +1536,8 @@ def settings_opciones_html(params={}):
                 settings_show_asignaturas_analisis = False
             if not settings_edit_calendar:
                 settings_edit_calendar = False
-
+                settings().calendar_sincronizado = False
+                settings().oauth2_credentials = ''
             if not settings_show_analisis_detalles:
                 settings_show_analisis_detalles = False
 
@@ -1546,7 +1546,6 @@ def settings_opciones_html(params={}):
             settings().tutoria_duracion = settings_tutoria_duracion
             settings().diferencial = settings_diferencial
             settings().calendar = settings_edit_calendar
-            # settings().calendar_sincronizado = settings_calendar_sincronizado
             settings().show_analisis_detalles = settings_show_analisis_detalles
 
             flash_toast('Configuracion actualizada', 'success')
