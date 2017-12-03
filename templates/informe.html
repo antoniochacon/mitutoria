@@ -55,7 +55,7 @@
 					{% for pregunta in invitado_preguntas_by_categoria_id_sql %}
 					{% with %}
 					{% set hashids_encode_pregunta_id = hashids_encode(pregunta.id)%}
-						<div class="col-sm-12 mb-3">
+						<div class="col-sm-12 col-md-6 mb-3">
 						<a id="anchor_pregunta_{{hashids_encode_pregunta_id}}"></a>
 						<div class="card border-gray z-depth-1-1-less mb-2">
 							<div class="card-header p-2">{{pregunta.enunciado}}</div>
