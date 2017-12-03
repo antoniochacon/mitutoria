@@ -1304,10 +1304,11 @@ def analisis_html(params={}):
         params['tutoria_delete_confirmar'] = False
         tutoria_delete_sql = tutoria_by_id(current_tutoria_id)
         alumno_sql = alumno_by_id(tutoria_delete_sql.alumno_id)
-        flash_toast('Tutoria de ' + Markup('<strong>') + alumno_sql.nombre + Markup('</strong>') + ' eliminada', 'success')
         tutoria_calendar_delete(event_id=tutoria_delete_sql.calendar_event_id)
         session_sql.delete(tutoria_delete_sql)
         session_sql.commit()
+        flash_toast('Tutoria de ' + Markup('<strong>') + alumno_sql.nombre + Markup('</strong>') + ' eliminada', 'success')
+        flash_toast('Google Calendar sincronizado', 'success')
         return redirect(url_for('alumnos_html'))
 
     stats = analisis_tutoria(current_tutoria_id)
