@@ -738,12 +738,10 @@ def tutoria_calendar_add(service, tutoria_add, calendar_datetime_utc_start_arrow
         'colorId': '3',
         'start': {
             'dateTime': calendar_datetime_utc_start_arrow,
-            # 'timeZone': 'Europe/London',
             'timeZone': 'Europe/Madrid',
         },
         'end': {
             'dateTime': calendar_datetime_utc_end_arrow,
-            # 'timeZone': 'Europe/London',
             'timeZone': 'Europe/Madrid',
         }
     }
@@ -774,7 +772,6 @@ def tutoria_calendar_sync():
                 try:
                     event = service.events().get(calendarId='primary', eventId=tutoria.calendar_event_id).execute()
                     calendar_datetime_utc_start_arrow = str(arrow.get(tutoria.fecha).shift(hours=tutoria.hora.hour, minutes=tutoria.hora.minute).replace(tzinfo='Europe/Madrid'))
-                    # calendar_datetime_utc_start_arrow = str(arrow.get(tutoria.fecha).shift(hours=tutoria.hora.hour, minutes=tutoria.hora.minute))
 
                     # XXX checkea cambios a sincronizar
                     if event['status'] == 'confirmed': # Sincroniza fechas de eventos en la agenda
