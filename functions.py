@@ -739,10 +739,12 @@ def tutoria_calendar_add(service, tutoria_add, calendar_datetime_utc_start_arrow
         'start': {
             'dateTime': calendar_datetime_utc_start_arrow,
             # 'timeZone': 'Europe/London',
+            'timeZone': 'Europe/Madrid',
         },
         'end': {
             'dateTime': calendar_datetime_utc_end_arrow,
             # 'timeZone': 'Europe/London',
+            'timeZone': 'Europe/Madrid',
         }
     }
     event = service.events().insert(calendarId='primary', body=event).execute()
