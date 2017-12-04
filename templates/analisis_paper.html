@@ -27,6 +27,7 @@
 		<!-- Set also "landscape" if you need -->
 		<body class="A4 landscape">
 			{%from '_macro.html' import highcharts_cuestionario, highcharts_asignaturas, highcharts_asignatura%}
+			{% set settings_sql = settings_sql %}
 			<!-- Each sheet element should have the class "sheet" -->
 			<!-- "padding-**mm" is optional: you can set 10, 15, 20 or 25 -->
 			<!-- HOJA 01 -->
@@ -75,7 +76,7 @@
 										</div>
 									</div>
 									<div class="card-body">
-										{% if diferencial_check(settings().diferencial, respuestas_pregunta_alumno_lista(tutoria.id, asignatura.id, stats['asignaturas_recibidas_lista'], stats['preguntas_con_respuesta_lista'])['respuestas_pregunta_media'], notas_pruebas_evaluables_alumno(
+										{% if diferencial_check(settings_sql.diferencial, respuestas_pregunta_alumno_lista(tutoria.id, asignatura.id, stats['asignaturas_recibidas_lista'], stats['preguntas_con_respuesta_lista'])['respuestas_pregunta_media'], notas_pruebas_evaluables_alumno(
 											tutoria.id,
 											asignatura.id
 										)['notas_alumno_media']) %}
@@ -83,7 +84,7 @@
 												resultados !
 											</span>
 										{% endif %}
-										{% if diferencial_check(settings().diferencial, respuestas_tutoria_media_stats, respuestas_pregunta_alumno_lista(tutoria.id, asignatura.id, stats['asignaturas_recibidas_lista'], stats['preguntas_con_respuesta_lista'])['respuestas_pregunta_media']) %}
+										{% if diferencial_check(settings_sql.diferencial, respuestas_tutoria_media_stats, respuestas_pregunta_alumno_lista(tutoria.id, asignatura.id, stats['asignaturas_recibidas_lista'], stats['preguntas_con_respuesta_lista'])['respuestas_pregunta_media']) %}
 											<span class="badge badge-primary float-right mr-1">
 												actitud !
 											</span>
@@ -116,7 +117,7 @@
 											</div>
 										</div>
 										<div class="card-body">
-											{% if diferencial_check(settings().diferencial, respuestas_pregunta_alumno_lista(tutoria.id, asignatura.id, stats['asignaturas_recibidas_lista'], stats['preguntas_con_respuesta_lista'])['respuestas_pregunta_media'], notas_pruebas_evaluables_alumno(
+											{% if diferencial_check(settings_sql.diferencial, respuestas_pregunta_alumno_lista(tutoria.id, asignatura.id, stats['asignaturas_recibidas_lista'], stats['preguntas_con_respuesta_lista'])['respuestas_pregunta_media'], notas_pruebas_evaluables_alumno(
 												tutoria.id,
 												asignatura.id
 											)['notas_alumno_media']) %}
@@ -124,7 +125,7 @@
 													resultados !
 												</span>
 											{% endif %}
-											{% if diferencial_check(settings().diferencial, respuestas_tutoria_media_stats, respuestas_pregunta_alumno_lista(tutoria.id, asignatura.id, stats['asignaturas_recibidas_lista'], stats['preguntas_con_respuesta_lista'])['respuestas_pregunta_media']) %}
+											{% if diferencial_check(settings_sql.diferencial, respuestas_tutoria_media_stats, respuestas_pregunta_alumno_lista(tutoria.id, asignatura.id, stats['asignaturas_recibidas_lista'], stats['preguntas_con_respuesta_lista'])['respuestas_pregunta_media']) %}
 												<span class="badge badge-primary float-right mr-1">
 													actitud !
 												</span>
