@@ -72,9 +72,6 @@
 										<i class="material-icons vertical-center">file_upload</i>
 									</button>
 								{% endif %}
-								<a data-toggle="collapse" href="#tutoria_delete_confirmar_{{hashids_encode(tutoria.id)}}" class="btn {% if tutoria.activa %} btn-outline-dark{% else %} btn-outline-mutted{% endif %} btn-sm link_without_pointer" aria-expanded="false" title="eliminar tutoria">
-								<i class="material-icons vertical-center">delete</i></a>
-								{% include 'analisis_tutoria_delete_confirmar_block.html' %}
 								<span
 									onclick="printPage('/analisis_paper/{{dic_encode_args({'current_tutoria_id': tutoria.id})}}');"
 									role="button"
@@ -82,6 +79,9 @@
 									title="imprimir">
 									<i class="material-icons vertical-center {% if tutoria.activa %} color-gray-darken-1 {% endif %}">print</i>
 								</span>
+								<a data-toggle="collapse" href="#tutoria_delete_confirmar_{{hashids_encode(tutoria.id)}}" class="btn {% if tutoria.activa %} btn-outline-dark{% else %} btn-outline-mutted{% endif %} btn-sm link_without_pointer" aria-expanded="false" title="eliminar tutoria">
+								<i class="material-icons vertical-center">delete</i></a>
+								{% include 'analisis_tutoria_delete_confirmar_block.html' %}
 							</div>
 
 						{# NOTE badge #}
