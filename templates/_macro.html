@@ -54,8 +54,9 @@
 	</script>
 {% endmacro %}
 
-
 {% macro highcharts_cuestionario(char_id, color, grupo, tutoria_id, stats, grupo_stats=grupo_stats) %}
+{% with %}
+{% set settings_sql = settings() %}
 	<div id="{{char_id | safe}}" class="chart" style="height: 300px"></div>
 	<script>
 		var label_color=jQuery.parseJSON({{stats['label_color_dic'] | safe}});
@@ -67,7 +68,7 @@
 				panKey: "shift",
 			},
 			plotOptions:{
-				{% if not settings().show_analisis_asignaturas_splines or stats['analisis_paper']%}
+				{% if not settings_sql.show_analisis_asignaturas_splines or stats['analisis_paper']%}
 				series: {
 					borderWidth: 0,
 					states: {
@@ -94,7 +95,7 @@
 				formatter: function () {
 					var text = "";
 					if (this.series.type == "column") {
-						text = this.x + " | Media: " + Highcharts.numberFormat(this.total, 1) {% if settings().show_analisis_asignaturas_splines%} + "<br>" + this.series.name + ": " + Highcharts.numberFormat(this.y * {{stats['asignaturas_recibidas_lista'] | count}}, 1){% endif %};
+						text = this.x + " | Media: " + Highcharts.numberFormat(this.total, 1) {% if settings_sql.show_analisis_asignaturas_splines%} + "<br>" + this.series.name + ": " + Highcharts.numberFormat(this.y * {{stats['asignaturas_recibidas_lista'] | count}}, 1){% endif %};
 					} else {
 						text = this.x + "<br>" + this.series.name + ": " + Highcharts.numberFormat(this.y, 1);
 					}
@@ -165,7 +166,7 @@
 						lineColor: null
 					}
 				},
-				{% if settings().show_analisis_asignaturas_splines and not stats['analisis_paper'] %}
+				{% if settings_sql.show_analisis_asignaturas_splines and not stats['analisis_paper'] %}
 				{% for asignatura in stats['asignaturas_recibidas_lista'] %}
 				 {
 						type: "spline",
@@ -189,9 +190,12 @@
 			]
 		});
 	</script>
+{% endwith %}
 {% endmacro %}
 
 {% macro highcharts_asignaturas(char_id, color_1, color_2, grupo, tutoria_id, stats, grupo_stats) %}
+{% with %}
+{% set settings_sql = settings() %}
 	<div id="{{char_id | safe}}" class="chart" style="height: 300px"></div>
 	<script>
 		Highcharts.chart("{{char_id | safe }}", {
@@ -210,7 +214,7 @@
 					var cuestiones_lista = {{stats['preguntas_con_respuesta_lista_enunciado_ticker'] | safe}};
 					var cuestion = this.series.name;
 					if (this.series.type == "column" && cuestiones_lista.indexOf(cuestion) >= 0) {
-						text = this.x + " | Cuestionario | Media: " + Highcharts.numberFormat(this.total, 1) {% if settings().show_analisis_preguntas_splines%} + "<br>" + this.series.name + ": " + Highcharts.numberFormat(this.y * {{stats['preguntas_con_respuesta_lista'] | count}}, 1) {% endif %};
+						text = this.x + " | Cuestionario | Media: " + Highcharts.numberFormat(this.total, 1) {% if settings_sql.show_analisis_preguntas_splines%} + "<br>" + this.series.name + ": " + Highcharts.numberFormat(this.y * {{stats['preguntas_con_respuesta_lista'] | count}}, 1) {% endif %};
 					} else if (this.series.type == "column") {
 						text = this.x + " | Notas | Media: " + Highcharts.numberFormat(this.y, 1) + "<br>" + this.series.name;
 					} else {
@@ -246,7 +250,7 @@
 				}
 			},
 			plotOptions: {
-				{% if not settings().show_analisis_preguntas_splines or stats['analisis_paper']%}
+				{% if not settings_sql.show_analisis_preguntas_splines or stats['analisis_paper']%}
 				series: {
 					borderWidth: 0,
 					states: {
@@ -326,7 +330,7 @@
 						lineColor: null
 					}
 				}
-				{% if settings().show_analisis_preguntas_splines and not stats['analisis_paper']%}
+				{% if settings_sql.show_analisis_preguntas_splines and not stats['analisis_paper']%}
 				{% for pregunta in stats['preguntas_con_respuesta_lista'] %}, {
 						type: "spline",
 						name: "{{pregunta.enunciado_ticker}}",
@@ -349,11 +353,11 @@
 			]
 		});
 	</script>
+{% endwith %}
 {% endmacro %}
 
 
 {% macro highcharts_asignatura(char_id, asignatura, alumno, grupo, tutoria_id, stats, grupo_stats, notas_pruebas_evaluables_alumno, notas_pruebas_evaluables_grupo, respuestas_tutoria_media_stats) %}
-
 	<div id="{{char_id | safe}}" class="chart" style="height: 200px; weight:300px;"></div>
 	<script>
 		Highcharts.chart("{{char_id | safe }}", {
@@ -776,27 +780,6 @@
 	</script>
 {% endmacro %}
 
-{% macro nav_tabs_admin(tab_active, params_args) %}
-	{{nav_tabs(tab_active, params_args=params_args, dic={'Cuestiones':'admin_cuestionario', 'Citas':'admin_citas', 'Users':'admin_usuarios', 'Stats':'admin_estadisticas'})}}
-{% endmacro %}
-{% macro nav_tabs(tab_active, params_args, dic) %}
-	<div class="pb-2">
-		<ul class="nav nav-tabs">
-			{% for tab_key in dic.keys() %}
-				<li class="nav-items">
-					<a class="nav-link {% if tab_key==tab_active %} active {% endif %}" href="/{{dic[tab_key]}}{% if params_args %}/{{params_args}}{% endif %}">{{tab_key}}</a>
-				</li>
-			{% endfor %}
-		</ul>
-	</div>
-{% endmacro %}
-{% macro nav_bar_top(link_active, params, current_user) %}
-	{% if current_user.is_authenticated %}
-		{{nav_bar(link_active, params=params, dic={'ayuda':'wellcome', 'alumnos':'alumnos', 'asignaturas':'asignaturas', 'opciones':'settings_cuestionario', 'admin':'admin_estadisticas', 'logout':'logout'})}}
-	{% else %}
-		{{nav_bar(link_active, params=params,  dic = {'inciar sesión': 'login','nueva cuenta': 'user_add'})}}
-	{% endif %}
-{% endmacro %}
 
 {% macro highcharts_salud_tutores_equipo_educativo(char_id, color, df_data_1, df_data_2, stats) %}
 	<div id="{{char_id | safe}}" class="chart" style="height: 200px"></div>
@@ -1165,7 +1148,32 @@
 	</h5>
 {% endmacro %}
 
+
 {# NOTE NO se puede usar settings() en lugar de settings() porque esta barra se puede acceder como invitado #}
+
+{% macro nav_tabs_admin(tab_active, params_args) %}
+	{{nav_tabs(tab_active, params_args=params_args, dic={'Cuestiones':'admin_cuestionario', 'Citas':'admin_citas', 'Users':'admin_usuarios', 'Stats':'admin_estadisticas'})}}
+{% endmacro %}
+{% macro nav_tabs(tab_active, params_args, dic) %}
+	<div class="pb-2">
+		<ul class="nav nav-tabs">
+			{% for tab_key in dic.keys() %}
+				<li class="nav-items">
+					<a class="nav-link {% if tab_key==tab_active %} active {% endif %}" href="/{{dic[tab_key]}}{% if params_args %}/{{params_args}}{% endif %}">{{tab_key}}</a>
+				</li>
+			{% endfor %}
+		</ul>
+	</div>
+{% endmacro %}
+{% macro nav_bar_top(link_active, params, current_user) %}
+	{% if current_user.is_authenticated %}
+		{{nav_bar(link_active, params=params, dic={'ayuda':'wellcome', 'alumnos':'alumnos', 'asignaturas':'asignaturas', 'opciones':'settings_cuestionario', 'admin':'admin_estadisticas', 'logout':'logout'})}}
+	{% else %}
+		{{nav_bar(link_active, params=params,  dic = {'inciar sesión': 'login','nueva cuenta': 'user_add'})}}
+	{% endif %}
+{% endmacro %}
+
+
 {% macro nav_bar(link_active, params, params_args, dic, current_user) %}
 	<nav class="navbar fixed-top navbar-expand-md navbar-dark bg-primary z-depth-1-less d-print-none">
 		<button class="navbar-toggler" role="button" type="button" data-toggle="collapse" data-target="#navbar" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
