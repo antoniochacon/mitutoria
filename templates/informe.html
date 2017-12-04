@@ -55,7 +55,11 @@
 					{% for pregunta in invitado_preguntas_by_categoria_id_sql %}
 					{% with %}
 					{% set hashids_encode_pregunta_id = hashids_encode(pregunta.id)%}
-						<div class="col-sm-12 col-md-6 mb-3">
+					<div class="col-sm-12 col-md-6 mb-3">
+					{#
+					{% set invitado_preguntas_by_categoria_id_sql_count = invitado_preguntas_by_categoria_id_sql | count%}
+						<div class="col-sm-12 {% if invitado_preguntas_by_categoria_id_sql_count > 1 %} col-md-6 {% if invitado_preguntas_by_categoria_id_sql_count > 2 %} col-lg-4 {% endif %} {% endif %} mb-4">
+					#}
 						<a id="anchor_pregunta_{{hashids_encode_pregunta_id}}"></a>
 						<div class="card border-gray z-depth-1-1-less mb-2">
 							<div class="card-header p-2">{{pregunta.enunciado}}</div>
@@ -110,7 +114,7 @@
 				<div class="row">
 					{% for prueba_evaluable in invitado_pruebas_evaluables_sql | reverse %}
 					{% with %}
-					{% set invitado_pruebas_evaluables_sql_count =invitado_pruebas_evaluables_sql | count %}
+					{% set invitado_pruebas_evaluables_sql_count = invitado_pruebas_evaluables_sql | count %}
 						<div class="col-sm-12 {% if invitado_pruebas_evaluables_sql_count > 1 %} col-md-6 {% if invitado_pruebas_evaluables_sql_count > 2 %} col-lg-4 {% endif %} {% endif %} mb-4">
 								<div class="card border-gray z-depth-1-1-less mb-2">
 									<div class="card-header p-1">
@@ -118,7 +122,7 @@
 											<span class="input-group-addon bg-light border border-0"><i class="material-icons vertical-center">edit</i></span>
 											<input
 												type="text"
-												class="form-control bg-light border border-0"
+												class="form-control bg-light border border-0 pl-0"
 												name="prueba_evaluable_nombre_{{hashids_encode(prueba_evaluable.id)}}"
 												value="{% if prueba_evaluable.nombre %}{{prueba_evaluable.nombre}}{% endif %}"
 												placeholder="Prueba evaluable {{1 + invitado_pruebas_evaluables_sql_count - loop.index}}">
