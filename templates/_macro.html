@@ -1,4 +1,4 @@
-{% set settings_sql = settings() %}
+
 {% macro highcharts_participacion_recent(char_id, titulo, height, weight, tooltip_x, tooltip_y, color_1, color_2, participacion_recent) %}
 	<div id='{{char_id | safe}}' class='chart' style='height: {{height}}px; weight:{{weight}}px'></div>
 	<script>
@@ -68,7 +68,7 @@
 				panKey: "shift",
 			},
 			plotOptions:{
-				{% if not settings_sql.show_analisis_asignaturas_splines or stats['analisis_paper']%}
+				{% if not settings().show_analisis_asignaturas_splines or stats['analisis_paper']%}
 				series: {
 					borderWidth: 0,
 					states: {
@@ -95,7 +95,7 @@
 				formatter: function () {
 					var text = "";
 					if (this.series.type == "column") {
-						text = this.x + " | Media: " + Highcharts.numberFormat(this.total, 1) {% if settings_sql.show_analisis_asignaturas_splines%} + "<br>" + this.series.name + ": " + Highcharts.numberFormat(this.y * {{stats['asignaturas_recibidas_lista'] | count}}, 1){% endif %};
+						text = this.x + " | Media: " + Highcharts.numberFormat(this.total, 1) {% if settings().show_analisis_asignaturas_splines%} + "<br>" + this.series.name + ": " + Highcharts.numberFormat(this.y * {{stats['asignaturas_recibidas_lista'] | count}}, 1){% endif %};
 					} else {
 						text = this.x + "<br>" + this.series.name + ": " + Highcharts.numberFormat(this.y, 1);
 					}
@@ -166,7 +166,7 @@
 						lineColor: null
 					}
 				},
-				{% if settings_sql.show_analisis_asignaturas_splines and not stats['analisis_paper'] %}
+				{% if settings().show_analisis_asignaturas_splines and not stats['analisis_paper'] %}
 				{% for asignatura in stats['asignaturas_recibidas_lista'] %}
 				 {
 						type: "spline",
@@ -211,7 +211,7 @@
 					var cuestiones_lista = {{stats['preguntas_con_respuesta_lista_enunciado_ticker'] | safe}};
 					var cuestion = this.series.name;
 					if (this.series.type == "column" && cuestiones_lista.indexOf(cuestion) >= 0) {
-						text = this.x + " | Cuestionario | Media: " + Highcharts.numberFormat(this.total, 1) {% if settings_sql.show_analisis_preguntas_splines%} + "<br>" + this.series.name + ": " + Highcharts.numberFormat(this.y * {{stats['preguntas_con_respuesta_lista'] | count}}, 1) {% endif %};
+						text = this.x + " | Cuestionario | Media: " + Highcharts.numberFormat(this.total, 1) {% if settings().show_analisis_preguntas_splines%} + "<br>" + this.series.name + ": " + Highcharts.numberFormat(this.y * {{stats['preguntas_con_respuesta_lista'] | count}}, 1) {% endif %};
 					} else if (this.series.type == "column") {
 						text = this.x + " | Notas | Media: " + Highcharts.numberFormat(this.y, 1) + "<br>" + this.series.name;
 					} else {
@@ -247,7 +247,7 @@
 				}
 			},
 			plotOptions: {
-				{% if not settings_sql.show_analisis_preguntas_splines or stats['analisis_paper']%}
+				{% if not settings().show_analisis_preguntas_splines or stats['analisis_paper']%}
 				series: {
 					borderWidth: 0,
 					states: {
@@ -327,7 +327,7 @@
 						lineColor: null
 					}
 				}
-				{% if settings_sql.show_analisis_preguntas_splines and not stats['analisis_paper']%}
+				{% if settings().show_analisis_preguntas_splines and not stats['analisis_paper']%}
 				{% for pregunta in stats['preguntas_con_respuesta_lista'] %}, {
 						type: "spline",
 						name: "{{pregunta.enunciado_ticker}}",
@@ -811,15 +811,15 @@
 						<li class="nav-item {% if link_key==link_active %} active strong {% endif %}">
 							<a class="nav-link" href="/{{dic[link_key]}}{% if params_args %}/{{params_args}}{% endif %}">{{link_key}}
 								{% if link_key == 'logout' %}
-									[{{user_by_id(settings_sql.id).username}}]
+									[{{user_by_id(settings().id).username}}]
 								{% endif %}
 							</a>
 						</li>
-					{% elif link_key == 'ayuda' and settings_sql.visit_number <= 50 %}
+					{% elif link_key == 'ayuda' and settings().visit_number <= 50 %}
 						<li class="nav-item {% if link_key==link_active %} active strong {% endif %}">
 							<a class="nav-link" href="/{{dic[link_key]}}{% if params_args %}/{{params_args}}{% endif %}">{{link_key}}</a>
 						</li>
-					{% elif link_key == 'admin' and settings_sql.role == 'admin' %}
+					{% elif link_key == 'admin' and settings().role == 'admin' %}
 						<li class="nav-item {% if link_key==link_active %} active strong {% endif %}">
 							<a class="nav-link" href="/{{dic[link_key]}}{% if params_args %}/{{params_args}}{% endif %}">{{link_key}}</a>
 						</li>
@@ -1183,9 +1183,9 @@
 			<h6 class="{{text_color}}">
 				{% if url == "asignaturas" %}
 				<form action="/asignaturas" method="POST">
-					<input type="hidden" name="asignaturas_orden" value="{{settings_sql.asignaturas_orden}}">
+					<input type="hidden" name="asignaturas_orden" value="{{settings().asignaturas_orden}}">
 						<button role="button" type="submit" name="selector_button" value="asignaturas_orden_switch" class="btn btn-outline-dark btn-sm float-right" title="reordenar">
-							<i class="material-icons vertical-center">wrap_text</i>{{ asignaturas_orden_switch(settings_sql.asignaturas_orden)}}
+							<i class="material-icons vertical-center">wrap_text</i>{{ asignaturas_orden_switch(settings().asignaturas_orden)}}
 						</button>
 				</form>
 				{% endif %}
