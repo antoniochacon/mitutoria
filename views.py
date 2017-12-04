@@ -1921,8 +1921,11 @@ def informe_html(current_tutoria_asignatura_id, params={}):
         if request.form['selector_button'] == 'selector_prueba_evaluable_add':
             params['anchor'] = 'anchor_pru_eva_add'
             params['collapse_prueba_evaluable_add'] = True
-            prueba_evaluable_nombre = request.form.get('prueba_evaluable_nombre')
-            prueba_evaluable_nota = request.form.get('prueba_evaluable_nota')
+            # En caso de volver a crear las notas con los nombres ya puestos
+            # prueba_evaluable_nombre = request.form.get('prueba_evaluable_nombre')
+            # prueba_evaluable_nota = request.form.get('prueba_evaluable_nota')
+            prueba_evaluable_nombre = ''
+            prueba_evaluable_nota = 0
             prueba_evaluable_add = Prueba_Evaluable(informe_id=informe.id, nombre=prueba_evaluable_nombre, nota=prueba_evaluable_nota)
             session_sql.add(prueba_evaluable_add)
             session_sql.commit()

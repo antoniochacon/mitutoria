@@ -753,56 +753,57 @@ def tutoria_calendar_add(service, tutoria_add, calendar_datetime_utc_start_arrow
     tutoria_sql.calendar_event_id = event['id']
     session_sql.commit()
 
-
 def tutoria_calendar_sync():
-    if settings().calendar:
-        if settings().oauth2_credentials:
-            try:
-                credentials = oauth2client.client.Credentials.new_from_json(settings().oauth2_credentials)
-                http = httplib2.Http()
-                http = credentials.authorize(http)
-                service = discovery.build('calendar', 'v3', http=http)
-            except:
-                return redirect(url_for('oauth2callback'))
-        else:
-            return redirect(url_for('oauth2callback'))
-
-        if settings().calendar_sincronizado:
-            for tutoria in grupo_tutorias(settings().grupo_activo_id, ''):
+    if settings():
+        settings_sql = settings()
+        if settings_sql.calendar:
+            if settings_sql.oauth2_credentials:
                 try:
-                    event = service.events().get(calendarId='primary', eventId=tutoria.calendar_event_id).execute()
-                    calendar_datetime_utc_start_arrow = str(arrow.get(tutoria.fecha).shift(hours=tutoria.hora.hour, minutes=tutoria.hora.minute).replace(tzinfo='Europe/Madrid'))
-                    # XXX checkea cambios a sincronizar
-                    if event['status'] == 'confirmed':  # Sincroniza fechas de eventos del calendario
-                        if event['start']['dateTime'] != calendar_datetime_utc_start_arrow:
-                            tutoria.fecha = arrow.get(event['start']['dateTime']).date()
-                            tutoria.hora = arrow.get(event['start']['dateTime']).time()
+                    credentials = oauth2client.client.Credentials.new_from_json(settings_sql.oauth2_credentials)
+                    http = httplib2.Http()
+                    http = credentials.authorize(http)
+                    service = discovery.build('calendar', 'v3', http=http)
+                except:
+                    return redirect(url_for('oauth2callback'))
+            else:
+                return redirect(url_for('oauth2callback'))
+
+            if settings_sql.calendar_sincronizado:
+                for tutoria in grupo_tutorias(settings_sql.grupo_activo_id, ''):
+                    try:
+                        event = service.events().get(calendarId='primary', eventId=tutoria.calendar_event_id).execute()
+                        calendar_datetime_utc_start_arrow = str(arrow.get(tutoria.fecha).shift(hours=tutoria.hora.hour, minutes=tutoria.hora.minute).replace(tzinfo='Europe/Madrid'))
+                        # XXX checkea cambios a sincronizar
+                        if event['status'] == 'confirmed':  # Sincroniza fechas de eventos del calendario
+                            if event['start']['dateTime'] != calendar_datetime_utc_start_arrow:
+                                tutoria.fecha = arrow.get(event['start']['dateTime']).date()
+                                tutoria.hora = arrow.get(event['start']['dateTime']).time()
+                                flash_toast('Google Calendar sincronizado', 'success')
+                        else:  # Elimina tutoria si ha sido eliminado desde la agenda
+                            session_sql.delete(tutoria)
                             flash_toast('Google Calendar sincronizado', 'success')
-                    else:  # Elimina tutoria si ha sido eliminado desde la agenda
+                    except:  # Elimina tutoria si no esta en el calendario
                         session_sql.delete(tutoria)
                         flash_toast('Google Calendar sincronizado', 'success')
-                except:  # Elimina tutoria si no esta en el calendario
-                    session_sql.delete(tutoria)
-                    flash_toast('Google Calendar sincronizado', 'success')
-        else:
-            # Purga eventos que contienen 'Evento creado por https://mitutoria.herokuapp.com/'
-            page_token = None
-            while True:
-                events = service.events().list(calendarId='primary', pageToken=page_token, q='Evento creado por https://mitutoria.herokuapp.com/').execute()
-                for event in events['items']:
-                    service.events().delete(calendarId='primary', eventId=event['id']).execute()
-                page_token = events.get('nextPageToken')
-                if not page_token:
-                    break
-            # Agrega todas las tutorias al calendario una vez purgado
-            for tutoria in grupo_tutorias(settings().grupo_activo_id, ''):
-                alumno_nombre = alumno_by_tutoria_id(tutoria.id).nombre
-                calendar_datetime_utc_start_arrow = str(arrow.get(tutoria.fecha).shift(hours=tutoria.hora.hour, minutes=tutoria.hora.minute).replace(tzinfo='Europe/Madrid'))
-                calendar_datetime_utc_end_arrow = str(arrow.get(tutoria.fecha).shift(hours=tutoria.hora.hour, minutes=tutoria.hora.minute + settings().tutoria_duracion).replace(tzinfo='Europe/Madrid'))
-                tutoria_calendar_add(service, tutoria, calendar_datetime_utc_start_arrow, calendar_datetime_utc_end_arrow, alumno_nombre)
-            flash_toast('Sincronizacion inical de Google Calendar', 'success')
-            settings().calendar_sincronizado = True
-        session_sql.commit()
+            else:
+                # Purga eventos que contienen 'Evento creado por https://mitutoria.herokuapp.com/'
+                page_token = None
+                while True:
+                    events = service.events().list(calendarId='primary', pageToken=page_token, q='Evento creado por https://mitutoria.herokuapp.com/').execute()
+                    for event in events['items']:
+                        service.events().delete(calendarId='primary', eventId=event['id']).execute()
+                    page_token = events.get('nextPageToken')
+                    if not page_token:
+                        break
+                # Agrega todas las tutorias al calendario una vez purgado
+                for tutoria in grupo_tutorias(settings_sql.grupo_activo_id, ''):
+                    alumno_nombre = alumno_by_tutoria_id(tutoria.id).nombre
+                    calendar_datetime_utc_start_arrow = str(arrow.get(tutoria.fecha).shift(hours=tutoria.hora.hour, minutes=tutoria.hora.minute).replace(tzinfo='Europe/Madrid'))
+                    calendar_datetime_utc_end_arrow = str(arrow.get(tutoria.fecha).shift(hours=tutoria.hora.hour, minutes=tutoria.hora.minute + settings_sql.tutoria_duracion).replace(tzinfo='Europe/Madrid'))
+                    tutoria_calendar_add(service, tutoria, calendar_datetime_utc_start_arrow, calendar_datetime_utc_end_arrow, alumno_nombre)
+                flash_toast('Sincronizacion inical de Google Calendar', 'success')
+                settings_sql.calendar_sincronizado = True
+            session_sql.commit()
 
 
 def settings_admin():
@@ -1308,15 +1309,18 @@ def equal_str(a, b):
 
 
 def tutorias_timeout():  # Update de TRUE a FALSE la columna activa de una tutoria pasadas 48 horas
-    if settings().tutoria_timeout:
-        alumnos = session_sql.query(Alumno).filter(Alumno.grupo_id == settings().grupo_activo_id).all()
-        for alumno in alumnos:
-            for tutoria in alumno_tutorias(alumno.id, True):
-                if tutoria.fecha < g.current_date - datetime.timedelta(hours=6):
-                    tutoria.activa = False
-                    session_sql.commit()
-                    tutoria_calendar_delete(tutoria.calendar_event_id)
-                    flash_toast('Tutoria de ' + Markup('<strong>') + alumno.nombre + Markup('</strong>') + ' para el dia ' + Markup('<strong>') + str(tutoria.fecha) + Markup('</strong>') + ' auto-archivada', 'warning')
+    if settings():
+        settings_sql=settings()
+        if settings_sql.tutoria_timeout:
+            alumnos = session_sql.query(Alumno).filter(Alumno.grupo_id == settings_sql.grupo_activo_id).all()
+            for alumno in alumnos:
+                for tutoria in alumno_tutorias(alumno.id, True):
+                    if tutoria.fecha < g.current_date - datetime.timedelta(hours=6):
+                        tutoria.activa = False
+                        session_sql.commit()
+                        tutoria_calendar_delete(tutoria.calendar_event_id)
+                        flash_toast('Tutoria de ' + Markup('<strong>') + alumno.nombre + Markup('</strong>') + ' para el dia ' + Markup('<strong>') + str(tutoria.fecha) + Markup('</strong>') + ' auto-archivada', 'warning')
+
 
 
 def grupo_tutorias(grupo_id, activa):

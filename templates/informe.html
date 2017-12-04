@@ -101,12 +101,17 @@
 				{% endif %}
 				<a id="anchor_pru_eva_add"></a>
 				<div class="col-sm-12 bg-dark text-white pl-2 pt-2 pb-2 mb-3">
-					Notas de pruebas evaluables
+					Notas
+					<button class="btn btn-info btn-sm float-right pt-0 pb-0 pl-0" type="submit" name="selector_button" value="selector_prueba_evaluable_add" title="agergar nota">
+						<i class="material-icons vertical-center">add</i>
+						agregar nota
+					</button>
 				</div>
-				{% include 'informe_prueba_evaluable_add_block.html' %}
 				<div class="row">
-					{% for prueba_evaluable in invitado_pruebas_evaluables_sql %}
-						<div class="col-sm-12 {% if invitado_pruebas_evaluables_sql | count > 1 %} col-md-6 {% if invitado_pruebas_evaluables_sql | count > 2 %} col-lg-4 {% endif %} {% endif %} mb-4">
+					{% for prueba_evaluable in invitado_pruebas_evaluables_sql | reverse %}
+					{% with %}
+					{% set invitado_pruebas_evaluables_sql_count =invitado_pruebas_evaluables_sql | count %}
+						<div class="col-sm-12 {% if invitado_pruebas_evaluables_sql_count > 1 %} col-md-6 {% if invitado_pruebas_evaluables_sql_count > 2 %} col-lg-4 {% endif %} {% endif %} mb-4">
 								<div class="card border-gray z-depth-1-1-less mb-2">
 									<div class="card-header p-1">
 										<div class="input-group">
@@ -116,7 +121,7 @@
 												class="form-control bg-light border border-0"
 												name="prueba_evaluable_nombre_{{hashids_encode(prueba_evaluable.id)}}"
 												value="{% if prueba_evaluable.nombre %}{{prueba_evaluable.nombre}}{% endif %}"
-												placeholder="Prueba evaluable {{loop.index}}">
+												placeholder="Prueba evaluable {{1 + invitado_pruebas_evaluables_sql_count - loop.index}}">
 
 										<div class="btn-group" role="group" aria-label="...">
 												{% include 'informe_prueba_evaluable_delete_confirmar_block.html' %}
@@ -133,6 +138,7 @@
 								</div>
 							</div>
 						</div>
+					{% endwith %}
 					{% endfor %}
 				</div>
 				<div class="col-sm-12 bg-dark text-white pl-2 pt-2 pb-2">
