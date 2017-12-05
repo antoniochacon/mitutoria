@@ -1113,10 +1113,9 @@
 		});
 	</script>
 {% endmacro %}
-{% macro checkbox_funky(tipo_a, tipo_b, tipo, prefix) %}
-	<span class="text-danger">macro checkbox_funky a reemplazar</span>
-	<br>
-{% endmacro %}
+
+
+{# NOTE NO se puede usar settings() en lugar de settings() porque esta barra se puede acceder como invitado #}
 {% macro titulo_1(url, text_color, bg_color, titulo, subtitulo) %}
 	<h5 class="{{text_color}} strong">
 		{{titulo}}
@@ -1147,9 +1146,6 @@
 		{% endif %}
 	</h5>
 {% endmacro %}
-
-
-{# NOTE NO se puede usar settings() en lugar de settings() porque esta barra se puede acceder como invitado #}
 
 {% macro nav_tabs_admin(tab_active, params_args) %}
 	{{nav_tabs(tab_active, params_args=params_args, dic={'Cuestiones':'admin_cuestionario', 'Citas':'admin_citas', 'Users':'admin_usuarios', 'Stats':'admin_estadisticas'})}}
