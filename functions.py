@@ -1353,7 +1353,6 @@ def tutorias_timeout():  # Update de TRUE a FALSE la columna activa de una tutor
                     if tutoria.fecha < g.current_date - datetime.timedelta(hours=6):
                         tutoria.activa = False
                         session_sql.commit()
-                        # tutoria_calendar_delete(tutoria.calendar_event_id)
                         flash_toast('Tutoria de ' + Markup('<strong>') + alumno.nombre + Markup('</strong>') + ' auto-archivada', 'warning')
 
 

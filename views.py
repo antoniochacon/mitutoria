@@ -853,7 +853,7 @@ def alumnos_html(params={}):
                         else:
                             session_sql.add(tutoria_add)
                             session_sql.commit()
-                            # send_email_tutoria_asincrono(alumno, tutoria_add)  # NOTE anular temporalemente para pruebas de envio de mails.
+                            send_email_tutoria_asincrono(alumno, tutoria_add)  # NOTE anular temporalemente para pruebas de envio de mails.
                             flash_toast('Enviando emails al equipo educativo de ' + Markup('<strong>') + alumno.nombre + Markup('</strong>'), 'info')
                             params['current_alumno_id'] = current_alumno_id
                             params['collapse_alumno'] = True
