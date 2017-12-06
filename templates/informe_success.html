@@ -30,14 +30,14 @@
 						Ánimo
 					{% elif params['participacion_porcentaje_recent'] > 50 and params['participacion_porcentaje_recent'] <= 75 %}
 						Buen trabajo
-					{% elif params['participacion_porcentaje_recent'] < 75 and params['participacion_porcentaje_recent'] < 100 %}
+					{% elif params['participacion_porcentaje_recent'] > 75 and params['participacion_porcentaje_recent'] < 100 %}
 						Excelente trabajo
 					{% elif params['participacion_porcentaje_recent'] == 100 %}
 						Enhorabuena
 					{% endif %}
 				</div>
-				<!-- <div class="small text-secondary">{% if params['asignatura_informes_activos_pendientes_count'] %} Informes pendientes: {{params['asignatura_informes_activos_pendientes_count']}}{% endif %}</div> -->
-				<div class="small text-secondary mb-2">su actividad últimos {{params['settings_admin_periodo_participacion_recent']}} días:</div>
+				<div class="small text-secondary">{% if params['asignatura_informes_activos_pendientes_count'] %} Informes pendientes: {{params['asignatura_informes_activos_pendientes_count']}}{% endif %}</div>
+				<!-- <div class="small text-secondary mb-2">su actividad últimos {{params['settings_admin_periodo_participacion_recent']}} días:</div> -->
 				<span class="contador_animado align-middle h3 pl-2 pr-2">
 					<span class="timer" data-to="{{params['participacion_porcentaje_recent']}}" data-speed="3000"></span>%
 				</span>

@@ -934,7 +934,8 @@ def asignatura_informes_respondidos_recent_count(asignatura_id):
 
 
 def asignatura_informes_activos_pendientes_count(asignatura_id):
-    informes_activos_solicitados = session_sql.query(Association_Tutoria_Asignatura).filter(Association_Tutoria_Asignatura.asignatura_id == asignatura_id).join(Tutoria).filter(Tutoria.activa == True).count()
+    # informes_activos_solicitados = session_sql.query(Association_Tutoria_Asignatura).filter(Association_Tutoria_Asignatura.asignatura_id == asignatura_id).join(Tutoria).filter(Tutoria.activa == True).count()
+    # return session_sql.query(Tutoria).filter(Tutoria.activa==True).join(Association_Tutoria_Asignatura).filter(Association_Tutoria_Asignatura.asignatura_id == asignatura_id).join(Asignatura).join(Informe).filter(Informe.asignatura_id == asignatura_id).count
     return 5
 
 
