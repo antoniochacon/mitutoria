@@ -114,6 +114,66 @@ def calendar_api_html():
     return render_template('calendar_api.html')
 
 
+# XXX admin_global_set
+@app.route('/admin_global_set', methods=['GET', 'POST'])
+@app.route('/admin_global_set/<params>', methods=['GET', 'POST'])
+@login_required
+def admin_global_set_html(params={}):
+    try:
+        params_old = dic_decode(params)
+    except:
+        params_old = {}
+        abort(404)
+
+    params = {}
+    params['anchor'] = params_old.get('anchor', 'anchor_top')
+
+    settings_admin_sql = settings_admin()
+    tutorias_clenaup_count = session_sql.query(Tutoria).filter(Tutoria.fecha < g.current_date - datetime.timedelta(days=30 * settings_admin_sql.periodo_cleanup_tutorias)).count()
+
+    if request.method == 'POST':
+        periodo_cleanup_tutorias = int(request.form.get('periodo_cleanup_tutorias'))
+        cleanup_tutorias_automatic = request.form.get('cleanup_tutorias_automatic')
+        if not cleanup_tutorias_automatic:
+            cleanup_tutorias_automatic = False
+
+        # XXX selector_cleanup_update
+        if request.form['selector_button'] == 'selector_cleanup_update':
+            if settings_admin_sql.periodo_cleanup_tutorias != periodo_cleanup_tutorias:
+                settings_admin_sql.periodo_cleanup_tutorias = periodo_cleanup_tutorias
+                session_sql.commit()
+                flash_toast('Tutorias CleanUp actualizado', 'success')
+            return redirect(url_for('admin_global_set_html'))
+
+        # XXX selector_global_set_edit
+        if request.form['selector_button'] == 'selector_global_set_edit':
+            commit_action = False
+            if settings_admin_sql.periodo_cleanup_tutorias != int(periodo_cleanup_tutorias):
+                settings_admin_sql.periodo_cleanup_tutorias = periodo_cleanup_tutorias
+                commit_action = True
+            if settings_admin_sql.periodo_participacion_recent != int(request.form.get('periodo_participacion_recent')):
+                settings_admin_sql.periodo_participacion_recent = request.form.get('periodo_participacion_recent')
+                commit_action = True
+            if settings_admin_sql.diferencial_default != int(request.form.get('diferencial_default')):
+                settings_admin_sql.diferencial_default = request.form.get('diferencial_default')
+                commit_action = True
+            if str(settings_admin_sql.cleanup_tutorias_automatic) != str(cleanup_tutorias_automatic):
+                settings_admin_sql.cleanup_tutorias_automatic = cleanup_tutorias_automatic
+                commit_action = True
+            if commit_action:
+                session_sql.commit()
+                flash_toast('Global Set actualizado', 'success')
+            return redirect(url_for('admin_global_set_html'))
+
+        if request.form['selector_button'] == 'selector_cleanup_tutorias':
+            if settings_admin_sql.periodo_cleanup_tutorias != periodo_cleanup_tutorias:
+                settings_admin_sql.periodo_cleanup_tutorias = periodo_cleanup_tutorias
+            cleanpup_tutorias(periodo_cleanup_tutorias)
+            return redirect(url_for('admin_global_set_html'))
+
+    return render_template('admin_global_set.html', tutorias_clenaup_count=tutorias_clenaup_count)
+
+
 @app.route('/admin_estadisticas', methods=['GET', 'POST'])
 @app.route('/admin_estadisticas/<params>', methods=['GET', 'POST'])
 @login_required
@@ -793,7 +853,7 @@ def alumnos_html(params={}):
                         else:
                             session_sql.add(tutoria_add)
                             session_sql.commit()
-                            send_email_tutoria_asincrono(alumno, tutoria_add)  # NOTE anular temporalemente para pruebas de envio de mails.
+                            # send_email_tutoria_asincrono(alumno, tutoria_add)  # NOTE anular temporalemente para pruebas de envio de mails.
                             flash_toast('Enviando emails al equipo educativo de ' + Markup('<strong>') + alumno.nombre + Markup('</strong>'), 'info')
                             params['current_alumno_id'] = current_alumno_id
                             params['collapse_alumno'] = True
@@ -833,11 +893,11 @@ def alumnos_html(params={}):
         if request.form['selector_button'] == 'selector_tutoria_add_close':
             return redirect(url_for('alumnos_html', params=dic_encode(params)))
 
-    # XXX tutorias_timeout
-    tutorias_timeout()
-
     # XXX sincronizar con google calendar
     tutoria_calendar_sync()
+
+    # XXX tutorias_timeout
+    tutorias_timeout()
 
     return render_template(
         'alumnos.html', alumno_add=Alumno_Add(), alumno_edit=Alumno_Add(),
@@ -2204,7 +2264,7 @@ def user_add_html():
                 settings_add = Settings(user_id=user_add.id)
                 session_sql.add(settings_add)
                 preguntas_active_default(user_add.id)  # inserta las preguntas activas by default
-                settings_add.diferencial = settings_admin().diferencial
+                settings_add.diferencial_default = settings_admin().diferencial_default
                 params['current_user_id'] = user_add.id
 
                 if user_add.email == 'antonioelmatematico@gmail.com':

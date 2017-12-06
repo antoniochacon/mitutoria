@@ -1117,16 +1117,23 @@
 
 {# NOTE NO se puede usar settings() en lugar de settings() porque esta barra se puede acceder como invitado #}
 {% macro titulo_1(url, text_color, bg_color, titulo, subtitulo) %}
-	<h5 class="{{text_color}} strong">
-		{{titulo}}
+	<span class="{{text_color}}">
+		<span class="strong h5">{{titulo}}</span>
 		{% if url == "alumnos" %}
-			<span class="badge badge-dark float-right">{{alumnos_not_sorted()|count}}
-				{{singular_plural("alumno", "alumnos",alumnos_not_sorted()|count)}}
+		{% with %}
+		{% set alumnos_not_sorted_count = alumnos_not_sorted()|count %}
+		{% set grupo_tutorias_all_count = grupo_tutorias(grupo_activo().id, '') | count %}
+			<span class="badge badge-dark float-right font-weight-normal mt-1">{{alumnos_not_sorted_count}}
+				{{singular_plural("alumno", "alumnos",alumnos_not_sorted_count)}} | {{grupo_tutorias_all_count}} {{singular_plural("tutoria", "tutorias", grupo_tutorias_all_count)}}
 			</span>
+		{% endwith %}
 		{% elif url == "asignaturas" %}
-			<span class="badge badge-dark float-right">{{asignaturas("apellidos", "nombre", "asignatura") | count}}
-				{{singular_plural("asignatura", "asignaturas", asignaturas("apellidos", "nombre", "asignatura") | count)}}
+		{% with %}
+		{% set asignaturas_count = asignaturas("apellidos", "nombre", "asignatura") | count %}
+			<span class="badge badge-dark float-right font-weight-normal mt-1">{{asignaturas_count}}
+				{{singular_plural("asignatura", "asignaturas", asignaturas_count)}}
 			</span>
+		{% endwith %}
 		{% endif %}
 		{% if subtitulo %}
 			<h6 class="{{text_color}}">
@@ -1144,11 +1151,11 @@
 			{%else%}
 			<div class="divider {{bg_color}} grueso line-height-1"></div>
 		{% endif %}
-	</h5>
+	</span>
 {% endmacro %}
 
 {% macro nav_tabs_admin(tab_active, params_args) %}
-	{{nav_tabs(tab_active, params_args=params_args, dic={'Cuestiones':'admin_cuestionario', 'Citas':'admin_citas', 'Users':'admin_usuarios', 'Stats':'admin_estadisticas'})}}
+	{{nav_tabs(tab_active, params_args=params_args, dic={'Cuestionario':'admin_cuestionario', 'Citas':'admin_citas', 'Global Set':'admin_global_set', 'Users':'admin_usuarios', 'Stats':'admin_estadisticas'})}}
 {% endmacro %}
 {% macro nav_tabs(tab_active, params_args, dic) %}
 	<div class="pb-2">

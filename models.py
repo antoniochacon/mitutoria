@@ -42,6 +42,7 @@ class Settings (Base):
     ban = Column(Boolean, default=False)
     calendar = Column(Boolean, default=False)
     calendar_sincronizado = Column(Boolean, default=False)
+    cleanup_tutorias_status = Column(Boolean, default=False)
     tutoria_duracion = Column(Integer, default=20)
     tutoria_timeout = Column(Boolean, default=True)
     show_asignaturas_analisis = Column(Boolean, default=True)
@@ -62,8 +63,10 @@ class Settings (Base):
 class Settings_Admin (Base):
     __tablename__ = 'settings_admin'
     id = Column(Integer, primary_key=True)
-    diferencial = Column(Integer, default=25)
-    periodo_recent = Column(Integer, default=30)
+    diferencial_default = Column(Integer, default=15)
+    periodo_participacion_recent = Column(Integer, default=30)
+    periodo_cleanup_tutorias = Column(Integer, default=3)
+    cleanup_tutorias_automatic = Column(Boolean, default=False)
 
 
 class Grupo (Base):
