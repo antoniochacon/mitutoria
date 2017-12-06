@@ -933,6 +933,11 @@ def asignatura_informes_respondidos_recent_count(asignatura_id):
     return session_sql.query(Informe).filter(Informe.asignatura_id == asignatura_id, Informe.created_at > g.current_date - datetime.timedelta(days=settings_admin().periodo_participacion_recent)).count()
 
 
+def asignatura_informes_activos_pendientes_count(asignatura_id):
+    informes_activos_solicitados = session_sql.query(Association_Tutoria_Asignatura).filter(Association_Tutoria_Asignatura.asignatura_id == asignatura_id).join(Tutoria).filter(Tutoria.activa == True).count()
+    return 5
+
+
 def connenction_check():
     try:
         with mail.connect() as conn:

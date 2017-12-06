@@ -35,23 +35,23 @@
 					<div class="col-sm-12 col-md-6 col-lg-4">
 						<span class="{% if tutoria.activa %}text-mutted{% else %}text-info{% endif %}">Alumno:
 						</span>
-						<h5 class="strong {% if not tutoria.activa %}text-mutted{% endif %}">
+						<span class="h6 {% if not tutoria.activa %}text-mutted{% endif %}">
 							{{alumno.apellidos}},
 							{{alumno.nombre}}
-						</h5>
+						</span>
 					</div>
 					<div class="col-sm-12 col-md-6 col-lg-3 pb-2">
-						<span class="{% if tutoria.activa %}text-mutted{% else %}text-info{% endif %}">Fecha:
+						<span class="small {% if tutoria.activa %}text-mutted{% else %}text-info{% endif %}">Fecha:
 						</span>
-						<span class="strong {% if not tutoria.activa %}text-mutted{% endif %}">
+						<span class="{% if not tutoria.activa %}text-mutted{% endif %}">
 							{{tutoria.fecha.strftime('%b') | capitalize}}
 							{{tutoria.fecha.strftime('%A') | capitalize}}
-							{{tutoria.fecha.strftime('%d')}}
+							{{tutoria.fecha.strftime('%d')}} [{{tutoria.hora.strftime('%H:%M')}} h]
 						</span>
 						<br>
-						<span class="{% if tutoria.activa %}text-mutted{% else %}text-info{% endif %}">Hora:
+						<!-- <span class="{% if tutoria.activa %}text-mutted{% else %}text-info{% endif %}">Hora:
 						</span>
-						<span class="strong {% if not tutoria.activa %}text-mutted{% endif %}">{{tutoria.hora.strftime('%H:%M')}}</span>
+						<span class="strong {% if not tutoria.activa %}text-mutted{% endif %}">{{tutoria.hora.strftime('%H:%M')}}</span> -->
 					</div>
 					<input type="hidden" name="current_tutoria_id" value="{{hashids_encode(tutoria.id)}}">
 					<div class="col">

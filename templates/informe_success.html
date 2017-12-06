@@ -4,9 +4,10 @@
 	{{nav_bar_top(current_user=current_user)}}
 	<div class="container">
 		<div class="paper bg-white padding_contenido">
-			{{titulo_1(bg_color='bg-dark', titulo='Informe de '+ params['alumno'])}}
+			{{titulo_1(bg_color='bg-dark', titulo='Informe de tutoría')}}
+			<span class="small text-mutted">Alumno: </span><span class="h6">{{params['alumno']}}</span>
 			<div class="small">
-			<span class="text-mutted">Tutoria:</span>
+			<span class="text-mutted">Fecha:</span>
 			{{params['fecha'].strftime('%A') | capitalize}}
 			{{params['fecha'].strftime('%d')}}
 			{{params['fecha'].strftime('%b') | capitalize}} [{{params['hora'].strftime('%H:%M')}} h]
@@ -25,15 +26,18 @@
 				{{highcharts_participacion_recent(char_id='tutoria_stats', height='220', weight='220', tooltip_x='33', tooltip_y='45', color_1='#BA5FD3', color_2='#f5f5f5', participacion_recent=params['participacion_porcentaje_recent'])}}
 				<div class="circle_interior">
 				<div class="h4 text-secondary mb-0">
-					{% if params['participacion_porcentaje_recent'] < 50 %}
+					{% if params['participacion_porcentaje_recent'] <= 50 %}
 						Ánimo
-					{% elif params['participacion_porcentaje_recent'] > 50 and params['participacion_porcentaje_recent'] < 75 %}
+					{% elif params['participacion_porcentaje_recent'] > 50 and params['participacion_porcentaje_recent'] <= 75 %}
 						Buen trabajo
-					{% else %}
+					{% elif params['participacion_porcentaje_recent'] < 75 and params['participacion_porcentaje_recent'] < 100 %}
+						Excelente trabajo
+					{% elif params['participacion_porcentaje_recent'] == 100 %}
 						Enhorabuena
 					{% endif %}
 				</div>
-				<div class="small text-secondary mb-2">participación reciente</div>
+				<!-- <div class="small text-secondary">{% if params['asignatura_informes_activos_pendientes_count'] %} Informes pendientes: {{params['asignatura_informes_activos_pendientes_count']}}{% endif %}</div> -->
+				<div class="small text-secondary mb-2">su actividad últimos {{params['settings_admin_periodo_participacion_recent']}} días:</div>
 				<span class="contador_animado align-middle h3 pl-2 pr-2">
 					<span class="timer" data-to="{{params['participacion_porcentaje_recent']}}" data-speed="3000"></span>%
 				</span>

@@ -2010,6 +2010,8 @@ def informe_html(current_tutoria_asignatura_id, params={}):
                 params['docente'] = asignatura.nombre + ' ' + asignatura.apellidos
                 params['invitado'] = True
                 params['participacion_porcentaje_recent'] = cociente_porcentual(asignatura_informes_respondidos_recent_count(asignatura.id), asignatura_informes_solicitados_recent_count(asignatura.id))
+                params['asignatura_informes_activos_pendientes_count'] = asignatura_informes_activos_pendientes_count(asignatura.id)
+                params['settings_admin_periodo_participacion_recent']=settings_admin().periodo_participacion_recent
                 return redirect(url_for('informe_success_html', params=dic_encode(params)))
 
         return render_template(
@@ -2053,7 +2055,9 @@ def informe_success_html(params={}):
     params['asignatura'] = params_old.get('asignatura', False)
     params['asignatura_id'] = params_old.get('asignatura_id', False)
     params['docente'] = params_old.get('docente', False)
-    params['participacion_porcentaje_recent'] = params_old.get('participacion_porcentaje_recent', False)
+    params['participacion_porcentaje_recent'] = params_old.get('participacion_porcentaje_recent', 0)
+    params['asignatura_informes_activos_pendientes_count'] = params_old.get('asignatura_informes_activos_pendientes_count', 0)
+    params['settings_admin_periodo_participacion_recent'] = params_old.get('settings_admin_periodo_participacion_recent', 30)
 
     return render_template(
         'informe_success.html', params=params)
