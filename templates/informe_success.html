@@ -43,7 +43,7 @@
 						Enhorabuena
 					{% endif %}
 				</div>
-				<div class="small text-secondary">{% if params['tutorias_sin_respuesta_by_asignatura_id']['tutorias_sin_respuesta_count'] %} Informes pendientes: {{params['tutorias_sin_respuesta_by_asignatura_id']['tutorias_sin_respuesta_count']}}{% endif %}</div>
+				<div class="small">{% if params['tutorias_sin_respuesta_by_asignatura_id']['tutorias_sin_respuesta_count'] %} <span class="text-warning">Informes pendientes: {{params['tutorias_sin_respuesta_by_asignatura_id']['tutorias_sin_respuesta_count']}}</span> {% else %} <span class="text-secondary">Sin tutorias pendientes</span>{% endif %}</div>
 				<div class="small text-secondary mb-2">actividad últimos {{params['settings_admin_periodo_participacion_recent']}} días:</div>
 				<span class="contador_animado align-middle h3 pl-2 pr-2">
 					<span class="timer" data-to="{{params['participacion_porcentaje_recent']}}" data-speed="3000"></span>%
