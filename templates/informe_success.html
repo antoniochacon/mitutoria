@@ -7,31 +7,16 @@
 			{{titulo_1(bg_color='bg-dark', titulo='Informe de tutoría')}}
 			<span class="small text-mutted">Alumno: </span><span class="h6">{{params['alumno']}}</span>
 			<div class="small">
-			{#
-			<span class="text-mutted">Fecha:</span>
-			{{params['fecha'].strftime('%A') | capitalize}}
-			{{params['fecha'].strftime('%d')}}
-			{{params['fecha'].strftime('%b') | capitalize}} [{{params['hora'].strftime('%H:%M')}} h]
-			<br>
-			#}
 			<span class="text-mutted">Grupo:</span>
 			{{params['grupo']}}
 			<br>
 			<span class="text-mutted">Tutor/a:</span>
 			{{params['tutor_nombre']}} {{params['tutor_apellidos']}}
-			{#
-			<br>
-			<span class="text-mutted">Asignatura:</span>
-			{{params['asignatura']}}
-			<br>
-			<span class="text-mutted">Docente:</span>
-			{{params['docente']}}
-			#}
 			</div>
 			<div class="divider bg-mutted mt-2"></div>
 			<div class="text-center mt-1 mb-1">
 				{{highcharts_participacion_recent(char_id='tutoria_stats', height='220', weight='220', tooltip_x='33', tooltip_y='45', color_1='#BA5FD3', color_2='#f5f5f5', participacion_recent=params['participacion_porcentaje_recent'])}}
-				<div class="circle_interior">
+				<div class="{% if params['tutorias_sin_respuesta_by_asignatura_id']['tutorias_sin_respuesta_count'] %}circle_interior_pendiente {% else %} circle_interior {% endif %}">
 				<div class="h4 text-secondary mb-0">
 					{% if params['participacion_porcentaje_recent'] <= 50 %}
 						Ánimo
@@ -43,13 +28,18 @@
 						Enhorabuena
 					{% endif %}
 				</div>
-				<div class="small">{% if params['tutorias_sin_respuesta_by_asignatura_id']['tutorias_sin_respuesta_count'] %} <span class="text-warning">Informes pendientes: {{params['tutorias_sin_respuesta_by_asignatura_id']['tutorias_sin_respuesta_count']}}</span> {% else %} <span class="text-secondary">Sin tutorias pendientes</span>{% endif %}</div>
+				{% if params['tutorias_sin_respuesta_by_asignatura_id']['tutorias_sin_respuesta_count'] %}
+				<a class="btn btn-outline-warning btn-sm link_without_pointer mt-1 mb-1" href="/informes_pendientes/{{dic_encode_args({'tutorias_sin_respuesta_by_asignatura_id': params['tutorias_sin_respuesta_by_asignatura_id'], 'asignatura_id': params['asignatura_id']})}}" role="button">Informes pendientes: {{params['tutorias_sin_respuesta_by_asignatura_id']['tutorias_sin_respuesta_count']}}</a>
+				{% else %}
+				<span class="text-secondary small">Sin tutorias pendientes</span>
+				{% endif %}
+
 				<div class="small text-secondary mb-2">actividad últimos {{params['settings_admin_periodo_participacion_recent']}} días:</div>
 				<span class="contador_animado align-middle h3 pl-2 pr-2">
 					<span class="timer" data-to="{{params['participacion_porcentaje_recent']}}" data-speed="3000"></span>%
 				</span>
 				</div>
-				<a class="btn btn-outline-dark btn-sm link_without_pointer mb-2" href="/informe/{{hashids_encode(params['current_tutoria_asignatura_id'])}}" role="button">Consultar o editar informe</a>
+				<a class="btn btn-outline-dark btn-sm link_without_pointer pt-0 mt-0 mb-2" href="/informe/{{hashids_encode(params['current_tutoria_asignatura_id'])}}" role="button">Editar informe</a>
 			</div>
 			<div class="divider bg-mutted"></div>
 		</div>

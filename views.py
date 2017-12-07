@@ -1912,7 +1912,7 @@ def informe_html(current_tutoria_asignatura_id, params={}):
         return redirect(url_for('informe_no_disponible_html'))
 
     try:
-        params_old = dic_decode(params)  # NOTE matiene siempre una copia de entrada original por si se necesita mas adelante
+        params_old = dic_decode(params)
     except:
         params_old = {}
         abort(404)
@@ -2002,6 +2002,7 @@ def informe_html(current_tutoria_asignatura_id, params={}):
                 params = {}
                 params['current_tutoria_asignatura_id'] = current_tutoria_asignatura_id
                 params['alumno'] = alumno.apellidos + ', ' + alumno.nombre
+                # params['alumno_id'] = alumno.id
                 params['grupo'] = grupo.nombre
                 params['tutor_nombre'] = grupo.tutor_nombre
                 params['tutor_apellidos'] = grupo.tutor_apellidos
@@ -2013,7 +2014,7 @@ def informe_html(current_tutoria_asignatura_id, params={}):
                 params['invitado'] = True
                 params['participacion_porcentaje_recent'] = cociente_porcentual(asignatura_informes_respondidos_recent_count(asignatura.id), asignatura_informes_solicitados_recent_count(asignatura.id))
                 params['tutorias_sin_respuesta_by_asignatura_id'] = tutorias_sin_respuesta_by_asignatura_id(asignatura.id)
-                params['settings_admin_periodo_participacion_recent']=settings_admin().periodo_participacion_recent
+                params['settings_admin_periodo_participacion_recent'] = settings_admin().periodo_participacion_recent
                 return redirect(url_for('informe_success_html', params=dic_encode(params)))
 
         return render_template(
@@ -2051,20 +2052,49 @@ def informe_success_html(params={}):
     params['current_tutoria_asignatura_id'] = params_old.get('current_tutoria_asignatura_id', 0)
     params['anchor'] = params_old.get('anchor', 'anchor_top')
     params['alumno'] = params_old.get('alumno', False)
+    # params['alumno_id'] = params_old.get('alumno_id', 0)
     params['grupo'] = params_old.get('grupo', False)
     params['tutor_nombre'] = params_old.get('tutor_nombre', False)
     params['tutor_apellidos'] = params_old.get('tutor_apellidos', False)
     params['fecha'] = params_old.get('fecha', False)
     params['hora'] = params_old.get('hora', False)
     params['asignatura'] = params_old.get('asignatura', False)
-    params['asignatura_id'] = params_old.get('asignatura_id', False)
+    params['asignatura_id'] = params_old.get('asignatura_id', 0)
     params['docente'] = params_old.get('docente', False)
     params['participacion_porcentaje_recent'] = params_old.get('participacion_porcentaje_recent', 0)
     params['tutorias_sin_respuesta_by_asignatura_id'] = params_old.get('tutorias_sin_respuesta_by_asignatura_id', {})
     params['settings_admin_periodo_participacion_recent'] = params_old.get('settings_admin_periodo_participacion_recent', 30)
+    # params['tutorias_id_lista'] = params_old.get('tutorias_id_lista', [])
 
     return render_template(
         'informe_success.html', params=params)
+
+
+@app.route('/informes_pendientes/<params>', methods=['GET', 'POST'])
+def informes_pendientes_html(params={}):
+    try:
+        params_old = dic_decode(params)
+    except:
+        params_old = {}
+        abort(404)
+    params = {}
+    params['anchor'] = params_old.get('anchor', 'anchor_top')
+    params['asignatura_id'] = params_old.get('asignatura_id', 0)
+    params['tutorias_sin_respuesta_by_asignatura_id'] = params_old.get('tutorias_sin_respuesta_by_asignatura_id', {})
+
+    asignatura_id = params['asignatura_id']
+    asignatura = asignatura_by_id(asignatura_id)
+
+    grupo = grupo_by_asignatura_id(asignatura_id)
+
+    tutorias_id_lista = params['tutorias_sin_respuesta_by_asignatura_id']['tutorias_id_lista']
+    tutorias_pendites = []
+    for tutoria_id in tutorias_id_lista:
+        tutorias_pendites.append(tutoria_by_id(tutoria_id))
+
+    return render_template(
+        'informes_pendientes.html',
+        asignatura=asignatura, tutorias_pendites=tutorias_pendites, grupo=grupo, params=params)
 
 
 @app.route('/email_tutoria')
