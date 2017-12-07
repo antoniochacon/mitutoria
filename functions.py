@@ -941,9 +941,7 @@ def tutorias_sin_respuesta_by_asignatura_id(asignatura_id):
     tutorias_activas_pendintes_count = session_sql.query(Tutoria).filter(Tutoria.activa == True).join(Association_Tutoria_Asignatura).filter(Association_Tutoria_Asignatura.asignatura_id == asignatura_id).count()
     tutorias_activas_respondidas_count = session_sql.query(Tutoria).filter(Tutoria.activa == True).join(Informe).filter(Informe.asignatura_id == asignatura_id).count()
     tutorias_sin_respuesta_count = tutorias_activas_pendintes_count - tutorias_activas_respondidas_count
-    dic['tutorias_activas_pendintes_count'] = tutorias_activas_pendintes_count
-    # dic['tutorias_activas_respondidas_count'] = tutorias_activas_respondidas_count
-    # dic['tutorias_sin_respuesta_count'] = tutorias_sin_respuesta_count
+    dic['tutorias_sin_respuesta_count'] = tutorias_sin_respuesta_count
 
     # tutorias (se podra usar para agregar la opcion de volver a recibir por email las tutorias no contestadas)
     if tutorias_sin_respuesta_count != 0:
