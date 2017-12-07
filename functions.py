@@ -933,24 +933,17 @@ def asignatura_informes_respondidos_recent_count(asignatura_id):
     return session_sql.query(Informe).filter(Informe.asignatura_id == asignatura_id, Informe.created_at > g.current_date - datetime.timedelta(days=settings_admin().periodo_participacion_recent)).count()
 
 
-# def asignatura_informes_activos_pendientes_count(asignatura_id):
-#     dic={}
-#     # re_send_email_tutoria(alumno, tutoria, asignaturas_id_lista)
-#     informes_activos_solicitados = session_sql.query(Association_Tutoria_Asignatura).filter(Association_Tutoria_Asignatura.asignatura_id == asignatura_id).join(Tutoria).filter(Tutoria.activa == True).count()
-#     informes_activos_respondiddos = session_sql.query(Tutoria).filter(Tutoria.activa == True).join(Informe).filter(Informe.asignatura_id == asignatura_id).count()
-#     dic['asignatura_informes_activos_pendientes_count']= informes_activos_solicitados - informes_activos_respondiddos
-#     dic['tutorias_sin_respuesta'] = 80
-#     return dic
-
 def tutorias_sin_respuesta_by_asignatura_id(asignatura_id):
     dic = {}
     tutorias_id_lista = []
-    
+
     # tutorias_count
     tutorias_activas_pendintes_count = session_sql.query(Tutoria).filter(Tutoria.activa == True).join(Association_Tutoria_Asignatura).filter(Association_Tutoria_Asignatura.asignatura_id == asignatura_id).count()
     tutorias_activas_respondidas_count = session_sql.query(Tutoria).filter(Tutoria.activa == True).join(Informe).filter(Informe.asignatura_id == asignatura_id).count()
     tutorias_sin_respuesta_count = tutorias_activas_pendintes_count - tutorias_activas_respondidas_count
-    dic['tutorias_sin_respuesta_count'] = tutorias_sin_respuesta_count
+    dic['tutorias_activas_pendintes_count'] = tutorias_activas_pendintes_count
+    # dic['tutorias_activas_respondidas_count'] = tutorias_activas_respondidas_count
+    # dic['tutorias_sin_respuesta_count'] = tutorias_sin_respuesta_count
 
     # tutorias (se podra usar para agregar la opcion de volver a recibir por email las tutorias no contestadas)
     if tutorias_sin_respuesta_count != 0:

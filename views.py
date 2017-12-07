@@ -751,7 +751,6 @@ def alumnos_html(params={}):
                     params['collapse_alumno_edit_asignaturas'] = True
                     flash_toast('Asignadas asignaturas a ' + Markup('<strong>') + alumno_edit_form.nombre.data + Markup('</strong>'), 'success')
                     collapse_alumno_edit_asignaturas_contador = 0
-                    # return redirect(url_for('alumnos_html', params=dic_encode(params)))
             session_sql.commit()  # NOTE agregado en caso de no modificar datos del alumno y solo asignacion de asignaturas
 
             # ***************************************
@@ -853,7 +852,7 @@ def alumnos_html(params={}):
                         else:
                             session_sql.add(tutoria_add)
                             session_sql.commit()
-                            send_email_tutoria_asincrono(alumno, tutoria_add)  # NOTE anular temporalemente para pruebas de envio de mails.
+                            # send_email_tutoria_asincrono(alumno, tutoria_add)  # NOTE anular temporalemente para pruebas de envio de mails.
                             flash_toast('Enviando emails al equipo educativo de ' + Markup('<strong>') + alumno.nombre + Markup('</strong>'), 'info')
                             params['current_alumno_id'] = current_alumno_id
                             params['collapse_alumno'] = True
@@ -2003,6 +2002,8 @@ def informe_html(current_tutoria_asignatura_id, params={}):
                 params['current_tutoria_asignatura_id'] = current_tutoria_asignatura_id
                 params['alumno'] = alumno.apellidos + ', ' + alumno.nombre
                 params['grupo'] = grupo.nombre
+                params['tutor_nombre'] = grupo.tutor_nombre
+                params['tutor_apellidos'] = grupo.tutor_apellidos
                 params['fecha'] = tutoria.fecha
                 params['hora'] = tutoria.hora
                 params['asignatura'] = asignatura.asignatura
@@ -2050,6 +2051,8 @@ def informe_success_html(params={}):
     params['anchor'] = params_old.get('anchor', 'anchor_top')
     params['alumno'] = params_old.get('alumno', False)
     params['grupo'] = params_old.get('grupo', False)
+    params['tutor_nombre'] = params_old.get('tutor_nombre', False)
+    params['tutor_apellidos'] = params_old.get('tutor_apellidos', False)
     params['fecha'] = params_old.get('fecha', False)
     params['hora'] = params_old.get('hora', False)
     params['asignatura'] = params_old.get('asignatura', False)

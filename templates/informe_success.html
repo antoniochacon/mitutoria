@@ -7,19 +7,26 @@
 			{{titulo_1(bg_color='bg-dark', titulo='Informe de tutoría')}}
 			<span class="small text-mutted">Alumno: </span><span class="h6">{{params['alumno']}}</span>
 			<div class="small">
+			{#
 			<span class="text-mutted">Fecha:</span>
 			{{params['fecha'].strftime('%A') | capitalize}}
 			{{params['fecha'].strftime('%d')}}
 			{{params['fecha'].strftime('%b') | capitalize}} [{{params['hora'].strftime('%H:%M')}} h]
 			<br>
+			#}
 			<span class="text-mutted">Grupo:</span>
 			{{params['grupo']}}
+			<br>
+			<span class="text-mutted">Tutor/a:</span>
+			{{params['tutor_nombre']}} {{params['tutor_apellidos']}}
+			{#
 			<br>
 			<span class="text-mutted">Asignatura:</span>
 			{{params['asignatura']}}
 			<br>
 			<span class="text-mutted">Docente:</span>
 			{{params['docente']}}
+			#}
 			</div>
 			<div class="divider bg-mutted mt-2"></div>
 			<div class="text-center mt-1 mb-1">
@@ -36,7 +43,7 @@
 						Enhorabuena
 					{% endif %}
 				</div>
-				<div class="small text-secondary">{% if params['tutorias_sin_respuesta_by_asignatura_id']['tutorias_sin_respuesta_count'] %} Informes pendientes: {{params['tutorias_sin_respuesta_by_asignatura_id']['tutorias_sin_respuesta_count']}}{% endif %}</div>
+				<div class="small text-secondary">{% if params['tutorias_sin_respuesta_by_asignatura_id']['tutorias_activas_pendintes_count'] %} Informes pendientes: {{params['tutorias_sin_respuesta_by_asignatura_id']['tutorias_activas_pendintes_count']}}{% endif %}</div>
 				<div class="small text-secondary mb-2">actividad últimos {{params['settings_admin_periodo_participacion_recent']}} días:</div>
 				<span class="contador_animado align-middle h3 pl-2 pr-2">
 					<span class="timer" data-to="{{params['participacion_porcentaje_recent']}}" data-speed="3000"></span>%
