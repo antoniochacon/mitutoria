@@ -1607,9 +1607,8 @@ def settings_opciones_html(params={}):
             settings().diferencial = settings_diferencial
             settings().calendar = settings_edit_calendar
             settings().show_analisis_detalles = settings_show_analisis_detalles
-
-            flash_toast('Configuracion actualizada', 'success')
             session_sql.commit()
+            flash_toast('Configuracion actualizada', 'success')
 
             if settings().calendar:
                 if settings().oauth2_calendar_credentials:
@@ -1620,7 +1619,6 @@ def settings_opciones_html(params={}):
                     service = discovery.build('calendar', 'v3', http=http)
                 else:
                     return redirect(url_for('oauth2callback'))
-
             return redirect(url_for('settings_opciones_html'))
     return render_template('settings_opciones.html', params=params)
 
@@ -2006,7 +2004,6 @@ def informe_html(current_tutoria_asignatura_id, params={}):
             #     print('informe.id', informe.id)
             #
             # print('current_informe_id', current_informe_id)
-
 
             # session_sql.commit()
             if params['pregunta_sin_respuesta']:
