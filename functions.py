@@ -701,9 +701,9 @@ def profesores_actividad_count():
 
 def tutoria_calendar_undelete(event_id):
     if settings().calendar:
-        if settings().oauth2_calendar_credentials:
+        if settings().oauth2_credentials:
             try:
-                credentials = oauth2client.client.Credentials.new_from_json(settings().oauth2_calendar_credentials)
+                credentials = oauth2client.client.Credentials.new_from_json(settings().oauth2_credentials)
                 http = httplib2.Http()
                 http = credentials.authorize(http)
                 service = discovery.build('calendar', 'v3', http=http)
@@ -721,9 +721,9 @@ def tutoria_calendar_undelete(event_id):
 
 def tutoria_calendar_delete(event_id):
     if settings().calendar:
-        if settings().oauth2_calendar_credentials:
+        if settings().oauth2_credentials:
             try:
-                credentials = oauth2client.client.Credentials.new_from_json(settings().oauth2_calendar_credentials)
+                credentials = oauth2client.client.Credentials.new_from_json(settings().oauth2_credentials)
                 http = httplib2.Http()
                 http = credentials.authorize(http)
                 service = discovery.build('calendar', 'v3', http=http)
@@ -798,9 +798,9 @@ def tutoria_calendar_sync():
     if settings():
         settings_sql = settings()
         if settings_sql.calendar:
-            if settings_sql.oauth2_calendar_credentials:
+            if settings_sql.oauth2_credentials:
                 try:
-                    credentials = oauth2client.client.Credentials.new_from_json(settings_sql.oauth2_calendar_credentials)
+                    credentials = oauth2client.client.Credentials.new_from_json(settings_sql.oauth2_credentials)
                     http = httplib2.Http()
                     http = credentials.authorize(http)
                     service = discovery.build('calendar', 'v3', http=http)
@@ -824,7 +824,6 @@ def tutoria_calendar_sync():
                                         tutoria.activa = True
                                         alumno = alumno_by_tutoria_id(tutoria.id)
                                         flash_toast('Tutoria de ' + Markup('<strong>') + alumno.nombre + Markup('</strong>') + ' auto-activada', 'info')
-                                        flash_toast('Google Calendar sincronizado', 'success')
                         else:  # Elimina tutoria si ha sido eliminado desde la agenda
                             session_sql.delete(tutoria)
                             flash_toast('Google Calendar sincronizado', 'success')

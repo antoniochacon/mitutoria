@@ -74,7 +74,7 @@ def oauth2callback():
     else:
         auth_code = request.args.get('code')
         credentials = flow.step2_exchange(auth_code)
-        settings().oauth2_calendar_credentials = credentials.to_json()
+        settings().oauth2_credentials = credentials.to_json()
         session_sql.commit()
     return redirect(url_for('settings_opciones_html'))
 
@@ -82,10 +82,10 @@ def oauth2callback():
 @app.route('/calendar_api')
 @login_required
 def calendar_api_html():
-    if settings().oauth2_calendar_credentials:
+    if settings().oauth2_credentials:
         try:
-            credentials = oauth2client.client.Credentials.new_from_json(settings().oauth2_calendar_credentials)
-            settings().oauth2_calendar_credentials = credentials.to_json()
+            credentials = oauth2client.client.Credentials.new_from_json(settings().oauth2_credentials)
+            settings().oauth2_credentials = credentials.to_json()
             session_sql.commit()
             http = httplib2.Http()
             http = credentials.authorize(http)
@@ -861,9 +861,9 @@ def alumnos_html(params={}):
                             params['anchor'] = 'anchor_top'
                             # NOTE comprobar permisos de oauth2
                             if settings().calendar:
-                                if settings().oauth2_calendar_credentials:
+                                if settings().oauth2_credentials:
                                     try:
-                                        credentials = oauth2client.client.Credentials.new_from_json(settings().oauth2_calendar_credentials)
+                                        credentials = oauth2client.client.Credentials.new_from_json(settings().oauth2_credentials)
                                         http = httplib2.Http()
                                         http = credentials.authorize(http)
                                         service = discovery.build('calendar', 'v3', http=http)
@@ -1521,9 +1521,9 @@ def analisis_tutoria_edit_html(params={}):
                     return redirect(url_for('analisis_html', params=dic_encode(params)))
                 else:
                     if settings().calendar:
-                        if settings().oauth2_calendar_credentials:
+                        if settings().oauth2_credentials:
                             try:
-                                credentials = oauth2client.client.Credentials.new_from_json(settings().oauth2_calendar_credentials)
+                                credentials = oauth2client.client.Credentials.new_from_json(settings().oauth2_credentials)
                                 http = httplib2.Http()
                                 http = credentials.authorize(http)
                                 service = discovery.build('calendar', 'v3', http=http)
@@ -1597,7 +1597,7 @@ def settings_opciones_html(params={}):
             if not settings_edit_calendar:
                 settings_edit_calendar = False
                 settings().calendar_sincronizado = False
-                settings().oauth2_calendar_credentials = ''
+                settings().oauth2_credentials = ''
             if not settings_show_analisis_detalles:
                 settings_show_analisis_detalles = False
 
@@ -1611,9 +1611,9 @@ def settings_opciones_html(params={}):
             flash_toast('Configuracion actualizada', 'success')
 
             if settings().calendar:
-                if settings().oauth2_calendar_credentials:
-                    credentials = oauth2client.client.Credentials.new_from_json(settings().oauth2_calendar_credentials)
-                    settings().oauth2_calendar_credentials = credentials.to_json()
+                if settings().oauth2_credentials:
+                    credentials = oauth2client.client.Credentials.new_from_json(settings().oauth2_credentials)
+                    settings().oauth2_credentials = credentials.to_json()
                     session_sql.commit()
                     http = credentials.authorize(httplib2.Http())
                     service = discovery.build('calendar', 'v3', http=http)
