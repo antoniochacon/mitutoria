@@ -10,11 +10,15 @@ import config_gmail_api
 # () Objeto
 # {} Valor
 # *****************************************************************
-def association_tutoria_asignatura_id(tutoria_id,asignatura_id):
-    return session_sql.query(Association_Tutoria_Asignatura).filter(Association_Tutoria_Asignatura.asignatura_id==asignatura_id, Association_Tutoria_Asignatura.tutoria_id==tutoria_id).first().id
+
+
+def association_tutoria_asignatura_id(tutoria_id, asignatura_id):
+    return session_sql.query(Association_Tutoria_Asignatura).filter(Association_Tutoria_Asignatura.asignatura_id == asignatura_id, Association_Tutoria_Asignatura.tutoria_id == tutoria_id).first().id
+
 
 def grupo_by_asignatura_id(asignatura_id):
-    return session_sql.query(Grupo).join(Asignatura).filter(Asignatura.id==asignatura_id).first()
+    return session_sql.query(Grupo).join(Asignatura).filter(Asignatura.id == asignatura_id).first()
+
 
 def tutoria_stats(tutoria_id):
     informes_recibidos_by_tutoria_id_count = session_sql.query(Informe).filter(Informe.tutoria_id == tutoria_id).count()
@@ -697,9 +701,9 @@ def profesores_actividad_count():
 
 def tutoria_calendar_undelete(event_id):
     if settings().calendar:
-        if settings().oauth2_credentials:
+        if settings().oauth2_calendar_credentials:
             try:
-                credentials = oauth2client.client.Credentials.new_from_json(settings().oauth2_credentials)
+                credentials = oauth2client.client.Credentials.new_from_json(settings().oauth2_calendar_credentials)
                 http = httplib2.Http()
                 http = credentials.authorize(http)
                 service = discovery.build('calendar', 'v3', http=http)
@@ -717,9 +721,9 @@ def tutoria_calendar_undelete(event_id):
 
 def tutoria_calendar_delete(event_id):
     if settings().calendar:
-        if settings().oauth2_credentials:
+        if settings().oauth2_calendar_credentials:
             try:
-                credentials = oauth2client.client.Credentials.new_from_json(settings().oauth2_credentials)
+                credentials = oauth2client.client.Credentials.new_from_json(settings().oauth2_calendar_credentials)
                 http = httplib2.Http()
                 http = credentials.authorize(http)
                 service = discovery.build('calendar', 'v3', http=http)
@@ -769,18 +773,34 @@ def cleanpup_tutorias(periodo_cleanup_tutorias):
         for settings in settings_all:
             if not settings.cleanup_tutorias_status:
                 settings.cleanup_tutorias_status = True
-    session_sql.commit()
-    flash_toast('Tutorias CleanUp: ' + str(tutorias_deleted_count), 'success')
+        session_sql.commit()
+    flash_toast('CleanUp [' + str(tutorias_deleted_count) + ' tutorias]', 'success')
     return tutorias_deleted_count
+
+
+def tutorias_timeout():  # Update de TRUE a FALSE la columna activa de una tutoria pasadas 48 horas
+    commit_action = False
+    if settings():
+        settings_sql = settings()
+        if settings_sql.tutoria_timeout:
+            alumnos = session_sql.query(Alumno).filter(Alumno.grupo_id == settings_sql.grupo_activo_id).all()
+            for alumno in alumnos:
+                for tutoria in alumno_tutorias(alumno.id, True):
+                    if tutoria.fecha < g.current_date - datetime.timedelta(hours=6):
+                        commit_action = True
+                        tutoria.activa = False
+                        flash_toast('Tutoria de ' + Markup('<strong>') + alumno.nombre + Markup('</strong>') + ' auto-archivada', 'info')
+            if commit_action:
+                session_sql.commit()
 
 
 def tutoria_calendar_sync():
     if settings():
         settings_sql = settings()
         if settings_sql.calendar:
-            if settings_sql.oauth2_credentials:
+            if settings_sql.oauth2_calendar_credentials:
                 try:
-                    credentials = oauth2client.client.Credentials.new_from_json(settings_sql.oauth2_credentials)
+                    credentials = oauth2client.client.Credentials.new_from_json(settings_sql.oauth2_calendar_credentials)
                     http = httplib2.Http()
                     http = credentials.authorize(http)
                     service = discovery.build('calendar', 'v3', http=http)
@@ -799,7 +819,12 @@ def tutoria_calendar_sync():
                             if event['start']['dateTime'] != calendar_datetime_utc_start_arrow:
                                 tutoria.fecha = arrow.get(event['start']['dateTime']).date()
                                 tutoria.hora = arrow.get(event['start']['dateTime']).time()
-                                flash_toast('Google Calendar sincronizado', 'success')
+                                if g.current_date <= arrow.get(event['start']['dateTime']).date():
+                                    if not tutoria.activa:
+                                        tutoria.activa = True
+                                        alumno = alumno_by_tutoria_id(tutoria.id)
+                                        flash_toast('Tutoria de ' + Markup('<strong>') + alumno.nombre + Markup('</strong>') + ' auto-activada', 'info')
+                                        flash_toast('Google Calendar sincronizado', 'success')
                         else:  # Elimina tutoria si ha sido eliminado desde la agenda
                             session_sql.delete(tutoria)
                             flash_toast('Google Calendar sincronizado', 'success')
@@ -839,8 +864,8 @@ def tutoria_calendar_sync():
             session_sql.commit()
 
 
-def settings_admin():
-    return session_sql.query(Settings_Admin).first()
+def settings_global():
+    return session_sql.query(Settings_Global).first()
 
 
 def diferencial_check(percent, resultado_1, resultado_2):
@@ -930,11 +955,11 @@ def asignatura_informes_respondidos_count(asignatura_id):
 
 
 def asignatura_informes_solicitados_recent_count(asignatura_id):
-    return session_sql.query(Association_Tutoria_Asignatura).filter(Association_Tutoria_Asignatura.asignatura_id == asignatura_id, Association_Tutoria_Asignatura.created_at > g.current_date - datetime.timedelta(days=settings_admin().periodo_participacion_recent)).count()
+    return session_sql.query(Association_Tutoria_Asignatura).filter(Association_Tutoria_Asignatura.asignatura_id == asignatura_id, Association_Tutoria_Asignatura.created_at > g.current_date - datetime.timedelta(days=settings_global().periodo_participacion_recent)).count()
 
 
 def asignatura_informes_respondidos_recent_count(asignatura_id):
-    return session_sql.query(Informe).filter(Informe.asignatura_id == asignatura_id, Informe.created_at > g.current_date - datetime.timedelta(days=settings_admin().periodo_participacion_recent)).count()
+    return session_sql.query(Informe).filter(Informe.asignatura_id == asignatura_id, Informe.created_at > g.current_date - datetime.timedelta(days=settings_global().periodo_participacion_recent)).count()
 
 
 def tutorias_sin_respuesta_by_asignatura_id(asignatura_id):
@@ -1397,19 +1422,6 @@ def equal_str(a, b):
     return False
 
 
-def tutorias_timeout():  # Update de TRUE a FALSE la columna activa de una tutoria pasadas 48 horas
-    if settings():
-        settings_sql = settings()
-        if settings_sql.tutoria_timeout:
-            alumnos = session_sql.query(Alumno).filter(Alumno.grupo_id == settings_sql.grupo_activo_id).all()
-            for alumno in alumnos:
-                for tutoria in alumno_tutorias(alumno.id, True):
-                    if tutoria.fecha < g.current_date - datetime.timedelta(hours=6):
-                        tutoria.activa = False
-                        session_sql.commit()
-                        flash_toast('Tutoria de ' + Markup('<strong>') + alumno.nombre + Markup('</strong>') + ' auto-archivada', 'warning')
-
-
 def grupo_tutorias(grupo_id, activa):
     if str(activa) == '':
         grupo_tutorias = session_sql.query(Tutoria).join(Alumno).join(Grupo).filter(Grupo.id == grupo_id).order_by('fecha').all()
@@ -1498,4 +1510,4 @@ def cita_random():
 
 
 app.jinja_env.globals.update(settings=settings, cita_random=cita_random,  singular_plural=singular_plural, grupo_activo=grupo_activo, curso=curso, alumnos_not_sorted=alumnos_not_sorted, alumnos=alumnos, alumno_tutorias=alumno_tutorias, equal_str=equal_str, asignaturas=asignaturas, asignatura_alumnos=asignatura_alumnos, association_alumno_asignatura_check=association_alumno_asignatura_check,
-                             tutoria_asignaturas_count=tutoria_asignaturas_count, string_to_date=string_to_date, association_settings_pregunta_check=association_settings_pregunta_check, preguntas=preguntas, informe_preguntas=informe_preguntas, invitado_settings=invitado_settings, invitado_preguntas=invitado_preguntas, invitado_settings_by_id=invitado_settings_by_id, invitado_respuesta=invitado_respuesta, invitado_pruebas_evaluables=invitado_pruebas_evaluables, invitado_informe=invitado_informe, cociente_porcentual=cociente_porcentual, tutoria_asignaturas=tutoria_asignaturas, pregunta_active_default_check=pregunta_active_default_check, pregunta_visible_check=pregunta_visible_check, grupo_activo_check=grupo_activo_check, user_by_id=user_by_id, asignatura_informes_solicitados_count=asignatura_informes_solicitados_count, asignatura_informes_respondidos_count=asignatura_informes_respondidos_count, asignaturas_not_sorted=asignaturas_not_sorted, grupo_tutorias=grupo_tutorias, alumno_by_id=alumno_by_id, hashids_encode=hashids_encode, hashids_decode=hashids_decode, f_encode=f_encode, f_decode=f_decode, dic_encode_args=dic_encode_args, dic_try=dic_try, settings_by_id=settings_by_id, usuario_grupos=usuario_grupos, usuarios=usuarios, usuarios_mas_activos=usuarios_mas_activos, grupo_alumnos_count=grupo_alumnos_count, diferencial_check=diferencial_check, categoria_by_id=categoria_by_id, categorias=categorias, preguntas_by_categoria_id=preguntas_by_categoria_id, asignatura_by_id=asignatura_by_id, informe_by_tutoria_id_by_asignatura_id=informe_by_tutoria_id_by_asignatura_id, asignaturas_alumno_by_alumno_id=asignaturas_alumno_by_alumno_id, respuestas_pregunta_alumno_lista=respuestas_pregunta_alumno_lista, respuestas_asignatura_alumno_lista=respuestas_asignatura_alumno_lista, notas_pruebas_evaluables_grupo=notas_pruebas_evaluables_grupo, notas_pruebas_evaluables_alumno=notas_pruebas_evaluables_alumno, analisis_tutoria=analisis_tutoria, tutoria_incoming=tutoria_incoming, asignaturas_orden_switch=asignaturas_orden_switch, asignaturas_ordenadas=asignaturas_ordenadas, invitado_preguntas_by_categoria_id=invitado_preguntas_by_categoria_id, tutoria_stats=tutoria_stats, settings_admin=settings_admin, association_tutoria_asignatura_id=association_tutoria_asignatura_id)
+                             tutoria_asignaturas_count=tutoria_asignaturas_count, string_to_date=string_to_date, association_settings_pregunta_check=association_settings_pregunta_check, preguntas=preguntas, informe_preguntas=informe_preguntas, invitado_settings=invitado_settings, invitado_preguntas=invitado_preguntas, invitado_settings_by_id=invitado_settings_by_id, invitado_respuesta=invitado_respuesta, invitado_pruebas_evaluables=invitado_pruebas_evaluables, invitado_informe=invitado_informe, cociente_porcentual=cociente_porcentual, tutoria_asignaturas=tutoria_asignaturas, pregunta_active_default_check=pregunta_active_default_check, pregunta_visible_check=pregunta_visible_check, grupo_activo_check=grupo_activo_check, user_by_id=user_by_id, asignatura_informes_solicitados_count=asignatura_informes_solicitados_count, asignatura_informes_respondidos_count=asignatura_informes_respondidos_count, asignaturas_not_sorted=asignaturas_not_sorted, grupo_tutorias=grupo_tutorias, alumno_by_id=alumno_by_id, hashids_encode=hashids_encode, hashids_decode=hashids_decode, f_encode=f_encode, f_decode=f_decode, dic_encode_args=dic_encode_args, dic_try=dic_try, settings_by_id=settings_by_id, usuario_grupos=usuario_grupos, usuarios=usuarios, usuarios_mas_activos=usuarios_mas_activos, grupo_alumnos_count=grupo_alumnos_count, diferencial_check=diferencial_check, categoria_by_id=categoria_by_id, categorias=categorias, preguntas_by_categoria_id=preguntas_by_categoria_id, asignatura_by_id=asignatura_by_id, informe_by_tutoria_id_by_asignatura_id=informe_by_tutoria_id_by_asignatura_id, asignaturas_alumno_by_alumno_id=asignaturas_alumno_by_alumno_id, respuestas_pregunta_alumno_lista=respuestas_pregunta_alumno_lista, respuestas_asignatura_alumno_lista=respuestas_asignatura_alumno_lista, notas_pruebas_evaluables_grupo=notas_pruebas_evaluables_grupo, notas_pruebas_evaluables_alumno=notas_pruebas_evaluables_alumno, analisis_tutoria=analisis_tutoria, tutoria_incoming=tutoria_incoming, asignaturas_orden_switch=asignaturas_orden_switch, asignaturas_ordenadas=asignaturas_ordenadas, invitado_preguntas_by_categoria_id=invitado_preguntas_by_categoria_id, tutoria_stats=tutoria_stats, settings_global=settings_global, association_tutoria_asignatura_id=association_tutoria_asignatura_id)

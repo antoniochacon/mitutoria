@@ -34,7 +34,7 @@ class Settings (Base):
     id = Column(Integer, primary_key=True)
     user_id = Column(Integer, ForeignKey('user.id'))
     user = relationship('User', back_populates='settings')
-    oauth2_credentials = Column(String)
+    oauth2_calendar_credentials = Column(String)
     email_validated = Column(Boolean, default=False)
     email_validated_intentos = Column(Integer, default=1)
     email_robinson = Column(Boolean, default=False)
@@ -60,8 +60,8 @@ class Settings (Base):
     visit_number = Column(Integer, default=1)
 
 
-class Settings_Admin (Base):
-    __tablename__ = 'settings_admin'
+class Settings_Global (Base):
+    __tablename__ = 'settings_global'
     id = Column(Integer, primary_key=True)
     diferencial_default = Column(Integer, default=15)
     periodo_participacion_recent = Column(Integer, default=30)

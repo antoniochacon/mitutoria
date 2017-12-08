@@ -74,7 +74,7 @@ def oauth2callback():
     else:
         auth_code = request.args.get('code')
         credentials = flow.step2_exchange(auth_code)
-        settings().oauth2_credentials = credentials.to_json()
+        settings().oauth2_calendar_credentials = credentials.to_json()
         session_sql.commit()
     return redirect(url_for('settings_opciones_html'))
 
@@ -82,10 +82,10 @@ def oauth2callback():
 @app.route('/calendar_api')
 @login_required
 def calendar_api_html():
-    if settings().oauth2_credentials:
+    if settings().oauth2_calendar_credentials:
         try:
-            credentials = oauth2client.client.Credentials.new_from_json(settings().oauth2_credentials)
-            settings().oauth2_credentials = credentials.to_json()
+            credentials = oauth2client.client.Credentials.new_from_json(settings().oauth2_calendar_credentials)
+            settings().oauth2_calendar_credentials = credentials.to_json()
             session_sql.commit()
             http = httplib2.Http()
             http = credentials.authorize(http)
@@ -128,8 +128,8 @@ def admin_global_set_html(params={}):
     params = {}
     params['anchor'] = params_old.get('anchor', 'anchor_top')
 
-    settings_admin_sql = settings_admin()
-    tutorias_clenaup_count = session_sql.query(Tutoria).filter(Tutoria.fecha < g.current_date - datetime.timedelta(days=30 * settings_admin_sql.periodo_cleanup_tutorias)).count()
+    settings_global_sql = settings_global()
+    tutorias_clenaup_count = session_sql.query(Tutoria).filter(Tutoria.fecha < g.current_date - datetime.timedelta(days=30 * settings_global_sql.periodo_cleanup_tutorias)).count()
 
     if request.method == 'POST':
         periodo_cleanup_tutorias = int(request.form.get('periodo_cleanup_tutorias'))
@@ -139,8 +139,8 @@ def admin_global_set_html(params={}):
 
         # XXX selector_cleanup_update
         if request.form['selector_button'] == 'selector_cleanup_update':
-            if settings_admin_sql.periodo_cleanup_tutorias != periodo_cleanup_tutorias:
-                settings_admin_sql.periodo_cleanup_tutorias = periodo_cleanup_tutorias
+            if settings_global_sql.periodo_cleanup_tutorias != periodo_cleanup_tutorias:
+                settings_global_sql.periodo_cleanup_tutorias = periodo_cleanup_tutorias
                 session_sql.commit()
                 flash_toast('Tutorias CleanUp actualizado', 'success')
             return redirect(url_for('admin_global_set_html'))
@@ -148,17 +148,17 @@ def admin_global_set_html(params={}):
         # XXX selector_global_set_edit
         if request.form['selector_button'] == 'selector_global_set_edit':
             commit_action = False
-            if settings_admin_sql.periodo_cleanup_tutorias != int(periodo_cleanup_tutorias):
-                settings_admin_sql.periodo_cleanup_tutorias = periodo_cleanup_tutorias
+            if settings_global_sql.periodo_cleanup_tutorias != int(periodo_cleanup_tutorias):
+                settings_global_sql.periodo_cleanup_tutorias = periodo_cleanup_tutorias
                 commit_action = True
-            if settings_admin_sql.periodo_participacion_recent != int(request.form.get('periodo_participacion_recent')):
-                settings_admin_sql.periodo_participacion_recent = request.form.get('periodo_participacion_recent')
+            if settings_global_sql.periodo_participacion_recent != int(request.form.get('periodo_participacion_recent')):
+                settings_global_sql.periodo_participacion_recent = request.form.get('periodo_participacion_recent')
                 commit_action = True
-            if settings_admin_sql.diferencial_default != int(request.form.get('diferencial_default')):
-                settings_admin_sql.diferencial_default = request.form.get('diferencial_default')
+            if settings_global_sql.diferencial_default != int(request.form.get('diferencial_default')):
+                settings_global_sql.diferencial_default = request.form.get('diferencial_default')
                 commit_action = True
-            if str(settings_admin_sql.cleanup_tutorias_automatic) != str(cleanup_tutorias_automatic):
-                settings_admin_sql.cleanup_tutorias_automatic = cleanup_tutorias_automatic
+            if str(settings_global_sql.cleanup_tutorias_automatic) != str(cleanup_tutorias_automatic):
+                settings_global_sql.cleanup_tutorias_automatic = cleanup_tutorias_automatic
                 commit_action = True
             if commit_action:
                 session_sql.commit()
@@ -166,8 +166,8 @@ def admin_global_set_html(params={}):
             return redirect(url_for('admin_global_set_html'))
 
         if request.form['selector_button'] == 'selector_cleanup_tutorias':
-            if settings_admin_sql.periodo_cleanup_tutorias != periodo_cleanup_tutorias:
-                settings_admin_sql.periodo_cleanup_tutorias = periodo_cleanup_tutorias
+            if settings_global_sql.periodo_cleanup_tutorias != periodo_cleanup_tutorias:
+                settings_global_sql.periodo_cleanup_tutorias = periodo_cleanup_tutorias
             cleanpup_tutorias(periodo_cleanup_tutorias)
             return redirect(url_for('admin_global_set_html'))
 
@@ -861,9 +861,9 @@ def alumnos_html(params={}):
                             params['anchor'] = 'anchor_top'
                             # NOTE comprobar permisos de oauth2
                             if settings().calendar:
-                                if settings().oauth2_credentials:
+                                if settings().oauth2_calendar_credentials:
                                     try:
-                                        credentials = oauth2client.client.Credentials.new_from_json(settings().oauth2_credentials)
+                                        credentials = oauth2client.client.Credentials.new_from_json(settings().oauth2_calendar_credentials)
                                         http = httplib2.Http()
                                         http = credentials.authorize(http)
                                         service = discovery.build('calendar', 'v3', http=http)
@@ -1521,9 +1521,9 @@ def analisis_tutoria_edit_html(params={}):
                     return redirect(url_for('analisis_html', params=dic_encode(params)))
                 else:
                     if settings().calendar:
-                        if settings().oauth2_credentials:
+                        if settings().oauth2_calendar_credentials:
                             try:
-                                credentials = oauth2client.client.Credentials.new_from_json(settings().oauth2_credentials)
+                                credentials = oauth2client.client.Credentials.new_from_json(settings().oauth2_calendar_credentials)
                                 http = httplib2.Http()
                                 http = credentials.authorize(http)
                                 service = discovery.build('calendar', 'v3', http=http)
@@ -1597,7 +1597,7 @@ def settings_opciones_html(params={}):
             if not settings_edit_calendar:
                 settings_edit_calendar = False
                 settings().calendar_sincronizado = False
-                settings().oauth2_credentials = ''
+                settings().oauth2_calendar_credentials = ''
             if not settings_show_analisis_detalles:
                 settings_show_analisis_detalles = False
 
@@ -1612,9 +1612,9 @@ def settings_opciones_html(params={}):
             session_sql.commit()
 
             if settings().calendar:
-                if settings().oauth2_credentials:
-                    credentials = oauth2client.client.Credentials.new_from_json(settings().oauth2_credentials)
-                    settings().oauth2_credentials = credentials.to_json()
+                if settings().oauth2_calendar_credentials:
+                    credentials = oauth2client.client.Credentials.new_from_json(settings().oauth2_calendar_credentials)
+                    settings().oauth2_calendar_credentials = credentials.to_json()
                     session_sql.commit()
                     http = credentials.authorize(httplib2.Http())
                     service = discovery.build('calendar', 'v3', http=http)
@@ -1938,7 +1938,11 @@ def informe_html(current_tutoria_asignatura_id, params={}):
         if not informe_sql:
             informe = Informe(tutoria_id=tutoria_id, asignatura_id=asignatura_id, comentario=request.form.get('comentario'))
             session_sql.add(informe)
-            session_sql.commit()
+
+            session_sql.flush()
+            current_informe_id = invitado_informe(tutoria.id, asignatura.id).id
+
+            # session_sql.commit()
             for pregunta in preguntas_orden_desc:
                 resultado = request.form.get('pregunta_' + str(hashids_encode(pregunta.id)))
                 if resultado:
@@ -1949,6 +1953,9 @@ def informe_html(current_tutoria_asignatura_id, params={}):
                     session_sql.add(respuesta)
         else:
             informe = informe_sql
+
+            current_informe_id = informe_sql.id
+
             informe.comentario = comentario = request.form.get('comentario')
             for pregunta in preguntas_orden_desc:
                 respuesta = invitado_respuesta(informe.id, pregunta.id)
@@ -1968,14 +1975,14 @@ def informe_html(current_tutoria_asignatura_id, params={}):
             prueba_evaluable.nota = request.form.get('prueba_evaluable_nota_' + str(hashids_encode(prueba_evaluable.id)))
             prueba_evaluable_dic['selector_prueba_evaluable_delete_' + str(prueba_evaluable.id)] = int(prueba_evaluable.id)
 
-        session_sql.commit()  # NOTE (NO BORRAR ESTA NOTA) este era el problema de no generar los graficos, era un problema de identado
+        # session_sql.commit()  # NOTE (NO BORRAR ESTA NOTA) este era el problema de no generar los graficos, era un problema de identado
 
         if request.form['selector_button'] in prueba_evaluable_dic.keys():
             params['anchor'] = 'anchor_pru_eva_add'
             prueba_evaluable_delete_id = prueba_evaluable_dic[request.form['selector_button']]
             prueba_evaluable_delete_sql = session_sql.query(Prueba_Evaluable).filter(Prueba_Evaluable.id == prueba_evaluable_delete_id).first()
             session_sql.delete(prueba_evaluable_delete_sql)
-            session_sql.commit()
+            # session_sql.commit()
             return redirect(url_for('informe_html', current_tutoria_asignatura_id=hashids_encode(current_tutoria_asignatura_id), params=dic_encode(params)))
 
         if request.form['selector_button'] == 'selector_prueba_evaluable_add':
@@ -1988,21 +1995,27 @@ def informe_html(current_tutoria_asignatura_id, params={}):
             prueba_evaluable_nota = 0
             prueba_evaluable_add = Prueba_Evaluable(informe_id=informe.id, nombre=prueba_evaluable_nombre, nota=prueba_evaluable_nota)
             session_sql.add(prueba_evaluable_add)
-            session_sql.commit()
+            # session_sql.commit()
             flash_toast('Prueba evaluable agregada', 'success')
             return redirect(url_for('informe_html', current_tutoria_asignatura_id=hashids_encode(current_tutoria_asignatura_id), params=dic_encode(params)))
 
         if request.form['selector_button'] == 'selector_informe_add':
-            session_sql.commit()
+            # session_sql.refresh(informe)
+            # session_sql.expire_all()
+            # for informe in session_sql:
+            #     print('informe.id', informe.id)
+            #
+            # print('current_informe_id', current_informe_id)
+
+
+            # session_sql.commit()
             if params['pregunta_sin_respuesta']:
                 flash_toast('Preguntas sin evaluar', 'warning')
                 return redirect(url_for('informe_html', current_tutoria_asignatura_id=hashids_encode(current_tutoria_asignatura_id), params=dic_encode(params)))
             else:
-                flash_toast('Infome de ' + Markup('<strong>') + alumno.nombre + Markup('</strong>') + ' enviado', 'success')
                 params = {}
                 params['current_tutoria_asignatura_id'] = current_tutoria_asignatura_id
                 params['alumno'] = alumno.apellidos + ', ' + alumno.nombre
-                # params['alumno_id'] = alumno.id
                 params['grupo'] = grupo.nombre
                 params['tutor_nombre'] = grupo.tutor_nombre
                 params['tutor_apellidos'] = grupo.tutor_apellidos
@@ -2014,7 +2027,11 @@ def informe_html(current_tutoria_asignatura_id, params={}):
                 params['invitado'] = True
                 params['participacion_porcentaje_recent'] = cociente_porcentual(asignatura_informes_respondidos_recent_count(asignatura.id), asignatura_informes_solicitados_recent_count(asignatura.id))
                 params['tutorias_sin_respuesta_by_asignatura_id'] = tutorias_sin_respuesta_by_asignatura_id(asignatura.id)
-                params['settings_admin_periodo_participacion_recent'] = settings_admin().periodo_participacion_recent
+                params['settings_global_periodo_participacion_recent'] = settings_global().periodo_participacion_recent
+                flash_toast('Infome de ' + Markup('<strong>') + alumno.nombre + Markup('</strong>') + ' enviado', 'success')
+                # for informe in session_sql:
+                #     print('informe.id', informe.id)
+                session_sql.commit()
                 return redirect(url_for('informe_success_html', params=dic_encode(params)))
 
         return render_template(
@@ -2052,7 +2069,6 @@ def informe_success_html(params={}):
     params['current_tutoria_asignatura_id'] = params_old.get('current_tutoria_asignatura_id', 0)
     params['anchor'] = params_old.get('anchor', 'anchor_top')
     params['alumno'] = params_old.get('alumno', False)
-    # params['alumno_id'] = params_old.get('alumno_id', 0)
     params['grupo'] = params_old.get('grupo', False)
     params['tutor_nombre'] = params_old.get('tutor_nombre', False)
     params['tutor_apellidos'] = params_old.get('tutor_apellidos', False)
@@ -2063,9 +2079,7 @@ def informe_success_html(params={}):
     params['docente'] = params_old.get('docente', False)
     params['participacion_porcentaje_recent'] = params_old.get('participacion_porcentaje_recent', 0)
     params['tutorias_sin_respuesta_by_asignatura_id'] = params_old.get('tutorias_sin_respuesta_by_asignatura_id', {})
-    params['settings_admin_periodo_participacion_recent'] = params_old.get('settings_admin_periodo_participacion_recent', 30)
-    # params['tutorias_id_lista'] = params_old.get('tutorias_id_lista', [])
-
+    params['settings_global_periodo_participacion_recent'] = params_old.get('settings_global_periodo_participacion_recent', 30)
     return render_template(
         'informe_success.html', params=params)
 
@@ -2081,17 +2095,13 @@ def informes_pendientes_html(params={}):
     params['anchor'] = params_old.get('anchor', 'anchor_top')
     params['asignatura_id'] = params_old.get('asignatura_id', 0)
     params['tutorias_sin_respuesta_by_asignatura_id'] = params_old.get('tutorias_sin_respuesta_by_asignatura_id', {})
-
     asignatura_id = params['asignatura_id']
     asignatura = asignatura_by_id(asignatura_id)
-
     grupo = grupo_by_asignatura_id(asignatura_id)
-
     tutorias_id_lista = params['tutorias_sin_respuesta_by_asignatura_id']['tutorias_id_lista']
     tutorias_pendites = []
     for tutoria_id in tutorias_id_lista:
         tutorias_pendites.append(tutoria_by_id(tutoria_id))
-
     return render_template(
         'informes_pendientes.html',
         asignatura=asignatura, tutorias_pendites=tutorias_pendites, grupo=grupo, params=params)
@@ -2302,7 +2312,7 @@ def user_add_html():
                 settings_add = Settings(user_id=user_add.id)
                 session_sql.add(settings_add)
                 preguntas_active_default(user_add.id)  # inserta las preguntas activas by default
-                settings_add.diferencial_default = settings_admin().diferencial_default
+                settings_add.diferencial_default = settings_global().diferencial_default
                 params['current_user_id'] = user_add.id
 
                 if user_add.email == 'antonioelmatematico@gmail.com':

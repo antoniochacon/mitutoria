@@ -13,14 +13,14 @@
 				{{grupo.tutor_nombre}}
 				{{grupo.tutor_apellidos}}
 				<br>
-				<span class="text-mutted">Asignatura:</span>
-				{{asignatura.asignatura}}
-				<br>
 				<span class="text-mutted">Docente:</span>
 				{{asignatura.nombre}}
 				{{asignatura.apellidos}}
+				<br>
+				<span class="text-mutted">Asignatura:</span>
+				{{asignatura.asignatura}}
 			</div>
-			<div class="divider bg-mutted mt-2"></div>
+			<div class="divider bg-mutted mt-2 mb-3"></div>
 			{% for tutoria in tutorias_pendites %}
 				{% with %}
 				{% set tutoria_incoming = tutoria_incoming(tutoria.id) %}
@@ -37,11 +37,10 @@
 					</span>
 				</a>
 				<div class="progress">
-					<div class="progress-bar bg-secondary" role="progressbar" aria-valuemin="0" aria-valuemax="100" style="height:2px; width: {{tutoria_incoming['porcentaje']}}%;"></div>
+					<div class="progress-bar bg-secondary" role="progressbar" aria-valuemin="0" aria-valuemax="100" style="height:4px; width: {{tutoria_incoming['porcentaje']}}%;"></div>
 				</div>
 				{% endwith %}
 			{% endfor %}
-			<!-- <div class="divider bg-mutted"></div> -->
 		</div>
 	</div>
 {% endblock %}

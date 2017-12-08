@@ -34,12 +34,12 @@
 				<span class="text-secondary small">Sin tutorias pendientes</span>
 				{% endif %}
 
-				<div class="small text-secondary mb-2">actividad últimos {{params['settings_admin_periodo_participacion_recent']}} días:</div>
+				<div class="small text-secondary mb-2">actividad últimos {{params['settings_global_periodo_participacion_recent']}} días:</div>
 				<span class="contador_animado align-middle h3 pl-2 pr-2">
 					<span class="timer" data-to="{{params['participacion_porcentaje_recent']}}" data-speed="3000"></span>%
 				</span>
 				</div>
-				<a class="btn btn-outline-dark btn-sm link_without_pointer pt-0 mt-0 mb-2" href="/informe/{{hashids_encode(params['current_tutoria_asignatura_id'])}}" role="button">Editar informe</a>
+				<a class="btn btn-outline-dark btn-sm link_without_pointer mb-2" href="/informe/{{hashids_encode(params['current_tutoria_asignatura_id'])}}" role="button"><i class="material-icons vertical-center pr-1">edit</i>Editar informe</a>
 			</div>
 			<div class="divider bg-mutted"></div>
 		</div>

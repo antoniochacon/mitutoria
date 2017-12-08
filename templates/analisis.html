@@ -31,8 +31,9 @@
 				{% with %}
 				{% set tutoria_incoming = tutoria_incoming(tutoria.id) %}
 				{% set settings_sql = settings() %}
-				<div class="row align-items-center pb-2">
-					<div class="col-sm-12 col-md-6 col-lg-4">
+				<div class="row mb-2 mt-2">
+					<div class="col-sm-12 col-md-6 mb-2">
+					<div>
 						<span class="{% if tutoria.activa %}text-mutted{% else %}text-info{% endif %}">Alumno:
 						</span>
 						<span class="h6 {% if not tutoria.activa %}text-mutted{% endif %}">
@@ -40,7 +41,7 @@
 							{{alumno.nombre}}
 						</span>
 					</div>
-					<div class="col-sm-12 col-md-6 col-lg-3 pb-2">
+					<div>
 						<span class="small {% if tutoria.activa %}text-mutted{% else %}text-info{% endif %}">Fecha:
 						</span>
 						<span class="{% if not tutoria.activa %}text-mutted{% endif %}">
@@ -49,14 +50,11 @@
 							{{tutoria.fecha.strftime('%d')}} [{{tutoria.hora.strftime('%H:%M')}} h]
 						</span>
 						<br>
-						<!-- <span class="{% if tutoria.activa %}text-mutted{% else %}text-info{% endif %}">Hora:
-						</span>
-						<span class="strong {% if not tutoria.activa %}text-mutted{% endif %}">{{tutoria.hora.strftime('%H:%M')}}</span> -->
+					</div>
 					</div>
 					<input type="hidden" name="current_tutoria_id" value="{{hashids_encode(tutoria.id)}}">
-					<div class="col">
-
-							<div class="btn-group mb-1" role="group" aria-label="...">
+					<div class="col-sm-12 col-md-6">
+							<div class="btn-group" role="group" aria-label="...">
 								<a data-toggle="collapse" href="#tutoria_edit_{{hashids_encode(tutoria.id)}}" class="btn {% if tutoria.activa %} btn-outline-dark{% else %} btn-outline-mutted{% endif %} btn-sm link_without_pointer" aria-expanded="false" title="cambiar fecha y hora">
 								<i class="material-icons vertical-center {% if tutoria.activa %} color-gray-darken-1 {% endif %}">edit</i></a>
 
@@ -90,8 +88,7 @@
 								|
 								{{stats['asignaturas_solicitadas_horario_lista'] | count}}
 							</span>
-							<span class="h4 align-middle">{{tutoria_incoming['porcentaje']}}
-								%</span>
+							<span class="h4 align-middle">{{tutoria_incoming['porcentaje']}}%</span>
 						</span>
 					</div>
 				</div>

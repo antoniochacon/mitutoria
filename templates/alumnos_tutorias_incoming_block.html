@@ -1,14 +1,18 @@
 {% with %}
 {% set grupo_tutorias_incoming = grupo_tutorias(grupo_activo().id, True) %}
+{% set grupo_tutorias_incoming_count = grupo_tutorias_incoming | count %}
 <a data-toggle="collapse" class="collpase-header-secondary" role="tab" data-parent="#parent_tutorias" href="#collapse_proxima_tutoria" aria-expanded="false">
 	{% if grupo_tutorias_incoming %}
 	<i class="material-icons vertical-center">notifications</i>
-			{{singular_plural("tutoria", "tutorias", grupo_tutorias_incoming | count)}}
-			{{singular_plural("pendiente", "pendientes", grupo_tutorias_incoming | count)}}
+			{{singular_plural("tutoria", "tutorias", grupo_tutorias_incoming_count)}}
+			{{singular_plural("pendiente", "pendientes", grupo_tutorias_incoming_count)}}
 		{% else %}
 		<i class="material-icons vertical-center">wb_sunny</i>
 		&nbsp;Relax, no tienes tutorias
 	{% endif %}
+	<span class="badge badge-light text-secondary float-right mt-1" title="tutorias pendientes">
+		{{grupo_tutorias_incoming_count}} {{singular_plural("tutoria", "tutorias", grupo_tutorias_incoming_count)}}
+	</span>
 </a>
 <div id="collapse_proxima_tutoria" class="collapse {% if grupo_tutorias_incoming %} show {% endif %}">
 	{% if grupo_tutorias_incoming %}

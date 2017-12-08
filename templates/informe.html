@@ -18,12 +18,12 @@
 			<span class="text-mutted">Tutor/a:</span>
 			{{grupo.tutor_nombre}} {{grupo.tutor_apellidos}}
 			<br>
-			<span class="text-mutted">Asignatura:</span>
-			{{asignatura.asignatura}}
-			<br>
 			<span class="text-mutted">Docente:</span>
 			{{asignatura.nombre}}
 			{{asignatura.apellidos}}
+			<br>
+			<span class="text-mutted">Asignatura:</span>
+			{{asignatura.asignatura}}
 			</div>
 		{% else %}
 			<div class="text-warning text-center">
@@ -153,7 +153,7 @@
 				</div>
 				<div class="col">
 					<button role="button" type="submit" name="selector_button" value="selector_informe_add" class="btn btn-outline-primary" title="enviar informe">
-						<i class="material-icons vertical-center">local_post_office</i>&nbsp; enviar informe
+						<i class="material-icons vertical-center pr-1">send</i>enviar informe
 					</button>
 				</div>
 				{% endwith %}
