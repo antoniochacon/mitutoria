@@ -82,9 +82,9 @@ def pagina_1_html(params={}):
     if request.method == 'POST':
         if request.form['selector_button'] == 'selector_alumno_add':
             pass
-            alumno_add_form = Alumno_Add(grupo_id=1, nombre=request.form.get('nombre'), apellidos=request.form.get('apellidos'))
+            alumno_add_form = Alumno_Add(grupo_id=6, nombre=request.form.get('nombre'), apellidos=request.form.get('apellidos'))
             if alumno_add_form.validate():
-                alumno_add = Alumno(grupo_id=1, apellidos=alumno_add_form.apellidos.data, nombre=alumno_add_form.nombre.data)
+                alumno_add = Alumno(grupo_id=6, apellidos=alumno_add_form.apellidos.data, nombre=alumno_add_form.nombre.data)
                 session_sql.add(alumno_add)
                 session_sql.commit()
                 flash_toast(alumno_add_form.nombre.data + ' agregado', 'success')
