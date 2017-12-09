@@ -60,16 +60,15 @@ def page_not_found_html(warning):
 
 @app.route('/')
 def index_html():
-    # return redirect(url_for('alumnos_html'))
-    return redirect(url_for('pagina_1_html'))
+    return redirect(url_for('alumnos_html'))
 
 
 # XXX pruebas
 
 
-@app.route('/pagina_1', methods=['GET', 'POST'])
+@app.route('/test', methods=['GET', 'POST'])
 @login_required
-def pagina_1_html():
+def test_html():
 
     # XXX alumno_add
     if request.method == 'POST':
@@ -81,18 +80,18 @@ def pagina_1_html():
                 session_sql.add(alumno_add)
                 session_sql.commit()
                 flash_toast(alumno_add_form.nombre.data + ' agregado', 'success')
-                return redirect(url_for('pagina_1_html'))
+                return redirect(url_for('test_html'))
             else:
                 flash_wtforms(alumno_add_form, flash_toast, 'warning')
-                return render_template('pagina_1.html', alumno_add=alumno_add_form)
-    return render_template('pagina_1.html', alumno_add=Alumno_Add())
+                return render_template('test.html', alumno_add=alumno_add_form)
+    return render_template('test.html', alumno_add=Alumno_Add())
 
 
 @app.route('/pagina_2', methods=['GET', 'POST'])
 @login_required
 def pagina_2_html():
 
-    return redirect(url_for('pagina_1_html', params=params))
+    return redirect(url_for('test_html', params=params))
 
 
 @app.route('/oauth2callback_calendar')
