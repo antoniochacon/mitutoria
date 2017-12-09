@@ -68,15 +68,8 @@ def index_html():
 
 
 @app.route('/pagina_1', methods=['GET', 'POST'])
-@app.route('/pagina_1/<params>', methods=['GET', 'POST'])
 @login_required
-def pagina_1_html(params={}):
-    try:
-        params_old = dic_decode(params)
-    except:
-        params_old = {}
-        abort(404)
-    params = {}
+def pagina_1_html():
 
     # XXX alumno_add
     if request.method == 'POST':
@@ -88,13 +81,11 @@ def pagina_1_html(params={}):
                 session_sql.add(alumno_add)
                 session_sql.commit()
                 flash_toast(alumno_add_form.nombre.data + ' agregado', 'success')
-                return redirect(url_for('pagina_1_html', params=dic_encode(params)))
+                return redirect(url_for('pagina_1_html'))
             else:
                 flash_wtforms(alumno_add_form, flash_toast, 'warning')
-                return render_template('pagina_1.html',
-                                       alumno_add=alumno_add_form, params=params)
-
-    return render_template('pagina_1.html', alumno_add=Alumno_Add(), params=params)
+                return render_template('pagina_1.html', alumno_add=alumno_add_form)
+    return render_template('pagina_1.html', alumno_add=Alumno_Add())
 
 
 @app.route('/pagina_2', methods=['GET', 'POST'])

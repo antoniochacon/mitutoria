@@ -1,7 +1,6 @@
 {% extends "_layout.html" %}
 {% block body %}
-	{% from "_macro.html" import nav_bar_top,
-	titulo_1 %}
+	{% from "_macro.html" import nav_bar_top,titulo_1 %}
 	{{ nav_bar_top(link_active='alumnos',params=params, current_user=current_user) }}
 	<div class="paper bg-white p-3">
 		<form action="/pagina_1" method="POST" enctype="multipart/form-data">
