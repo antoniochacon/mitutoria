@@ -57,13 +57,25 @@ hashids = Hashids(salt=salt)
 # redirect usar siempre params=dic_encode(params): Ejemplo: return redirect(url_for('alumnos_html', params=dic_encode(params)))
 # render_template usar siempre params=params: Ejemplo return render_template('alumnos.html', params=params)
 # ****************************************
+# oauth2_credentials
+import httplib2
+import os
+import oauth2client
+from oauth2client import client, tools
+import base64
+from email import encoders
+from email.message import Message
+from email.mime.text import MIMEText
+from apiclient import discovery
+# ****************************************
+
+
 # XXX Local_Host
 # tutoria_email_link = 'http://localhost:5000/informe/'
 # email_validate_link = 'http://localhost:5000/email_validate/'
 # index_link = 'http://localhost:5000/'
 # password_reset_link = 'http://localhost:5000/password_reset/'
 # email_time_sleep = 3
-
 
 
 # XXX Heroku_Host

@@ -63,6 +63,8 @@ class Settings (Base):
 class Settings_Global (Base):
     __tablename__ = 'settings_global'
     id = Column(Integer, primary_key=True)
+    oauth2_credentials = Column(String)
+    gmail_sender = Column(String(120))
     diferencial_default = Column(Integer, default=15)
     periodo_participacion_recent = Column(Integer, default=30)
     periodo_cleanup_tutorias = Column(Integer, default=3)

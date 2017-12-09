@@ -68,10 +68,16 @@ class User_Login (Form):
     remember = BooleanField('recuerdame')
 
 
+class Settings_Global_Add (Form):
+    gmail_sender = EmailField('gmail sender', [validators.Required(message='gmail sender es obligatorio'),
+                                               validators.Email(message='Escriba una direccion valida de email'),
+                                               validators.length(max=120, message='email debe tener maximo 120 caracteres')])
+
+
 class Grupo_Add (Form):
     nombre = StringField('grupo', [validators.Required(message='el nombre grupo es obligatorio'),
-                                              validators.length(min=3, message='el nombre grupo debe tener minimo 3 caracteres'),
-                                              validators.length(max=80, message='el nombre grupo debe tener maximo 80 caracteres')])
+                                   validators.length(min=3, message='el nombre grupo debe tener minimo 3 caracteres'),
+                                   validators.length(max=80, message='el nombre grupo debe tener maximo 80 caracteres')])
 
     tutor_nombre = StringField('tutor nombre', [validators.Required(message='el nombre del tutor es obligatorio')])
     tutor_apellidos = StringField('tutor apellidos', [validators.Required(message='los apellidos del tutor son obligatorios')])

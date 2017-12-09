@@ -63,9 +63,9 @@ def index_html():
     return redirect(url_for('alumnos_html'))
 
 
-@app.route('/oauth2callback')
-def oauth2callback():
-    flow = client.flow_from_clientsecrets('static/credentials/client_secret.json', scope='https://www.googleapis.com/auth/calendar', redirect_uri=index_link + 'oauth2callback')
+@app.route('/oauth2callback_calendar')
+def oauth2callback_calendar():
+    flow = client.flow_from_clientsecrets('static/credentials/client_secret.json', scope='https://www.googleapis.com/auth/calendar', redirect_uri=index_link + 'oauth2callback_calendar')
     flow.params['access_type'] = 'offline'
     flow.params['approval_prompt'] = 'force'
     if 'code' not in request.args:
@@ -79,71 +79,91 @@ def oauth2callback():
     return redirect(url_for('settings_opciones_html'))
 
 
-@app.route('/calendar_api')
-@login_required
-def calendar_api_html():
-    if settings().oauth2_credentials:
-        try:
-            credentials = oauth2client.client.Credentials.new_from_json(settings().oauth2_credentials)
-            settings().oauth2_credentials = credentials.to_json()
-            session_sql.commit()
-            http = httplib2.Http()
-            http = credentials.authorize(http)
-            service = discovery.build('calendar', 'v3', http=http)
-        except:
-            return redirect(url_for('oauth2callback'))
+@app.route('/oauth2callback_gmail')
+def oauth2callback_gmail():
+    flow = client.flow_from_clientsecrets('static/credentials/client_secret.json', scope='https://www.googleapis.com/auth/gmail.send', redirect_uri=index_link + 'oauth2callback_gmail')
+    flow.params['access_type'] = 'offline'
+    flow.params['approval_prompt'] = 'force'
+    if 'code' not in request.args:
+        auth_uri = flow.step1_get_authorize_url()
+        return redirect(auth_uri)
     else:
-        return redirect(url_for('oauth2callback'))
-
-    event = {
-        'summary': 'Tutoria',
-        'location': grupo_activo().centro,
-        'description': 'Evento creado por https://mitutoria.herokuapp.com/',
-        'colorId': '3',
-        'start': {
-            'dateTime': '2017-09-10T09:00:00-07:00',
-            'timeZone': 'Europe/Madrid',
-        },
-        'end': {
-            'dateTime': '2017-09-11T09:00:00-07:00',
-            'timeZone': 'Europe/Madrid',
-        }
-    }
-    event = service.events().insert(calendarId='primary', body=event).execute()
-
-    return render_template('calendar_api.html')
+        auth_code = request.args.get('code')
+        credentials = flow.step2_exchange(auth_code)
+        settings_global().oauth2_credentials = credentials.to_json()
+        session_sql.commit()
+    return redirect(url_for('admin_settings_global_html'))
 
 
-# XXX admin_global_set
-@app.route('/admin_global_set', methods=['GET', 'POST'])
-@app.route('/admin_global_set/<params>', methods=['GET', 'POST'])
+#
+# @app.route('/calendar_api')
+# @login_required
+# def calendar_api_html():
+#     if settings().oauth2_credentials:
+#         try:
+#             credentials = oauth2client.client.Credentials.new_from_json(settings().oauth2_credentials)
+#             settings().oauth2_credentials = credentials.to_json()
+#             session_sql.commit()
+#             http = httplib2.Http()
+#             http = credentials.authorize(http)
+#             service = discovery.build('calendar', 'v3', http=http)
+#         except:
+#             return redirect(url_for('oauth2callback_calendar'))
+#     else:
+#         return redirect(url_for('oauth2callback_calendar'))
+#
+#     event = {
+#         'summary': 'Tutoria',
+#         'location': grupo_activo().centro,
+#         'description': 'Evento creado por https://mitutoria.herokuapp.com/',
+#         'colorId': '3',
+#         'start': {
+#             'dateTime': '2017-09-10T09:00:00-07:00',
+#             'timeZone': 'Europe/Madrid',
+#         },
+#         'end': {
+#             'dateTime': '2017-09-11T09:00:00-07:00',
+#             'timeZone': 'Europe/Madrid',
+#         }
+#     }
+#     event = service.events().insert(calendarId='primary', body=event).execute()
+#
+#     return render_template('calendar_api.html')
+
+
+# XXX admin_settings_global
+@app.route('/admin_settings_global', methods=['GET', 'POST'])
+@app.route('/admin_settings_global/<params>', methods=['GET', 'POST'])
 @login_required
-def admin_global_set_html(params={}):
+def admin_settings_global_html(params={}):
     try:
         params_old = dic_decode(params)
     except:
         params_old = {}
         abort(404)
-
     params = {}
     params['anchor'] = params_old.get('anchor', 'anchor_top')
-
     settings_global_sql = settings_global()
     tutorias_clenaup_count = session_sql.query(Tutoria).filter(Tutoria.fecha < g.current_date - datetime.timedelta(days=30 * settings_global_sql.periodo_cleanup_tutorias)).count()
-
+    # session.clear()
     if request.method == 'POST':
         periodo_cleanup_tutorias = int(request.form.get('periodo_cleanup_tutorias'))
         cleanup_tutorias_automatic = request.form.get('cleanup_tutorias_automatic')
+        gmail_sender = request.form.get('gmail_sender')
         if not cleanup_tutorias_automatic:
             cleanup_tutorias_automatic = False
 
-        # XXX selector_cleanup_update
+        # XXX selector_autorizar_credencial
+        if request.form['selector_button'] == 'selector_autorizar_credencial':
+            return redirect(url_for('oauth2callback_gmail'))
+
+            # XXX selector_cleanup_update
         if request.form['selector_button'] == 'selector_cleanup_update':
             if settings_global_sql.periodo_cleanup_tutorias != periodo_cleanup_tutorias:
                 settings_global_sql.periodo_cleanup_tutorias = periodo_cleanup_tutorias
                 session_sql.commit()
                 flash_toast('Tutorias CleanUp actualizado', 'success')
-            return redirect(url_for('admin_global_set_html'))
+            return redirect(url_for('admin_settings_global_html'))
 
         # XXX selector_global_set_edit
         if request.form['selector_button'] == 'selector_global_set_edit':
@@ -160,18 +180,30 @@ def admin_global_set_html(params={}):
             if str(settings_global_sql.cleanup_tutorias_automatic) != str(cleanup_tutorias_automatic):
                 settings_global_sql.cleanup_tutorias_automatic = cleanup_tutorias_automatic
                 commit_action = True
+
+            settings_global_edit_form = Settings_Global_Add(gmail_sender=gmail_sender)
+            if settings_global_edit_form.validate():
+                settings_global_edit = Settings_Global_Add(gmail_sender=gmail_sender)
+                if settings_global_sql.gmail_sender != gmail_sender:
+                    settings_global_sql.gmail_sender = gmail_sender
+                    commit_action = True
+            else:
+                flash_wtforms(settings_global_edit_form, flash_toast, 'warning')
+                return render_template('admin_settings_global.html',
+                                       settings_global_edit=settings_global_edit_form)
             if commit_action:
                 session_sql.commit()
                 flash_toast('Global Set actualizado', 'success')
-            return redirect(url_for('admin_global_set_html'))
+            return redirect(url_for('admin_settings_global_html'))
 
         if request.form['selector_button'] == 'selector_cleanup_tutorias':
             if settings_global_sql.periodo_cleanup_tutorias != periodo_cleanup_tutorias:
                 settings_global_sql.periodo_cleanup_tutorias = periodo_cleanup_tutorias
             cleanpup_tutorias(periodo_cleanup_tutorias)
-            return redirect(url_for('admin_global_set_html'))
+            return redirect(url_for('admin_settings_global_html'))
 
-    return render_template('admin_global_set.html', tutorias_clenaup_count=tutorias_clenaup_count)
+    return render_template('admin_settings_global.html',
+                           settings_global_edit=Settings_Global_Add(), tutorias_clenaup_count=tutorias_clenaup_count)
 
 
 @app.route('/admin_estadisticas', methods=['GET', 'POST'])
@@ -861,16 +893,14 @@ def alumnos_html(params={}):
                             params['anchor'] = 'anchor_top'
                             # NOTE comprobar permisos de oauth2
                             if settings().calendar:
-                                if settings().oauth2_credentials:
-                                    try:
-                                        credentials = oauth2client.client.Credentials.new_from_json(settings().oauth2_credentials)
-                                        http = httplib2.Http()
-                                        http = credentials.authorize(http)
-                                        service = discovery.build('calendar', 'v3', http=http)
-                                    except:
-                                        return redirect(url_for('oauth2callback'))
-                                else:
-                                    return redirect(url_for('oauth2callback'))
+                                try:
+                                    credentials = oauth2client.client.Credentials.new_from_json(settings().oauth2_credentials)
+                                    http = httplib2.Http()
+                                    http = credentials.authorize(http)
+                                    service = discovery.build('calendar', 'v3', http=http)
+                                except:
+                                    return redirect(url_for('oauth2callback_calendar'))
+
                                # NOTE agregar eventos a la agenda
                                 tutoria_hora = datetime.datetime.strptime(tutoria_add_form.hora.data, '%H:%M')
                                 tutoria_fecha = tutoria_add_form.fecha.data
@@ -1368,7 +1398,7 @@ def analisis_html(params={}):
         session_sql.delete(tutoria_delete_sql)
         session_sql.commit()
         flash_toast('Tutoria de ' + Markup('<strong>') + alumno_sql.nombre + Markup('</strong>') + ' eliminada', 'success')
-        flash_toast('Google Calendar sincronizado', 'success')
+        # flash_toast('Google Calendar sincronizado', 'success')
         return redirect(url_for('alumnos_html'))
 
     stats = analisis_tutoria(current_tutoria_id)
@@ -1472,6 +1502,7 @@ def analisis_tutoria_edit_html(params={}):
             current_alumno_id = alumno.id
             if asignaturas_id_lista:
                 re_send_email_tutoria_asincrono(alumno, current_tutoria, asignaturas_id_lista)
+                session_sql.commit()
                 flash_toast('Reenviando emails a las asignaturas elegidas', 'info')
                 return redirect(url_for('analisis_html', params=dic_encode(params)))
             else:
@@ -1521,16 +1552,13 @@ def analisis_tutoria_edit_html(params={}):
                     return redirect(url_for('analisis_html', params=dic_encode(params)))
                 else:
                     if settings().calendar:
-                        if settings().oauth2_credentials:
-                            try:
-                                credentials = oauth2client.client.Credentials.new_from_json(settings().oauth2_credentials)
-                                http = httplib2.Http()
-                                http = credentials.authorize(http)
-                                service = discovery.build('calendar', 'v3', http=http)
-                            except:
-                                return redirect(url_for('oauth2callback'))
-                        else:
-                            return redirect(url_for('oauth2callback'))
+                        try:
+                            credentials = oauth2client.client.Credentials.new_from_json(settings().oauth2_credentials)
+                            http = httplib2.Http()
+                            http = credentials.authorize(http)
+                            service = discovery.build('calendar', 'v3', http=http)
+                        except:
+                            return redirect(url_for('oauth2callback_calendar'))
 
                     # Actualiza google calendar
                     tutoria_edit_form_hora = datetime.datetime.strptime(tutoria_edit_form.hora.data, '%H:%M')
@@ -1611,14 +1639,14 @@ def settings_opciones_html(params={}):
             flash_toast('Configuracion actualizada', 'success')
 
             if settings().calendar:
-                if settings().oauth2_credentials:
+                try:
                     credentials = oauth2client.client.Credentials.new_from_json(settings().oauth2_credentials)
                     settings().oauth2_credentials = credentials.to_json()
                     session_sql.commit()
                     http = credentials.authorize(httplib2.Http())
                     service = discovery.build('calendar', 'v3', http=http)
-                else:
-                    return redirect(url_for('oauth2callback'))
+                except:
+                    return redirect(url_for('oauth2callback_calendar'))
             return redirect(url_for('settings_opciones_html'))
     return render_template('settings_opciones.html', params=params)
 

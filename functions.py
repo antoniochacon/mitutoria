@@ -2,13 +2,70 @@ from app import app
 from config_parametros import *
 import config_parametros
 
-from config_gmail_api import *
-import config_gmail_api
-
 # NOTE
 # [] Lista
 # () Objeto
 # {} Valor
+# *****************************************************************
+
+# Calendar API
+# *****************************************************************
+
+
+def get_service_calendar():  # Ejemplo de codigo para crear el servicio calendar
+    settings_sql = settings()
+    try:
+        oauth2_credentials = settings_sql.oauth2_credentials
+        credentials = oauth2client.client.Credentials.new_from_json(oauth2_credentials)
+        http = credentials.authorize(httplib2.Http())
+        service = discovery.build('calendar', 'v3', http=http)
+    except:
+        return redirect(url_for('oauth2callback_calendar'))
+    return service
+# Fin Caldenar API
+# *****************************************************************
+
+
+# Gmail API
+# *****************************************************************
+
+def get_service_gmail():  # Ejemplo de codigo para crear el servicio gmail
+    settings_global_sql = settings_global()
+    try:
+        oauth2_credentials = settings_global_sql.oauth2_credentials
+        credentials = oauth2client.client.Credentials.new_from_json(oauth2_credentials)
+        http = credentials.authorize(httplib2.Http())
+        service = discovery.build('gmail', 'v1', http=http)
+    except:
+        return redirect(url_for('oauth2callback_gmail'))
+    return service
+
+
+def create_message(sender, to, subject, message_text):
+    # Create message container
+    message = MIMEText(message_text, 'html')
+    message['To'] = to
+    message['From'] = sender
+    message['Subject'] = subject
+    raw_message = base64.urlsafe_b64encode(message.as_bytes())
+    raw_message = raw_message.decode()
+    body = {'raw': raw_message}
+    return body
+
+
+def send_message(service, user_id, body, message_text):
+    try:
+        message_sent = (service.users().messages().send(userId=user_id, body=body).execute())
+    except:
+        pass
+
+
+def create_message_and_send(service, sender, to, subject, message_text):
+    message = create_message(sender, to, subject, message_text)
+    send_message(service, "me", message, message_text)
+
+
+# Fin Gmail API
 # *****************************************************************
 
 
@@ -700,17 +757,15 @@ def profesores_actividad_count():
 
 
 def tutoria_calendar_undelete(event_id):
-    if settings().calendar:
-        if settings().oauth2_credentials:
-            try:
-                credentials = oauth2client.client.Credentials.new_from_json(settings().oauth2_credentials)
-                http = httplib2.Http()
-                http = credentials.authorize(http)
-                service = discovery.build('calendar', 'v3', http=http)
-            except:
-                return redirect(url_for('oauth2callback'))
-        else:
-            return redirect(url_for('oauth2callback'))
+    settings_sql = settings()
+    if settings_sql.calendar:
+        try:
+            oauth2_credentials = settings_sql.oauth2_credentials
+            credentials = oauth2client.client.Credentials.new_from_json(oauth2_credentials)
+            http = credentials.authorize(httplib2.Http())
+            service = discovery.build('calendar', 'v3', http=http)
+        except:
+            return redirect(url_for('oauth2callback_calendar'))
         try:
             event = service.events().get(calendarId='primary', eventId=event_id).execute()
             event['status'] = 'confirmed'
@@ -720,17 +775,15 @@ def tutoria_calendar_undelete(event_id):
 
 
 def tutoria_calendar_delete(event_id):
-    if settings().calendar:
-        if settings().oauth2_credentials:
-            try:
-                credentials = oauth2client.client.Credentials.new_from_json(settings().oauth2_credentials)
-                http = httplib2.Http()
-                http = credentials.authorize(http)
-                service = discovery.build('calendar', 'v3', http=http)
-            except:
-                return redirect(url_for('oauth2callback'))
-        else:
-            return redirect(url_for('oauth2callback'))
+    settings_sql = settings()
+    if settings_sql.calendar:
+        try:
+            oauth2_credentials = settings_sql.oauth2_credentials
+            credentials = oauth2client.client.Credentials.new_from_json(oauth2_credentials)
+            http = credentials.authorize(httplib2.Http())
+            service = discovery.build('calendar', 'v3', http=http)
+        except:
+            return redirect(url_for('oauth2callback_calendar'))
         try:
             service.events().delete(calendarId='primary', eventId=event_id).execute()
         except:
@@ -795,20 +848,16 @@ def tutorias_timeout():  # Update de TRUE a FALSE la columna activa de una tutor
 
 
 def tutoria_calendar_sync():
-    if settings():
-        settings_sql = settings()
+    settings_sql = settings()
+    if settings_sql:
         if settings_sql.calendar:
-            if settings_sql.oauth2_credentials:
-                try:
-                    credentials = oauth2client.client.Credentials.new_from_json(settings_sql.oauth2_credentials)
-                    http = httplib2.Http()
-                    http = credentials.authorize(http)
-                    service = discovery.build('calendar', 'v3', http=http)
-                except:
-                    return redirect(url_for('oauth2callback'))
-            else:
-                return redirect(url_for('oauth2callback'))
-
+            try:
+                credentials = oauth2client.client.Credentials.new_from_json(settings_sql.oauth2_credentials)
+                http = httplib2.Http()
+                http = credentials.authorize(http)
+                service = discovery.build('calendar', 'v3', http=http)
+            except:
+                return redirect(url_for('oauth2callback_calendar'))
             if settings_sql.calendar_sincronizado:
                 for tutoria in grupo_tutorias(settings_sql.grupo_activo_id, ''):
                     try:
@@ -997,10 +1046,15 @@ def connenction_check():
 # *****************************************************************
 
 def send_email_tutoria(alumno, tutoria):
-    credentials = get_credentials_gmail()
-    http = credentials.authorize(httplib2.Http())
-    service = discovery.build('gmail', 'v1', http=http)
-    sender = 'mitutoria.email@gmail.com'
+    settings_global_sql = settings_global()
+    try:
+        oauth2_credentials = settings_global_sql.oauth2_credentials
+        credentials = oauth2client.client.Credentials.new_from_json(oauth2_credentials)
+        http = credentials.authorize(httplib2.Http())
+        service = discovery.build('gmail', 'v1', http=http)
+    except:
+        return redirect(url_for('oauth2callback_gmail'))
+    sender = settings_global_sql.gmail_sender
 
     for asignatura in asignaturas_alumno_by_alumno_id(alumno.id):
         tutoria_asignatura_add = Association_Tutoria_Asignatura(tutoria_id=tutoria.id, asignatura_id=asignatura.id)
@@ -1053,10 +1107,16 @@ def send_email_password_reset_request_asincrono(current_user_id):
 
 
 def send_email_validate(current_user_id):
-    credentials = get_credentials_gmail()
-    http = credentials.authorize(httplib2.Http())
-    service = discovery.build('gmail', 'v1', http=http)
-    sender = 'mitutoria.email@gmail.com'
+    settings_global_sql = settings_global()
+    try:
+        oauth2_credentials = settings_global_sql.oauth2_credentials
+        credentials = oauth2client.client.Credentials.new_from_json(oauth2_credentials)
+        http = credentials.authorize(httplib2.Http())
+        service = discovery.build('gmail', 'v1', http=http)
+    except:
+        return redirect(url_for('oauth2callback_gmail'))
+    sender = settings_global_sql.gmail_sender
+
     # XXX envio de mail
     # ****************************************
     to = user_by_id(current_user_id).email
@@ -1078,10 +1138,15 @@ def send_email_validate_asincrono(current_user_id):
 
 
 def re_send_email_tutoria(alumno, tutoria, asignaturas_id_lista):
-    credentials = get_credentials_gmail()
-    http = credentials.authorize(httplib2.Http())
-    service = discovery.build('gmail', 'v1', http=http)
-    sender = 'mitutoria.email@gmail.com'
+    settings_global_sql = settings_global()
+    try:
+        oauth2_credentials = settings_global_sql.oauth2_credentials
+        credentials = oauth2client.client.Credentials.new_from_json(oauth2_credentials)
+        http = credentials.authorize(httplib2.Http())
+        service = discovery.build('gmail', 'v1', http=http)
+    except:
+        return redirect(url_for('oauth2callback_gmail'))
+    sender = settings_global_sql.gmail_sender
 
     for asignatura_id in asignaturas_id_lista:
         asignatura = asignatura_by_id(asignatura_id)
@@ -1091,6 +1156,7 @@ def re_send_email_tutoria(alumno, tutoria, asignaturas_id_lista):
         else:
             tutoria_asignatura_add = Association_Tutoria_Asignatura(tutoria_id=tutoria.id, asignatura_id=asignatura_id)
             session_sql.add(tutoria_asignatura_add)
+
         # XXX envio de mail
         # ****************************************
         to = asignatura.email
@@ -1106,37 +1172,7 @@ def re_send_email_tutoria_asincrono(alumno, tutoria, asignaturas_id_lista):
         re_send_email_tutoria(alumno, tutoria, asignaturas_id_lista)
     re_send_email_tutoria_threading = threading.Thread(name='re_send_email_tutoria_thread', target=re_send_email_tutoria_process, args=(alumno, tutoria, asignaturas_id_lista))
     re_send_email_tutoria_threading.start()
-    session_sql.commit()
-
-
-# def self_re_send_email_tutorias(tutorias_id_lista, asignatura_id):
-#     credentials = get_credentials_gmail()
-#     http = credentials.authorize(httplib2.Http())
-#     service = discovery.build('gmail', 'v1', http=http)
-#     sender = 'mitutoria.email@gmail.com'
-#
-#     alumno = alumno_by_id(alumno_id)
-#     alumno=alumno_by_tutoria_id
-#     asignatura = asignatura_by_id(asignatura_id)
-#
-#     for tutoria_id in tutorias_id_lista:
-#         tutoria = tutoria_by_id(tutoria_id)
-#
-#         # XXX envio de mail
-#         to = asignatura.email
-#         subject = 'Tutoria | %s | %s | %s %s' % (grupo_activo().nombre, alumno.nombre, tutoria.fecha.strftime('%A'), tutoria.fecha.strftime('%d'))
-#         message_text = render_template('email_tutoria.html', tutoria=tutoria, alumno=alumno, asignatura=asignatura, tutoria_email_link=tutoria_email_link, tutoria_asignatura_id=tutoria_asignatura_add.id, index_link=index_link)
-#         create_message_and_send(service, sender, to, subject, message_text)
-#         time.sleep(email_time_sleep)
-
-
-# def self_re_send_email_tutorias_asincrono(tutorias_id_lista, asignatura_id):
-#     @copy_current_request_context
-#     def self_re_send_email_tutorias_process(tutorias_id_lista, asignatura_id):
-#         self_re_send_email_tutorias(tutorias_id_lista, asignatura_id)
-#     self_re_send_email_tutorias_threading = threading.Thread(name='self_re_send_email_tutorias_thread', target=self_re_send_email_tutorias_process, args=(tutorias_id_lista, asignatura_id))
-#     self_re_send_email_tutorias_threading.start()
-#     session_sql.commit()
+    # session_sql.commit()
 # *****************************************************************
 
 
