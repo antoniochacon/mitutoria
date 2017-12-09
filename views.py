@@ -60,7 +60,48 @@ def page_not_found_html(warning):
 
 @app.route('/')
 def index_html():
-    return redirect(url_for('alumnos_html'))
+    # return redirect(url_for('alumnos_html'))
+    return redirect(url_for('pagina_1_html'))
+
+
+# XXX pruebas
+
+
+@app.route('/pagina_1', methods=['GET', 'POST'])
+@app.route('/pagina_1/<params>', methods=['GET', 'POST'])
+@login_required
+def pagina_1_html(params={}):
+    try:
+        params_old = dic_decode(params)
+    except:
+        params_old = {}
+        abort(404)
+    params = {}
+
+    # XXX alumno_add
+    if request.method == 'POST':
+        if request.form['selector_button'] == 'selector_alumno_add':
+            pass
+            alumno_add_form = Alumno_Add(grupo_id=1, nombre=request.form.get('nombre'), apellidos=request.form.get('apellidos'))
+            if alumno_add_form.validate():
+                alumno_add = Alumno(grupo_id=1, apellidos=alumno_add_form.apellidos.data, nombre=alumno_add_form.nombre.data)
+                session_sql.add(alumno_add)
+                session_sql.commit()
+                flash_toast(alumno_add_form.nombre.data + ' agregado', 'success')
+                return redirect(url_for('pagina_1_html', params=dic_encode(params)))
+            else:
+                flash_wtforms(alumno_add_form, flash_toast, 'warning')
+                return render_template('pagina_1.html',
+                                       alumno_add=alumno_add_form, params=params)
+
+    return render_template('pagina_1.html', alumno_add=Alumno_Add(), params=params)
+
+
+@app.route('/pagina_2', methods=['GET', 'POST'])
+@login_required
+def pagina_2_html():
+
+    return redirect(url_for('pagina_1_html', params=params))
 
 
 @app.route('/oauth2callback_calendar')
@@ -93,42 +134,6 @@ def oauth2callback_gmail():
         settings_global().oauth2_credentials = credentials.to_json()
         session_sql.commit()
     return redirect(url_for('admin_settings_global_html'))
-
-
-#
-# @app.route('/calendar_api')
-# @login_required
-# def calendar_api_html():
-#     if settings().oauth2_credentials:
-#         try:
-#             credentials = oauth2client.client.Credentials.new_from_json(settings().oauth2_credentials)
-#             settings().oauth2_credentials = credentials.to_json()
-#             session_sql.commit()
-#             http = httplib2.Http()
-#             http = credentials.authorize(http)
-#             service = discovery.build('calendar', 'v3', http=http)
-#         except:
-#             return redirect(url_for('oauth2callback_calendar'))
-#     else:
-#         return redirect(url_for('oauth2callback_calendar'))
-#
-#     event = {
-#         'summary': 'Tutoria',
-#         'location': grupo_activo().centro,
-#         'description': 'Evento creado por https://mitutoria.herokuapp.com/',
-#         'colorId': '3',
-#         'start': {
-#             'dateTime': '2017-09-10T09:00:00-07:00',
-#             'timeZone': 'Europe/Madrid',
-#         },
-#         'end': {
-#             'dateTime': '2017-09-11T09:00:00-07:00',
-#             'timeZone': 'Europe/Madrid',
-#         }
-#     }
-#     event = service.events().insert(calendarId='primary', body=event).execute()
-#
-#     return render_template('calendar_api.html')
 
 
 # XXX admin_settings_global
@@ -542,59 +547,6 @@ def user_ficha_alumnos_html(params={}):
 
     return render_template(
         'user_ficha_alumnos.html', user=user, params=params)
-
-
-# XXX pruebas
-
-
-@app.route('/pagina_1/', methods=['GET', 'POST'])
-@app.route('/pagina_1/<params>', methods=['GET', 'POST'])
-def pagina_1_html(params={}):
-    par_1 = ''
-    par_2 = ''
-    # NOTE ejemplo de args (funcional)
-    # args_decoded = f_decode(request.args.get('args', False))
-    # par_1 = args_decoded.split('&')[0].split('=')[1]
-    # return render_template('pagina_1.html', par_1=par_1, par_2=par_2)
-    # NOTE ejemplo de params (funcional)
-    try:
-        params = dic_decode(params)
-    except:
-        abort(404)
-    params['collapse'] = False
-    # params = dic_decode(params)
-    # NOTE ejemplo de decorardor
-    # params = dic_decode(params)
-    # params = 'hola'
-    flash_toast('ejemplo de flash_toast sin sesion', 'success')
-
-    return render_template('pagina_1.html', par_1=par_1, par_2=par_2, params=params)
-
-
-@app.route('/pagina_2', methods=['GET', 'POST'])
-def pagina_2_html():
-
-    # NOTE ejemplo de args (funcional)
-    # args = 'par_1=hola&par_2=adios'
-    # par_1 = 'xxxxxx'
-    # args = f.encrypt(str.encode('par_1=' + par_1 + '&par_2=adios'))
-    # return redirect(url_for('pagina_1_html', args=args))
-
-    # NOTE ejemplo de params (fucional)
-    alumnos_id = 'hola'
-    params = {'alumno_id': alumnos_id, 'anchor': 'top'}
-    params = dic_encode(params)
-    # NOTE ejemplo de decorardor
-    # params = 'hola'
-
-    return redirect(url_for('pagina_1_html', params=params))
-
-
-@app.route('/pagina_pdf')
-def pagina_pdf_html():
-    params = {}
-    params['nombre'] = 'Antonio'
-    return render_template('pagina_pdf.html', params=params)
 
 
 @app.route('/alumnos', methods=['GET', 'POST'])
