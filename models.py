@@ -15,9 +15,11 @@ engine = create_engine(Server_Config.engine_url, echo=False)
 Session_SQL = sessionmaker(bind=engine)
 Base = declarative_base()
 # create a Session_SQL
-Session_SQL = sessionmaker()
+# Session_SQL = sessionmaker() #NOTE linea original
+Session_SQL = scoped_session(Session_SQL) #NOTE prueba para evitar pisar sessiones
 Session_SQL.configure(bind=engine)
 session_sql = Session_SQL()
+# session_sql = scoped_session(session_sql)
 
 
 class User (UserMixin, Base):

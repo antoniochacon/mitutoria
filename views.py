@@ -3,8 +3,11 @@ from functions import *
 import functions
 # *************************************
 
+# Fuerza el reload de los archivos de static
+# **********************************************
 
-@app.url_defaults  # Fuerza el reload de los archivos de static
+
+@app.url_defaults
 def hashed_url_for_static_file(endpoint, values):
     if 'static' == endpoint or endpoint.endswith('.static'):
         filename = values.get('filename')
@@ -26,9 +29,10 @@ def hashed_url_for_static_file(endpoint, values):
 
 def static_file_hash(filename):
     return int(os.stat(filename).st_mtime)
-
-
+# **********************************************
 # (FIN) Fuerza el reload de los archivos de static
+
+
 login_manager = LoginManager()
 login_manager.init_app(app)
 login_manager.login_view = 'login_html'
@@ -37,6 +41,7 @@ login_manager.login_view = 'login_html'
 @login_manager.user_loader
 def load_user(user_id):
     return session_sql.query(User).get(int(user_id))
+
 
 
 @app.before_request
@@ -1869,21 +1874,23 @@ def informe_no_disponible_html():
 # XXX informe
 
 
-@app.route('/informe/<current_tutoria_asignatura_id>/', methods=['GET', 'POST'])
-@app.route('/informe/<current_tutoria_asignatura_id>/<params>', methods=['GET', 'POST'])
-def informe_html(current_tutoria_asignatura_id, params={}):
+@app.route('/informe/<asignatura_id>/<tutoria_id>', methods=['GET', 'POST'])
+@app.route('/informe/<asignatura_id>/<tutoria_id>/<params>', methods=['GET', 'POST'])
+def informe_html(asignatura_id, tutoria_id, params={}):
     try:
-        current_tutoria_asignatura_id = hashids_decode(current_tutoria_asignatura_id)
-        current_tutoria_asignatura = session_sql.query(Association_Tutoria_Asignatura).filter(Association_Tutoria_Asignatura.id == current_tutoria_asignatura_id).first()
-        current_tutoria_asignatura.tutoria_id
+        tutoria_id = hashids_decode(tutoria_id)
+        asignatura_id = hashids_decode(asignatura_id)
+        tutoria_asignatura_check = session_sql.query(Association_Tutoria_Asignatura).filter(Association_Tutoria_Asignatura.tutoria_id == tutoria_id, Association_Tutoria_Asignatura.asignatura_id == asignatura_id).first()
+        if not tutoria_asignatura_check:
+            return redirect(url_for('informe_no_disponible_html'))
     except:
         return redirect(url_for('informe_no_disponible_html'))
-
     try:
         params_old = dic_decode(params)
     except:
         params_old = {}
         abort(404)
+
     params = {}
     params['anchor'] = params_old.get('anchor', 'anchor_top')
     params['collapse_prueba_evaluable_add'] = params_old.get('collapse_prueba_evaluable_add', False)
@@ -1893,8 +1900,6 @@ def informe_html(current_tutoria_asignatura_id, params={}):
     prueba_evaluable_dic = {}
 
     if request.method == 'POST':
-        tutoria_id = current_tutoria_asignatura.tutoria_id
-        asignatura_id = current_tutoria_asignatura.asignatura_id
         tutoria = tutoria_by_id(tutoria_id)
         asignatura = asignatura_by_id(asignatura_id)
         grupo = invitado_grupo(tutoria_id)
@@ -1906,11 +1911,8 @@ def informe_html(current_tutoria_asignatura_id, params={}):
         if not informe_sql:
             informe = Informe(tutoria_id=tutoria_id, asignatura_id=asignatura_id, comentario=request.form.get('comentario'))
             session_sql.add(informe)
-
-            session_sql.flush()
             current_informe_id = invitado_informe(tutoria.id, asignatura.id).id
 
-            # session_sql.commit()
             for pregunta in preguntas_orden_desc:
                 resultado = request.form.get('pregunta_' + str(hashids_encode(pregunta.id)))
                 if resultado:
@@ -1921,9 +1923,7 @@ def informe_html(current_tutoria_asignatura_id, params={}):
                     session_sql.add(respuesta)
         else:
             informe = informe_sql
-
             current_informe_id = informe_sql.id
-
             informe.comentario = comentario = request.form.get('comentario')
             for pregunta in preguntas_orden_desc:
                 respuesta = invitado_respuesta(informe.id, pregunta.id)
@@ -1943,71 +1943,47 @@ def informe_html(current_tutoria_asignatura_id, params={}):
             prueba_evaluable.nota = request.form.get('prueba_evaluable_nota_' + str(hashids_encode(prueba_evaluable.id)))
             prueba_evaluable_dic['selector_prueba_evaluable_delete_' + str(prueba_evaluable.id)] = int(prueba_evaluable.id)
 
-        # session_sql.commit()  # NOTE (NO BORRAR ESTA NOTA) este era el problema de no generar los graficos, era un problema de identado
-
         if request.form['selector_button'] in prueba_evaluable_dic.keys():
             params['anchor'] = 'anchor_pru_eva_add'
             prueba_evaluable_delete_id = prueba_evaluable_dic[request.form['selector_button']]
             prueba_evaluable_delete_sql = session_sql.query(Prueba_Evaluable).filter(Prueba_Evaluable.id == prueba_evaluable_delete_id).first()
             session_sql.delete(prueba_evaluable_delete_sql)
-            # session_sql.commit()
-            return redirect(url_for('informe_html', current_tutoria_asignatura_id=hashids_encode(current_tutoria_asignatura_id), params=dic_encode(params)))
+            return redirect(url_for(
+                'informe_html',
+                asignatura_id=hashids_encode(asignatura_id), tutoria_id=hashids_encode(tutoria_id), params=dic_encode(params)))
 
         if request.form['selector_button'] == 'selector_prueba_evaluable_add':
             params['anchor'] = 'anchor_pru_eva_add'
             params['collapse_prueba_evaluable_add'] = True
-            # En caso de volver a crear las notas con los nombres ya puestos
-            # prueba_evaluable_nombre = request.form.get('prueba_evaluable_nombre')
-            # prueba_evaluable_nota = request.form.get('prueba_evaluable_nota')
             prueba_evaluable_nombre = ''
             prueba_evaluable_nota = 0
             prueba_evaluable_add = Prueba_Evaluable(informe_id=informe.id, nombre=prueba_evaluable_nombre, nota=prueba_evaluable_nota)
             session_sql.add(prueba_evaluable_add)
-            # session_sql.commit()
             flash_toast('Prueba evaluable agregada', 'success')
-            return redirect(url_for('informe_html', current_tutoria_asignatura_id=hashids_encode(current_tutoria_asignatura_id), params=dic_encode(params)))
+            return redirect(url_for(
+                'informe_html',
+                asignatura_id=hashids_encode(asignatura_id), tutoria_id=hashids_encode(tutoria_id), params=dic_encode(params)))
 
         if request.form['selector_button'] == 'selector_informe_add':
-            # session_sql.refresh(informe)
-            # session_sql.expire_all()
-            # for informe in session_sql:
-            #     print('informe.id', informe.id)
-            #
-            # print('current_informe_id', current_informe_id)
-
-            # session_sql.commit()
             if params['pregunta_sin_respuesta']:
                 flash_toast('Preguntas sin evaluar', 'warning')
-                return redirect(url_for('informe_html', current_tutoria_asignatura_id=hashids_encode(current_tutoria_asignatura_id), params=dic_encode(params)))
+                return redirect(url_for(
+                    'informe_html',
+                    asignatura_id=hashids_encode(asignatura_id), tutoria_id=hashids_encode(tutoria_id), params=dic_encode(params)))
             else:
-                params = {}
-                params['current_tutoria_asignatura_id'] = current_tutoria_asignatura_id
-                params['alumno'] = alumno.apellidos + ', ' + alumno.nombre
-                params['grupo'] = grupo.nombre
-                params['tutor_nombre'] = grupo.tutor_nombre
-                params['tutor_apellidos'] = grupo.tutor_apellidos
-                params['fecha'] = tutoria.fecha
-                params['hora'] = tutoria.hora
-                params['asignatura'] = asignatura.asignatura
-                params['asignatura_id'] = asignatura.id
-                params['docente'] = asignatura.nombre + ' ' + asignatura.apellidos
-                params['invitado'] = True
-                params['participacion_porcentaje_recent'] = cociente_porcentual(asignatura_informes_respondidos_recent_count(asignatura.id), asignatura_informes_solicitados_recent_count(asignatura.id))
-                params['tutorias_sin_respuesta_by_asignatura_id'] = tutorias_sin_respuesta_by_asignatura_id(asignatura.id)
-                params['settings_global_periodo_participacion_recent'] = settings_global().periodo_participacion_recent
                 flash_toast('Infome de ' + Markup('<strong>') + alumno.nombre + Markup('</strong>') + ' enviado', 'success')
-                # for informe in session_sql:
-                #     print('informe.id', informe.id)
                 session_sql.commit()
-                return redirect(url_for('informe_success_html', params=dic_encode(params)))
+                return redirect(url_for(
+                    'informe_success_html',
+                    asignatura_id=hashids_encode(asignatura_id), tutoria_id=hashids_encode(tutoria_id),params=dic_encode(params)))
 
         return render_template(
             'informe.html', tutoria=tutoria, asignatura=asignatura,
             alumno=alumno, grupo=grupo, informe=informe, params=params)
 
     else:
-        tutoria_id = int(current_tutoria_asignatura.tutoria_id)
-        asignatura_id = current_tutoria_asignatura.asignatura_id
+        tutoria_id = int(tutoria_id)
+        asignatura_id = int(asignatura_id)
         tutoria = tutoria_by_id(tutoria_id)
         asignatura = asignatura_by_id(asignatura_id)
         alumno = alumno_by_id(tutoria.alumno_id)
@@ -2016,62 +1992,50 @@ def informe_html(current_tutoria_asignatura_id, params={}):
         informe = invitado_informe(tutoria_id, asignatura_id)
         return render_template(
             'informe.html', tutoria=tutoria, asignatura=asignatura,
-            alumno=alumno, grupo=grupo, informe=informe,
-            current_tutoria_asignatura_id=current_tutoria_asignatura_id,
-            params=params)
-
+            alumno=alumno, grupo=grupo, informe=informe, params=params)
 
 # XXX informe_success
 
 
-@app.route('/informe_success/<params>', methods=['GET', 'POST'])
-def informe_success_html(params={}):
+@app.route('/informe_success/<asignatura_id>/<tutoria_id>', methods=['GET', 'POST'])
+def informe_success_html(asignatura_id, tutoria_id):
     try:
-        params_old = dic_decode(params)
+        tutoria_id = hashids_decode(tutoria_id)
+        asignatura_id = hashids_decode(asignatura_id)
+        tutoria_asignatura_check = session_sql.query(Association_Tutoria_Asignatura).filter(Association_Tutoria_Asignatura.tutoria_id == tutoria_id, Association_Tutoria_Asignatura.asignatura_id == asignatura_id).first()
+        if not tutoria_asignatura_check:
+            return redirect(url_for('informe_no_disponible_html'))
     except:
-        params_old = {}
-        abort(404)
-    params = {}
-    # params_anchor_off = True  # NOTE necesario para activar el anchor sin pasarlo por params
-    params['current_tutoria_asignatura_id'] = params_old.get('current_tutoria_asignatura_id', 0)
-    params['anchor'] = params_old.get('anchor', 'anchor_top')
-    params['alumno'] = params_old.get('alumno', False)
-    params['grupo'] = params_old.get('grupo', False)
-    params['tutor_nombre'] = params_old.get('tutor_nombre', False)
-    params['tutor_apellidos'] = params_old.get('tutor_apellidos', False)
-    params['fecha'] = params_old.get('fecha', False)
-    params['hora'] = params_old.get('hora', False)
-    params['asignatura'] = params_old.get('asignatura', False)
-    params['asignatura_id'] = params_old.get('asignatura_id', 0)
-    params['docente'] = params_old.get('docente', False)
-    params['participacion_porcentaje_recent'] = params_old.get('participacion_porcentaje_recent', 0)
-    params['tutorias_sin_respuesta_by_asignatura_id'] = params_old.get('tutorias_sin_respuesta_by_asignatura_id', {})
-    params['settings_global_periodo_participacion_recent'] = params_old.get('settings_global_periodo_participacion_recent', 30)
-    return render_template(
-        'informe_success.html', params=params)
+        return redirect(url_for('informe_no_disponible_html'))
 
-
-@app.route('/informes_pendientes/<params>', methods=['GET', 'POST'])
-def informes_pendientes_html(params={}):
-    try:
-        params_old = dic_decode(params)
-    except:
-        params_old = {}
-        abort(404)
     params = {}
-    params['anchor'] = params_old.get('anchor', 'anchor_top')
-    params['asignatura_id'] = params_old.get('asignatura_id', 0)
-    params['tutorias_sin_respuesta_by_asignatura_id'] = params_old.get('tutorias_sin_respuesta_by_asignatura_id', {})
-    asignatura_id = params['asignatura_id']
     asignatura = asignatura_by_id(asignatura_id)
-    grupo = grupo_by_asignatura_id(asignatura_id)
-    tutorias_id_lista = params['tutorias_sin_respuesta_by_asignatura_id']['tutorias_id_lista']
+    tutoria = tutoria_by_id(tutoria_id)
+    params['alumno'] = alumno_by_tutoria_id(tutoria_id)
+    params['grupo'] = grupo_by_tutoria_id(tutoria_id)
+    params['participacion_porcentaje_recent'] = cociente_porcentual(asignatura_informes_respondidos_recent_count(asignatura.id), asignatura_informes_solicitados_recent_count(asignatura.id))
+    params['tutorias_sin_respuesta_by_asignatura_id'] = tutorias_sin_respuesta_by_asignatura_id(asignatura.id)
+    params['settings_global_periodo_participacion_recent'] = settings_global().periodo_participacion_recent
+    return render_template(
+        'informe_success.html', asignatura=asignatura, tutoria=tutoria, params=params)
+
+
+@app.route('/informes_pendientes/<asignatura_id>', methods=['GET', 'POST'])
+def informes_pendientes_html(asignatura_id):
+    try:
+        asignatura_id = hashids_decode(asignatura_id)
+    except:
+        return redirect(url_for('informe_no_disponible_html'))
+
+    params = {}
+    asignatura = asignatura_by_id(asignatura_id)
+    params['grupo'] = grupo_by_asignatura_id(asignatura_id)
+    tutorias_id_lista = tutorias_sin_respuesta_by_asignatura_id(asignatura.id)['tutorias_id_lista']
     tutorias_pendites = []
     for tutoria_id in tutorias_id_lista:
         tutorias_pendites.append(tutoria_by_id(tutoria_id))
-    return render_template(
-        'informes_pendientes.html',
-        asignatura=asignatura, tutorias_pendites=tutorias_pendites, grupo=grupo, params=params)
+    params['tutorias_pendites'] = tutorias_pendites
+    return render_template('informes_pendientes.html', asignatura=asignatura, params=params)
 
 
 @app.route('/email_tutoria')

@@ -5,13 +5,13 @@
 	<div class="container">
 		<div class="paper bg-white padding_contenido">
 			{{titulo_1(bg_color='bg-dark', titulo='Informe de tutoría')}}
-			<span class="small text-mutted">Alumno: </span><span class="h6">{{params['alumno']}}</span>
+			<span class="small text-mutted">Alumno: </span><span class="h6">{{params['alumno'].apellidos}}, {{params['alumno'].nombre}}</span>
 			<div class="small">
 			<span class="text-mutted">Grupo:</span>
-			{{params['grupo']}}
+			{{params['grupo'].nombre}}
 			<br>
 			<span class="text-mutted">Tutor/a:</span>
-			{{params['tutor_nombre']}} {{params['tutor_apellidos']}}
+			{{params['grupo'].tutor_nombre}} {{params['grupo'].tutor_apellidos}}
 			</div>
 			<div class="divider bg-mutted mt-2"></div>
 			<div class="text-center mt-1 mb-1">
@@ -29,7 +29,7 @@
 					{% endif %}
 				</div>
 				{% if params['tutorias_sin_respuesta_by_asignatura_id']['tutorias_sin_respuesta_count'] %}
-				<a class="btn btn-outline-warning btn-sm link_without_pointer mt-1 mb-1" href="/informes_pendientes/{{dic_encode_args({'tutorias_sin_respuesta_by_asignatura_id': params['tutorias_sin_respuesta_by_asignatura_id'], 'asignatura_id': params['asignatura_id']})}}" role="button">Informes pendientes: {{params['tutorias_sin_respuesta_by_asignatura_id']['tutorias_sin_respuesta_count']}}</a>
+				<a class="btn btn-outline-warning btn-sm link_without_pointer mt-1 mb-1" href="/informes_pendientes/{{hashids_encode(asignatura.id)}}" role="button">Informes pendientes: {{params['tutorias_sin_respuesta_by_asignatura_id']['tutorias_sin_respuesta_count']}}</a>
 				{% else %}
 				<span class="text-secondary small">Sin tutorias pendientes</span>
 				{% endif %}
@@ -39,7 +39,7 @@
 					<span class="timer" data-to="{{params['participacion_porcentaje_recent']}}" data-speed="3000"></span>%
 				</span>
 				</div>
-				<a class="btn btn-outline-dark btn-sm link_without_pointer mb-2" href="/informe/{{hashids_encode(params['current_tutoria_asignatura_id'])}}" role="button"><i class="material-icons vertical-center pr-1">edit</i>Editar informe</a>
+				<a class="btn btn-outline-dark btn-sm link_without_pointer mb-2" href="/informe/{{hashids_encode(asignatura.id)}}/{{hashids_encode(tutoria.id)}}" role="button"><i class="material-icons vertical-center pr-1">edit</i>Editar informe</a>
 			</div>
 			<div class="divider bg-mutted"></div>
 		</div>

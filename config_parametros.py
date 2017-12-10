@@ -57,7 +57,7 @@ hashids = Hashids(salt=salt)
 # redirect usar siempre params=dic_encode(params): Ejemplo: return redirect(url_for('alumnos_html', params=dic_encode(params)))
 # render_template usar siempre params=params: Ejemplo return render_template('alumnos.html', params=params)
 # ****************************************
-# oauth2_credentials
+# oauth2_credentials (necesario para gmail y calendar api)
 import httplib2
 import os
 import oauth2client
@@ -71,7 +71,7 @@ from apiclient import discovery
 
 
 # XXX Local_Host
-# tutoria_email_link = 'http://localhost:5000/informe/'
+# tutoria_email_link = 'http://localhost:5000/informe'
 # email_validate_link = 'http://localhost:5000/email_validate/'
 # index_link = 'http://localhost:5000/'
 # password_reset_link = 'http://localhost:5000/password_reset/'
@@ -79,7 +79,7 @@ from apiclient import discovery
 
 
 # XXX Heroku_Host
-tutoria_email_link = 'https://mitutoria.herokuapp.com/informe/'
+tutoria_email_link = 'https://mitutoria.herokuapp.com/informe'
 email_validate_link = 'https://mitutoria.herokuapp.com/email_validate/'
 index_link = 'https://mitutoria.herokuapp.com/'
 password_reset_link = 'https://mitutoria.herokuapp.com/password_reset/'

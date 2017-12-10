@@ -38,7 +38,7 @@
 				<div class="divider bg-dark"></div>
 			</div>
 		</div>
-		<form action="/informe/{{hashids_encode(current_tutoria_asignatura_id)}}/" method="POST">
+		<form action="/informe/{{hashids_encode(asignatura.id)}}/{{hashids_encode(tutoria.id)}}" method="POST">
 			{% with %}
 			{% set invitado_settings_sql = invitado_settings(tutoria.id) %}
 				{% if not invitado_preguntas(invitado_settings_sql.id) %}
