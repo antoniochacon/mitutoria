@@ -9,10 +9,10 @@
 			{% set settings_by_tutoria_id_sql = settings_by_tutoria_id(tutoria.id) %}
 			<ul class="nav nav-tabs my-2" role="tablist">
 				<li class="nav-item">
-					<a class="nav-link {% if params['cuestionario_tab'] %}active{% endif %}" data-toggle="tab" href="#cuestionario" role="tab">Cuestionario</a>
+					<a class="nav-link px-1 {% if params['cuestionario_tab'] %}active{% endif %}" data-toggle="tab" href="#cuestionario" role="tab">Cuestionario</a>
 				</li>
 				<li class="nav-item">
-					<a class="nav-link {% if informe %}{% if params['notas_tab'] %}active{% endif %}{% else %}disabled link_without_pointer{% endif %}" data-toggle="tab" href="{% if informe %}#notas{% else %}#{% endif %}" role="tab">Notas y Observaciones</a>
+					<a class="nav-link px-1 {% if informe %}{% if params['notas_tab'] %}active{% endif %}{% else %}disabled link_without_pointer{% endif %}" data-toggle="tab" href="{% if informe %}#notas{% else %}#{% endif %}" role="tab">Notas y Comentario</a>
 				</li>
 			</ul>
 			<div class="tab-content">
