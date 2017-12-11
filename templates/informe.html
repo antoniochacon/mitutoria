@@ -3,6 +3,7 @@
 	{%from '_macro.html' import nav_bar_top, titulo_1, nav_tabs_disable%}
 	{{nav_bar_top(current_user=current_user)}}
 	<div class="paper bg-white padding_contenido">
+	{{titulo_1(bg_color='bg-dark', titulo='Informe de tutoría')}}
 		{% include 'informe_datos_tutoria_block.html' %}
 		<form action="/informe/{{hashids_encode(asignatura.id)}}/{{hashids_encode(tutoria.id)}}/" method="POST">
 			{% with %}
@@ -12,7 +13,12 @@
 					<a class="nav-link px-1 {% if params['cuestionario_tab'] %}active{% endif %}" data-toggle="tab" href="#cuestionario" role="tab">Cuestionario</a>
 				</li>
 				<li class="nav-item">
-					<a class="nav-link px-1 {% if informe %}{% if params['notas_tab'] %}active{% endif %}{% else %}disabled link_without_pointer{% endif %}" data-toggle="tab" href="{% if informe %}#notas{% else %}#{% endif %}" role="tab">Notas y Comentario</a>
+					<a
+						class="nav-link px-1 {% if informe %}{% if params['notas_tab'] %}active{% endif %}{% else %}disabled link_without_pointer{% endif %}"
+						data-toggle="tab"
+						href="{% if informe %}#notas{% else %}#{% endif %}"
+						role="tab"
+						title="{% if not informe %}Hay que guardar primero el cuestionario para poder agregar Notas y Comentario{% endif %}">Notas y Comentario</a>
 				</li>
 			</ul>
 			<div class="tab-content">

@@ -4,16 +4,9 @@
 	{{nav_bar_top(current_user=current_user)}}
 	<div class="container">
 		<div class="paper bg-white padding_contenido">
-			{{titulo_1(bg_color='bg-dark', titulo='Informe de tutoría')}}
-			<span class="small text-mutted">Alumno: </span><span class="h6">{{params['alumno'].apellidos}}, {{params['alumno'].nombre}}</span>
-			<div class="small">
-			<span class="text-mutted">Grupo:</span>
-			{{params['grupo'].nombre}}
-			<br>
-			<span class="text-mutted">Tutor/a:</span>
-			{{params['grupo'].tutor_nombre}} {{params['grupo'].tutor_apellidos}}
-			</div>
-			<div class="divider bg-mutted mt-2"></div>
+			{{titulo_1(bg_color='bg-dark', titulo='Informe de tutoría enviado')}}
+			{% include 'informe_datos_tutoria_block.html' %}
+
 			<div class="text-center mt-1 mb-1">
 				{{highcharts_participacion_recent(char_id='tutoria_stats', height='220', weight='220', tooltip_x='33', tooltip_y='45', color_1='#BA5FD3', color_2='#f5f5f5', participacion_recent=params['participacion_porcentaje_recent'])}}
 				<div class="{% if params['tutorias_sin_respuesta_by_asignatura_id']['tutorias_sin_respuesta_count'] %}circle_interior_pendiente {% else %} circle_interior {% endif %}">

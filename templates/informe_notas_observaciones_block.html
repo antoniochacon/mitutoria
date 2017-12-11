@@ -44,7 +44,7 @@
 				<div>
 					<div class="range-slider">
 						<div class="range-slider-value">0</div>
-						<input name="prueba_evaluable_nota_{{hashids_encode(prueba_evaluable.id)}}" class="range-slider-range" type="range" step="0.1"  value="{% if prueba_evaluable.nota %}{{prueba_evaluable.nota}}{% else %}0{% endif %}"  min="0" max="10">
+						<input name="prueba_evaluable_nota_{{hashids_encode(prueba_evaluable.id)}}" class="range-slider-range" type="range" step="0.1" value="{% if prueba_evaluable.nota %}{{prueba_evaluable.nota}}{% else %}0{% endif %}" min="0" max="10">
 					</div>
 				</div>
 			</div>
@@ -52,6 +52,16 @@
 		{% endwith %}
 	{% endfor %}
 </div>
+	{% if invitado_pruebas_evaluables_sql %}
+	<div class="row">
+		<div class="col-sm-12 mb-3">
+			<button class="btn btn-dark btn-sm float-right " type="submit" name="selector_button" value="selector_prueba_evaluable_add" title="agergar nota">
+				<i class="material-icons vertical-center">add</i>
+				agregar nota
+			</button>
+		</div>
+	</div>
+	{% endif %}
 <div class="col-sm-12 bg-dark text-white pl-2 pt-2 pb-2">
 	Observaciones
 </div>
