@@ -812,7 +812,8 @@ def alumnos_html(params={}):
 
             else:
                 if tutoria_add_form.validate():
-                    tutoria_add_form_fecha = datetime.datetime.strptime(tutoria_add_form.fecha.data, '%A-%d-%B-%Y').strftime('%Y-%m-%d')
+                    # FIXME da error de fecha tras el nuevo modelo locale de heroku (falla tambien en LOCAL SERVER)
+                    tutoria_add_form_fecha = datetime.datetime.strptime(tutoria_add_form.fecha.data, '%d-%m-%Y').strftime('%Y-%m-%d')
                     tutoria_add = Tutoria(alumno_id=current_alumno_id, fecha=tutoria_add_form_fecha, hora=tutoria_add_form.hora.data)
                     alumno = alumno_by_id(current_alumno_id)
                     tutoria_sql = session_sql.query(Tutoria).filter(Tutoria.alumno_id == current_alumno_id, Tutoria.fecha == tutoria_add_form_fecha).first()
@@ -852,9 +853,9 @@ def alumnos_html(params={}):
                                 tutoria_fecha = tutoria_add_form.fecha.data
                                 alumno_nombre = alumno.nombre
 
-                                calendar_datetime_utc_start = (datetime.datetime.strptime(tutoria_fecha, '%A-%d-%B-%Y') + datetime.timedelta(hours=tutoria_hora.hour) + datetime.timedelta(minutes=tutoria_hora.minute)).timestamp()
+                                calendar_datetime_utc_start = (datetime.datetime.strptime(tutoria_fecha, '%d-%m-%Y') + datetime.timedelta(hours=tutoria_hora.hour) + datetime.timedelta(minutes=tutoria_hora.minute)).timestamp()
                                 calendar_datetime_utc_start_arrow = str(arrow.get(calendar_datetime_utc_start).replace(tzinfo='Europe/Madrid'))
-                                calendar_datetime_utc_end = (datetime.datetime.strptime(tutoria_fecha, '%A-%d-%B-%Y') + datetime.timedelta(hours=tutoria_hora.hour) + datetime.timedelta(minutes=(tutoria_hora.minute + settings().tutoria_duracion))).timestamp()
+                                calendar_datetime_utc_end = (datetime.datetime.strptime(tutoria_fecha, '%d-%m-%Y') + datetime.timedelta(hours=tutoria_hora.hour) + datetime.timedelta(minutes=(tutoria_hora.minute + settings().tutoria_duracion))).timestamp()
                                 calendar_datetime_utc_end_arrow = str(arrow.get(calendar_datetime_utc_end).replace(tzinfo='Europe/Madrid'))
 
                                 tutoria_calendar_add(service, tutoria_add, calendar_datetime_utc_start_arrow, calendar_datetime_utc_end_arrow, alumno_nombre)
@@ -1490,7 +1491,7 @@ def analisis_tutoria_edit_html(params={}):
             tutoria_sql = session_sql.query(Tutoria).filter(Tutoria.id == current_tutoria_id).first()
             tutoria_edit_form = Tutoria_Add(current_tutoria_id=current_tutoria_id, fecha=request.form.get('fecha'), hora=request.form.get('hora'))
             if tutoria_edit_form.validate():
-                tutoria_edit_form_fecha = datetime.datetime.strptime(tutoria_edit_form.fecha.data, '%A-%d-%B-%Y').strftime('%Y-%m-%d')
+                tutoria_edit_form_fecha = datetime.datetime.strptime(tutoria_edit_form.fecha.data, '%d-%m-%Y').strftime('%Y-%m-%d')
                 if datetime.datetime.strptime(tutoria_edit_form_fecha, '%Y-%m-%d').date() < g.current_date:
                     tutoria_edit_form.fecha.errors = ['Tutoría no actualizada.']
                     flash_wtforms(tutoria_edit_form, flash_toast, 'warning')
@@ -1508,10 +1509,10 @@ def analisis_tutoria_edit_html(params={}):
 
                     # Actualiza google calendar
                     tutoria_edit_form_hora = datetime.datetime.strptime(tutoria_edit_form.hora.data, '%H:%M')
-                    calendar_datetime_utc_start = (datetime.datetime.strptime(tutoria_edit_form.fecha.data, '%A-%d-%B-%Y') + datetime.timedelta(hours=(tutoria_edit_form_hora.hour)) + datetime.timedelta(minutes=tutoria_edit_form_hora.minute)).timestamp()
+                    calendar_datetime_utc_start = (datetime.datetime.strptime(tutoria_edit_form.fecha.data, '%d-%m-%Y') + datetime.timedelta(hours=(tutoria_edit_form_hora.hour)) + datetime.timedelta(minutes=tutoria_edit_form_hora.minute)).timestamp()
                     calendar_datetime_utc_start_arrow = str(arrow.get(calendar_datetime_utc_start).replace(tzinfo='Europe/Madrid'))
 
-                    calendar_datetime_utc_end = (datetime.datetime.strptime(tutoria_edit_form.fecha.data, '%A-%d-%B-%Y') + datetime.timedelta(hours=(tutoria_edit_form_hora.hour)) + datetime.timedelta(minutes=(tutoria_edit_form_hora.minute + settings().tutoria_duracion))).timestamp()
+                    calendar_datetime_utc_end = (datetime.datetime.strptime(tutoria_edit_form.fecha.data, '%d-%m-%Y') + datetime.timedelta(hours=(tutoria_edit_form_hora.hour)) + datetime.timedelta(minutes=(tutoria_edit_form_hora.minute + settings().tutoria_duracion))).timestamp()
                     calendar_datetime_utc_end_arrow = str(arrow.get(calendar_datetime_utc_end).replace(tzinfo='Europe/Madrid'))
 
                     try:

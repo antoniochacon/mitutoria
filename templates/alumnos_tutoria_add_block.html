@@ -10,7 +10,7 @@
 						name="{{tutoria_add.fecha.name}}"
 						readonly="true"
 						style="background-color: white"
-						value="{% if request.method=='POST' and params['collapse_tutoria_add'] %}{{tutoria_add.fecha.data}}{% else %}{{g.current_date.strftime('%A-%d-%B-%Y')}}{% endif %}"
+						value="{% if request.method=='POST' and params['collapse_tutoria_add'] %}{{tutoria_add.fecha.data}}{% else %}{{g.current_date.strftime('%d-%m-%Y')}}{% endif %}"
 						placeholder="{{tutoria_add.fecha.label.text}}">
 					<span class="input-group-addon {% if request.method=='POST' and params['collapse_tutoria_add'] %} {% if tutoria_add.fecha.errors %} form_addon-warning {% else %} form_addon-success {% endif %} {% endif %}">fecha</span>
 				</div>
