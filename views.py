@@ -2031,7 +2031,6 @@ def informe_success_html(asignatura_id, tutoria_id, params={}):
         'informe_success.html',
         asignatura=asignatura, tutoria=tutoria, alumno=alumno, grupo=grupo, params=params)
 
-
 @app.route('/informes_pendientes/<asignatura_id>', methods=['GET', 'POST'])
 def informes_pendientes_html(asignatura_id):
     try:
