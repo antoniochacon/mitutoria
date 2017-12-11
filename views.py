@@ -1951,6 +1951,7 @@ def informe_html(asignatura_id, tutoria_id, params={}):
             prueba_evaluable_delete_id = prueba_evaluable_dic[request.form['selector_button']]
             prueba_evaluable_delete_sql = session_sql.query(Prueba_Evaluable).filter(Prueba_Evaluable.id == prueba_evaluable_delete_id).first()
             session_sql.delete(prueba_evaluable_delete_sql)
+            session_sql.commit()
             params['notas_tab'] = True
             return redirect(url_for('informe_html', tutoria_id=hashids_encode(tutoria_id), asignatura_id=hashids_encode(asignatura_id), params=dic_encode(params)))
 
@@ -1960,7 +1961,7 @@ def informe_html(asignatura_id, tutoria_id, params={}):
             prueba_evaluable_nota = 0
             prueba_evaluable_add = Prueba_Evaluable(informe_id=informe_sql.id, nombre=prueba_evaluable_nombre, nota=prueba_evaluable_nota)
             session_sql.add(prueba_evaluable_add)
-            session_sql.flush()
+            session_sql.commit()
             params['anchor'] = 'anchor_pru_eva_' + str(hashids_encode(prueba_evaluable_add.id))
 
             flash_toast('Prueba evaluable agregada', 'success')

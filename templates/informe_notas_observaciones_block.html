@@ -1,7 +1,6 @@
 {% if informe %}
 	{% set invitado_pruebas_evaluables_sql = invitado_pruebas_evaluables(informe.id) %}
 {% endif %}
-<a id="anchor_pru_eva_add"></a>
 <div class="col-sm-12 bg-dark text-white pl-2 pt-2 pb-2 mb-3">
 	Notas
 	<button class="btn btn-info btn-sm float-right pt-0 pb-0 pl-0" type="submit" name="selector_button" value="selector_prueba_evaluable_add" title="agergar nota">
@@ -10,7 +9,14 @@
 	</button>
 </div>
 <div class="row">
-	{% for prueba_evaluable in invitado_pruebas_evaluables_sql %}
+	{% if not invitado_pruebas_evaluables_sql %}
+		<div class="col-sm-12 mb-3 ml-2">
+			<span class="small">Agregue las notas de pruebas evaluables.</span>
+			<br>
+			<span class="small">Es aconsejable indicar el nombre de cada prueba.</span>
+		</div>
+	{% endif %}
+	{% for prueba_evaluable in invitado_pruebas_evaluables_sql%}
 		{% with %}
 		{% set invitado_pruebas_evaluables_sql_count = invitado_pruebas_evaluables_sql | count %}
 		<div class="col-sm-12 {% if invitado_pruebas_evaluables_sql_count > 1 %} col-md-6 {% if invitado_pruebas_evaluables_sql_count > 2 %} col-lg-4 {% endif %} {% endif %} mb-2">
@@ -38,7 +44,7 @@
 				<div>
 					<div class="range-slider">
 						<div class="range-slider-value">0</div>
-						<input name="prueba_evaluable_nota_{{hashids_encode(prueba_evaluable.id)}}" class="range-slider-range" type="range" step="0.1" {% if prueba_evaluable.nota %} value="0" {% endif %} min="0" max="10">
+						<input name="prueba_evaluable_nota_{{hashids_encode(prueba_evaluable.id)}}" class="range-slider-range" type="range" step="0.1"  value="{% if prueba_evaluable.nota %}{{prueba_evaluable.nota}}{% else %}0{% endif %}"  min="0" max="10">
 					</div>
 				</div>
 			</div>
