@@ -1894,7 +1894,7 @@ def informe_html(asignatura_id, tutoria_id, params={}):
     params['anchor'] = params_old.get('anchor', 'anchor_top')
     params['pregunta_sin_respuesta'] = params_old.get('pregunta_sin_respuesta', False)
     params['selector_guardar_cuestionario'] = params_old.get('selector_guardar_cuestionario', False)
-    print('selector_guardar_cuestionario:',params['selector_guardar_cuestionario'])
+    print('selector_guardar_cuestionario:', params['selector_guardar_cuestionario'])
 
     tutoria = tutoria_by_id(tutoria_id)
     asignatura = asignatura_by_id(asignatura_id)
@@ -2022,7 +2022,7 @@ def informe_success_html(asignatura_id, tutoria_id, params={}):
     params = {}
     asignatura = asignatura_by_id(asignatura_id)
     tutoria = tutoria_by_id(tutoria_id)
-    alumno= alumno_by_tutoria_id(tutoria_id)
+    alumno = alumno_by_tutoria_id(tutoria_id)
     grupo = grupo_by_tutoria_id(tutoria_id)
     params['participacion_porcentaje_recent'] = cociente_porcentual(asignatura_informes_respondidos_recent_count(asignatura.id), asignatura_informes_solicitados_recent_count(asignatura.id))
     params['tutorias_sin_respuesta_by_asignatura_id'] = tutorias_sin_respuesta_by_asignatura_id(asignatura.id)
@@ -2030,8 +2030,6 @@ def informe_success_html(asignatura_id, tutoria_id, params={}):
     return render_template(
         'informe_success.html',
         asignatura=asignatura, tutoria=tutoria, alumno=alumno, grupo=grupo, params=params)
-
-
 
 
 @app.route('/informes_pendientes/<asignatura_id>', methods=['GET', 'POST'])
