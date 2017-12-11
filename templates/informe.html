@@ -1,163 +1,35 @@
 {% extends "_layout.html" %}
 {% block body %}
-	{%from '_macro.html' import nav_bar_top, titulo_1%}
+	{%from '_macro.html' import nav_bar_top, titulo_1, nav_tabs_disable%}
 	{{nav_bar_top(current_user=current_user)}}
 	<div class="paper bg-white padding_contenido">
-		{% if alumno and asignatura and tutoria %}
-			{{titulo_1(bg_color='bg-dark', titulo='Informe de tutoría')}}
-			<span class="small text-mutted">Alumno: </span><span class="h6">{{alumno.apellidos}}, {{alumno.nombre}}</span>
-			<div class="small">
-			<span class="text-mutted">Fecha:</span>
-			{{tutoria.fecha.strftime('%A') | capitalize}}
-			{{tutoria.fecha.strftime('%d')}}
-			{{tutoria.fecha.strftime('%b') | capitalize}} [{{tutoria.hora.strftime('%H:%M')}} h]
-			<br>
-			<span class="text-mutted">Grupo:</span>
-			{{grupo.nombre}}
-			<br>
-			<span class="text-mutted">Tutor/a:</span>
-			{{grupo.tutor_nombre}} {{grupo.tutor_apellidos}}
-			<br>
-			<span class="text-mutted">Docente:</span>
-			{{asignatura.nombre}}
-			{{asignatura.apellidos}}
-			<br>
-			<span class="text-mutted">Asignatura:</span>
-			{{asignatura.asignatura}}
-			</div>
-		{% else %}
-			<div class="text-warning text-center">
-				No disponible el informe de su materia.
-				<br>
-				Consulte con el tutor/a correspodiente.
-			</div>
-		{% endif %}
-		<div class="row">
-			<div class="col-sm-12 strong pt-2 pb-3">
-				Cuestionario
-				<div class="divider bg-dark"></div>
-			</div>
-		</div>
-		<form action="/informe/{{hashids_encode(asignatura.id)}}/{{hashids_encode(tutoria.id)}}" method="POST">
+		{% include 'informe_datos_tutoria_block.html' %}
+		<form action="/informe/{{hashids_encode(asignatura.id)}}/{{hashids_encode(tutoria.id)}}/" method="POST">
 			{% with %}
-			{% set invitado_settings_sql = invitado_settings(tutoria.id) %}
-				{% if not invitado_preguntas(invitado_settings_sql.id) %}
-					<div class="text-warning">
-						Las preguntas de este cuestionario han sido descartadas.
-						<br>
-						Póngase en contacto con el tutor de este alumno/a para resolver sus dudas.
-					</div>
-				{% endif %}
-				{% for categoria in categorias() %}
-				{% with %}
-				{% set invitado_preguntas_by_categoria_id_sql =invitado_preguntas_by_categoria_id(invitado_settings_sql.id, categoria.id) %}
-					{% if invitado_preguntas_by_categoria_id_sql %}
-					<div class="bg-dark text-white pl-2 pt-2 pb-2 mb-2">
-						{{categoria.enunciado}}
-					</div>
-					<div class="row">
-					{% for pregunta in invitado_preguntas_by_categoria_id_sql %}
-					{% with %}
-					{% set hashids_encode_pregunta_id = hashids_encode(pregunta.id)%}
-					<div class="col-sm-12 col-md-6 mb-3">
-						<a id="anchor_pregunta_{{hashids_encode_pregunta_id}}"></a>
-						<div class="card border-gray z-depth-1-1-less mb-2">
-							<div class="card-header p-2">{{pregunta.enunciado}}</div>
-								<div>
-									<div class="range-slider_cualitativo">
-										<div id="range-slider-value_cualitativo" class="range-slider-value_cualitativo"></div>
-										<input
-											name="pregunta_input_{{hashids_encode_pregunta_id}}"
-											class="range-slider-range_cualitativo"
-											type="range"
-											step="2"
-											{% if informe %}
-												{% if invitado_respuesta(informe.id,pregunta.id).resultado %}
-													value="{{invitado_respuesta(informe.id,pregunta.id).resultado}}"
-												{% endif %}
-											{% endif %}
-											value="-2"
-											min="0"
-											max="10"
-											oninput="this.form.pregunta_{{hashids_encode_pregunta_id}}.value=this.value">
-									</div>
-								<input type="hidden" name="pregunta_{{hashids_encode_pregunta_id}}" min="-2" max="10"
-								{% if informe %}
-								{% if invitado_respuesta(informe.id,pregunta.id).resultado %}
-								value="{{invitado_respuesta(informe.id,pregunta.id).resultado}}"
-								{% endif %}
-								{% endif %}
-								value="-2"
-								oninput="this.form.pregunta_input_{{hashids_encode_pregunta_id}}.value=this.value">
-								<input type="hidden" name="pregunta_id" value="{{hashids_encode_pregunta_id}}">
-							</div>
-						</div>
-					</div>
-					{% endwith %}
-					{% endfor %}
-					</div>
-					{% endif %}
-				{% endwith %}
-				{% endfor %}
-				{% with %}
-				{% if informe %}
-				{% set invitado_pruebas_evaluables_sql = invitado_pruebas_evaluables(informe.id) %}
-				{% endif %}
-				<a id="anchor_pru_eva_add"></a>
-				<div class="col-sm-12 bg-dark text-white pl-2 pt-2 pb-2 mb-3">
-					Notas
-					<button class="btn btn-info btn-sm float-right pt-0 pb-0 pl-0" type="submit" name="selector_button" value="selector_prueba_evaluable_add" title="agergar nota">
-						<i class="material-icons vertical-center">add</i>
-						agregar nota
-					</button>
+			{% set settings_by_tutoria_id_sql = settings_by_tutoria_id(tutoria.id) %}
+			<ul class="nav nav-tabs my-2" role="tablist">
+				<li class="nav-item">
+					<a class="nav-link {% if params['cuestionario_tab'] %}active{% endif %}" data-toggle="tab" href="#cuestionario" role="tab">Cuestionario</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link {% if informe %}{% if params['notas_tab'] %}active{% endif %}{% else %}disabled link_without_pointer{% endif %}" data-toggle="tab" href="{% if informe %}#notas{% else %}#{% endif %}" role="tab">Notas y Observaciones</a>
+				</li>
+			</ul>
+			<div class="tab-content">
+				<div class="tab-pane fade {% if params['cuestionario_tab'] %}show active{% endif %}" id="cuestionario" role="tabpanel">
+					{% include 'informe_cuestionario_block.html' %}
 				</div>
-				<div class="row">
-					{% for prueba_evaluable in invitado_pruebas_evaluables_sql | reverse %}
-					{% with %}
-					{% set invitado_pruebas_evaluables_sql_count = invitado_pruebas_evaluables_sql | count %}
-						<div class="col-sm-12 {% if invitado_pruebas_evaluables_sql_count > 1 %} col-md-6 {% if invitado_pruebas_evaluables_sql_count > 2 %} col-lg-4 {% endif %} {% endif %} mb-4">
-								<div class="card border-gray z-depth-1-1-less mb-2">
-									<div class="card-header p-1">
-										<div class="input-group">
-											<span class="input-group-addon bg-light border border-0"><i class="material-icons vertical-center">edit</i></span>
-											<input
-												type="text"
-												class="form-control bg-light border border-0 pl-0"
-												name="prueba_evaluable_nombre_{{hashids_encode(prueba_evaluable.id)}}"
-												value="{% if prueba_evaluable.nombre %}{{prueba_evaluable.nombre}}{% endif %}"
-												placeholder="Prueba evaluable {{1 + invitado_pruebas_evaluables_sql_count - loop.index}}">
-
-										<div class="btn-group" role="group" aria-label="...">
-												{% include 'informe_prueba_evaluable_delete_confirmar_block.html' %}
-												<a data-toggle="collapse" href="#prueba_evaluable_close_{{hashids_encode(prueba_evaluable.id)}}" class="btn btn-outline-dark btn-sm link_without_pointer border border-0" aria-expanded="false" title="Eliminar prueba">
-												<i class="material-icons vertical-center">close</i></a>
-										</div>
-										</div>
-									</div>
-								<div>
-									<div class="range-slider">
-										<div class="range-slider-value">0</div>
-										<input name="prueba_evaluable_nota_{{hashids_encode(prueba_evaluable.id)}}" class="range-slider-range" type="range" step="0.1" {% if prueba_evaluable.nota %} value="{{prueba_evaluable.nota}}" {% endif %} value="0" min="0" max="10">
-									</div>
-								</div>
-							</div>
-						</div>
-					{% endwith %}
-					{% endfor %}
+				<div class="tab-pane fade {% if params['notas_tab'] %}show active{% endif %}" id="notas" role="tabpanel">
+					{% include 'informe_notas_observaciones_block.html' %}
 				</div>
-				<div class="col-sm-12 bg-dark text-white pl-2 pt-2 pb-2">
-					Comentario
-				</div>
-				<div class="col-sm-12 pt-3 pb-3 pl-1 pr-1">
-					<textarea class="form-control vresize" rows="3" name="comentario" id="comentario">{{informe.comentario}}</textarea>
-				</div>
-				<div class="col">
-					<button role="button" type="submit" name="selector_button" value="selector_informe_add" class="btn btn-outline-primary" title="enviar informe">
-						<i class="material-icons vertical-center pr-1">send</i>enviar informe
-					</button>
-				</div>
-				{% endwith %}
-				{% endwith %}
-			</form>
+			</div>
+			{% endwith %}
+			<!-- <div class="divider bg-dark mb-2"></div> -->
+			{% if informe %}
+				<button role="button" type="submit" name="selector_button" value="selector_enviar_informe" class="btn btn-outline-primary" title="enviar informe">
+					<i class="material-icons vertical-center pr-1">send</i>enviar informe
+				</button>
+			{% endif %}
+		</form>
 	</div>
 {% endblock %}
