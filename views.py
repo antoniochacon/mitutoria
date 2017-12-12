@@ -1993,7 +1993,7 @@ def informe_html(asignatura_id, tutoria_id, params={}):
             session_sql.add(prueba_evaluable_add)
             session_sql.flush()  # necesario para disponer luego de prueba_evaluable_add.id
             params['anchor'] = 'anchor_pru_eva_' + str(hashids_encode(prueba_evaluable_add.id))
-            flash_toast('Prueba evaluable agregada', 'success')
+            # flash_toast('Prueba evaluable agregada', 'success')
             params['notas_tab'] = True
             return redirect(url_for('informe_html', tutoria_id=hashids_encode(tutoria_id), asignatura_id=hashids_encode(asignatura_id), params=dic_encode(params)))
 
