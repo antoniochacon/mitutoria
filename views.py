@@ -7,6 +7,11 @@ import functions
 # **********************************************
 
 
+
+
+
+
+
 @app.url_defaults
 def hashed_url_for_static_file(endpoint, values):
     if 'static' == endpoint or endpoint.endswith('.static'):
