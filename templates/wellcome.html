@@ -1,6 +1,6 @@
 {% extends '_layout.html' %}
 {% block body %}
-	{%from '_macro.html' import nav_bar_top, titulo_1, nav_tabs,%}
+	{%from '_macro.html' import nav_bar_top, titulo_1, nav_tabs%}
 	{{ nav_bar_top(link_active='ayuda',params=params, current_user=current_user) }}
 	<div class="paper bg-white padding_contenido">
 		{{titulo_1(bg_color='bg-dark',titulo='Ayuda')}}
@@ -19,7 +19,7 @@
 				<div class="pl-2">
 					Al comenzar, será dirigido a la sección de grupos, en la que podrá crear su primer grupo de alumnos.
 					<br>
-					<span class="small text-mutted">
+					<span class="small text-gray">
 						"Tutor" será el nombre con el que usted desee mostrarse a su equipo educativo.
 					</span>
 				</div>
@@ -33,7 +33,7 @@
 			<div class="media-body">
 				<div class="pl-2">
 					Una vez creado el grupo, en el menu principal elija la opción de alumnos. Podrá agregar tantos alumnos como desee.<br>
-					<span class="small text-mutted">Los alumnos pueden ser agreado de uno en uno o bien importados en un solo lote desde Séneca.
+					<span class="small text-gray">Los alumnos pueden ser agreado de uno en uno o bien importados en un solo lote desde Séneca.
 						<br>
 						Para ello primero tendrá que ir a Séneca y exportar sus alumnos en fomato CSV y acontinuacion use la opción de "importar de Séneca".
 					</span>
@@ -60,7 +60,7 @@
 				<div class="pl-2">
 					Solamente le queda asignar que alumnos tienen tal o cual asignatura.
 					<br>
-					<span class="small text-mutted">
+					<span class="small text-gray">
 						Esto mismo lo puede hacer indicando que profesor tiene que alumnos. Como usted prefiera.
 					</span>
 				</div>
@@ -75,8 +75,8 @@
 				<div class="pl-2">
 					Enhorabuena, finalizó la configuración. Seleccione un alumno y pique sobre "Solicitar tutoría", indique fecha y hora.
 					<br>
-					<span class="small text-mutted">
-						Nuestro sistema se encargará de enviar los y recopilar los informes de su equipo educativo.
+					<span class="small text-gray">
+						La aplicación se encargará de enviar los y recopilar los informes de su equipo educativo.
 					</span>
 				</div>
 			</div>
