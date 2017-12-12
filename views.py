@@ -53,6 +53,12 @@ def getos():
     return (os.name)
 
 
+
+
+
+
+
+
 @app.errorhandler(404)
 def page_not_found_html(warning):
 
