@@ -1,0 +1,74 @@
+{% with %}
+{% set categorias = categorias() %}
+{% set categorias_count = categorias | count %}
+<a data-toggle="collapse" data-parent="#parent_pregunta" href="#categoria_add" class="collapse_header_1" aria-expanded="true" aria-controls="collapse_categoria_add" title="Agregar categoria">
+	<div class="media">
+		&nbsp;<i class="material-icons vertical-center">view_list</i>&nbsp;
+		<div class="media-body">
+			<div class="padding_2">
+				agregar nueva categoria
+				<span class="badge float-right {% if categorias %}badge-mutted{% else %}badge-warning text-white{% endif %}" title="activa por defecto">
+					{{categorias_count}}
+					{{singular_plural('categoria','categorias', categorias_count)}}
+				</span>
+			</div>
+		</div>
+	</div>
+</a>
+<div class="collapse {% if params['collapse_categoria_add'] %} show {% endif %}" id="categoria_add">
+	<br>
+	<div class="padding_3">
+		<form action="/admin_cuestionario" method="POST">
+			<div class="row">
+				<div class="form-group col-md-12 mb-3">
+					<div class="input-group">
+						<input
+							type="text"
+							class="form-control {% if request.method=='POST' and params['collapse_categoria_add'] %}{% if categoria_add.enunciado.errors %} is-invalid {% else %} is-valid {% endif %}{% endif %}"
+							name="{{categoria_add.enunciado.name}}"
+							{% if request.method=='POST' %}
+							value="{% if request.method=='POST' and params['collapse_categoria_add'] %}{{categoria_add.enunciado.data}}{% endif %}"
+							{% endif %}
+							placeholder="{{categoria_add.enunciado.label.text}}">
+						<span class="input-group-addon {% if request.method=='POST' and params['collapse_categoria_add'] %} {% if categoria_add.enunciado.errors %} form_addon-warning {% else %} form_addon-success {% endif %} {% endif %}">{{categoria_add.enunciado.label.text}}</span>
+					</div>
+				</div>
+				<div class="form-group col-sm-12 col-md-4">
+					<div class="input-group">
+						<input
+							type="text"
+							class="form-control {% if request.method=='POST' and params['collapse_categoria_add'] %}{% if categoria_add.color.errors %} is-invalid {% else %} is-valid {% endif %}{% endif %}"
+							name="{{categoria_add.color.name}}"
+							value="{% if request.method=='POST' and params['collapse_categoria_add'] %}{{categoria_add.color.data}}{% else %}#343a40{% endif %}"
+							placeholder="#343a40">
+						<span class="input-group-addon {% if request.method=='POST' and params['collapse_categoria_add'] %} {% if categoria_add.color.errors %} form_addon-warning {% else %} form_addon-success {% endif %} {% endif %}">{{categoria_add.color.label.text}}</span>
+					</div>
+				</div>
+				<div class="form-group col-sm-12 col-md-4">
+					<div class="input-group">
+						<input
+							type="number"
+							class="form-control {% if request.method=='POST' and params['collapse_categoria_add'] %}{% if categoria_add.orden.errors %} is-invalid {% else %} is-valid {% endif %}{% endif %}"
+							name="{{categoria_add.orden.name}}"
+							value="{% if request.method=='POST' and params['collapse_categoria_add'] %}{{categoria_add.orden.data}}{% else %}{{categorias_count +1}}{% endif %}"
+							placeholder="{{categorias_count +1}}">
+						<span class="input-group-addon {% if request.method=='POST' and params['collapse_categoria_add'] %} {% if categoria_add.orden.errors %} form_addon-warning {% else %} form_addon-success {% endif %} {% endif %}">{{categoria_add.orden.label.text}}</span>
+					</div>
+				</div>
+			</div>
+			<div class="btn-group pb-3" role="group" aria-label="...">
+				<button role="button" type="submit" name="selector_button" value="selector_categoria_add" class="btn btn-outline-primary btn-sm" title="agregar categoria">
+					<i class="material-icons vertical-center">person</i>
+					agregar
+				</button>
+				{% if params['collapse_categoria_add'] and request.method == 'POST' %}
+					<button role="button" type="submit" name="selector_button" value="selector_categoria_add_close" class="btn btn-outline-dark btn-sm" title="cerrar">
+						<i class="material-icons vertical-center">close</i>
+					</button>
+				{% endif %}
+			</div>
+		</form>
+	</div>
+	<div class="divider grueso bg-primary"></div>
+</div>
+{% endwith %}

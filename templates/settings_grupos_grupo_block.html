@@ -1,0 +1,157 @@
+<a id="anchor_gru_{{hashids_encode(grupo.id)}}"></a>
+<a data-toggle="collapse" class="collapse_header_1" data-parent="#parent_grupo" href="#grupo_listado{{hashids_encode(grupo.id)}}" aria-expanded="true" title="{{grupo.nombre}}">
+	<div class="media">
+		<span class="curso_academico {% if grupo_activo_check(grupo.id) %} curso_academico-primary {% else %} curso_academico-mutted {% endif %}">{{grupo.curso_academico}}
+			|
+			{{grupo.curso_academico+1}}</span>
+
+		<div class="media-body">
+			<div class="padding_2">
+				{{grupo.nombre}}
+				{# NOTE badge #}
+				<span class="badge float-right {% if grupo_alumnos_count(grupo.id) %}{% if grupo_activo_check(grupo.id) %} badge-dark {% else %} badge-mutted {% endif %}{% else %}badge-warning{% endif %} text-white" title="{{grupo_alumnos_count(grupo.id)}} {{singular_plural('alumno','alumnos', grupo_alumnos_count(grupo.id))}}">
+					{% if grupo_alumnos_count(grupo.id) %}
+						{{grupo_alumnos_count(grupo.id)}}
+						{{singular_plural('alumno', 'alumnos', grupo_alumnos_count(grupo.id))}}
+					{% else %}
+						sin alumnos
+					{% endif %}
+				</span>
+			</div>
+		</div>
+	</div>
+</a>
+<div id="grupo_listado{{hashids_encode(grupo.id)}}" class="collapse {% if equal_str(grupo.id, params['current_grupo_id']) and params['collapse_grupo_edit'] %} show {% endif %}" role="tab">
+	<div class="divider grueso bg-primary"></div>
+	{# XXX: grupo_edit #}
+	<br>
+	<div class="padding_3">
+		<form action="/settings_grupos" method="POST">
+			<div class="row">
+				<div class="form-group col-md-6 mb-3">
+					<div class="input-group">
+						<input
+							type="text"
+							{% if not equal_str(grupo.id, params['current_grupo_id']) or not params['grupo_edit_link'] %}
+							readonly
+							{% endif %}
+							class="form-control {% if request.method=='POST' and params['collpase_grupo_edit'] %} {% if grupo_edit.nombre.errors %} is-invalid {% else %} is-valid {% endif %}{% endif %}"
+							name="{{grupo_edit.nombre.name}}"
+							value="{% if equal_str(grupo.id,params['current_grupo_id']) and request.method=='POST' and params['collpase_grupo_edit'] %}{{grupo_edit.nombre.data}}{% else %}{{grupo.nombre}}{% endif %}"
+							placeholder="{{grupo_edit.nombre.label.text}}">
+						<span class="input-group-addon {% if request.method=='POST' and params['collpase_grupo_edit'] %} {% if grupo_edit.nombre.errors %} form_addon-warning {% else %} form_addon-success {% endif %} {% endif %}">{{grupo_edit.nombre.label.text}}</span>
+					</div>
+				</div>
+				<div class="form-group col-md-6 mb-3">
+					<div class="input-group">
+						<input
+							type="text"
+							{% if not equal_str(grupo.id, params['current_grupo_id']) or not params['grupo_edit_link'] %}
+							readonly
+							{% endif %}
+							class="form-control {% if request.method=='POST' and params['collpase_grupo_edit'] %} {% if grupo_edit.centro.errors %} is-invalid {% else %} is-valid {% endif %}{% endif %}"
+							name="{{grupo_edit.centro.name}}"
+							value="{% if equal_str(grupo.id,params['current_grupo_id']) and request.method=='POST' and params['collpase_grupo_edit'] %}{{grupo_edit.centro.data}}{% else %}{{grupo.centro}}{% endif %}"
+							placeholder="{{grupo_edit.centro.label.text}}">
+						<span class="input-group-addon {% if request.method=='POST' and params['collpase_grupo_edit'] %} {% if grupo_edit.centro.errors %} form_addon-warning {% else %} form_addon-success {% endif %} {% endif %}">{{grupo_edit.centro.label.text}}</span>
+					</div>
+				</div>
+				<div class="form-group col-md-6 mb-3">
+					<div class="input-group">
+						<input
+							type="text"
+							{% if not equal_str(grupo.id, params['current_grupo_id']) or not params['grupo_edit_link'] %}
+							readonly
+							{% endif %}
+							class="form-control {% if request.method=='POST' and params['collpase_grupo_edit'] %} {% if grupo_edit.tutor_nombre.errors %} is-invalid {% else %} is-valid {% endif %}{% endif %}"
+							name="{{grupo_edit.tutor_nombre.name}}"
+							value="{% if equal_str(grupo.id,params['current_grupo_id']) and request.method=='POST' and params['collpase_grupo_edit'] %}{{grupo_edit.tutor_nombre.data}}{% else %}{{grupo.tutor_nombre}}{% endif %}"
+							placeholder="{{grupo_edit.tutor_nombre.label.text}}">
+						<span class="input-group-addon {% if request.method=='POST' and params['collpase_grupo_edit'] %} {% if grupo_edit.tutor_nombre.errors %} form_addon-warning {% else %} form_addon-success {% endif %} {% endif %}">{{grupo_edit.tutor_nombre.label.text}}</span>
+					</div>
+				</div>
+				<div class="form-group col-md-6 mb-3">
+					<div class="input-group">
+						<input
+							type="text"
+							{% if not equal_str(grupo.id, params['current_grupo_id']) or not params['grupo_edit_link'] %}
+							readonly
+							{% endif %}
+							class="form-control {% if request.method=='POST' and params['collpase_grupo_edit'] %} {% if grupo_edit.tutor_apellidos.errors %} is-invalid {% else %} is-valid {% endif %}{% endif %}"
+							name="{{grupo_edit.tutor_apellidos.name}}"
+							value="{% if equal_str(grupo.id,params['current_grupo_id']) and request.method=='POST' and params['collpase_grupo_edit'] %}{{grupo_edit.tutor_apellidos.data}}{% else %}{{grupo.tutor_apellidos}}{% endif %}"
+							placeholder="{{grupo_edit.tutor_apellidos.label.text}}">
+						<span class="input-group-addon {% if request.method=='POST' and params['collpase_grupo_edit'] %} {% if grupo_edit.tutor_apellidos.errors %} form_addon-warning {% else %} form_addon-success {% endif %} {% endif %}">{{grupo_edit.tutor_apellidos.label.text}}</span>
+					</div>
+				</div>
+
+				<input type="hidden" name="curso_academico" value="{{curso()}}">
+				{% if not params['login'] %}
+					<div class="form-group col-md-6 mb-3">
+						<label class="custom-control custom-checkbox check_box_1">
+							<input
+								type="checkbox"
+								{% if not equal_str(grupo.id, params['current_grupo_id']) or not params['grupo_edit_link'] %}
+								disabled
+								{% endif %}
+								class="custom-control-input"
+								name="grupo_edit_grupo_activo_switch"
+								value="True"
+								{% if equal_str(grupo.id, settings().grupo_activo_id) %}
+								checked
+								{% endif %}>
+							<span class="custom-control-indicator"></span>
+							<span class="custom-control-description">Establecer como actual grupo activo</span>
+						</label>
+					</div>
+				{% endif %}
+				<input type="hidden" name="current_grupo_id" value="{{hashids_encode(grupo.id)}}">
+			</div>
+			<!-- ************************************* -->
+			{% if equal_str(grupo.id, params['current_grupo_id'])and params['grupo_edit_link'] %}
+				{% if params['grupo_delete_link'] %}
+					<div class="btn-group" role="group" aria-label="...">
+						<button role="button" type="submit" name="selector_button" value="selector_grupo_delete" class="btn btn-outline-warning btn-sm" title="confirmar eliminar grupo">
+							<i class="material-icons vertical-center">delete</i>
+							confirmar eliminar</button>
+						<button role="button" type="submit" name="selector_button" value="selector_grupo_delete_close" class="btn btn-outline-dark btn-sm" title="cancelar eliminar">
+							<i class="material-icons vertical-center">close</i>
+						</button>
+					</div>
+					<br>
+					<span class="text-warning small">
+						Una vez elminado no podra ser recuperado.</span>
+				{% else %}
+					<div class="btn-group" role="group" aria-label="...">
+						<button role="button" type="submit" name="selector_button" value="selector_grupo_edit" class="btn btn-outline-primary btn-sm" title="guardar cambios">
+							<i class="material-icons vertical-center">save</i>
+							guardar
+						</button>
+						{# <button role="button" type="submit" name="selector_button" value="selector_grupo_edit_rollback" class="btn btn-outline-dark btn-sm" title="deshacer cambios"> <i class="material-icons vertical-center">settings_backup_restore</i> </button>#}
+						<button role="button" type="submit" name="selector_button" value="selector_grupo_delete_link" class="btn btn-outline-dark btn-sm" title="eliminar grupo">
+							<i class="material-icons vertical-center">delete</i>
+						</button>
+						<button role="button" type="submit" name="selector_button" value="selector_grupo_edit_link_close" class="btn btn-outline-dark btn-sm" title="cerrar edición">
+							<i class="material-icons vertical-center">close</i>
+						</button>
+					</div>
+				{% endif %}
+				<!-- ********************************* -->
+			{% else %}
+				<div class="btn-group" role="group" aria-label="...">
+					<button role="button" type="submit" name="selector_button" class="btn btn-outline-dark btn-sm" value="selector_grupo_edit_link" title="editar ficha">
+						<i class="material-icons vertical-center">edit</i>
+						editar ficha
+					</button>
+					{% if equal_str(grupo.id,params['current_grupo_id']) and params['collapse_grupo_edit']%}
+						<button role="button" type="submit" name="selector_button" class="btn btn-outline-dark btn-sm" value="selector_grupo_edit_close" title="cerrar ficha">
+							<i class="material-icons vertical-center">close</i>
+						</button>
+					{% endif %}
+				</div>
+			{% endif %}
+		</form>
+	</div>
+	<br>
+	<div class="divider grueso bg-primary"></div>
+</div>

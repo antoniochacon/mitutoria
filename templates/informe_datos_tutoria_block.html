@@ -1,0 +1,41 @@
+{% if alumno and asignatura and tutoria %}
+	<div class="row small my-2">
+		<div class="col-sm-12 col-md-6 col-lg-4">
+			<span class="text-mutted">Alumno:</span>
+			<span class="h6">
+				{{alumno.apellidos}},
+				{{alumno.nombre}}
+			</span>
+			<br>
+			<span class="text-mutted">Fecha:</span>
+			{{tutoria.fecha.strftime('%A') | capitalize}}
+			{{tutoria.fecha.strftime('%d')}}
+			{{tutoria.fecha.strftime('%b') | capitalize}}
+			[{{tutoria.hora.strftime('%H:%M')}}
+			h]
+		</div>
+		<div class="col-sm-12 col-md-6 col-lg-4">
+			<span class="text-mutted">Tutor/a:</span>
+			{{grupo.tutor_nombre}}
+			{{grupo.tutor_apellidos}}
+			<br>
+			<span class="text-mutted">Grupo:</span>
+			{{grupo.nombre}}
+		</div>
+		<div class="col-sm-12 col-md-6 col-lg-4">
+			<span class="text-mutted">Docente:</span>
+			{{asignatura.nombre}}
+			{{asignatura.apellidos}}
+			<br>
+			<span class="text-mutted">Asignatura:</span>
+			{{asignatura.asignatura}}
+		</div>
+	</div>
+	<div class="divider bg-dark"></div>
+{% else %}
+	<div class="text-warning text-center">
+		No disponible el informe de su materia.
+		<br>
+		Consulte con el tutor/a correspodiente.
+	</div>
+{% endif %}

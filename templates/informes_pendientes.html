@@ -1,0 +1,46 @@
+{% extends '_layout.html' %}
+{% block body %}
+	{%from '_macro.html' import nav_bar_top, titulo_1, highcharts_participacion_recent%}
+	{{nav_bar_top(current_user=current_user)}}
+	<div class="container">
+		<div class="paper bg-white padding_contenido">
+			{{titulo_1(bg_color='bg-dark', titulo='Informes pendientes')}}
+			<div class="small">
+				<span class="text-mutted">Grupo:</span>
+				{{params['grupo'].nombre}}
+				<br>
+				<span class="text-mutted">Tutor/a:</span>
+				{{params['grupo'].tutor_nombre}}
+				{{params['grupo'].tutor_apellidos}}
+				<br>
+				<span class="text-mutted">Docente:</span>
+				{{asignatura.nombre}}
+				{{asignatura.apellidos}}
+				<br>
+				<span class="text-mutted">Asignatura:</span>
+				{{asignatura.asignatura}}
+			</div>
+			<div class="divider bg-mutted mt-2 mb-3"></div>
+			{% for tutoria in params['tutorias_pendites'] %}
+				{% with %}
+				{% set tutoria_incoming = tutoria_incoming(tutoria.id) %}
+				<a href="/informe/{{hashids_encode(asignatura.id)}}/{{hashids_encode(tutoria.id)}}/" class="collapse_header_2" title="ver informe">
+					&nbsp;
+					{{tutoria.fecha.strftime('%A') | capitalize}}
+					{{tutoria.fecha.strftime('%d')}}
+					[{{tutoria.hora.strftime('%H:%M')}}]
+					<span class="text-gray small">
+						{{alumno_by_id(tutoria.alumno_id).nombre}}
+					</span>
+					<span class="badge badge-secondary float-right mt-1" title="{{tutoria_incoming['porcentaje']}}% de los informes recibidos">
+						{{tutoria_incoming['porcentaje']}}%
+					</span>
+				</a>
+				<div class="progress">
+					<div class="progress-bar bg-secondary" role="progressbar" aria-valuemin="0" aria-valuemax="100" style="height:4px; width: {{tutoria_incoming['porcentaje']}}%;"></div>
+				</div>
+				{% endwith %}
+			{% endfor %}
+		</div>
+	</div>
+{% endblock %}

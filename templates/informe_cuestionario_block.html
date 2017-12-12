@@ -1,0 +1,63 @@
+{% if not invitado_preguntas(settings_by_tutoria_id_sql.id) %}
+	<div class="text-warning">
+		Las preguntas de este cuestionario han sido descartadas.
+		<br>
+		Póngase en observacioneso con el tutor de este alumno/a para resolver sus dudas.
+	</div>
+{% endif %}
+{% for categoria in categorias() %}
+	{% with %}
+	{% set invitado_preguntas_by_categoria_id_sql = invitado_preguntas_by_categoria_id(settings_by_tutoria_id_sql.id, categoria.id) %}
+	{% if invitado_preguntas_by_categoria_id_sql %}
+		<div class="bg-dark text-white pl-2 pt-2 pb-2 mb-2">
+			{{categoria.enunciado}}
+		</div>
+		<div class="row">
+			{% for pregunta in invitado_preguntas_by_categoria_id_sql %}
+				{% with %}
+				{% set hashids_encode_pregunta_id = hashids_encode(pregunta.id)%}
+				<div class="col-sm-12 col-md-6 mb-2">
+					<a id="anchor_pregunta_{{hashids_encode_pregunta_id}}"></a>
+					<div class="card border-gray z-depth-1-1-less mb-2">
+						<div class="card-header p-2">{{pregunta.enunciado}}</div>
+						<div>
+							<div class="range-slider_cualitativo">
+								<div id="range-slider-value_cualitativo" class="range-slider-value_cualitativo"></div>
+								<input
+									name="pregunta_input_{{hashids_encode_pregunta_id}}"
+									class="range-slider-range_cualitativo"
+									type="range"
+									step="2"
+									value="{% if informe %}{% if invitado_respuesta(informe.id,pregunta.id).resultado %}{{invitado_respuesta(informe.id,pregunta.id).resultado}}{% else %}{{params[['pregunta_',pregunta.id]|join('')]}}{% endif %}{% else %}{{params[['pregunta_',pregunta.id]|join('')]}}{% endif %}"
+									min="0"
+									max="10"
+									oninput="this.form.pregunta_{{hashids_encode_pregunta_id}}.value=this.value">
+							</div>
+							<input
+								type="hidden"
+								name="pregunta_{{hashids_encode_pregunta_id}}"
+								min="-2"
+								max="10"
+								value="{% if informe %}{% if invitado_respuesta(informe.id,pregunta.id).resultado %}{{invitado_respuesta(informe.id,pregunta.id).resultado}}{% else %}{{params[['pregunta_',pregunta.id]|join('')]}}{% endif %}{% else %}{{params[['pregunta_',pregunta.id]|join('')]}}{% endif %}"
+								oninput="this.form.pregunta_input_{{hashids_encode_pregunta_id}}.value=this.value">
+							<input type="hidden" name="pregunta_id" value="{{hashids_encode_pregunta_id}}">
+						</div>
+					</div>
+				</div>
+				{% endwith %}
+			{% endfor %}
+		</div>
+	{% endif %}
+	{% endwith %}
+{% endfor %}
+{% with %}
+<div class="row">
+	<div class="col-sm-12">
+		{% if not informe %}
+			<button role="button" type="submit" name="selector_button" value="selector_guardar_cuestionario" class="btn btn-outline-dark" title="guardar cuestionario">
+				<i class="material-icons vertical-center pr-1">save</i>guardar cuestionario
+			</button>
+		{% endif %}
+	</div>
+</div>
+{% endwith %}

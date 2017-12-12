@@ -1,0 +1,44 @@
+<div class="padding_3">
+	<br>
+	<form action="/alumnos" action="alumnos" method="POST">
+		<div class="row">
+			<div class="form-group col-md-6 mb-3">
+				<div class="input-group">
+					<input
+						type="text"
+						class="form-control datepicker cursor {% if request.method=='POST' and params['collapse_tutoria_add'] %} {% if tutoria_add.fecha.errors %} is-invalid {% else %} is-valid {% endif %} {% endif %}"
+						name="{{tutoria_add.fecha.name}}"
+						readonly="true"
+						style="background-color: white"
+						value="{% if request.method=='POST' and params['collapse_tutoria_add'] %}{{tutoria_add.fecha.data}}{% else %}{{g.current_date.strftime('%d-%m-%Y')}}{% endif %}"
+						placeholder="{{tutoria_add.fecha.label.text}}">
+					<span class="input-group-addon {% if request.method=='POST' and params['collapse_tutoria_add'] %} {% if tutoria_add.fecha.errors %} form_addon-warning {% else %} form_addon-success {% endif %} {% endif %}">fecha</span>
+				</div>
+			</div>
+			<div class="form-group col-md-3 mb-3">
+				<div class="input-group">
+					<input
+						type="text"
+						class="form-control clockpicker {% if request.method=='POST' and params['collapse_tutoria_add'] %} {% if tutoria_add.hora.errors %} is-invalid {% else %} is-valid {% endif %} {% endif %}"
+						style="background-color: white"
+						readonly="true"
+						name="{{tutoria_add.hora.name}}"
+						value="{% if request.method=='POST' and params['collapse_tutoria_add'] %}{{tutoria_add.hora.data}}{% else %}{{g.current_time.strftime('%H:%M')}}{% endif %}"
+						placeholder="{{tutoria_add.hora.label.text}}">
+					<span class="input-group-addon {% if request.method=='POST' and params['collapse_tutoria_add'] %} {% if tutoria_add.hora.errors %} form_addon-warning {% else %} form_addon-success {% endif %} {% endif %}">hora</span>
+				</div>
+			</div>
+			<input type="hidden" name="current_alumno_id" value="{{hashids_encode(alumno.id)}}">
+			<div class="btn-group col-md-3 mb-3" role="group" aria-label="...">
+				<button role="button" type="submit" class="btn btn-outline-primary btn-sm" name="selector_button" value="selector_tutoria_add" title="solicitar tutoria">
+					<i class="material-icons vertical-center">local_post_office</i>
+					Solicitar</button>
+				{% if equal_str(alumno.id, params['current_alumno_id']) and params['collapse_tutoria_add']%}
+					<button role="button" type="submit" class="btn btn-outline-dark btn-sm" name="selector_button" value="selector_tutoria_add_close" title="Cerrar">
+						<i class="material-icons vertical-center">close</i>
+					</button>
+				{% endif %}
+			</div>
+		</div>
+	</form>
+</div>

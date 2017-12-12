@@ -1,0 +1,48 @@
+{% extends '_layout.html' %}
+{% block body %}
+	{%from '_macro.html' import nav_bar_top, titulo_1, nav_tabs %}
+	{{ nav_bar_top(link_active='opciones',params=params, current_user=current_user) }}
+	<div class="paper bg-white padding_contenido">
+		{{titulo_1(bg_color='bg-dark', titulo='Opciones')}}
+		{{nav_tabs(tab_active='Cuestionario', dic={'Cuestionario':'settings_cuestionario', 'Grupos':'settings_grupos', 'Opciones':'settings_opciones'})}}
+		<div class="padding_3">
+			<div class="pb-1">
+				Selecciona las preguntas que desee que formen su cuestionario.
+			</div>
+			<form action="settings_cuestionario" method="POST">
+				{% if preguntas(True) %}
+					{% for categoria in categorias() %}
+						{% with %}
+						{% set preguntas_by_categoria_id = preguntas_by_categoria_id(True, categoria.id) %}
+						{% if preguntas_by_categoria_id %}
+							<div class="bg-dark text-white pl-3 pt-2 pb-2 mt-3">
+								{{categoria.enunciado}}
+							</div>
+							<!-- <div class="divider bg-dark"></div> -->
+							{% for pregunta in preguntas_by_categoria_id %}
+								{% with %}
+								{% set association_settings_pregunta_check = association_settings_pregunta_check(settings().id, pregunta.id) %}
+								{# NOTE elminado el form-group para ajustar mejor #}
+								<label class="custom-control custom-checkbox check_box_1 {% if loop.first %} mt-1 {% else %} mt-0 {% endif %} {% if loop.last %}mb-1{% else %} mb-0{% endif %}">
+									<input type="checkbox" class="custom-control-input" name="pregunta" value="{{hashids_encode(pregunta.id)}}" {% if association_settings_pregunta_check %} checked="checked" {% endif %}>
+									<span class="custom-control-indicator"></span>
+									<span class="custom-control-description {% if not association_settings_pregunta_check %} text-muted {% endif %}" {% if association_settings_pregunta_check %} style="color:{{categoria.color}};" {% endif %}>{{pregunta.enunciado}}</span>
+								</label>
+								{% endwith %}
+							{% endfor %}
+						{% endif %}
+						{% endwith %}
+					{% endfor %}
+					<button role="button" type="submit" name="selector_button" value="selector_settings_cuestionario" class="btn btn-outline-primary btn-sm mt-3" title="guardar cambios">
+						<i class="material-icons vertical-center">save</i>
+						guardar
+					</button>
+				{% else %}
+					<div class="text-mutted pb-4">
+						En estos momentos no hay preguntas disponibles.
+					</div>
+				{% endif %}
+			</form>
+		</div>
+	</div>
+{% endblock %}

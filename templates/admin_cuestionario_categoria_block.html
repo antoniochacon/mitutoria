@@ -1,0 +1,157 @@
+{% for categoria in categorias() %}
+	<a id="anchor_cat_{{hashids_encode(categoria.id)}}"></a>
+	<a data-toggle="collapse" data-parent="#parent_categoria" href="#categoria_{{hashids_encode(categoria.id)}}" class="collapse_header_1" aria-expanded="false" title="{{categoria.enunciado}}">
+		<div class="media">
+			<span class="capital {% if preguntas_by_categoria_id('', categoria.id) %}capital-mutted{% else %}capital-warning{% endif %}">{{categoria.orden}}</span>
+			<div class="media-body">
+				<div class="padding_2">
+					{{categoria.enunciado}}
+				</div>
+			</div>
+		</div>
+	</a>
+	<div id="categoria_{{hashids_encode(categoria.id)}}" class="collapse {% if equal_str(categoria.id, params['current_categoria_id']) and params['collapse_categoria_edit'] %} show {% endif %}">
+		<div class="divider grueso bg-primary"></div>
+		{# XXX: categoria_edit #}
+		<div class="padding_3 pt-3 pb-3">
+			<form action="/admin_cuestionario" method="POST">
+				<div class="row">
+					<div class="form-group col-md-12">
+						<div class="input-group">
+							<input
+								type="text"
+								{% if not equal_str(categoria.id, params['current_categoria_id']) or not params['categoria_edit_link'] %}
+								readonly
+								{% endif %}
+								class="form-control {% if request.method=='POST' and params['collpase_categoria_edit'] %} {% if categoria_edit.enunciado.errors %} is-invalid {% else %} is-valid {% endif %}{% endif %}"
+								name="{{categoria_edit.enunciado.name}}"
+								value="{% if equal_str(categoria.id,params['current_categoria_id']) and request.method=='POST' and params['collpase_categoria_edit'] %}{{categoria_edit.enunciado.data}}{% else %}{{categoria.enunciado}}{% endif %}"
+								placeholder="{{categoria_edit.enunciado.label.text}}">
+							<span class="input-group-addon {% if request.method=='POST' and params['collpase_categoria_edit'] %} {% if categoria_edit.enunciado.errors %} form_addon-warning {% else %} form_addon-success {% endif %} {% endif %}">{{categoria_edit.enunciado.label.text}}</span>
+						</div>
+					</div>
+					<div class="media col-sm-12 col-md-6 col-lg-4">
+					<div class="form-group align-self-center mr-1">
+						<div class="input-group">
+							<input
+								type="text"
+								{% if not equal_str(categoria.id, params['current_categoria_id']) or not params['categoria_edit_link'] %}
+								readonly
+								{% endif %}
+								class="form-control {% if request.method=='POST' and params['collpase_categoria_edit'] %} {% if categoria_edit.color.errors %} is-invalid {% else %} is-valid {% endif %}{% endif %}"
+								name="{{categoria_edit.color.name}}"
+								value="{% if equal_str(categoria.id,params['current_categoria_id']) and request.method=='POST' and params['collpase_categoria_edit'] %}{{categoria_edit.color.data}}{% else %}{{categoria.color}}{% endif %}"
+								placeholder="{{categoria_edit.color.label.text}}">
+							<span class="input-group-addon text-white {% if request.method=='POST' and params['collpase_categoria_edit'] %} {% if categoria_edit.color.errors %} form_addon-warning {% else %} form_addon-success {% endif %} {% endif %}" style="background:{{categoria.color}};">{{categoria_edit.color.label.text}}</span>
+						</div>
+					</div>
+					</div>
+					<div class="media col-sm-12 col-md-6 col-lg-4">
+						<div class="form-group align-self-center mr-1">
+							<div class="input-group">
+								<input
+									type="number"
+									{% if not equal_str(categoria.id, params['current_categoria_id']) or not params['categoria_edit_link'] %}
+									readonly
+									{% endif %}
+									class="form-control {% if request.method=='POST' and params['collpase_categoria_edit'] %} {% if categoria_edit.orden.errors %} is-invalid {% else %} is-valid {% endif %}{% endif %}"
+									name="{{categoria_edit.orden.name}}"
+									value="{% if equal_str(categoria.id,params['current_categoria_id']) and request.method=='POST' and params['collpase_categoria_edit'] %}{{categoria_edit.orden.data}}{% else %}{{categoria.orden}}{% endif %}"
+									placeholder="{{categoria_edit.orden.label.text}}">
+								<span class="input-group-addon {% if request.method=='POST' and params['collpase_categoria_edit'] %} {% if categoria_edit.orden.errors %} form_addon-warning {% else %} form_addon-success {% endif %} {% endif %}">{{categoria_edit.orden.label.text}}</span>
+							</div>
+						</div>
+						<div class="media-body">
+							<div class="padding_2">
+								<div class="btn-group-vertical">
+									<button
+										role="button"
+										type="submit"
+										name="selector_button"
+										value="selector_move_up_categoria"
+										class="btn btn-outline-dark btn-sm"
+										title="subir posición"
+										{% if equal_str(categoria.id, params['current_categoria_id'])and params['collapse_categoria_edit'] %}
+										{% if not params['categoria_edit_link'] %}
+										disabled
+										{% endif %}
+										{% else %}
+										disabled
+										{% endif %}
+										{% if loop.first %}
+										disabled
+										{% endif %}>
+										<i class="material-icons vertical-center">keyboard_arrow_up</i>
+									</button>
+									<button
+										role="button"
+										type="submit"
+										name="selector_button"
+										value="selector_move_down_categoria"
+										class="btn btn-outline-dark btn-sm"
+										title="bajar posición"
+										{% if equal_str(categoria.id, params['current_categoria_id'])and params['collapse_categoria_edit'] %}
+										{% if not params['categoria_edit_link'] %}
+										disabled
+										{% endif %}
+										{% else %}
+										disabled
+										{% endif %}
+										{% if loop.last %}
+										disabled="disabled"
+										{% endif %}>
+										<i class="material-icons vertical-center">keyboard_arrow_down</i>
+									</button>
+								</div>
+							</div>
+						</div>
+					</div>
+					<input type="hidden" name="current_categoria_id" value="{{hashids_encode(categoria.id)}}">
+				</div>
+				{% if equal_str(categoria.id, params['current_categoria_id'])and params['categoria_edit_link'] %}
+					{% if params['categoria_delete_link'] %}
+						<div class="btn-group" role="group" aria-label="...">
+							<button role="button" type="submit" name="selector_button" value="selector_categoria_delete" class="btn btn-outline-warning btn-sm" title="confirmar eliminar categoria">
+								<i class="material-icons vertical-center">delete</i>
+								confirmar eliminar
+							</button>
+							<button role="button" type="submit" name="selector_button" value="selector_categoria_delete_close" class="btn btn-outline-dark btn-sm" title="cancelar eliminar">
+								<i class="material-icons vertical-center">close</i>
+							</button>
+						</div>
+						<br>
+						<span class="text-warning small">
+							Una vez elminada no podra ser recuperada.</span>
+					{% else %}
+						<div class="btn-group" role="group" aria-label="...">
+							<button role="button" type="submit" name="selector_button" value="selector_categoria_edit" class="btn btn-outline-primary btn-sm" title="guardar cambios">
+								<i class="material-icons vertical-center">save</i>
+								guardar
+							</button>
+							{# <button role="button" type="submit" name="selector_button" value="selector_categoria_edit_rollback" class="btn btn-outline-dark btn-sm" title="deshacer cambios"> <i class="material-icons vertical-center">settings_backup_restore</i> </button> #}
+							<button role="button" type="submit" name="selector_button" value="selector_categoria_delete_link" class="btn btn-outline-dark btn-sm" title="eliminar categoria">
+								<i class="material-icons vertical-center">delete</i>
+							</button>
+							<button role="button" type="submit" name="selector_button" value="selector_categoria_edit_link_close" class="btn btn-outline-dark btn-sm" title="cerrar edición">
+								<i class="material-icons vertical-center">close</i>
+							</button>
+						</div>
+					{% endif %}
+				{% else %}
+					<div class="btn-group" role="group" aria-label="...">
+						<button role="button" type="submit" name="selector_button" class="btn btn-outline-dark btn-sm" value="selector_categoria_edit_link" title="editar ficha">
+							<i class="material-icons vertical-center">edit</i>
+							editar ficha
+						</button>
+						{% if equal_str(categoria.id,params['current_categoria_id']) and params['collapse_categoria_edit']%}
+							<button role="button" type="submit" name="selector_button" class="btn btn-outline-dark btn-sm" value="selector_categoria_edit_close" title="cerrar ficha">
+								<i class="material-icons vertical-center">close</i>
+							</button>
+						{% endif %}
+					</div>
+				{% endif %}
+			</form>
+		</div>
+		<div class="divider grueso bg-primary"></div>
+	</div>
+{% endfor %}

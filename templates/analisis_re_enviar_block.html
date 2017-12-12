@@ -1,0 +1,46 @@
+<div id="tutoria_reenviar_{{hashids_encode(tutoria.id)}}" class="collapse">
+<div class="list_group_item_1">
+	Asignaturas a las que reenviar email:
+</div>
+<div class="padding_contenido">
+	{% if not stats['asignaturas_grupo_lista'] %}
+		<span class="text-warning">
+			Este grupo no dispone de asignaturas.
+		</span>
+	{% else %}
+		{% if params['collapse_tutoria_edit_enviar_a'] %}
+			<span class="text-warning">
+				Debe indicar al menos una asignatura para solicitar informes de
+				<span class="strong">{{alumno.nombre}}</span>
+			</span>
+		{% endif %}
+		<div class="row">
+			{% for asignatura in stats['asignaturas_alumno_lista'] %}
+				<div class="form-group col-md-6 col-lg-4 mb-0">
+					<label class="custom-control custom-checkbox check_box_1">
+						<input type="checkbox" class="custom-control-input" name="asignatura" value="{{hashids_encode(asignatura.id)}}" {% if asignatura not in stats['asignaturas_recibidas_lista'] %} checked="checked" {% endif %}>
+						<span class="custom-control-indicator"></span>
+						<span class="custom-control-description {% if asignatura not in stats['asignaturas_recibidas_lista'] %} text-warning {% endif %}">{{asignatura.asignatura}}
+							<span class="text-gray small">
+								|
+								{{asignatura.nombre}}
+							</span></span>
+					</label>
+				</div>
+			{% endfor %}
+		</div>
+	{% endif %}
+	<div class="btn-group mt-2" role="group" aria-label="...">
+		<button type="submit" name="selector_button" value="selector_tutoria_re_enviar" class="btn btn-outline-primary btn-sm" title="re-enviar emails">
+			<i class="material-icons vertical-center">mail</i>
+			Re-enviar
+		</button>
+		<a data-toggle="collapse" href="#tutoria_reenviar_{{hashids_encode(tutoria.id)}}" class="btn btn-outline-dark btn-sm link_without_pointer" aria-expanded="false" title="cerrar">
+		<i class="material-icons vertical-center">close</i></a>
+	</div>
+	<div class="text-mutted small pt-2">
+		No modifica el equipo educativo del alumno, solo es efectivo para el envio temporal
+	</div>
+</div>
+<div class="divider bg-primary grueso"></div>
+</div>
