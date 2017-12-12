@@ -297,16 +297,6 @@ def admin_estadisticas_html(params={}):
         'admin_estadisticas.html', params=params, stats=stats)
 
 
-# XXX wellcome
-
-
-@app.route('/wellcome')
-@login_required
-def wellcome_html():
-    params = {}
-    params['anchor'] = 'anchor_top'
-    # flash_toast('Bienvenido ' + current_user.username, 'success')
-    return render_template('wellcome.html', params=params)
 
 
 # XXX admin_usuario_edit
@@ -2306,6 +2296,22 @@ def login_validacion_email_html(params={}):
 
     return render_template('login_validacion_email.html', params=params)
 
+# XXX wellcome
+
+@app.route('/wellcome', methods=['GET', 'POST'])
+@app.route('/wellcome/<params>', methods=['GET', 'POST'])
+@login_required
+def wellcome_html(params={}):
+    try:
+        params_old = dic_decode(params)
+    except:
+        params_old = {}
+        abort(404)
+    params = {}
+    params['anchor'] = params_old.get('anchor', 'anchor_top')
+    # params['current_user_id'] = params_old.get('current_user_id', False)
+    # if params['current_user_id']:
+    return render_template('wellcome.html', params=params)
 
 @app.route('/email_validate/<params>')
 def email_validate_html(params={}):
@@ -2333,7 +2339,7 @@ def email_validate_html(params={}):
             login_user(user_sql, remember=True)
             flash_toast('Enhorabuena, cuenta activada.', 'success')
             flash_toast('Bienvenido ' + current_user.username, 'success')
-            return redirect(url_for('wellcome_html'))
+            return redirect(url_for('wellcome_html', params=dic_encode(params)))
     else:
         return redirect(url_for('login_html'))
 
