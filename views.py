@@ -40,11 +40,6 @@ login_manager.login_view = 'login_html'
 @login_manager.user_loader
 def load_user(user_id):
     return session_sql.query(User).get(int(user_id))
-
-
-
-
-
 @app.before_request
 def before_request_html():
     g.current_year = datetime.date.today().year
