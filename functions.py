@@ -8,6 +8,21 @@ import config_parametros
 # {} Valor
 # *****************************************************************
 
+
+def translate_fecha(fecha):
+
+    dic = {'Jan': 'Ene', 'Jan': 'Feb', 'Mar': 'Mar', 'Apr': 'Abr', 'May': 'May', 'Jun': 'Jun', 'Jul': 'Jul', 'Aug': 'Ago', 'Sep': 'Sep', 'Oct': 'Oct', 'Nov': 'Nov', 'Dec': 'Dic',
+           'Monday': 'Lunes', 'Tuesday': 'Martes', 'Wednesday': 'Miercoles', 'Thursday': 'Jueves', 'Friday': 'Viernes', 'Saturday': 'Sabado', 'Sunday': 'Domingo'}
+    for i, j in dic.items():
+        fecha = fecha.replace(i, j)
+    return fecha
+
+
+def replace_string_by_dic(texto, dic):
+    for i, j in dic.items():
+        texto = texto.replace(i, j)
+    return texto
+
 # Calendar API
 # *****************************************************************
 
@@ -1058,7 +1073,7 @@ def send_email_tutoria(alumno, tutoria):
         # XXX envio de mail
         # ****************************************
         to = asignatura.email
-        subject = 'Tutoria | %s | %s | %s %s' % (grupo_activo().nombre, alumno.nombre, tutoria.fecha.strftime('%A'), tutoria.fecha.strftime('%d'))
+        subject = 'Tutoria | %s | %s | %s %s' % (grupo_activo().nombre, alumno.nombre, translate_fecha(tutoria.fecha.strftime('%A')), tutoria.fecha.strftime('%d'))
         message_text = render_template('email_tutoria.html', tutoria=tutoria, alumno=alumno, asignatura=asignatura, tutoria_email_link=tutoria_email_link, index_link=index_link)
         create_message_and_send(service, sender, to, subject, message_text)
         time.sleep(email_time_sleep)
@@ -1155,7 +1170,7 @@ def re_send_email_tutoria(alumno, tutoria, asignaturas_id_lista):
         # XXX envio de mail
         # ****************************************
         to = asignatura.email
-        subject = 'Tutoria | %s | %s | %s %s' % (grupo_activo().nombre, alumno.nombre, tutoria.fecha.strftime('%A'), tutoria.fecha.strftime('%d'))
+        subject = 'Tutoria | %s | %s | %s %s' % (grupo_activo().nombre, alumno.nombre, translate_fecha(tutoria.fecha.strftime('%A')), tutoria.fecha.strftime('%d'))
         message_text = render_template('email_tutoria.html', tutoria=tutoria, alumno=alumno, asignatura=asignatura, tutoria_email_link=tutoria_email_link, tutoria_asignatura_id=tutoria_asignatura_add.id, index_link=index_link)
         create_message_and_send(service, sender, to, subject, message_text)
         time.sleep(email_time_sleep)
@@ -1540,4 +1555,4 @@ def cita_random():
 
 
 app.jinja_env.globals.update(settings=settings, cita_random=cita_random,  singular_plural=singular_plural, grupo_activo=grupo_activo, curso=curso, alumnos_not_sorted=alumnos_not_sorted, alumnos=alumnos, alumno_tutorias=alumno_tutorias, equal_str=equal_str, asignaturas=asignaturas, asignatura_alumnos=asignatura_alumnos, association_alumno_asignatura_check=association_alumno_asignatura_check,
-                             tutoria_asignaturas_count=tutoria_asignaturas_count, string_to_date=string_to_date, association_settings_pregunta_check=association_settings_pregunta_check, preguntas=preguntas, informe_preguntas=informe_preguntas, settings_by_tutoria_id=settings_by_tutoria_id, invitado_preguntas=invitado_preguntas, settings_by_tutoria_id_by_id=settings_by_tutoria_id_by_id, invitado_respuesta=invitado_respuesta, invitado_pruebas_evaluables=invitado_pruebas_evaluables, invitado_informe=invitado_informe, cociente_porcentual=cociente_porcentual, tutoria_asignaturas=tutoria_asignaturas, pregunta_active_default_check=pregunta_active_default_check, pregunta_visible_check=pregunta_visible_check, grupo_activo_check=grupo_activo_check, user_by_id=user_by_id, asignatura_informes_solicitados_count=asignatura_informes_solicitados_count, asignatura_informes_respondidos_count=asignatura_informes_respondidos_count, asignaturas_not_sorted=asignaturas_not_sorted, grupo_tutorias=grupo_tutorias, alumno_by_id=alumno_by_id, hashids_encode=hashids_encode, hashids_decode=hashids_decode, f_encode=f_encode, f_decode=f_decode, dic_encode_args=dic_encode_args, dic_try=dic_try, settings_by_id=settings_by_id, usuario_grupos=usuario_grupos, usuarios=usuarios, usuarios_mas_activos=usuarios_mas_activos, grupo_alumnos_count=grupo_alumnos_count, diferencial_check=diferencial_check, categoria_by_id=categoria_by_id, categorias=categorias, preguntas_by_categoria_id=preguntas_by_categoria_id, asignatura_by_id=asignatura_by_id, informe_by_tutoria_id_by_asignatura_id=informe_by_tutoria_id_by_asignatura_id, asignaturas_alumno_by_alumno_id=asignaturas_alumno_by_alumno_id, respuestas_pregunta_alumno_lista=respuestas_pregunta_alumno_lista, respuestas_asignatura_alumno_lista=respuestas_asignatura_alumno_lista, notas_pruebas_evaluables_grupo=notas_pruebas_evaluables_grupo, notas_pruebas_evaluables_alumno=notas_pruebas_evaluables_alumno, analisis_tutoria=analisis_tutoria, tutoria_incoming=tutoria_incoming, asignaturas_orden_switch=asignaturas_orden_switch, asignaturas_ordenadas=asignaturas_ordenadas, invitado_preguntas_by_categoria_id=invitado_preguntas_by_categoria_id, tutoria_stats=tutoria_stats, settings_global=settings_global, association_tutoria_asignatura_id=association_tutoria_asignatura_id)
+                             tutoria_asignaturas_count=tutoria_asignaturas_count, string_to_date=string_to_date, association_settings_pregunta_check=association_settings_pregunta_check, preguntas=preguntas, informe_preguntas=informe_preguntas, settings_by_tutoria_id=settings_by_tutoria_id, invitado_preguntas=invitado_preguntas, settings_by_tutoria_id_by_id=settings_by_tutoria_id_by_id, invitado_respuesta=invitado_respuesta, invitado_pruebas_evaluables=invitado_pruebas_evaluables, invitado_informe=invitado_informe, cociente_porcentual=cociente_porcentual, tutoria_asignaturas=tutoria_asignaturas, pregunta_active_default_check=pregunta_active_default_check, pregunta_visible_check=pregunta_visible_check, grupo_activo_check=grupo_activo_check, user_by_id=user_by_id, asignatura_informes_solicitados_count=asignatura_informes_solicitados_count, asignatura_informes_respondidos_count=asignatura_informes_respondidos_count, asignaturas_not_sorted=asignaturas_not_sorted, grupo_tutorias=grupo_tutorias, alumno_by_id=alumno_by_id, hashids_encode=hashids_encode, hashids_decode=hashids_decode, f_encode=f_encode, f_decode=f_decode, dic_encode_args=dic_encode_args, dic_try=dic_try, settings_by_id=settings_by_id, usuario_grupos=usuario_grupos, usuarios=usuarios, usuarios_mas_activos=usuarios_mas_activos, grupo_alumnos_count=grupo_alumnos_count, diferencial_check=diferencial_check, categoria_by_id=categoria_by_id, categorias=categorias, preguntas_by_categoria_id=preguntas_by_categoria_id, asignatura_by_id=asignatura_by_id, informe_by_tutoria_id_by_asignatura_id=informe_by_tutoria_id_by_asignatura_id, asignaturas_alumno_by_alumno_id=asignaturas_alumno_by_alumno_id, respuestas_pregunta_alumno_lista=respuestas_pregunta_alumno_lista, respuestas_asignatura_alumno_lista=respuestas_asignatura_alumno_lista, notas_pruebas_evaluables_grupo=notas_pruebas_evaluables_grupo, notas_pruebas_evaluables_alumno=notas_pruebas_evaluables_alumno, analisis_tutoria=analisis_tutoria, tutoria_incoming=tutoria_incoming, asignaturas_orden_switch=asignaturas_orden_switch, asignaturas_ordenadas=asignaturas_ordenadas, invitado_preguntas_by_categoria_id=invitado_preguntas_by_categoria_id, tutoria_stats=tutoria_stats, settings_global=settings_global, association_tutoria_asignatura_id=association_tutoria_asignatura_id, translate_fecha=translate_fecha)

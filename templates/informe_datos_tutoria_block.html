@@ -8,9 +8,9 @@
 			</span>
 			<br>
 			<span class="text-mutted">Fecha:</span>
-			{{tutoria.fecha.strftime('%A') | capitalize}}
+			{{translate_fecha(tutoria.fecha.strftime('%A') | capitalize)}}
 			{{tutoria.fecha.strftime('%d')}}
-			{{tutoria.fecha.strftime('%b') | capitalize}}
+			{{translate_fecha(tutoria.fecha.strftime('%b')) | capitalize}}
 			[{{tutoria.hora.strftime('%H:%M')}}
 			h]
 		</div>

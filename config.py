@@ -1,5 +1,5 @@
 import io
-import locale
+# import locale
 
 
 class Config(object):

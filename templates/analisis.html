@@ -45,8 +45,8 @@
 						<span class="small {% if tutoria.activa %}text-mutted{% else %}text-info{% endif %}">Fecha:
 						</span>
 						<span class="{% if not tutoria.activa %}text-mutted{% endif %}">
-							{{tutoria.fecha.strftime('%b') | capitalize}}
-							{{tutoria.fecha.strftime('%A') | capitalize}}
+							{{translate_fecha(tutoria.fecha.strftime('%b')) | capitalize}}
+							{{translate_fecha(tutoria.fecha.strftime('%A') | capitalize)}}
 							{{tutoria.fecha.strftime('%d')}} [{{tutoria.hora.strftime('%H:%M')}} h]
 						</span>
 						<br>

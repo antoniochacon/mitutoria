@@ -7,11 +7,6 @@ import functions
 # **********************************************
 
 
-
-
-
-
-
 @app.url_defaults
 def hashed_url_for_static_file(endpoint, values):
     if 'static' == endpoint or endpoint.endswith('.static'):
@@ -295,8 +290,6 @@ def admin_estadisticas_html(params={}):
     # --------------------------------
     return render_template(
         'admin_estadisticas.html', params=params, stats=stats)
-
-
 
 
 # XXX admin_usuario_edit
@@ -2298,20 +2291,14 @@ def login_validacion_email_html(params={}):
 
 # XXX wellcome
 
-@app.route('/wellcome', methods=['GET', 'POST'])
-@app.route('/wellcome/<params>', methods=['GET', 'POST'])
+
+@app.route('/wellcome')
 @login_required
-def wellcome_html(params={}):
-    try:
-        params_old = dic_decode(params)
-    except:
-        params_old = {}
-        abort(404)
+def wellcome_html():
     params = {}
-    params['anchor'] = params_old.get('anchor', 'anchor_top')
-    # params['current_user_id'] = params_old.get('current_user_id', False)
-    # if params['current_user_id']:
+    params['anchor'] = 'anchor_top'
     return render_template('wellcome.html', params=params)
+
 
 @app.route('/email_validate/<params>')
 def email_validate_html(params={}):

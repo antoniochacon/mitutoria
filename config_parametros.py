@@ -6,7 +6,7 @@ import secrets
 from werkzeug.security import generate_password_hash, check_password_hash
 import datetime
 import time
-import locale
+# import locale
 from models import *
 from forms import *
 import csv

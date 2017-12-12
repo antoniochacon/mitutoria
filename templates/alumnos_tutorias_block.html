@@ -11,8 +11,8 @@
 			<a id="anchor_tut_{{hashids_encode(tutoria.id)}}"></a>
 			<a href="/analisis/{{dic_encode_args({'current_tutoria_id': tutoria.id})}}" class="collapse_header_2" title="ver informe">
 				<span class="{% if tutoria.activa %} h5 strong {% else %} text-mutted {% endif %}">
-					{{tutoria.fecha.strftime('%b') | capitalize}}
-					{{tutoria.fecha.strftime('%A') | capitalize}}
+					{{translate_fecha(tutoria.fecha.strftime('%b')) | capitalize}}
+					{{translate_fecha(tutoria.fecha.strftime('%A') | capitalize)}}
 					{{tutoria.fecha.strftime('%d')}}
 					[{{tutoria.hora.strftime('%H:%M')}}]
 				</span>

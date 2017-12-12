@@ -30,7 +30,7 @@
 											{{alumno.nombre}}
 											{{alumno.apellidos}}
 											|
-											{{tutoria.fecha.strftime('%A') | capitalize}}
+											{{translate_fecha(tutoria.fecha.strftime('%A') | capitalize)}}
 											{{tutoria.fecha.strftime('%d')}}
 											<br>
 											Docente: {{asignatura.nombre}} | Asignatura: {{asignatura.asignatura}}

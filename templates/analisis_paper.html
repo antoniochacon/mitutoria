@@ -44,8 +44,8 @@
 				{{grupo.tutor_apellidos}},
 				{{grupo.tutor_nombre}}
 				<span class="text-mutted pl-3">Fecha:</span>
-				{{tutoria.fecha.strftime('%b') | capitalize}}
-				{{tutoria.fecha.strftime('%A') | capitalize}}
+				{{translate_fecha(tutoria.fecha.strftime('%b')) | capitalize}}
+				{{translate_fecha(tutoria.fecha.strftime('%A') | capitalize)}}
 				{{tutoria.fecha.strftime('%d')}}
 				<span class="text-mutted pl-3">Hora:</span>
 				{{tutoria.hora.strftime('%H:%M')}}
