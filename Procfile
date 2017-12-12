@@ -1,1 +1,1 @@
-local web: python app.py
+local: python app.py
