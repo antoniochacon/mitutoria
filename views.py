@@ -552,7 +552,6 @@ def alumnos_html(params={}):
     except:
         params_old = {}
         abort(404)
-
     params = {}
     params['anchor'] = params_old.get('anchor', 'anchor_top')
     params['collapse_alumno_add'] = params_old.get('collapse_alumno_add', False)
