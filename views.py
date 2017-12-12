@@ -2,7 +2,6 @@ from app import app
 from functions import *
 import functions
 # *************************************
-
 # Fuerza el reload de los archivos de static
 # **********************************************
 
@@ -41,6 +40,9 @@ login_manager.login_view = 'login_html'
 @login_manager.user_loader
 def load_user(user_id):
     return session_sql.query(User).get(int(user_id))
+
+
+
 
 
 @app.before_request
