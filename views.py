@@ -1186,7 +1186,7 @@ def admin_cuestionario_html(params={}):
         if request.form['selector_button'] == 'selector_pregunta_delete':
             pregunta_delete_form = Pregunta_Add(request.form)
             current_pregunta_id = current_id_request('current_pregunta_id')
-            pregunta_delete = pregunta_by_id(current_pregunta_id, '')
+            pregunta_delete = pregunta_by_id(current_pregunta_id)
             session_sql.delete(pregunta_delete)
             session_sql.commit()
             flash_toast('Pregunta elminada', 'success')
@@ -1224,7 +1224,7 @@ def settings_cuestionario_html(params={}):
             for pregunta_id_encoded in preguntas_id_lista_encoded:
                 preguntas_id_lista.append(hashids_decode(pregunta_id_encoded))
             contador = 0
-            for pregunta in preguntas(''):
+            for pregunta in preguntas():
                 if pregunta.id in preguntas_id_lista:
                     association_settings_pregunta_sql = session_sql.query(Association_Settings_Pregunta).filter_by(pregunta_id=pregunta.id, settings_id=settings().id).first()
                     if not association_settings_pregunta_sql:

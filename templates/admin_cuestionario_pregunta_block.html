@@ -1,10 +1,10 @@
 {% with %}
 {% set categorias=categorias() %}
 {% for categoria in categorias %}
-	<div class="bg-dark pl-3 pt-2 pb-2 mt-2 mb-2 {% if not preguntas_by_categoria_id(True, categoria.id) %} text-warning {% else %} text-white {% endif %}">
+	<div class="bg-dark pl-3 pt-2 pb-2 mt-2 mb-2 {% if not preguntas_by_categoria_id(categoria.id, visible=True) %} text-warning {% else %} text-white {% endif %}">
 		{{categoria.enunciado}}
 	</div>
-	{% for pregunta in preguntas_by_categoria_id('', categoria.id) %}
+	{% for pregunta in preguntas_by_categoria_id(categoria.id) %}
 		<a id="anchor_pre_{{hashids_encode(pregunta.id)}}"></a>
 		<a data-toggle="collapse" data-parent="#parent_pregunta" href="#pregunta_{{hashids_encode(pregunta.id)}}" class="collapse_header_1" aria-expanded="false" title="{{pregunta.enunciado_ticker}}">
 			<div class="media">

@@ -69,7 +69,7 @@ class Settings_Global (Base):
     diferencial_default = Column(Integer, default=15)  # %
     periodo_participacion_recent = Column(Integer, default=30)  # dias
     periodo_cleanup_tutorias = Column(Integer, default=3)  # meses
-    periodo_deleted_tutorias = Column(Integer, default=7)  # dias
+    periodo_deleted_tutorias = Column(Integer, default=15)  # dias
     cleanup_tutorias_automatic = Column(Boolean, default=False)
 
 

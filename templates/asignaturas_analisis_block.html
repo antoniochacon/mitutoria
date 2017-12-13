@@ -1,11 +1,11 @@
 {% with %}
 {% set grupo_activo = grupo_activo() %}
-{% set grupo_tutorias = grupo_tutorias(grupo_activo.id, '') %}
+{% set tutorias_by_grupo_id = tutorias_by_grupo_id(grupo_activo.id) %}
 <a data-toggle="collapse" class="collpase-header-secondary" href="#analisis_evolucion" aria-expanded="false">
 	Evolución participación equipo educativo.
 </a>
 <div id="analisis_evolucion" class="collapse">
-	{% if grupo_tutorias%}
+	{% if tutorias_by_grupo_id%}
 		<div class="padding_contenido">
 			{{highcharts_admin_profesores_activos_evolucion(char_id='analisis_evolucion_participacion', y_axe_titulo='profesores', tooltip_text='participacion', color='#BA5FD3', df_data=stats['evolucion_tutorias_exito_grupo'], df_media=stats['evolucion_tutorias_exito_grupo_media'])}}
 		</div>

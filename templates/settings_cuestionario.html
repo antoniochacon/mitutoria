@@ -10,10 +10,10 @@
 				Selecciona las preguntas que desee que formen su cuestionario.
 			</div>
 			<form action="settings_cuestionario" method="POST">
-				{% if preguntas(True) %}
+				{% if preguntas(visible=True) %}
 					{% for categoria in categorias() %}
 						{% with %}
-						{% set preguntas_by_categoria_id = preguntas_by_categoria_id(True, categoria.id) %}
+						{% set preguntas_by_categoria_id = preguntas_by_categoria_id(categoria.id, visible=True) %}
 						{% if preguntas_by_categoria_id %}
 							<div class="bg-dark text-white pl-3 pt-2 pb-2 mt-3">
 								{{categoria.enunciado}}

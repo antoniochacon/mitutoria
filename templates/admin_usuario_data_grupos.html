@@ -9,7 +9,7 @@
 		{% for grupo in usuario_grupos(params['current_usuario_id']) %}
 			{% with %}
 			{% set grupo_alumnos_count = grupo_alumnos_count(grupo.id) %}
-			{% set grupo_tutorias_count = grupo_tutorias(grupo.id, '') | count %}
+			{% set tutorias_by_grupo_id_count = tutorias_by_grupo_id(grupo.id) | count %}
 			<div class="media pb-3">
 				<span class="curso_academico {% if grupo_activo_check(grupo.id) %} curso_academico-primary {% else %} curso_academico-mutted {% endif %}">{{grupo.curso_academico}}
 					|
@@ -31,8 +31,8 @@
 							{% endif %}
 						</span>
 						<span class="badge border border-dark bg-white text-dark float-right mr-2" title="total de tutorias">
-							{{grupo_tutorias_count}}
-							{{singular_plural('tutoria', 'tutorias', grupo_tutorias_count)}}
+							{{tutorias_by_grupo_id_count}}
+							{{singular_plural('tutoria', 'tutorias', tutorias_by_grupo_id_count)}}
 						</span>
 						<div class="divider bg-mutted padding_2"></div>
 					</div>
