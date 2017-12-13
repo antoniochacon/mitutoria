@@ -15,11 +15,10 @@ engine = create_engine(Server_Config.engine_url, echo=False)
 Session_SQL = sessionmaker(bind=engine)
 Base = declarative_base()
 # create a Session_SQL
-# Session_SQL = sessionmaker() #NOTE linea original
-Session_SQL = scoped_session(Session_SQL) #NOTE prueba para evitar pisar sessiones
+# Session_SQL = sessionmaker() # NOTE linea original
+Session_SQL = scoped_session(Session_SQL)  # NOTE scoped_session es la recomendada para web apps
 Session_SQL.configure(bind=engine)
 session_sql = Session_SQL()
-# session_sql = scoped_session(session_sql)
 
 
 class User (UserMixin, Base):
@@ -67,9 +66,10 @@ class Settings_Global (Base):
     id = Column(Integer, primary_key=True)
     oauth2_credentials = Column(String)
     gmail_sender = Column(String(120))
-    diferencial_default = Column(Integer, default=15)
-    periodo_participacion_recent = Column(Integer, default=30)
-    periodo_cleanup_tutorias = Column(Integer, default=3)
+    diferencial_default = Column(Integer, default=15)  # %
+    periodo_participacion_recent = Column(Integer, default=30)  # dias
+    periodo_cleanup_tutorias = Column(Integer, default=3)  # meses
+    periodo_deleted_tutorias = Column(Integer, default=7)  # dias
     cleanup_tutorias_automatic = Column(Boolean, default=False)
 
 

@@ -10,7 +10,6 @@ import config_parametros
 
 
 def translate_fecha(fecha):
-
     dic = {'Jan': 'Ene', 'Jan': 'Feb', 'Mar': 'Mar', 'Apr': 'Abr', 'May': 'May', 'Jun': 'Jun', 'Jul': 'Jul', 'Aug': 'Ago', 'Sep': 'Sep', 'Oct': 'Oct', 'Nov': 'Nov', 'Dec': 'Dic',
            'Monday': 'Lunes', 'Tuesday': 'Martes', 'Wednesday': 'Miercoles', 'Thursday': 'Jueves', 'Friday': 'Viernes', 'Saturday': 'Sabado', 'Sunday': 'Domingo'}
     for i, j in dic.items():
@@ -885,9 +884,11 @@ def tutoria_calendar_sync():
                                         flash_toast('Tutoria de ' + Markup('<strong>') + alumno.nombre + Markup('</strong>') + ' auto-activada', 'info')
                         else:  # Elimina tutoria si ha sido eliminado desde la agenda
                             session_sql.delete(tutoria)
+                            # tutoria.deleted=True
                             flash_toast('Google Calendar sincronizado', 'success')
                     except:  # Elimina tutoria si no esta en el calendario
                         session_sql.delete(tutoria)
+                        # tutoria.deleted=True
                         flash_toast('Google Calendar sincronizado', 'success')
                 # Purga eventos de las tutorias eliminadas por el cleanpup
                 if settings_sql.cleanup_tutorias_status:
