@@ -1,0 +1,46 @@
+<a data-toggle="collapse" class="collpase-header-dark" role="tab" data-parent="#parent_tutorias" href="#collapse_tutorias_deleted" aria-expanded="false">
+	<i class="material-icons vertical-center">delete</i>
+	Papelera de tutorias
+	<span class="badge badge-light float-right mt-1" title="tutorias eliminadas">
+		{{tutorias_by_grupo_id_deleted_count}}
+		{{singular_plural("tutoria", "tutorias", tutorias_by_grupo_id_deleted_count)}}
+	</span>
+</a>
+<div id="collapse_tutorias_deleted" class="collapse">
+	{% if tutorias_by_grupo_id_deleted %}
+		<div class="m-0 p-0">
+			<div class="padding_contenido pt-2">
+				{% for tutoria in tutorias_by_grupo_id_deleted %}
+					{% with %}
+					{% set tutoria_incoming = tutoria_incoming(tutoria.id) %}
+					<a href="/analisis/{{dic_encode_args({'current_tutoria_id': tutoria.id})}}" class="collapse_header_2" title="ver informe">
+						&nbsp;
+						{{translate_fecha(tutoria.fecha.strftime('%A') | capitalize)}}
+						{{tutoria.fecha.strftime('%d')}}
+						[{{tutoria.hora.strftime('%H:%M')}}]
+						<span class="text-gray small">
+							{{alumno_by_id(tutoria.alumno_id).nombre}}
+						</span>
+						<span class="badge badge-secondary float-right mt-1" title="{{tutoria_incoming['porcentaje']}}% de los informes recibidos">
+							{{tutoria_incoming['porcentaje']}}%
+						</span>
+					</a>
+					<div class="progress">
+						<div class="progress-bar bg-secondary" role="progressbar" aria-valuemin="0" aria-valuemax="100" style="height:2px; width: {{tutoria_incoming['porcentaje']}}%;"></div>
+					</div>
+					{% endwith %}
+				{% endfor %}
+			</div>
+		</div>
+	{% else %}
+		<div class="padding_contenido text-mutted">
+			{% if cita_random() %}
+				"{{cita_random().frase}}"
+				<span class="text-info">
+					-
+					{{cita_random().autor}}
+				</span>
+			{% endif %}
+		</div>
+	{% endif %}
+</div>

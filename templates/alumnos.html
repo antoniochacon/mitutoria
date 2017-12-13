@@ -6,10 +6,18 @@
 	titulo_1 %}
 	{{ nav_bar_top(link_active='alumnos',params=params, current_user=current_user) }}
 	{% if gupo_alumnos %}
-		<div class="paper bg-white">
+		<div class="paper bg-white mb-3">
 			{% include 'alumnos_tutorias_incoming_block.html' %}
 		</div>
-		<br>
+		{% with %}
+		{% set tutorias_by_grupo_id_deleted = tutorias_by_grupo_id(grupo_activo().id, deleted=True) %}
+		{% set tutorias_by_grupo_id_deleted_count = tutorias_by_grupo_id_deleted | count %}
+		{% if tutorias_by_grupo_id_deleted %}
+		<div class="paper bg-white mb-3">
+			{% include 'alumnos_tutorias_deleted_block.html' %}
+		</div>
+		{% endif %}
+		{% endwith %}
 	{% endif %}
 	<div class="paper bg-white padding_contenido">
 		{% with %}

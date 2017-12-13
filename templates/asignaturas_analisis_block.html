@@ -1,6 +1,6 @@
 {% with %}
 {% set grupo_activo = grupo_activo() %}
-{% set tutorias_by_grupo_id = tutorias_by_grupo_id(grupo_activo.id) %}
+{% set tutorias_by_grupo_id = tutorias_by_grupo_id(grupo_activo.id, deleted=False) %}
 <a data-toggle="collapse" class="collpase-header-secondary" href="#analisis_evolucion" aria-expanded="false">
 	Evolución participación equipo educativo.
 </a>
