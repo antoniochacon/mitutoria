@@ -20,9 +20,8 @@
 			<div class="padding_contenido pt-2">
 				{% for tutoria in tutorias_by_grupo_id_incoming %}
 					{% with %}
-					{% set tutoria_incoming = tutoria_incoming(tutoria.id) %}
+					{% set tutoria_incoming_stats = tutoria_incoming(tutoria.id) %}
 					<a href="/analisis/{{dic_encode_args({'current_tutoria_id': tutoria.id})}}" class="collapse_header_2" title="ver informe">
-						&nbsp;
 						{{translate_fecha(tutoria.fecha.strftime('%A') | capitalize)}}
 						{{tutoria.fecha.strftime('%d')}}
 						[{{tutoria.hora.strftime('%H:%M')}}]
@@ -30,12 +29,12 @@
 						<span class="text-gray small">
 						{{alumno_by_id(tutoria.alumno_id).nombre}}
 						</span>
-						<span class="badge badge-secondary float-right mt-1" title="{{tutoria_incoming['porcentaje']}}% de los informes recibidos">
-							{{tutoria_incoming['porcentaje']}}%
+						<span class="badge badge-secondary float-right mt-1" title="{{tutoria_incoming_stats['porcentaje']}}% de los informes recibidos">
+							{{tutoria_incoming_stats['porcentaje']}}%
 						</span>
 					</a>
 					<div class="progress">
-						<div class="progress-bar bg-secondary" role="progressbar" aria-valuemin="0" aria-valuemax="100" style="height:2px; width: {{tutoria_incoming['porcentaje']}}%;"></div>
+						<div class="progress-bar bg-secondary" role="progressbar" aria-valuemin="0" aria-valuemax="100" style="height:4px; width: {{tutoria_incoming_stats['porcentaje']}}%;"></div>
 					</div>
 					{% endwith %}
 				{% endfor %}

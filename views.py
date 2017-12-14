@@ -50,7 +50,6 @@ def before_request_html():
     g.current_time = datetime.datetime.now()
     g.current_user = current_user
 
-
 @app.route('/getos')
 def getos():
     return (os.name)
@@ -542,6 +541,7 @@ def alumnos_html(params={}):
         abort(404)
 
     params = {}
+    settings_sql=settings()
     params['anchor'] = params_old.get('anchor', 'anchor_top')
     params['collapse_alumno_add'] = params_old.get('collapse_alumno_add', False)
     params['alumno_importar_link'] = params_old.get('alumno_importar_link', False)
@@ -554,13 +554,16 @@ def alumnos_html(params={}):
     params['collapse_tutorias'] = params_old.get('collapse_tutorias', False)
     params['collapse_tutoria_no_activas'] = params_old.get('collapse_tutoria_no_activas', False)
     params['current_tutoria_id'] = params_old.get('current_tutoria_id', 0)
+    current_tutoria_id = params['current_tutoria_id']
     params['invitado'] = params_old.get('invitado', False)
 
+    params['tutoria_delete_confirmar'] = params_old.get('tutoria_delete_confirmar', False)
+    params['tutoria_restaurar'] = params_old.get('tutoria_restaurar', False)
     params['alumno_delete_confirmar'] = params_old.get('alumno_delete_confirmar', False)
     params['current_alumno_id'] = params_old.get('current_alumno_id', 0)
     current_alumno_id = params['current_alumno_id']
 
-    if not settings().grupo_activo_id:
+    if not settings_sql.grupo_activo_id:
         if not grupos():
             params['collapse_grupo_add'] = True
         return redirect(url_for('settings_grupos_html', params=dic_encode(params)))
@@ -573,6 +576,36 @@ def alumnos_html(params={}):
         flash_toast(Markup('<strong>') + alumno_delete_sql.nombre + Markup('</strong>') + ' elminado', 'success')
         return redirect(url_for('alumnos_html', params=dic_encode(params)))
 
+    if params['tutoria_delete_confirmar']:
+        params['tutoria_delete_confirmar'] = False
+        tutoria = tutoria_by_id(current_tutoria_id)
+        session_sql.delete(tutoria)
+        session_sql.commit()
+        flash_toast('Tutoria elminada', 'success')
+        return redirect(url_for('alumnos_html', params=dic_encode(params)))
+
+    if params['tutoria_restaurar']:
+        params['tutoria_restaurar'] = False
+        tutoria = tutoria_by_id(current_tutoria_id)
+        tutoria.deleted = False
+        session_sql.commit()
+        if settings_sql.calendar:
+            try:
+                credentials = oauth2client.client.Credentials.new_from_json(settings_sql.oauth2_credentials)
+                http = httplib2.Http()
+                http = credentials.authorize(http)
+                service = discovery.build('calendar', 'v3', http=http)
+            except:
+                return redirect(url_for('oauth2callback_calendar'))
+            alumno_nombre = alumno_by_tutoria_id(current_tutoria_id).nombre
+            calendar_datetime_utc_start_arrow = str(arrow.get(tutoria.fecha).shift(hours=tutoria.hora.hour, minutes=tutoria.hora.minute).replace(tzinfo='Europe/Madrid'))
+            calendar_datetime_utc_end_arrow = str(arrow.get(tutoria.fecha).shift(hours=tutoria.hora.hour, minutes=tutoria.hora.minute + settings_sql.tutoria_duracion).replace(tzinfo='Europe/Madrid'))
+            tutoria_calendar_add(service, tutoria, calendar_datetime_utc_start_arrow, calendar_datetime_utc_end_arrow, alumno_nombre)
+
+        # abort(404)
+        flash_toast('Tutoria restaurada', 'success')
+        return redirect(url_for('alumnos_html', params=dic_encode(params)))
+
     if request.method == 'POST':
         # NOTE almacena current_alumno_id para el resto de situacones
         current_alumno_id = current_id_request('current_alumno_id')
@@ -582,7 +615,7 @@ def alumnos_html(params={}):
             params['collapse_alumno_add'] = True
             alumno_add_form = Alumno_Add(request.form)
             if alumno_add_form.validate():
-                alumno = session_sql.query(Alumno).filter(Alumno.grupo_id == settings().grupo_activo_id, unaccent(func.lower(Alumno.apellidos)) == unaccent(func.lower(alumno_add_form.apellidos.data)), unaccent(func.lower(Alumno.nombre)) == unaccent(func.lower(alumno_add_form.nombre.data))).first()
+                alumno = session_sql.query(Alumno).filter(Alumno.grupo_id == settings_sql.grupo_activo_id, unaccent(func.lower(Alumno.apellidos)) == unaccent(func.lower(alumno_add_form.apellidos.data)), unaccent(func.lower(Alumno.nombre)) == unaccent(func.lower(alumno_add_form.nombre.data))).first()
                 if alumno:
                     alumno_add_form.nombre.errors = ['']
                     alumno_add_form.apellidos.errors = ['']
@@ -593,7 +626,7 @@ def alumnos_html(params={}):
                         params=params)
                 else:
                     params['collapse_alumno_add'] = False
-                    alumno_add = Alumno(grupo_id=settings().grupo_activo_id, apellidos=alumno_add_form.apellidos.data.title(), nombre=alumno_add_form.nombre.data.title())
+                    alumno_add = Alumno(grupo_id=settings_sql.grupo_activo_id, apellidos=alumno_add_form.apellidos.data.title(), nombre=alumno_add_form.nombre.data.title())
                     session_sql.add(alumno_add)
                     session_sql.commit()
                     flash_toast(Markup('<strong>') + alumno_add_form.nombre.data.title() + Markup('</strong>') + ' agregado', 'success')
@@ -636,12 +669,12 @@ def alumnos_html(params={}):
                     for alumno in alumnos_reader:
                         alumno_apellidos = alumno['Alumno'].split(', ')[0]
                         alumno_nombre = alumno['Alumno'].split(', ')[1]
-                        alumno_sql = session_sql.query(Alumno).filter(Alumno.grupo_id == settings().grupo_activo_id, unaccent(func.lower(Alumno.apellidos)) == unaccent(func.lower(alumno_apellidos)), unaccent(func.lower(Alumno.nombre)) == unaccent(func.lower(alumno_nombre))).first()
+                        alumno_sql = session_sql.query(Alumno).filter(Alumno.grupo_id == settings_sql.grupo_activo_id, unaccent(func.lower(Alumno.apellidos)) == unaccent(func.lower(alumno_apellidos)), unaccent(func.lower(Alumno.nombre)) == unaccent(func.lower(alumno_nombre))).first()
                         if alumno_sql:
                             alumno_repetido_contador = alumno_repetido_contador + 1
                         else:
                             alumno_add_contador = alumno_add_contador + 1
-                            alumno_add = Alumno(grupo_id=settings().grupo_activo_id, apellidos=alumno_apellidos, nombre=alumno_nombre)
+                            alumno_add = Alumno(grupo_id=settings_sql.grupo_activo_id, apellidos=alumno_apellidos, nombre=alumno_nombre)
                             session_sql.add(alumno_add)
                     session_sql.commit()
                     if alumno_add_contador != 0:
@@ -721,7 +754,7 @@ def alumnos_html(params={}):
 
             # ***************************************
             if alumno_edit_form.validate():
-                alumno_edit = Alumno(grupo_id=settings().grupo_activo_id, nombre=alumno_edit_form.nombre.data.title(), apellidos=alumno_edit_form.apellidos.data.title())
+                alumno_edit = Alumno(grupo_id=settings_sql.grupo_activo_id, nombre=alumno_edit_form.nombre.data.title(), apellidos=alumno_edit_form.apellidos.data.title())
                 alumno_sql = session_sql.query(Alumno).filter_by(id=current_alumno_id).first()
                 if alumno_sql.nombre.lower() != alumno_edit.nombre.lower() or alumno_sql.apellidos.lower() != alumno_edit.apellidos.lower():
                     if alumno_sql.nombre.lower() != alumno_edit.nombre.lower():
@@ -820,16 +853,16 @@ def alumnos_html(params={}):
                             session_sql.add(tutoria_add)
                             session_sql.commit()
                             # NOTE anular email
-                            send_email_tutoria_asincrono(alumno, tutoria_add)  # NOTE anular temporalemente para pruebas de envio de mails.
+                            # send_email_tutoria_asincrono(alumno, tutoria_add)  # NOTE anular temporalemente para pruebas de envio de mails.
                             flash_toast('Enviando emails al equipo educativo de ' + Markup('<strong>') + alumno.nombre + Markup('</strong>'), 'info')
                             params['current_alumno_id'] = current_alumno_id
                             params['collapse_alumno'] = True
                             params['collapse_tutorias'] = True
                             params['anchor'] = 'anchor_top'
                             # NOTE comprobar permisos de oauth2
-                            if settings().calendar:
+                            if settings_sql.calendar:
                                 try:
-                                    credentials = oauth2client.client.Credentials.new_from_json(settings().oauth2_credentials)
+                                    credentials = oauth2client.client.Credentials.new_from_json(settings_sql.oauth2_credentials)
                                     http = httplib2.Http()
                                     http = credentials.authorize(http)
                                     service = discovery.build('calendar', 'v3', http=http)
@@ -843,7 +876,7 @@ def alumnos_html(params={}):
 
                                 calendar_datetime_utc_start = (datetime.datetime.strptime(tutoria_fecha, '%d-%m-%Y') + datetime.timedelta(hours=tutoria_hora.hour) + datetime.timedelta(minutes=tutoria_hora.minute)).timestamp()
                                 calendar_datetime_utc_start_arrow = str(arrow.get(calendar_datetime_utc_start).replace(tzinfo='Europe/Madrid'))
-                                calendar_datetime_utc_end = (datetime.datetime.strptime(tutoria_fecha, '%d-%m-%Y') + datetime.timedelta(hours=tutoria_hora.hour) + datetime.timedelta(minutes=(tutoria_hora.minute + settings().tutoria_duracion))).timestamp()
+                                calendar_datetime_utc_end = (datetime.datetime.strptime(tutoria_fecha, '%d-%m-%Y') + datetime.timedelta(hours=tutoria_hora.hour) + datetime.timedelta(minutes=(tutoria_hora.minute + settings_sql.tutoria_duracion))).timestamp()
                                 calendar_datetime_utc_end_arrow = str(arrow.get(calendar_datetime_utc_end).replace(tzinfo='Europe/Madrid'))
 
                                 tutoria_calendar_add(service, tutoria_add, calendar_datetime_utc_start_arrow, calendar_datetime_utc_end_arrow, alumno_nombre)
@@ -1330,10 +1363,9 @@ def analisis_html(params={}):
         tutoria_delete_sql = tutoria_by_id(current_tutoria_id)
         alumno_sql = alumno_by_id(tutoria_delete_sql.alumno_id)
         tutoria_calendar_delete(event_id=tutoria_delete_sql.calendar_event_id)
-        session_sql.delete(tutoria_delete_sql)
+        tutoria_delete_sql.deleted=False
         session_sql.commit()
-        flash_toast('Tutoria de ' + Markup('<strong>') + alumno_sql.nombre + Markup('</strong>') + ' eliminada', 'success')
-        # flash_toast('Google Calendar sincronizado', 'success')
+        flash_toast('Tutoria eliminada', 'success')
         return redirect(url_for('alumnos_html'))
 
     stats = analisis_tutoria(current_tutoria_id)
@@ -1394,36 +1426,22 @@ def analisis_tutoria_edit_html(params={}):
         if request.form['selector_button'] == 'selector_tutoria_edit_close':
             return redirect(url_for('analisis_html', params=dic_encode(params)))
 
-        # XXX tutoria_regresar_alumno
-        # if request.form['selector_button'] == 'selector_tutoria_regresar_alumno':
-        #     current_tutoria = tutoria_by_id(current_tutoria_id)
-        #     alumno = alumno_by_id(current_tutoria.alumno_id)
-        #     current_alumno_id = alumno.id
-        #     params['current_alumno_id'] = current_alumno_id
-        #     params['current_tutoria_id'] = current_tutoria_id
-        #     params['collapse_alumno'] = True
-        #     params['collapse_tutorias'] = True
-        #     if not current_tutoria.activa:
-        #         params['collapse_tutoria_no_activas'] = True
-        #     params['anchor'] = 'anchor_alu_' + str(hashids_encode(current_alumno_id))
-        #     return redirect(url_for('alumnos_html', params=dic_encode(params)))
-
         # XXX tutoria_re_enviar_link
-        if request.form['selector_button'] == 'selector_tutoria_re_enviar_link':
-            current_tutoria = tutoria_by_id(current_tutoria_id)
-            if current_tutoria.activa:
-                if current_tutoria.fecha < g.current_date:
-                    flash_toast('No se puede reenviar una tutoria pasada' + Markup('<br>') + 'Debe cambiar fecha', 'warning')
-                else:
-                    params['tutoria_re_enviar_link'] = True
-                    return redirect(url_for('analisis_html', params=dic_encode(params)))
-            else:
-                flash_toast('No deberías reenviar una tutoria archivada' + Markup('<br>') + 'Deberías activarla', 'warning')
-            return redirect(url_for('analisis_html', params=dic_encode(params)))
+        # if request.form['selector_button'] == 'selector_tutoria_re_enviar_link':
+        #     current_tutoria = tutoria_by_id(current_tutoria_id)
+        #     if current_tutoria.activa:
+        #         if current_tutoria.fecha < g.current_date:
+        #             flash_toast('No se puede reenviar una tutoria pasada' + Markup('<br>') + 'Debe cambiar fecha', 'warning')
+        #         else:
+        #             params['tutoria_re_enviar_link'] = True
+        #             return redirect(url_for('analisis_html', params=dic_encode(params)))
+        #     else:
+        #         flash_toast('No deberías reenviar una tutoria archivada' + Markup('<br>') + 'Deberías activarla', 'warning')
+        #     return redirect(url_for('analisis_html', params=dic_encode(params)))
 
         # XXX selector_tutoria_re_enviar_close
-        if request.form['selector_button'] == 'selector_tutoria_re_enviar_close':
-            return redirect(url_for('analisis_html', params=dic_encode(params)))
+        # if request.form['selector_button'] == 'selector_tutoria_re_enviar_close':
+        #     return redirect(url_for('analisis_html', params=dic_encode(params)))
 
         # XXX tutoria_re_enviar
         if request.form['selector_button'] == 'selector_tutoria_re_enviar':

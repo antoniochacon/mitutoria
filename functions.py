@@ -868,10 +868,15 @@ def tutoria_calendar_sync():
             except:
                 return redirect(url_for('oauth2callback_calendar'))
             if settings_sql.calendar_sincronizado:
-                for tutoria in tutorias_by_grupo_id(settings_sql.grupo_activo_id, deleted=False):
+                # for tutoria in tutorias_by_grupo_id(settings_sql.grupo_activo_id, deleted=False):
+                for tutoria in tutorias_by_grupo_id(settings_sql.grupo_activo_id):
                     try:
                         event = service.events().get(calendarId='primary', eventId=tutoria.calendar_event_id).execute()
                         calendar_datetime_utc_start_arrow = str(arrow.get(tutoria.fecha).shift(hours=tutoria.hora.hour, minutes=tutoria.hora.minute).replace(tzinfo='Europe/Madrid'))
+
+                        if tutoria.deleted:
+                            service.events().delete(calendarId='primary', eventId=event['id']).execute()
+
                         # XXX checkea cambios a sincronizar
                         if event['status'] == 'confirmed':  # Sincroniza fechas de eventos del calendario
                             if event['start']['dateTime'] != calendar_datetime_utc_start_arrow:
@@ -883,13 +888,11 @@ def tutoria_calendar_sync():
                                         alumno = alumno_by_tutoria_id(tutoria.id)
                                         flash_toast('Tutoria de ' + Markup('<strong>') + alumno.nombre + Markup('</strong>') + ' auto-activada', 'info')
                         else:  # Elimina tutoria si ha sido eliminado desde la agenda
-                            session_sql.delete(tutoria)
-                            # tutoria.deleted=True
-                            flash_toast('Google Calendar sincronizado', 'success')
+                            tutoria.deleted=True
+                            # flash_toast('Google Calendar sincronizado', 'success')
                     except:  # Elimina tutoria si no esta en el calendario
-                        session_sql.delete(tutoria)
-                        # tutoria.deleted=True
-                        flash_toast('Google Calendar sincronizado', 'success')
+                        tutoria.deleted=True
+                        # flash_toast('Google Calendar sincronizado', 'success')
                 # Purga eventos de las tutorias eliminadas por el cleanpup
                 if settings_sql.cleanup_tutorias_status:
                     settings_sql.cleanup_tutorias_status = False
@@ -1183,7 +1186,6 @@ def re_send_email_tutoria_asincrono(alumno, tutoria, asignaturas_id_lista):
         re_send_email_tutoria(alumno, tutoria, asignaturas_id_lista)
     re_send_email_tutoria_threading = threading.Thread(name='re_send_email_tutoria_thread', target=re_send_email_tutoria_process, args=(alumno, tutoria, asignaturas_id_lista))
     re_send_email_tutoria_threading.start()
-    # session_sql.commit()
 # *****************************************************************
 
 
