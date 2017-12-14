@@ -12,29 +12,33 @@
 			{% for tutoria in tutorias_by_grupo_id_deleted %}
 				{% with %}
 				{% set tutoria_deleted_stats = tutoria_incoming(tutoria.id) %}
-					<div class="collapse_header_2">
-						{{translate_fecha(tutoria.fecha.strftime('%A') | capitalize)}}
-						{{tutoria.fecha.strftime('%d')}}
-						[{{tutoria.hora.strftime('%H:%M')}}]
-						<span class="text-gray small">
-							{{alumno_by_id(tutoria.alumno_id).nombre}}
-						</span>
-						<span class="btn-group float-right" role="group" aria-label="...">
-							<a href="/alumnos/{{dic_encode_args({'current_tutoria_id': tutoria.id, 'tutoria_restaurar': True})}}" role="button" class="btn btn-outline-secondary btn-sm py-0 px-2 link_without_pointer" title="Restaurar tutoria">
-								{{tutoria_deleted_stats['porcentaje']}}%
-								<i class="material-icons vertical-center">reply</i>
-							</a>
-							{% include 'alumnos_tutoria_delete_confirmar_block.html' %}
-							<a data-toggle="collapse" href="#alumnos_tutoria_delete_confirmar_{{hashids_encode(tutoria.id)}}" class="btn btn-outline-warning btn-sm py-0 px-2 link_without_pointer" aria-expanded="false" title="Eliminar tutoria">
-								<i class="material-icons vertical-center">delete</i>
-							</a>
-						</span>
-					</div>
-					<div class="progress">
-						<div class="progress-bar bg-secondary" role="progressbar" aria-valuemin="0" aria-valuemax="100" style="height:4px; width: {{tutoria_deleted_stats['porcentaje']}}%;"></div>
-					</div>
+				<div class="collapse_header_2">
+					{{translate_fecha(tutoria.fecha.strftime('%A') | capitalize)}}
+					{{tutoria.fecha.strftime('%d')}}
+					[{{tutoria.hora.strftime('%H:%M')}}]
+					<span class="text-gray small">
+						{{alumno_by_id(tutoria.alumno_id).nombre}}
+					</span>
+					<span class="btn-group float-right" role="group" aria-label="...">
+						<a href="/alumnos/{{dic_encode_args({'current_tutoria_id': tutoria.id, 'tutoria_restaurar': True})}}" role="button" class="btn btn-outline-secondary btn-sm py-0 px-2 link_without_pointer" title="Restaurar tutoria">
+							{{tutoria_deleted_stats['porcentaje']}}%
+							<i class="material-icons vertical-center">reply</i>
+						</a>
+						{% include 'alumnos_tutoria_delete_confirmar_block.html' %}
+						<a data-toggle="collapse" href="#alumnos_tutoria_delete_confirmar_{{hashids_encode(tutoria.id)}}" class="btn btn-outline-warning btn-sm py-0 px-2 link_without_pointer" aria-expanded="false" title="Eliminar tutoria">
+							<i class="material-icons vertical-center">delete</i>
+						</a>
+					</span>
+				</div>
+				<div class="progress">
+					<div class="progress-bar bg-secondary" role="progressbar" aria-valuemin="0" aria-valuemax="100" style="height:4px; width: {{tutoria_deleted_stats['porcentaje']}}%;"></div>
+				</div>
 				{% endwith %}
 			{% endfor %}
+
 		</div>
+	</div>
+	<div class="padding_contenido small pt-2">
+		Las tutorias que lleven 15 días en la Papelera se eliminarán automáticamente
 	</div>
 </div>
