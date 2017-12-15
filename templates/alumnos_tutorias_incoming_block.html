@@ -1,7 +1,7 @@
 {% with %}
 {% set tutorias_by_grupo_id_incoming = tutorias_by_grupo_id(grupo_activo().id, activa=True, deleted=False) %}
 {% set tutorias_by_grupo_id_incoming_count = tutorias_by_grupo_id_incoming | count %}
-<a data-toggle="collapse" class="collpase-header-secondary" role="tab" data-parent="#parent_tutorias" href="#collapse_tutorias_incoming" aria-expanded="false">
+<a data-toggle="collapse" class="collpase-header-secondary" role="tab" data-parent="#parent_tutorias_incoming" href="#collapse_tutorias_incoming" aria-expanded="false">
 	{% if tutorias_by_grupo_id_incoming %}
 	<i class="material-icons vertical-center">notifications</i>
 			{{singular_plural("tutoria", "tutorias", tutorias_by_grupo_id_incoming_count)}}
@@ -21,7 +21,7 @@
 				{% for tutoria in tutorias_by_grupo_id_incoming %}
 					{% with %}
 					{% set tutoria_incoming_stats = tutoria_incoming(tutoria.id) %}
-					<a href="/analisis/{{dic_encode_args({'current_tutoria_id': tutoria.id})}}" class="collapse_header_2" title="ver informe">
+					<a href="/analisis/{{dic_encode_args({'current_tutoria_id': tutoria.id})}}" class="collapse_header_2" title="ver informes">
 						{{translate_fecha(tutoria.fecha.strftime('%A') | capitalize)}}
 						{{tutoria.fecha.strftime('%d')}}
 						[{{tutoria.hora.strftime('%H:%M')}}]
