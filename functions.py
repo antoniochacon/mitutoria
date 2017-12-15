@@ -10,7 +10,7 @@ import config_parametros
 
 
 def purgar_papelera_tutorias():
-    tutorias = session_sql.query(Tutoria).filter(Tutoria.deleted == True, Tutoria.fecha < g.current_date - datetime.timedelta(days=g.settings_global.periodo_deleted_tutorias)).all()
+    tutorias = session_sql.query(Tutoria).filter(Tutoria.deleted==True, Tutoria.deleted_at < g.current_date - datetime.timedelta(days=g.settings_global.periodo_deleted_tutorias)).all()
     for tutoria in tutorias:
         session_sql.delete(tutoria)
     session_sql.commit()
@@ -51,7 +51,7 @@ def get_service_calendar():  # Ejemplo de codigo para crear el servicio calendar
 
 def get_service_gmail():  # Ejemplo de codigo para crear el servicio gmail
     try:
-        settings_global_sql=session_sql.query(Settings_Global).first()
+        settings_global_sql = session_sql.query(Settings_Global).first()
         credentials = oauth2client.client.Credentials.new_from_json(oauth2_credentials)
         http = credentials.authorize(httplib2.Http())
         service = discovery.build('gmail', 'v1', http=http)
@@ -893,9 +893,11 @@ def tutoria_calendar_sync():
                                         flash_toast('Tutoria de ' + Markup('<strong>') + alumno.nombre + Markup('</strong>') + ' auto-activada', 'info')
                         else:  # Elimina tutoria si ha sido eliminado desde la agenda
                             tutoria.deleted = True
+                            tutoria.deleted_at = g.current_time
                             # flash_toast('Google Calendar sincronizado', 'success')
                     except:  # Elimina tutoria si no esta en el calendario
                         tutoria.deleted = True
+                        tutoria.deleted_at = g.current_time
                         # flash_toast('Google Calendar sincronizado', 'success')
                 # Purga eventos de las tutorias eliminadas por el cleanpup
                 if g.settings_current_user.cleanup_tutorias_status:
@@ -1192,7 +1194,6 @@ def re_send_email_tutoria_asincrono(alumno, tutoria, asignaturas_id_lista):
 # *****************************************************************
 
 
-
 def pregunta_delete(pregunta_delete_id):  # Delete pregunta
     pregunta_delete = session_sql.query(Pregunta).filter_by(id=pregunta_delete_id).first()
     session_sql.delete(pregunta_delete)
@@ -1232,11 +1233,14 @@ def grupo_activo():  # (Grupo) activo de usuario
         return session_sql.query(Grupo).filter(Grupo.id == settings().grupo_activo_id).first()
     except:
         pass
+
+
 def settings():
     try:
         return session_sql.query(Settings).filter_by(id=current_user.id).first()
     except:
         pass
+
 
 def grupo_activo_check(grupo_id):  # Checkea si un grupo es el activo o no
     if grupo_id == g.settings_current_user.grupo_activo_id:

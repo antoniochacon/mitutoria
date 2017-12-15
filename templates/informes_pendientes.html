@@ -5,27 +5,29 @@
 	<div class="container">
 		<div class="paper bg-white padding_contenido">
 			{{titulo_1(bg_color='bg-dark', titulo='Informes pendientes')}}
-			<div class="small">
-				<span class="text-mutted">Grupo:</span>
-				{{params['grupo'].nombre}}
-				<br>
-				<span class="text-mutted">Tutor/a:</span>
-				{{params['grupo'].tutor_nombre}}
-				{{params['grupo'].tutor_apellidos}}
-				<br>
-				<span class="text-mutted">Docente:</span>
-				{{asignatura.nombre}}
-				{{asignatura.apellidos}}
-				<br>
-				<span class="text-mutted">Asignatura:</span>
-				{{asignatura.asignatura}}
+			<div class="row small my-2">
+				<div class="col-sm-12 col-md-6">
+					<span class="text-mutted">Tutor/a:</span>
+					{{grupo.tutor_nombre}}
+					{{grupo.tutor_apellidos}}
+					<br>
+					<span class="text-mutted">Grupo:</span>
+					{{grupo.nombre}}
+				</div>
+				<div class="col-sm-12 col-md-6">
+					<span class="text-mutted">Docente:</span>
+					{{asignatura.nombre}}
+					{{asignatura.apellidos}}
+					<br>
+					<span class="text-mutted">Asignatura:</span>
+					{{asignatura.asignatura}}
+				</div>
 			</div>
 			<div class="divider bg-mutted mt-2 mb-3"></div>
 			{% for tutoria in params['tutorias_pendites'] %}
 				{% with %}
 				{% set tutoria_incoming = tutoria_incoming(tutoria.id) %}
 				<a href="/informe/{{hashids_encode(asignatura.id)}}/{{hashids_encode(tutoria.id)}}/" class="collapse_header_2" title="ver informe">
-					&nbsp;
 					{{translate_fecha(tutoria.fecha.strftime('%A') | capitalize)}}
 					{{tutoria.fecha.strftime('%d')}}
 					[{{tutoria.hora.strftime('%H:%M')}}]

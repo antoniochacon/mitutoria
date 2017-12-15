@@ -1,17 +1,19 @@
 {% with %}
 {% set preguntas = preguntas() %}
 {% set preguntas_count = preguntas | count %}
-<div class="divider grueso bg-primary mt-3 mb-3"></div>
+<div class="bg-dark text-white p-2 mb-2">
+	Preguntas
+	<span class="badge float-right {% if preguntas %}badge-mutted{% else %}badge-warning text-white{% endif %}" title="activa por defecto">
+		{{preguntas_count}}
+		{{singular_plural('pregunta','preguntas', preguntas_count)}}
+	</span>
+</div>
 <a data-toggle="collapse" data-parent="#parent_pregunta" href="#pregunta_add" class="collapse_header_1" aria-expanded="true" aria-controls="collapse_pregunta_add" title="Agregar pregunta">
 	<div class="media">
 		<i class="material-icons vertical-center pl-1">playlist_add</i>&nbsp;
 		<div class="media-body">
 			<div class="padding_2">
 				agregar nueva pregunta
-				<span class="badge float-right {% if preguntas %}badge-mutted{% else %}badge-warning text-white{% endif %}" title="activa por defecto">
-					{{preguntas_count}}
-					{{singular_plural('pregunta','preguntas', preguntas_count)}}
-				</span>
 			</div>
 		</div>
 	</div>

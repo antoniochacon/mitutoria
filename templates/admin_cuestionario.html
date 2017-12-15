@@ -15,15 +15,19 @@
 				{# XXX: categorias_listado #}
 				{% include 'admin_cuestionario_categoria_block.html' %}
 			</div>
-			<div>
-				{# XXX: pregunta_add #}
-				<a id="anchor_pre_add"></a>
-				{% include 'admin_cuestionario_pregunta_add_block.html' %}
-			</div>
-			<div>
-				{# XXX: preguntas_listado #}
-				{% include 'admin_cuestionario_pregunta_block.html' %}
-			</div>
 		</div>
 	</div>
+	<br>
+	<div class="paper bg-white padding_contenido">
+		<div>
+			{# XXX: pregunta_add #}
+			<a id="anchor_pre_add"></a>
+			{% include 'admin_cuestionario_pregunta_add_block.html' %}
+		</div>
+		<div>
+			{# XXX: preguntas_listado #}
+			{% include 'admin_cuestionario_pregunta_block.html' %}
+		</div>
+	</div>
+</div>
 {% endblock %}

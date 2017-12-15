@@ -548,7 +548,6 @@ def alumnos_html(params={}):
         abort(404)
 
     params = {}
-    g.settings_current_user = g.settings_current_user
     params['anchor'] = params_old.get('anchor', 'anchor_top')
     params['collapse_alumno_add'] = params_old.get('collapse_alumno_add', False)
     params['alumno_importar_link'] = params_old.get('alumno_importar_link', False)
@@ -570,9 +569,8 @@ def alumnos_html(params={}):
     params['current_alumno_id'] = params_old.get('current_alumno_id', 0)
     current_alumno_id = params['current_alumno_id']
 
-    if not g.settings_current_user.grupo_activo_id:
-        if not grupos():
-            params['collapse_grupo_add'] = True
+    if not g.settings_current_user.grupo_activo_id or not grupos():
+        params['collapse_grupo_add'] = True
         return redirect(url_for('settings_grupos_html', params=dic_encode(params)))
 
     if params['alumno_delete_confirmar']:
@@ -595,6 +593,7 @@ def alumnos_html(params={}):
         params['tutoria_restaurar'] = False
         tutoria = tutoria_by_id(current_tutoria_id)
         tutoria.deleted = False
+        tutoria.deleted_at = ''
         session_sql.commit()
         if g.settings_current_user.calendar:
             try:
@@ -783,14 +782,6 @@ def alumnos_html(params={}):
                 flash_wtforms(alumno_edit_form, flash_toast, 'warning')
             return render_template('alumnos.html', alumno_add=Alumno_Add(), alumno_edit=alumno_edit_form,
                                    grupo_add=Grupo_Add(), tutoria_add=Tutoria_Add(), params=params)
-        # XXX alumno_edit_rollback
-        # if request.form['selector_button'] == 'selector_alumno_edit_rollback':
-        #     params['collapse_alumno'] = True
-        #     params['collapse_alumno_edit'] = True
-        #     params['alumno_edit_link'] = True
-        #     params['anchor'] = 'anchor_tut_add_' + str(hashids_encode(current_alumno_id))
-        #     session_sql.rollback()
-        #     return redirect(url_for('alumnos_html', params=dic_encode(params)))
 
         # XXX alumno_delete_close
         if request.form['selector_button'] == 'selector_alumno_delete_close':
@@ -1371,10 +1362,11 @@ def analisis_html(params={}):
 
     if params['tutoria_delete_confirmar']:
         params['tutoria_delete_confirmar'] = False
-        tutoria_delete_sql = tutoria_by_id(current_tutoria_id)
-        alumno_sql = alumno_by_id(tutoria_delete_sql.alumno_id)
-        tutoria_calendar_delete(event_id=tutoria_delete_sql.calendar_event_id)
-        tutoria_delete_sql.deleted = False
+        tutoria = tutoria_by_id(current_tutoria_id)
+        alumno_sql = alumno_by_id(tutoria.alumno_id)
+        tutoria_calendar_delete(event_id=tutoria.calendar_event_id)
+        tutoria.deleted = True
+        tutoria.deleted_at = g.current_date
         session_sql.commit()
         flash_toast('Tutoria eliminada', 'success')
         return redirect(url_for('alumnos_html'))
@@ -1436,23 +1428,6 @@ def analisis_tutoria_edit_html(params={}):
         # XXX tutoria_edit_close
         if request.form['selector_button'] == 'selector_tutoria_edit_close':
             return redirect(url_for('analisis_html', params=dic_encode(params)))
-
-        # XXX tutoria_re_enviar_link
-        # if request.form['selector_button'] == 'selector_tutoria_re_enviar_link':
-        #     current_tutoria = tutoria_by_id(current_tutoria_id)
-        #     if current_tutoria.activa:
-        #         if current_tutoria.fecha < g.current_date:
-        #             flash_toast('No se puede reenviar una tutoria pasada' + Markup('<br>') + 'Debe cambiar fecha', 'warning')
-        #         else:
-        #             params['tutoria_re_enviar_link'] = True
-        #             return redirect(url_for('analisis_html', params=dic_encode(params)))
-        #     else:
-        #         flash_toast('No deberías reenviar una tutoria archivada' + Markup('<br>') + 'Deberías activarla', 'warning')
-        #     return redirect(url_for('analisis_html', params=dic_encode(params)))
-
-        # XXX selector_tutoria_re_enviar_close
-        # if request.form['selector_button'] == 'selector_tutoria_re_enviar_close':
-        #     return redirect(url_for('analisis_html', params=dic_encode(params)))
 
         # XXX tutoria_re_enviar
         if request.form['selector_button'] == 'selector_tutoria_re_enviar':
@@ -2059,13 +2034,13 @@ def informes_pendientes_html(asignatura_id):
 
     params = {}
     asignatura = asignatura_by_id(asignatura_id)
-    params['grupo'] = grupo_by_asignatura_id(asignatura_id)
+    grupo = grupo_by_asignatura_id(asignatura_id)
     tutorias_id_lista = tutorias_sin_respuesta_by_asignatura_id(asignatura.id)['tutorias_id_lista']
     tutorias_pendites = []
     for tutoria_id in tutorias_id_lista:
         tutorias_pendites.append(tutoria_by_id(tutoria_id))
     params['tutorias_pendites'] = tutorias_pendites
-    return render_template('informes_pendientes.html', asignatura=asignatura, params=params)
+    return render_template('informes_pendientes.html', asignatura=asignatura, grupo=grupo, params=params)
 
 
 @app.route('/email_tutoria')

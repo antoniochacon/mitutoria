@@ -189,6 +189,7 @@ class Tutoria (Base):
     hora = Column(Time)
     activa = Column(Boolean, default=True)
     deleted = Column(Boolean, default=False)
+    deleted_at = Column(Date)
     calendar_event_id = Column(String)
     acuerdo = Column(String)
     informes = relationship('Informe', backref='tutoria', lazy='dynamic', cascade='delete')
