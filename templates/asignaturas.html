@@ -4,7 +4,7 @@
 	{% set grupo_activo_sql = grupo_activo()%}
 	{%from "_macro.html" import nav_bar_top, titulo_1, highcharts_admin_profesores_activos_evolucion%}
 	{{ nav_bar_top(link_active='asignaturas',params=params, current_user=current_user) }}
-	{% if settings().show_asignaturas_analisis %}
+	{% if g.settings_current_user.show_asignaturas_analisis %}
 		<div class="paper bg-white">
 			{% include 'asignaturas_analisis_block.html' %}
 		</div>
@@ -24,7 +24,7 @@
 				</div>
 			</div>
 			<div>
-				{% for asignatura in asignaturas_ordenadas(settings().asignaturas_orden) %}
+				{% for asignatura in asignaturas_ordenadas(g.settings_current_user.asignaturas_orden) %}
 					{# TODO: asignaturas_listado #}
 					{% include 'asignaturas_block.html' %}
 				{% endfor %}

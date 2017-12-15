@@ -68,7 +68,7 @@
 
 {% macro highcharts_cuestionario(char_id, color, grupo, tutoria_id, stats, grupo_stats=grupo_stats) %}
 {% with %}
-{% set settings_sql = settings() %}
+{% set settings_sql = g.settings_current_user %}
 	<div id="{{char_id | safe}}" class="chart" style="height: 300px"></div>
 	<script>
 		var label_color=jQuery.parseJSON({{stats['label_color_dic'] | safe}});
@@ -207,7 +207,7 @@
 
 {% macro highcharts_asignaturas(char_id, color_1, color_2, grupo, tutoria_id, stats, grupo_stats) %}
 {% with %}
-{% set settings_sql = settings() %}
+{% set settings_sql = g.settings_current_user %}
 	<div id="{{char_id | safe}}" class="chart" style="height: 300px"></div>
 	<script>
 		Highcharts.chart("{{char_id | safe }}", {
@@ -1127,7 +1127,7 @@
 {% endmacro %}
 
 
-{# NOTE NO se puede usar settings() en lugar de settings() porque esta barra se puede acceder como invitado #}
+{# NOTE NO se puede usar g.settings_current_user en lugar de g.settings_current_user porque esta barra se puede acceder como invitado #}
 {% macro titulo_1(url, text_color, bg_color, titulo, subtitulo) %}
 	<span class="{{text_color}}">
 		<span class="strong h5">{{titulo}}</span>
@@ -1151,9 +1151,9 @@
 			<h6 class="{{text_color}}">
 				{% if url == "asignaturas" %}
 				<form action="/asignaturas" method="POST">
-					<input type="hidden" name="asignaturas_orden" value="{{settings().asignaturas_orden}}">
+					<input type="hidden" name="asignaturas_orden" value="{{g.settings_current_user.asignaturas_orden}}">
 						<button role="button" type="submit" name="selector_button" value="asignaturas_orden_switch" class="btn btn-outline-dark btn-sm float-right" title="reordenar">
-							<i class="material-icons vertical-center">wrap_text</i>{{ asignaturas_orden_switch(settings().asignaturas_orden)}}
+							<i class="material-icons vertical-center">wrap_text</i>{{ asignaturas_orden_switch(g.settings_current_user.asignaturas_orden)}}
 						</button>
 				</form>
 				{% endif %}
@@ -1202,15 +1202,15 @@
 						<li class="nav-item {% if link_key==link_active %} active strong {% endif %}">
 							<a class="nav-link" href="/{{dic[link_key]}}{% if params_args %}/{{params_args}}{% endif %}">{{link_key}}
 								{% if link_key == 'logout' %}
-									[{{user_by_id(settings().id).username}}]
+									[{{user_by_id(g.settings_current_user.id).username}}]
 								{% endif %}
 							</a>
 						</li>
-					{% elif link_key == 'ayuda' and settings().visit_number <= 50 %}
+					{% elif link_key == 'ayuda' and g.settings_current_user.visit_number <= 50 %}
 						<li class="nav-item {% if link_key==link_active %} active strong {% endif %}">
 							<a class="nav-link" href="/{{dic[link_key]}}{% if params_args %}/{{params_args}}{% endif %}">{{link_key}}</a>
 						</li>
-					{% elif link_key == 'admin' and settings().role == 'admin' %}
+					{% elif link_key == 'admin' and g.settings_current_user.role == 'admin' %}
 						<li class="nav-item {% if link_key==link_active %} active strong {% endif %}">
 							<a class="nav-link" href="/{{dic[link_key]}}{% if params_args %}/{{params_args}}{% endif %}">{{link_key}}</a>
 						</li>

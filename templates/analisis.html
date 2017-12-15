@@ -30,7 +30,7 @@
 			<form action="/analisis_tutoria_edit" method="POST">
 				{% with %}
 				{% set tutoria_incoming = tutoria_incoming(tutoria.id) %}
-				{% set settings_sql = settings() %}
+				{% set settings_sql = g.settings_current_user %}
 				<div class="row mb-2 mt-2">
 					<div class="col-sm-12 col-md-6 mb-2">
 					<div>
@@ -54,7 +54,7 @@
 					</div>
 					<input type="hidden" name="current_tutoria_id" value="{{hashids_encode(tutoria.id)}}">
 					<div class="col-sm-12 col-md-6">
-							<div class="btn-group" role="group" aria-label="...">
+							<div class="btn-group mb-1" role="group">
 								<a data-toggle="collapse" href="#tutoria_edit_{{hashids_encode(tutoria.id)}}" class="btn {% if tutoria.activa %} btn-outline-dark{% else %} btn-outline-mutted{% endif %} btn-sm link_without_pointer" aria-expanded="false" title="cambiar fecha y hora">
 								<i class="material-icons vertical-center {% if tutoria.activa %} color-gray-darken-1 {% endif %}">edit</i></a>
 

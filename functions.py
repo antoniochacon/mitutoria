@@ -27,9 +27,8 @@ def replace_string_by_dic(texto, dic):
 
 
 def get_service_calendar():  # Ejemplo de codigo para crear el servicio calendar
-    settings_sql = settings()
     try:
-        oauth2_credentials = settings_sql.oauth2_credentials
+        oauth2_credentials = g.settings_current_user.oauth2_credentials
         credentials = oauth2client.client.Credentials.new_from_json(oauth2_credentials)
         http = credentials.authorize(httplib2.Http())
         service = discovery.build('calendar', 'v3', http=http)
@@ -44,9 +43,8 @@ def get_service_calendar():  # Ejemplo de codigo para crear el servicio calendar
 # *****************************************************************
 
 def get_service_gmail():  # Ejemplo de codigo para crear el servicio gmail
-    settings_global_sql = settings_global()
     try:
-        oauth2_credentials = settings_global_sql.oauth2_credentials
+        oauth2_credentials = g.settings_global.oauth2_credentials
         credentials = oauth2client.client.Credentials.new_from_json(oauth2_credentials)
         http = credentials.authorize(httplib2.Http())
         service = discovery.build('gmail', 'v1', http=http)
@@ -167,7 +165,7 @@ def analisis_tutoria(tutoria_id):
     label_color_dic = {}
     column_color = []
     stats['categorias_pregunta'] = session_sql.query(Categoria).order_by('orden').all()
-    stats['preguntas_settings'] = session_sql.query(Pregunta).join(Association_Settings_Pregunta).filter(Association_Settings_Pregunta.settings_id == settings().id).order_by('orden').all()
+    stats['preguntas_settings'] = session_sql.query(Pregunta).join(Association_Settings_Pregunta).filter(Association_Settings_Pregunta.settings_id == g.settings_current_user.id).order_by('orden').all()
     for categoria in stats['categorias_pregunta']:
         for pregunta in categoria.preguntas.order_by('orden'):
             if pregunta in stats['preguntas_settings']:
@@ -229,7 +227,7 @@ def respuestas_pregunta_alumno_lista(tutoria_id, asignatura_id, asignaturas_list
     stats = {}
 
     for pregunta in preguntas_lista:
-        respuestas = session_sql.query(Respuesta).join(Informe).join(Tutoria).filter(Respuesta.pregunta_id == pregunta.id, Informe.asignatura_id == asignatura_id, Informe.tutoria_id == tutoria_id, Tutoria.deleted==False).all()
+        respuestas = session_sql.query(Respuesta).join(Informe).join(Tutoria).filter(Respuesta.pregunta_id == pregunta.id, Informe.asignatura_id == asignatura_id, Informe.tutoria_id == tutoria_id, Tutoria.deleted == False).all()
         for respuesta in respuestas:
             if respuesta:
                 resultado = respuesta.resultado
@@ -254,7 +252,7 @@ def respuestas_asignatura_alumno_lista(tutoria_id, pregunta_id, asignaturas_list
     stats = {}
 
     for asignatura in asignaturas_lista:
-        respuestas = session_sql.query(Respuesta).join(Informe).join(Tutoria).filter(Respuesta.pregunta_id == pregunta_id, Informe.asignatura_id == asignatura.id, Informe.tutoria_id == tutoria_id, Tutoria.deleted==False).all()
+        respuestas = session_sql.query(Respuesta).join(Informe).join(Tutoria).filter(Respuesta.pregunta_id == pregunta_id, Informe.asignatura_id == asignatura.id, Informe.tutoria_id == tutoria_id, Tutoria.deleted == False).all()
         for respuesta in respuestas:
             if respuesta:
                 resultado = respuesta.resultado
@@ -288,7 +286,7 @@ def respuestas_grupo_stats(tutoria_id, preguntas_lista, asignaturas_lista):
     for pregunta in preguntas:
         respuestas_pregunta_lista = []
         for asignatura in asignaturas:
-            respuestas = session_sql.query(Respuesta).join(Informe).join(Tutoria).join(Alumno).join(Grupo).filter(Respuesta.pregunta_id == pregunta.id, Informe.asignatura_id == asignatura.id, Informe.tutoria_id != tutoria_id, Grupo.id == grupo.id, Tutoria.deleted==False).all()
+            respuestas = session_sql.query(Respuesta).join(Informe).join(Tutoria).join(Alumno).join(Grupo).filter(Respuesta.pregunta_id == pregunta.id, Informe.asignatura_id == asignatura.id, Informe.tutoria_id != tutoria_id, Grupo.id == grupo.id, Tutoria.deleted == False).all()
             for respuesta in respuestas:
                 if respuesta:
                     resultado = respuesta.resultado
@@ -307,7 +305,7 @@ def respuestas_grupo_stats(tutoria_id, preguntas_lista, asignaturas_lista):
     for asignatura in asignaturas:
         respuestas_asignatura_lista = []
         for pregunta in preguntas:
-            respuestas = session_sql.query(Respuesta).join(Informe).join(Tutoria).join(Alumno).join(Grupo).filter(Respuesta.pregunta_id == pregunta.id, Informe.asignatura_id == asignatura.id, Informe.tutoria_id != tutoria_id, Grupo.id == grupo.id, Tutoria.deleted==False).all()
+            respuestas = session_sql.query(Respuesta).join(Informe).join(Tutoria).join(Alumno).join(Grupo).filter(Respuesta.pregunta_id == pregunta.id, Informe.asignatura_id == asignatura.id, Informe.tutoria_id != tutoria_id, Grupo.id == grupo.id, Tutoria.deleted == False).all()
             for respuesta in respuestas:
                 if respuesta:
                     resultado = respuesta.resultado
@@ -372,7 +370,7 @@ def notas_pruebas_evaluables_grupo(tutoria_id, asignatura_id):
     notas_pruebas_evaluables_lista = []
     nota_pruebas_evaluables_media = 'sin_notas'
     grupo = grupo_by_tutoria_id(tutoria_id)
-    pruebas_evaluables = session_sql.query(Prueba_Evaluable).join(Informe).join(Tutoria).filter(Informe.asignatura_id == asignatura_id, Tutoria.id != tutoria_id, Tutoria.deleted==False).all()
+    pruebas_evaluables = session_sql.query(Prueba_Evaluable).join(Informe).join(Tutoria).filter(Informe.asignatura_id == asignatura_id, Tutoria.id != tutoria_id, Tutoria.deleted == False).all()
 
     for prueba_evaluable in pruebas_evaluables:
         if prueba_evaluable:
@@ -391,8 +389,8 @@ def evolucion_tutorias(alumno_id):
     evolucion_notas_serie = []
     evolucion_notas = []
     alumno = alumno_by_id(alumno_id)
-    tutorias_alumno = session_sql.query(Tutoria).filter(Tutoria.alumno_id == alumno_id, Tutoria.deleted==False).order_by(desc('fecha')).all()
-    tutorias_grupo = session_sql.query(Tutoria).join(Alumno).join(Grupo).filter(Grupo.id == alumno.grupo_id, Tutoria.alumno_id != alumno_id, Tutoria.deleted==False).order_by(desc('fecha')).all()
+    tutorias_alumno = session_sql.query(Tutoria).filter(Tutoria.alumno_id == alumno_id, Tutoria.deleted == False).order_by(desc('fecha')).all()
+    tutorias_grupo = session_sql.query(Tutoria).join(Alumno).join(Grupo).filter(Grupo.id == alumno.grupo_id, Tutoria.alumno_id != alumno_id, Tutoria.deleted == False).order_by(desc('fecha')).all()
     stats = {}
 
     # evolucion_grupo
@@ -451,7 +449,7 @@ def informes_by_tutoria_id(tutoria_id):
 
 
 def informes_grupo_by_tutoria_id(tutoria_id):
-    return session_sql.query(Informe).join(Tutoria).join(Alumno).join(Grupo).filter(Grupo.id == grupo_by_tutoria_id(tutoria_id, Tutoria.deleted==False).id).all()
+    return session_sql.query(Informe).join(Tutoria).join(Alumno).join(Grupo).filter(Grupo.id == grupo_by_tutoria_id(tutoria_id, Tutoria.deleted == False).id).all()
 
 
 # ***********************************************************************
@@ -515,7 +513,7 @@ def usuarios_activos_count():
 
 
 def tutorias_all_count():
-    return session_sql.query(Tutoria).filter(Tutoria.deleted==False).count()
+    return session_sql.query(Tutoria).filter(Tutoria.deleted == False).count()
 
 
 def profesores_all_cunt():
@@ -543,7 +541,7 @@ def profesores_por_usuario():
         settings_profesores_count_lista = []
         settings_all = session_sql.query(Settings).filter(Settings.grupo_activo_id != None).count()
         for settings in settings_all:
-            settings_profesores_count = settings_sql.query(Asignatura).filter(Asignatura.grupo_id == settings.grupo_activo_id).count()
+            settings_profesores_count = g.settings_current_user.query(Asignatura).filter(Asignatura.grupo_id == settings.grupo_activo_id).count()
             settings_profesores_count_lista.append(settings_profesores_count)
         profesores_min = min(settings_profesores_count_lista)
         profesores_media = int(mean(settings_profesores_count_lista))
@@ -641,7 +639,7 @@ def tutorias_con_respuesta_count():
     try:
         # NOTE todos los informes tienen respuesta pues son generados al responder
         tutorias_sin_respuesta_count = 0
-        tutorias = session_sql.query(Tutoria).filter(Tutoria.deleted==False).all()
+        tutorias = session_sql.query(Tutoria).filter(Tutoria.deleted == False).all()
         for tutoria in tutorias:
             tutoria_respuesta = session_sql.query(Informe).filter(Informe.tutoria_id == tutoria.id).first()
             if not tutoria_respuesta:
@@ -655,7 +653,7 @@ def tutorias_con_respuesta_count():
 
 def tutorias_con_acuerdo_count():
     try:
-        tutorias_con_respuesta_count = session_sql.query(Tutoria).filter(Tutoria.acuerdo != None, Tutoria.deleted==False).count()
+        tutorias_con_respuesta_count = session_sql.query(Tutoria).filter(Tutoria.acuerdo != None, Tutoria.deleted == False).count()
         tutorias_con_respuesta_percent = tutorias_con_respuesta_count / tutorias_all_count() * 100
         return tutorias_con_respuesta_percent
     except:
@@ -683,7 +681,7 @@ def tutorias_por_usuario_count():
         tutorias_por_usuario_list = []
         settings_all = session_sql.query(Settings).filter(Settings.grupo_activo_id != None).all()  # NOTE con esto aseguro que el usuario al menos ha creado un grupo_activo_id
         for settings in settings_all:
-            tutorias_por_usuario = session_sql.query(Tutoria).join(Alumno).join(Grupo).filter(Grupo.id == settings.grupo_activo_id, Tutoria.deleted==False).count()
+            tutorias_por_usuario = session_sql.query(Tutoria).join(Alumno).join(Grupo).filter(Grupo.id == settings.grupo_activo_id, Tutoria.deleted == False).count()
             tutorias_por_usuario_list.append(tutorias_por_usuario)
         tutorias_por_usuario_min = min(tutorias_por_usuario_list)
         tutorias_por_usuario_media = int(mean(tutorias_por_usuario_list))
@@ -716,7 +714,7 @@ def evolucion_tutorias_exito_grupo(current_grupo_id):
         informes_posibles_count = 0
         tutoria_profesores_responden_evolucion = []
         media_lista = []
-        tutorias = session_sql.query(Tutoria).join(Alumno).join(Grupo).filter(Grupo.id == current_grupo_id, Tutoria.deleted==False).order_by('fecha').all()
+        tutorias = session_sql.query(Tutoria).join(Alumno).join(Grupo).filter(Grupo.id == current_grupo_id, Tutoria.deleted == False).order_by('fecha').all()
         for tutoria in tutorias:
             asignaturas_tutoria_count = session_sql.query(Association_Tutoria_Asignatura).filter(Association_Tutoria_Asignatura.tutoria_id == tutoria.id).count()
             informes_posibles_count = informes_posibles_count + asignaturas_tutoria_count
@@ -739,7 +737,7 @@ def profesores_actividad_count():
         profesores_activos_evolucion_frecuencia = []
         profesores_activos_evolucion_frecuencia_absoluta = []
         media_lista = []
-        tutorias = session_sql.query(Tutoria).filter(Tutoria.deleted==False).order_by('fecha').all()
+        tutorias = session_sql.query(Tutoria).filter(Tutoria.deleted == False).order_by('fecha').all()
         for tutoria in tutorias:
             tutoria_asignaturas_count = session_sql.query(Association_Tutoria_Asignatura).filter(Association_Tutoria_Asignatura.tutoria_id == tutoria.id).count()
             informes_posibles_count = informes_posibles_count + tutoria_asignaturas_count
@@ -766,10 +764,9 @@ def profesores_actividad_count():
 
 
 def tutoria_calendar_undelete(event_id):
-    settings_sql = settings()
-    if settings_sql.calendar:
+    if g.settings_current_user.calendar:
         try:
-            oauth2_credentials = settings_sql.oauth2_credentials
+            oauth2_credentials = g.settings_current_user.oauth2_credentials
             credentials = oauth2client.client.Credentials.new_from_json(oauth2_credentials)
             http = credentials.authorize(httplib2.Http())
             service = discovery.build('calendar', 'v3', http=http)
@@ -784,10 +781,10 @@ def tutoria_calendar_undelete(event_id):
 
 
 def tutoria_calendar_delete(event_id):
-    settings_sql = settings()
-    if settings_sql.calendar:
+    g.settings_current_user = g.settings_current_user
+    if g.settings_current_user.calendar:
         try:
-            oauth2_credentials = settings_sql.oauth2_credentials
+            oauth2_credentials = g.settings_current_user.oauth2_credentials
             credentials = oauth2client.client.Credentials.new_from_json(oauth2_credentials)
             http = credentials.authorize(httplib2.Http())
             service = discovery.build('calendar', 'v3', http=http)
@@ -842,10 +839,10 @@ def cleanpup_tutorias(periodo_cleanup_tutorias):
 
 def tutorias_timeout():  # Update de TRUE a FALSE la columna activa de una tutoria pasadas 48 horas
     commit_action = False
-    if settings():
-        settings_sql = settings()
-        if settings_sql.tutoria_timeout:
-            alumnos = session_sql.query(Alumno).filter(Alumno.grupo_id == settings_sql.grupo_activo_id).all()
+    if g.settings_current_user:
+        g.settings_current_user = g.settings_current_user
+        if g.settings_current_user.tutoria_timeout:
+            alumnos = session_sql.query(Alumno).filter(Alumno.grupo_id == g.settings_current_user.grupo_activo_id).all()
             for alumno in alumnos:
                 for tutoria in tutorias_by_alumno_id(alumno.id, deleted=False, activa=True):
                     if tutoria.fecha < g.current_date - datetime.timedelta(hours=6):
@@ -857,19 +854,19 @@ def tutorias_timeout():  # Update de TRUE a FALSE la columna activa de una tutor
 
 
 def tutoria_calendar_sync():
-    settings_sql = settings()
-    if settings_sql:
-        if settings_sql.calendar:
+    g.settings_current_user = g.settings_current_user
+    if g.settings_current_user:
+        if g.settings_current_user.calendar:
             try:
-                credentials = oauth2client.client.Credentials.new_from_json(settings_sql.oauth2_credentials)
+                credentials = oauth2client.client.Credentials.new_from_json(g.settings_current_user.oauth2_credentials)
                 http = httplib2.Http()
                 http = credentials.authorize(http)
                 service = discovery.build('calendar', 'v3', http=http)
             except:
                 return redirect(url_for('oauth2callback_calendar'))
-            if settings_sql.calendar_sincronizado:
-                # for tutoria in tutorias_by_grupo_id(settings_sql.grupo_activo_id, deleted=False):
-                for tutoria in tutorias_by_grupo_id(settings_sql.grupo_activo_id):
+            if g.settings_current_user.calendar_sincronizado:
+                # for tutoria in tutorias_by_grupo_id(g.settings_current_user.grupo_activo_id, deleted=False):
+                for tutoria in tutorias_by_grupo_id(g.settings_current_user.grupo_activo_id):
                     try:
                         event = service.events().get(calendarId='primary', eventId=tutoria.calendar_event_id).execute()
                         calendar_datetime_utc_start_arrow = str(arrow.get(tutoria.fecha).shift(hours=tutoria.hora.hour, minutes=tutoria.hora.minute).replace(tzinfo='Europe/Madrid'))
@@ -888,14 +885,14 @@ def tutoria_calendar_sync():
                                         alumno = alumno_by_tutoria_id(tutoria.id)
                                         flash_toast('Tutoria de ' + Markup('<strong>') + alumno.nombre + Markup('</strong>') + ' auto-activada', 'info')
                         else:  # Elimina tutoria si ha sido eliminado desde la agenda
-                            tutoria.deleted=True
+                            tutoria.deleted = True
                             # flash_toast('Google Calendar sincronizado', 'success')
                     except:  # Elimina tutoria si no esta en el calendario
-                        tutoria.deleted=True
+                        tutoria.deleted = True
                         # flash_toast('Google Calendar sincronizado', 'success')
                 # Purga eventos de las tutorias eliminadas por el cleanpup
-                if settings_sql.cleanup_tutorias_status:
-                    settings_sql.cleanup_tutorias_status = False
+                if g.settings_current_user.cleanup_tutorias_status:
+                    g.settings_current_user.cleanup_tutorias_status = False
                     page_token = None
                     while True:
                         events = service.events().list(calendarId='primary', pageToken=page_token, q='Evento creado por https://mitutoria.herokuapp.com/').execute()
@@ -916,18 +913,14 @@ def tutoria_calendar_sync():
                     if not page_token:
                         break
                 # Agrega todas las tutorias al calendario una vez purgado
-                for tutoria in tutorias_by_grupo_id(settings_sql.grupo_activo_id, deleted=False):
+                for tutoria in tutorias_by_grupo_id(g.settings_current_user.grupo_activo_id, deleted=False):
                     alumno_nombre = alumno_by_tutoria_id(tutoria.id).nombre
                     calendar_datetime_utc_start_arrow = str(arrow.get(tutoria.fecha).shift(hours=tutoria.hora.hour, minutes=tutoria.hora.minute).replace(tzinfo='Europe/Madrid'))
-                    calendar_datetime_utc_end_arrow = str(arrow.get(tutoria.fecha).shift(hours=tutoria.hora.hour, minutes=tutoria.hora.minute + settings_sql.tutoria_duracion).replace(tzinfo='Europe/Madrid'))
+                    calendar_datetime_utc_end_arrow = str(arrow.get(tutoria.fecha).shift(hours=tutoria.hora.hour, minutes=tutoria.hora.minute + g.settings_current_user.tutoria_duracion).replace(tzinfo='Europe/Madrid'))
                     tutoria_calendar_add(service, tutoria, calendar_datetime_utc_start_arrow, calendar_datetime_utc_end_arrow, alumno_nombre)
                 flash_toast('Sincronizacion inical de Google Calendar', 'success')
-                settings_sql.calendar_sincronizado = True
+                g.settings_current_user.calendar_sincronizado = True
             session_sql.commit()
-
-
-def settings_global():
-    return session_sql.query(Settings_Global).first()
 
 
 def diferencial_check(percent, resultado_1, resultado_2):
@@ -1017,11 +1010,11 @@ def asignatura_informes_respondidos_count(asignatura_id):
 
 
 def asignatura_informes_solicitados_recent_count(asignatura_id):
-    return session_sql.query(Association_Tutoria_Asignatura).filter(Association_Tutoria_Asignatura.asignatura_id == asignatura_id, Association_Tutoria_Asignatura.created_at > g.current_date - datetime.timedelta(days=settings_global().periodo_participacion_recent)).count()
+    return session_sql.query(Association_Tutoria_Asignatura).filter(Association_Tutoria_Asignatura.asignatura_id == asignatura_id, Association_Tutoria_Asignatura.created_at > g.current_date - datetime.timedelta(days=g.settings_global.periodo_participacion_recent)).count()
 
 
 def asignatura_informes_respondidos_recent_count(asignatura_id):
-    return session_sql.query(Informe).filter(Informe.asignatura_id == asignatura_id, Informe.created_at > g.current_date - datetime.timedelta(days=settings_global().periodo_participacion_recent)).count()
+    return session_sql.query(Informe).filter(Informe.asignatura_id == asignatura_id, Informe.created_at > g.current_date - datetime.timedelta(days=g.settings_global.periodo_participacion_recent)).count()
 
 
 def tutorias_sin_respuesta_by_asignatura_id(asignatura_id):
@@ -1029,15 +1022,15 @@ def tutorias_sin_respuesta_by_asignatura_id(asignatura_id):
     tutorias_id_lista = []
 
     # tutorias_count
-    tutorias_activas_pendintes_count = session_sql.query(Tutoria).filter(Tutoria.activa == True,Tutoria.deleted==False).join(Association_Tutoria_Asignatura).filter(Association_Tutoria_Asignatura.asignatura_id == asignatura_id).count()
-    tutorias_activas_respondidas_count = session_sql.query(Tutoria).filter(Tutoria.activa == True, Tutoria.deleted==False).join(Informe).filter(Informe.asignatura_id == asignatura_id).count()
+    tutorias_activas_pendintes_count = session_sql.query(Tutoria).filter(Tutoria.activa == True, Tutoria.deleted == False).join(Association_Tutoria_Asignatura).filter(Association_Tutoria_Asignatura.asignatura_id == asignatura_id).count()
+    tutorias_activas_respondidas_count = session_sql.query(Tutoria).filter(Tutoria.activa == True, Tutoria.deleted == False).join(Informe).filter(Informe.asignatura_id == asignatura_id).count()
     tutorias_sin_respuesta_count = tutorias_activas_pendintes_count - tutorias_activas_respondidas_count
     dic['tutorias_sin_respuesta_count'] = tutorias_sin_respuesta_count
 
     # tutorias (se podra usar para agregar la opcion de volver a recibir por email las tutorias no contestadas)
     if tutorias_sin_respuesta_count != 0:
-        tutorias_activas_pendintes = session_sql.query(Tutoria).filter(Tutoria.activa == True, Tutoria.deleted==False).join(Association_Tutoria_Asignatura).filter(Association_Tutoria_Asignatura.asignatura_id == asignatura_id).all()
-        tutorias_activas_respondidas = session_sql.query(Tutoria).filter(Tutoria.activa == True, Tutoria.deleted==False).join(Informe).filter(Informe.asignatura_id == asignatura_id).all()
+        tutorias_activas_pendintes = session_sql.query(Tutoria).filter(Tutoria.activa == True, Tutoria.deleted == False).join(Association_Tutoria_Asignatura).filter(Association_Tutoria_Asignatura.asignatura_id == asignatura_id).all()
+        tutorias_activas_respondidas = session_sql.query(Tutoria).filter(Tutoria.activa == True, Tutoria.deleted == False).join(Informe).filter(Informe.asignatura_id == asignatura_id).all()
         for tutoria in tutorias_activas_pendintes:
             if tutoria not in tutorias_activas_respondidas:
                 tutorias_id_lista.append(tutoria.id)
@@ -1060,15 +1053,14 @@ def connenction_check():
 # *****************************************************************
 
 def send_email_tutoria(alumno, tutoria):
-    settings_global_sql = settings_global()
     try:
-        oauth2_credentials = settings_global_sql.oauth2_credentials
+        oauth2_credentials = g.settings_global.oauth2_credentials
         credentials = oauth2client.client.Credentials.new_from_json(oauth2_credentials)
         http = credentials.authorize(httplib2.Http())
         service = discovery.build('gmail', 'v1', http=http)
     except:
         return redirect(url_for('oauth2callback_gmail'))
-    sender = settings_global_sql.gmail_sender
+    sender = g.settings_global.gmail_sender
 
     for asignatura in asignaturas_alumno_by_alumno_id(alumno.id):
         tutoria_asignatura_add = Association_Tutoria_Asignatura(tutoria_id=tutoria.id, asignatura_id=asignatura.id)
@@ -1121,15 +1113,14 @@ def send_email_password_reset_request_asincrono(current_user_id):
 
 
 def send_email_validate(current_user_id):
-    settings_global_sql = settings_global()
     try:
-        oauth2_credentials = settings_global_sql.oauth2_credentials
+        oauth2_credentials = g.settings_global.oauth2_credentials
         credentials = oauth2client.client.Credentials.new_from_json(oauth2_credentials)
         http = credentials.authorize(httplib2.Http())
         service = discovery.build('gmail', 'v1', http=http)
     except:
         return redirect(url_for('oauth2callback_gmail'))
-    sender = settings_global_sql.gmail_sender
+    sender = g.settings_global.gmail_sender
 
     # XXX envio de mail
     # ****************************************
@@ -1152,15 +1143,14 @@ def send_email_validate_asincrono(current_user_id):
 
 
 def re_send_email_tutoria(alumno, tutoria, asignaturas_id_lista):
-    settings_global_sql = settings_global()
     try:
-        oauth2_credentials = settings_global_sql.oauth2_credentials
+        oauth2_credentials = g.settings_global.oauth2_credentials
         credentials = oauth2client.client.Credentials.new_from_json(oauth2_credentials)
         http = credentials.authorize(httplib2.Http())
         service = discovery.build('gmail', 'v1', http=http)
     except:
         return redirect(url_for('oauth2callback_gmail'))
-    sender = settings_global_sql.gmail_sender
+    sender = g.settings_global.gmail_sender
 
     for asignatura_id in asignaturas_id_lista:
         asignatura = asignatura_by_id(asignatura_id)
@@ -1210,27 +1200,27 @@ def asignatura_delete(asignatura_delete_id):  # Delete asignatura
 def grupo_delete(grupo_delete_id):  # Delete grupo
     grupo_delete_sql = session_sql.query(Grupo).filter(Grupo.id == grupo_delete_id).first()
     if grupo_activo_check(grupo_delete_sql.id):
-        settings_sql = session_sql.query(Settings).filter(Settings.id == settings().id).first()
-        settings_sql.grupo_activo_id = None
+        g.settings_current_user = session_sql.query(Settings).filter(Settings.id == g.settings_current_user.id).first()
+        g.settings_current_user.grupo_activo_id = None
     session_sql.delete(grupo_delete_sql)
     session_sql.commit()
 
 
 def grupo_check():  # Comprueba si existe ya un grupo declarado como activo.
     if current_user:
-        if settings().grupo_activo_id:
+        if g.settings_current_user.grupo_activo_id:
             return True
     return False
 
 
 def grupo_activo():  # (Grupo) activo de usuario
-    if settings():
-        grupo_activo = session_sql.query(Grupo).filter(Grupo.id == settings().grupo_activo_id).first()
+    if g.settings_current_user:
+        grupo_activo = session_sql.query(Grupo).filter(Grupo.id == g.settings_current_user.grupo_activo_id).first()
     return grupo_activo
 
 
 def grupo_activo_check(grupo_id):  # Checkea si un grupo es el activo o no
-    if grupo_id == settings().grupo_activo_id:
+    if grupo_id == g.settings_current_user.grupo_activo_id:
         return True
     else:
         return False
@@ -1252,12 +1242,6 @@ def pregunta_visible_check(pregunta_id):
         if pregunta.visible:
             visible_check = True
     return visible_check
-
-
-def settings():
-    if current_user:
-        settings = session_sql.query(Settings).filter(Settings.user_id == current_user.id).first()
-    return settings
 
 
 def settings_by_id(settings_id):
@@ -1353,16 +1337,16 @@ def pregunta_by_id(pregunta_id, **kwargs):
 
 
 def informe_preguntas():
-    informe_preguntas = session_sql.query(Pregunta).join(Association_Settings_Pregunta).filter(Association_Settings_Pregunta.settings_id == settings().id).all()
+    informe_preguntas = session_sql.query(Pregunta).join(Association_Settings_Pregunta).filter(Association_Settings_Pregunta.settings_id == g.settings_current_user.id).all()
     return informe_preguntas
 
 
 def grupo_informes(grupo_id):
-    grupo_informes = session_sql.query(Informe).join(Association_Settings_Pregunta).filter(Association_Settings_Pregunta.settings_id == settings().id).all()
+    grupo_informes = session_sql.query(Informe).join(Association_Settings_Pregunta).filter(Association_Settings_Pregunta.settings_id == g.settings_current_user.id).all()
 
 
 def grupos():
-    grupos = session_sql.query(Grupo).filter(Grupo.settings_id == settings().id).order_by(desc('curso_academico'), 'nombre').all()
+    grupos = session_sql.query(Grupo).filter(Grupo.settings_id == g.settings_current_user.id).order_by(desc('curso_academico'), 'nombre').all()
     return grupos
 
 
@@ -1470,22 +1454,22 @@ def grupo_alumnos_count(grupo_id):  # {alumnos_count} de un grupo
 
 
 def asignaturas(order_by_1, order_by_2, order_by_3):  # [asignaturas] sorted de un grupo
-    asignaturas = session_sql.query(Asignatura).filter_by(grupo_id=settings().grupo_activo_id).order_by(order_by_1, order_by_2, order_by_3).all()
+    asignaturas = session_sql.query(Asignatura).filter_by(grupo_id=g.settings_current_user.grupo_activo_id).order_by(order_by_1, order_by_2, order_by_3).all()
     return asignaturas
 
 
 def asignaturas_not_sorted():  # [asignaturas] not sorted  de un grupo
-    asignaturas_not_sorted = session_sql.query(Asignatura).filter_by(grupo_id=settings().grupo_activo_id).order_by('id').all()
+    asignaturas_not_sorted = session_sql.query(Asignatura).filter_by(grupo_id=g.settings_current_user.grupo_activo_id).order_by('id').all()
     return asignaturas_not_sorted
 
 
 def alumnos_not_sorted():  # [alumnos] NO ordeandos de un grupo
-    alumnos_not_sorted = session_sql.query(Alumno).filter_by(grupo_id=settings().grupo_activo_id).order_by('id').all()
+    alumnos_not_sorted = session_sql.query(Alumno).filter_by(grupo_id=g.settings_current_user.grupo_activo_id).order_by('id').all()
     return alumnos_not_sorted
 
 
 def alumnos(order_by_1, order_by_2):  # [alumnos] ordeandos de un grupo_activo
-    alumnos = session_sql.query(Alumno).filter(Alumno.grupo_id == settings().grupo_activo_id).order_by(str(order_by_1), str(order_by_2)).all()
+    alumnos = session_sql.query(Alumno).filter(Alumno.grupo_id == g.settings_current_user.grupo_activo_id).order_by(str(order_by_1), str(order_by_2)).all()
     return alumnos
 
 
@@ -1534,5 +1518,5 @@ def cita_random():
     return cita_random
 
 
-app.jinja_env.globals.update(settings=settings, cita_random=cita_random,  singular_plural=singular_plural, grupo_activo=grupo_activo, curso=curso, alumnos_not_sorted=alumnos_not_sorted, alumnos=alumnos, tutorias_by_alumno_id=tutorias_by_alumno_id, equal_str=equal_str, asignaturas=asignaturas, asignatura_alumnos=asignatura_alumnos, association_alumno_asignatura_check=association_alumno_asignatura_check,
-                             tutoria_asignaturas_count=tutoria_asignaturas_count, string_to_date=string_to_date, association_settings_pregunta_check=association_settings_pregunta_check, preguntas=preguntas, informe_preguntas=informe_preguntas, settings_by_tutoria_id=settings_by_tutoria_id, invitado_preguntas=invitado_preguntas, settings_by_tutoria_id_by_id=settings_by_tutoria_id_by_id, invitado_respuesta=invitado_respuesta, invitado_pruebas_evaluables=invitado_pruebas_evaluables, invitado_informe=invitado_informe, cociente_porcentual=cociente_porcentual, tutoria_asignaturas=tutoria_asignaturas, pregunta_active_default_check=pregunta_active_default_check, pregunta_visible_check=pregunta_visible_check, grupo_activo_check=grupo_activo_check, user_by_id=user_by_id, asignatura_informes_solicitados_count=asignatura_informes_solicitados_count, asignatura_informes_respondidos_count=asignatura_informes_respondidos_count, asignaturas_not_sorted=asignaturas_not_sorted, tutorias_by_grupo_id=tutorias_by_grupo_id, alumno_by_id=alumno_by_id, hashids_encode=hashids_encode, hashids_decode=hashids_decode, f_encode=f_encode, f_decode=f_decode, dic_encode_args=dic_encode_args, dic_try=dic_try, settings_by_id=settings_by_id, usuario_grupos=usuario_grupos, usuarios=usuarios, usuarios_mas_activos=usuarios_mas_activos, grupo_alumnos_count=grupo_alumnos_count, diferencial_check=diferencial_check, categoria_by_id=categoria_by_id, categorias=categorias, preguntas_by_categoria_id=preguntas_by_categoria_id, asignatura_by_id=asignatura_by_id, informe_by_tutoria_id_by_asignatura_id=informe_by_tutoria_id_by_asignatura_id, asignaturas_alumno_by_alumno_id=asignaturas_alumno_by_alumno_id, respuestas_pregunta_alumno_lista=respuestas_pregunta_alumno_lista, respuestas_asignatura_alumno_lista=respuestas_asignatura_alumno_lista, notas_pruebas_evaluables_grupo=notas_pruebas_evaluables_grupo, notas_pruebas_evaluables_alumno=notas_pruebas_evaluables_alumno, analisis_tutoria=analisis_tutoria, tutoria_incoming=tutoria_incoming, asignaturas_orden_switch=asignaturas_orden_switch, asignaturas_ordenadas=asignaturas_ordenadas, invitado_preguntas_by_categoria_id=invitado_preguntas_by_categoria_id, tutoria_stats=tutoria_stats, settings_global=settings_global, association_tutoria_asignatura_id=association_tutoria_asignatura_id, translate_fecha=translate_fecha)
+app.jinja_env.globals.update(cita_random=cita_random,  singular_plural=singular_plural, grupo_activo=grupo_activo, curso=curso, alumnos_not_sorted=alumnos_not_sorted, alumnos=alumnos, tutorias_by_alumno_id=tutorias_by_alumno_id, equal_str=equal_str, asignaturas=asignaturas, asignatura_alumnos=asignatura_alumnos, association_alumno_asignatura_check=association_alumno_asignatura_check,
+                             tutoria_asignaturas_count=tutoria_asignaturas_count, string_to_date=string_to_date, association_settings_pregunta_check=association_settings_pregunta_check, preguntas=preguntas, informe_preguntas=informe_preguntas, settings_by_tutoria_id=settings_by_tutoria_id, invitado_preguntas=invitado_preguntas, settings_by_tutoria_id_by_id=settings_by_tutoria_id_by_id, invitado_respuesta=invitado_respuesta, invitado_pruebas_evaluables=invitado_pruebas_evaluables, invitado_informe=invitado_informe, cociente_porcentual=cociente_porcentual, tutoria_asignaturas=tutoria_asignaturas, pregunta_active_default_check=pregunta_active_default_check, pregunta_visible_check=pregunta_visible_check, grupo_activo_check=grupo_activo_check, user_by_id=user_by_id, asignatura_informes_solicitados_count=asignatura_informes_solicitados_count, asignatura_informes_respondidos_count=asignatura_informes_respondidos_count, asignaturas_not_sorted=asignaturas_not_sorted, tutorias_by_grupo_id=tutorias_by_grupo_id, alumno_by_id=alumno_by_id, hashids_encode=hashids_encode, hashids_decode=hashids_decode, f_encode=f_encode, f_decode=f_decode, dic_encode_args=dic_encode_args, dic_try=dic_try, settings_by_id=settings_by_id, usuario_grupos=usuario_grupos, usuarios=usuarios, usuarios_mas_activos=usuarios_mas_activos, grupo_alumnos_count=grupo_alumnos_count, diferencial_check=diferencial_check, categoria_by_id=categoria_by_id, categorias=categorias, preguntas_by_categoria_id=preguntas_by_categoria_id, asignatura_by_id=asignatura_by_id, informe_by_tutoria_id_by_asignatura_id=informe_by_tutoria_id_by_asignatura_id, asignaturas_alumno_by_alumno_id=asignaturas_alumno_by_alumno_id, respuestas_pregunta_alumno_lista=respuestas_pregunta_alumno_lista, respuestas_asignatura_alumno_lista=respuestas_asignatura_alumno_lista, notas_pruebas_evaluables_grupo=notas_pruebas_evaluables_grupo, notas_pruebas_evaluables_alumno=notas_pruebas_evaluables_alumno, analisis_tutoria=analisis_tutoria, tutoria_incoming=tutoria_incoming, asignaturas_orden_switch=asignaturas_orden_switch, asignaturas_ordenadas=asignaturas_ordenadas, invitado_preguntas_by_categoria_id=invitado_preguntas_by_categoria_id, tutoria_stats=tutoria_stats, association_tutoria_asignatura_id=association_tutoria_asignatura_id, translate_fecha=translate_fecha)

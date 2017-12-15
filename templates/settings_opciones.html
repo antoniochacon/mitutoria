@@ -1,7 +1,7 @@
 {% extends '_layout.html' %}
 {% block body %}
 	{% with %}
-	{% set settings = settings() %}
+	{% set settings = g.settings_current_user %}
 	{%from '_macro.html' import nav_bar_top, titulo_1, nav_tabs %}
 	{{ nav_bar_top(link_active='opciones',params=params, current_user=current_user) }}
 	<div class="paper bg-white padding_contenido">

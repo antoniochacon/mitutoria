@@ -132,12 +132,12 @@
 					</div>
 				</div>
 				<div class="card-body">
-					{% if diferencial_check(settings().diferencial, 10, 10,) %}
+					{% if diferencial_check(g.settings_current_user.diferencial, 10, 10,) %}
 						<span class="badge text-white badge-secondary float-right">
 							resultados !
 						</span>
 					{% endif %}
-					{% if diferencial_check(settings().diferencial, 10, 10) %}
+					{% if diferencial_check(g.settings_current_user.diferencial, 10, 10) %}
 						<span class="badge badge-primary float-right mr-1">
 							actitud !
 						</span>

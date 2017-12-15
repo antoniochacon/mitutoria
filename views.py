@@ -49,6 +49,14 @@ def before_request_html():
     g.current_date = datetime.date.today()
     g.current_time = datetime.datetime.now()
     g.current_user = current_user
+    try:
+        g.settings_current_user = session_sql.query(Settings).filter(Settings.id==current_user.id).first()
+    except:
+        pass
+    try:
+        g.settings_global= session_sql.query(Settings_Global).first()
+    except:
+        pass
 
 @app.route('/getos')
 def getos():
@@ -108,7 +116,7 @@ def oauth2callback_calendar():
     else:
         auth_code = request.args.get('code')
         credentials = flow.step2_exchange(auth_code)
-        settings().oauth2_credentials = credentials.to_json()
+        g.settings_current_user.oauth2_credentials = credentials.to_json()
         session_sql.commit()
     return redirect(url_for('settings_opciones_html'))
 
@@ -124,7 +132,7 @@ def oauth2callback_gmail():
     else:
         auth_code = request.args.get('code')
         credentials = flow.step2_exchange(auth_code)
-        settings_global().oauth2_credentials = credentials.to_json()
+        g.settings_global.oauth2_credentials = credentials.to_json()
         session_sql.commit()
     return redirect(url_for('admin_settings_global_html'))
 
@@ -141,8 +149,7 @@ def admin_settings_global_html(params={}):
         abort(404)
     params = {}
     params['anchor'] = params_old.get('anchor', 'anchor_top')
-    settings_global_sql = settings_global()
-    tutorias_clenaup_count = session_sql.query(Tutoria).filter(Tutoria.fecha < g.current_date - datetime.timedelta(days=30 * settings_global_sql.periodo_cleanup_tutorias)).count()
+    tutorias_clenaup_count = session_sql.query(Tutoria).filter(Tutoria.fecha < g.current_date - datetime.timedelta(days=30 * g.settings_global.periodo_cleanup_tutorias)).count()
     # session.clear()
     if request.method == 'POST':
         periodo_cleanup_tutorias = int(request.form.get('periodo_cleanup_tutorias'))
@@ -157,8 +164,8 @@ def admin_settings_global_html(params={}):
 
             # XXX selector_cleanup_update
         if request.form['selector_button'] == 'selector_cleanup_update':
-            if settings_global_sql.periodo_cleanup_tutorias != periodo_cleanup_tutorias:
-                settings_global_sql.periodo_cleanup_tutorias = periodo_cleanup_tutorias
+            if g.settings_global.periodo_cleanup_tutorias != periodo_cleanup_tutorias:
+                g.settings_global.periodo_cleanup_tutorias = periodo_cleanup_tutorias
                 session_sql.commit()
                 flash_toast('Tutorias CleanUp actualizado', 'success')
             return redirect(url_for('admin_settings_global_html'))
@@ -166,24 +173,24 @@ def admin_settings_global_html(params={}):
         # XXX selector_global_set_edit
         if request.form['selector_button'] == 'selector_global_set_edit':
             commit_action = False
-            if settings_global_sql.periodo_cleanup_tutorias != int(periodo_cleanup_tutorias):
-                settings_global_sql.periodo_cleanup_tutorias = periodo_cleanup_tutorias
+            if g.settings_global.periodo_cleanup_tutorias != int(periodo_cleanup_tutorias):
+                g.settings_global.periodo_cleanup_tutorias = periodo_cleanup_tutorias
                 commit_action = True
-            if settings_global_sql.periodo_participacion_recent != int(request.form.get('periodo_participacion_recent')):
-                settings_global_sql.periodo_participacion_recent = request.form.get('periodo_participacion_recent')
+            if g.settings_global.periodo_participacion_recent != int(request.form.get('periodo_participacion_recent')):
+                g.settings_global.periodo_participacion_recent = request.form.get('periodo_participacion_recent')
                 commit_action = True
-            if settings_global_sql.diferencial_default != int(request.form.get('diferencial_default')):
-                settings_global_sql.diferencial_default = request.form.get('diferencial_default')
+            if g.settings_global.diferencial_default != int(request.form.get('diferencial_default')):
+                g.settings_global.diferencial_default = request.form.get('diferencial_default')
                 commit_action = True
-            if str(settings_global_sql.cleanup_tutorias_automatic) != str(cleanup_tutorias_automatic):
-                settings_global_sql.cleanup_tutorias_automatic = cleanup_tutorias_automatic
+            if str(g.settings_global.cleanup_tutorias_automatic) != str(cleanup_tutorias_automatic):
+                g.settings_global.cleanup_tutorias_automatic = cleanup_tutorias_automatic
                 commit_action = True
 
             settings_global_edit_form = Settings_Global_Add(gmail_sender=gmail_sender)
             if settings_global_edit_form.validate():
                 settings_global_edit = Settings_Global_Add(gmail_sender=gmail_sender)
-                if settings_global_sql.gmail_sender != gmail_sender:
-                    settings_global_sql.gmail_sender = gmail_sender
+                if g.settings_global.gmail_sender != gmail_sender:
+                    g.settings_global.gmail_sender = gmail_sender
                     commit_action = True
             else:
                 flash_wtforms(settings_global_edit_form, flash_toast, 'warning')
@@ -195,8 +202,8 @@ def admin_settings_global_html(params={}):
             return redirect(url_for('admin_settings_global_html'))
 
         if request.form['selector_button'] == 'selector_cleanup_tutorias':
-            if settings_global_sql.periodo_cleanup_tutorias != periodo_cleanup_tutorias:
-                settings_global_sql.periodo_cleanup_tutorias = periodo_cleanup_tutorias
+            if g.settings_global.periodo_cleanup_tutorias != periodo_cleanup_tutorias:
+                g.settings_global.periodo_cleanup_tutorias = periodo_cleanup_tutorias
             cleanpup_tutorias(periodo_cleanup_tutorias)
             return redirect(url_for('admin_settings_global_html'))
 
@@ -337,11 +344,10 @@ def admin_usuario_edit_html(params={}):
                 settings_email_robinson = False
 
             if usuario_edit_form.validate():
-                settings_sql = session_sql.query(Settings).filter(Settings.id == current_usuario_id).first()
-                settings_sql.role = usuario_edit_form.role.data
-                settings_sql.ban = settings_edit_ban
-                settings_sql.email_validated = settings_email_validated
-                settings_sql.email_robinson = settings_email_robinson
+                g.settings_current_user.role = usuario_edit_form.role.data
+                g.settings_current_user.ban = settings_edit_ban
+                g.settings_current_user.email_validated = settings_email_validated
+                g.settings_current_user.email_robinson = settings_email_robinson
 
                 usuario_sql = session_sql.query(User).filter(User.id == current_usuario_id).first()
                 usuario_password_new = usuario_edit_form.password.data
@@ -541,7 +547,7 @@ def alumnos_html(params={}):
         abort(404)
 
     params = {}
-    settings_sql=settings()
+    g.settings_current_user=g.settings_current_user
     params['anchor'] = params_old.get('anchor', 'anchor_top')
     params['collapse_alumno_add'] = params_old.get('collapse_alumno_add', False)
     params['alumno_importar_link'] = params_old.get('alumno_importar_link', False)
@@ -563,7 +569,7 @@ def alumnos_html(params={}):
     params['current_alumno_id'] = params_old.get('current_alumno_id', 0)
     current_alumno_id = params['current_alumno_id']
 
-    if not settings_sql.grupo_activo_id:
+    if not g.settings_current_user.grupo_activo_id:
         if not grupos():
             params['collapse_grupo_add'] = True
         return redirect(url_for('settings_grupos_html', params=dic_encode(params)))
@@ -589,9 +595,9 @@ def alumnos_html(params={}):
         tutoria = tutoria_by_id(current_tutoria_id)
         tutoria.deleted = False
         session_sql.commit()
-        if settings_sql.calendar:
+        if g.settings_current_user.calendar:
             try:
-                credentials = oauth2client.client.Credentials.new_from_json(settings_sql.oauth2_credentials)
+                credentials = oauth2client.client.Credentials.new_from_json(g.settings_current_user.oauth2_credentials)
                 http = httplib2.Http()
                 http = credentials.authorize(http)
                 service = discovery.build('calendar', 'v3', http=http)
@@ -599,7 +605,7 @@ def alumnos_html(params={}):
                 return redirect(url_for('oauth2callback_calendar'))
             alumno_nombre = alumno_by_tutoria_id(current_tutoria_id).nombre
             calendar_datetime_utc_start_arrow = str(arrow.get(tutoria.fecha).shift(hours=tutoria.hora.hour, minutes=tutoria.hora.minute).replace(tzinfo='Europe/Madrid'))
-            calendar_datetime_utc_end_arrow = str(arrow.get(tutoria.fecha).shift(hours=tutoria.hora.hour, minutes=tutoria.hora.minute + settings_sql.tutoria_duracion).replace(tzinfo='Europe/Madrid'))
+            calendar_datetime_utc_end_arrow = str(arrow.get(tutoria.fecha).shift(hours=tutoria.hora.hour, minutes=tutoria.hora.minute + g.settings_current_user.tutoria_duracion).replace(tzinfo='Europe/Madrid'))
             tutoria_calendar_add(service, tutoria, calendar_datetime_utc_start_arrow, calendar_datetime_utc_end_arrow, alumno_nombre)
 
         # abort(404)
@@ -615,7 +621,7 @@ def alumnos_html(params={}):
             params['collapse_alumno_add'] = True
             alumno_add_form = Alumno_Add(request.form)
             if alumno_add_form.validate():
-                alumno = session_sql.query(Alumno).filter(Alumno.grupo_id == settings_sql.grupo_activo_id, unaccent(func.lower(Alumno.apellidos)) == unaccent(func.lower(alumno_add_form.apellidos.data)), unaccent(func.lower(Alumno.nombre)) == unaccent(func.lower(alumno_add_form.nombre.data))).first()
+                alumno = session_sql.query(Alumno).filter(Alumno.grupo_id == g.settings_current_user.grupo_activo_id, unaccent(func.lower(Alumno.apellidos)) == unaccent(func.lower(alumno_add_form.apellidos.data)), unaccent(func.lower(Alumno.nombre)) == unaccent(func.lower(alumno_add_form.nombre.data))).first()
                 if alumno:
                     alumno_add_form.nombre.errors = ['']
                     alumno_add_form.apellidos.errors = ['']
@@ -626,7 +632,7 @@ def alumnos_html(params={}):
                         params=params)
                 else:
                     params['collapse_alumno_add'] = False
-                    alumno_add = Alumno(grupo_id=settings_sql.grupo_activo_id, apellidos=alumno_add_form.apellidos.data.title(), nombre=alumno_add_form.nombre.data.title())
+                    alumno_add = Alumno(grupo_id=g.settings_current_user.grupo_activo_id, apellidos=alumno_add_form.apellidos.data.title(), nombre=alumno_add_form.nombre.data.title())
                     session_sql.add(alumno_add)
                     session_sql.commit()
                     flash_toast(Markup('<strong>') + alumno_add_form.nombre.data.title() + Markup('</strong>') + ' agregado', 'success')
@@ -669,12 +675,12 @@ def alumnos_html(params={}):
                     for alumno in alumnos_reader:
                         alumno_apellidos = alumno['Alumno'].split(', ')[0]
                         alumno_nombre = alumno['Alumno'].split(', ')[1]
-                        alumno_sql = session_sql.query(Alumno).filter(Alumno.grupo_id == settings_sql.grupo_activo_id, unaccent(func.lower(Alumno.apellidos)) == unaccent(func.lower(alumno_apellidos)), unaccent(func.lower(Alumno.nombre)) == unaccent(func.lower(alumno_nombre))).first()
+                        alumno_sql = session_sql.query(Alumno).filter(Alumno.grupo_id == g.settings_current_user.grupo_activo_id, unaccent(func.lower(Alumno.apellidos)) == unaccent(func.lower(alumno_apellidos)), unaccent(func.lower(Alumno.nombre)) == unaccent(func.lower(alumno_nombre))).first()
                         if alumno_sql:
                             alumno_repetido_contador = alumno_repetido_contador + 1
                         else:
                             alumno_add_contador = alumno_add_contador + 1
-                            alumno_add = Alumno(grupo_id=settings_sql.grupo_activo_id, apellidos=alumno_apellidos, nombre=alumno_nombre)
+                            alumno_add = Alumno(grupo_id=g.settings_current_user.grupo_activo_id, apellidos=alumno_apellidos, nombre=alumno_nombre)
                             session_sql.add(alumno_add)
                     session_sql.commit()
                     if alumno_add_contador != 0:
@@ -754,7 +760,7 @@ def alumnos_html(params={}):
 
             # ***************************************
             if alumno_edit_form.validate():
-                alumno_edit = Alumno(grupo_id=settings_sql.grupo_activo_id, nombre=alumno_edit_form.nombre.data.title(), apellidos=alumno_edit_form.apellidos.data.title())
+                alumno_edit = Alumno(grupo_id=g.settings_current_user.grupo_activo_id, nombre=alumno_edit_form.nombre.data.title(), apellidos=alumno_edit_form.apellidos.data.title())
                 alumno_sql = session_sql.query(Alumno).filter_by(id=current_alumno_id).first()
                 if alumno_sql.nombre.lower() != alumno_edit.nombre.lower() or alumno_sql.apellidos.lower() != alumno_edit.apellidos.lower():
                     if alumno_sql.nombre.lower() != alumno_edit.nombre.lower():
@@ -860,9 +866,9 @@ def alumnos_html(params={}):
                             params['collapse_tutorias'] = True
                             params['anchor'] = 'anchor_top'
                             # NOTE comprobar permisos de oauth2
-                            if settings_sql.calendar:
+                            if g.settings_current_user.calendar:
                                 try:
-                                    credentials = oauth2client.client.Credentials.new_from_json(settings_sql.oauth2_credentials)
+                                    credentials = oauth2client.client.Credentials.new_from_json(g.settings_current_user.oauth2_credentials)
                                     http = httplib2.Http()
                                     http = credentials.authorize(http)
                                     service = discovery.build('calendar', 'v3', http=http)
@@ -876,7 +882,7 @@ def alumnos_html(params={}):
 
                                 calendar_datetime_utc_start = (datetime.datetime.strptime(tutoria_fecha, '%d-%m-%Y') + datetime.timedelta(hours=tutoria_hora.hour) + datetime.timedelta(minutes=tutoria_hora.minute)).timestamp()
                                 calendar_datetime_utc_start_arrow = str(arrow.get(calendar_datetime_utc_start).replace(tzinfo='Europe/Madrid'))
-                                calendar_datetime_utc_end = (datetime.datetime.strptime(tutoria_fecha, '%d-%m-%Y') + datetime.timedelta(hours=tutoria_hora.hour) + datetime.timedelta(minutes=(tutoria_hora.minute + settings_sql.tutoria_duracion))).timestamp()
+                                calendar_datetime_utc_end = (datetime.datetime.strptime(tutoria_fecha, '%d-%m-%Y') + datetime.timedelta(hours=tutoria_hora.hour) + datetime.timedelta(minutes=(tutoria_hora.minute + g.settings_current_user.tutoria_duracion))).timestamp()
                                 calendar_datetime_utc_end_arrow = str(arrow.get(calendar_datetime_utc_end).replace(tzinfo='Europe/Madrid'))
 
                                 tutoria_calendar_add(service, tutoria_add, calendar_datetime_utc_start_arrow, calendar_datetime_utc_end_arrow, alumno_nombre)
@@ -1259,18 +1265,18 @@ def settings_cuestionario_html(params={}):
             contador = 0
             for pregunta in preguntas():
                 if pregunta.id in preguntas_id_lista:
-                    association_settings_pregunta_sql = session_sql.query(Association_Settings_Pregunta).filter_by(pregunta_id=pregunta.id, settings_id=settings().id).first()
+                    association_settings_pregunta_sql = session_sql.query(Association_Settings_Pregunta).filter_by(pregunta_id=pregunta.id, settings_id=g.settings_current_user.id).first()
                     if not association_settings_pregunta_sql:
-                        association_settings_pregunta_add = Association_Settings_Pregunta(pregunta_id=pregunta.id, settings_id=settings().id)
+                        association_settings_pregunta_add = Association_Settings_Pregunta(pregunta_id=pregunta.id, settings_id=g.settings_current_user.id)
                         session_sql.add(association_settings_pregunta_add)
                         contador += 1
                 else:
-                    association_settings_pregunta_sql = session_sql.query(Association_Settings_Pregunta).filter_by(pregunta_id=pregunta.id, settings_id=settings().id).first()
+                    association_settings_pregunta_sql = session_sql.query(Association_Settings_Pregunta).filter_by(pregunta_id=pregunta.id, settings_id=g.settings_current_user.id).first()
                     if association_settings_pregunta_sql:
                         session_sql.delete(association_settings_pregunta_sql)
                         contador += 1
             session_sql.commit()
-            if not settings().preguntas:
+            if not g.settings_current_user.preguntas:
                 flash_toast('Cuestionario vacío', 'warning')
             else:
                 if contador != 0:
@@ -1396,7 +1402,7 @@ def analisis_tutoria_edit_html(params={}):
                 settings_show_analisis_asignaturas_splines = False
             else:
                 settings_show_analisis_asignaturas_splines = True
-            settings().show_analisis_asignaturas_splines = settings_show_analisis_asignaturas_splines
+            g.settings_current_user.show_analisis_asignaturas_splines = settings_show_analisis_asignaturas_splines
             session_sql.commit()
             params['anchor'] = 'anchor_cues'
             return redirect(url_for('analisis_html', params=dic_encode(params)))
@@ -1408,7 +1414,7 @@ def analisis_tutoria_edit_html(params={}):
                 settings_show_analisis_preguntas_splines = False
             else:
                 settings_show_analisis_preguntas_splines = True
-            settings().show_analisis_preguntas_splines = settings_show_analisis_preguntas_splines
+            g.settings_current_user.show_analisis_preguntas_splines = settings_show_analisis_preguntas_splines
             session_sql.commit()
             params['anchor'] = 'anchor_comp'
             params['show_analisis_preguntas_splines'] = True
@@ -1504,9 +1510,9 @@ def analisis_tutoria_edit_html(params={}):
                     flash_toast('Debe indicar una fecha posterior', 'warning')
                     return redirect(url_for('analisis_html', params=dic_encode(params)))
                 else:
-                    if settings().calendar:
+                    if g.settings_current_user.calendar:
                         try:
-                            credentials = oauth2client.client.Credentials.new_from_json(settings().oauth2_credentials)
+                            credentials = oauth2client.client.Credentials.new_from_json(g.settings_current_user.oauth2_credentials)
                             http = httplib2.Http()
                             http = credentials.authorize(http)
                             service = discovery.build('calendar', 'v3', http=http)
@@ -1518,7 +1524,7 @@ def analisis_tutoria_edit_html(params={}):
                     calendar_datetime_utc_start = (datetime.datetime.strptime(tutoria_edit_form.fecha.data, '%d-%m-%Y') + datetime.timedelta(hours=(tutoria_edit_form_hora.hour)) + datetime.timedelta(minutes=tutoria_edit_form_hora.minute)).timestamp()
                     calendar_datetime_utc_start_arrow = str(arrow.get(calendar_datetime_utc_start).replace(tzinfo='Europe/Madrid'))
 
-                    calendar_datetime_utc_end = (datetime.datetime.strptime(tutoria_edit_form.fecha.data, '%d-%m-%Y') + datetime.timedelta(hours=(tutoria_edit_form_hora.hour)) + datetime.timedelta(minutes=(tutoria_edit_form_hora.minute + settings().tutoria_duracion))).timestamp()
+                    calendar_datetime_utc_end = (datetime.datetime.strptime(tutoria_edit_form.fecha.data, '%d-%m-%Y') + datetime.timedelta(hours=(tutoria_edit_form_hora.hour)) + datetime.timedelta(minutes=(tutoria_edit_form_hora.minute + g.settings_current_user.tutoria_duracion))).timestamp()
                     calendar_datetime_utc_end_arrow = str(arrow.get(calendar_datetime_utc_end).replace(tzinfo='Europe/Madrid'))
 
                     try:
@@ -1577,24 +1583,24 @@ def settings_opciones_html(params={}):
                 settings_show_asignaturas_analisis = False
             if not settings_edit_calendar:
                 settings_edit_calendar = False
-                settings().calendar_sincronizado = False
-                settings().oauth2_credentials = ''
+                g.settings_current_user.calendar_sincronizado = False
+                g.settings_current_user.oauth2_credentials = ''
             if not settings_show_analisis_detalles:
                 settings_show_analisis_detalles = False
 
-            settings().tutoria_timeout = settings_edit_tutoria_timeout
-            settings().show_asignaturas_analisis = settings_show_asignaturas_analisis
-            settings().tutoria_duracion = settings_tutoria_duracion
-            settings().diferencial = settings_diferencial
-            settings().calendar = settings_edit_calendar
-            settings().show_analisis_detalles = settings_show_analisis_detalles
+            g.settings_current_user.tutoria_timeout = settings_edit_tutoria_timeout
+            g.settings_current_user.show_asignaturas_analisis = settings_show_asignaturas_analisis
+            g.settings_current_user.tutoria_duracion = settings_tutoria_duracion
+            g.settings_current_user.diferencial = settings_diferencial
+            g.settings_current_user.calendar = settings_edit_calendar
+            g.settings_current_user.show_analisis_detalles = settings_show_analisis_detalles
             session_sql.commit()
             flash_toast('Configuracion actualizada', 'success')
 
-            if settings().calendar:
+            if g.settings_current_user.calendar:
                 try:
-                    credentials = oauth2client.client.Credentials.new_from_json(settings().oauth2_credentials)
-                    settings().oauth2_credentials = credentials.to_json()
+                    credentials = oauth2client.client.Credentials.new_from_json(g.settings_current_user.oauth2_credentials)
+                    g.settings_current_user.oauth2_credentials = credentials.to_json()
                     session_sql.commit()
                     http = credentials.authorize(httplib2.Http())
                     service = discovery.build('calendar', 'v3', http=http)
@@ -1633,10 +1639,10 @@ def settings_grupos_html(params={}):
             grupo_add_form = Grupo_Add(request.form)
             grupo_add_grupo_activo = request.form.get('grupo_add_grupo_activo')
             if grupo_add_form.validate():
-                grupo_add = Grupo(settings_id=settings().id, nombre=grupo_add_form.nombre.data, tutor_nombre=grupo_add_form.tutor_nombre.data.title(), tutor_apellidos=grupo_add_form.tutor_apellidos.data.title(),
+                grupo_add = Grupo(settings_id=g.settings_current_user.id, nombre=grupo_add_form.nombre.data, tutor_nombre=grupo_add_form.tutor_nombre.data.title(), tutor_apellidos=grupo_add_form.tutor_apellidos.data.title(),
                                   centro=grupo_add_form.centro.data, curso_academico=grupo_add_form.curso_academico.data)
                 # NOTE checking unicidad de nombre, centro, fecha y usuario
-                unicidad_de_grupo_sql = session_sql.query(Settings).filter(Settings.id == settings().id).join(Grupo).filter(Grupo.nombre == grupo_add_form.nombre.data, Grupo.curso_academico == grupo_add_form.curso_academico.data, Grupo.centro == grupo_add_form.centro.data).first()
+                unicidad_de_grupo_sql = session_sql.query(Settings).filter(Settings.id == g.settings_current_user.id).join(Grupo).filter(Grupo.nombre == grupo_add_form.nombre.data, Grupo.curso_academico == grupo_add_form.curso_academico.data, Grupo.centro == grupo_add_form.centro.data).first()
                 if unicidad_de_grupo_sql:
                     grupo_add_form.nombre.errors = ['']
                     flash_toast(Markup('<strong>') + grupo_add.nombre + Markup('</strong> ya existe en ') + str(grupo_add.curso_academico) + Markup(' | ') + str(int(grupo_add.curso_academico) + 1) + Markup('<br> Cambie el nombre'), 'warning')
@@ -1647,13 +1653,13 @@ def settings_grupos_html(params={}):
                     session_sql.add(grupo_add)
                     session_sql.flush()
                     if grupo_add_grupo_activo:
-                        settings().grupo_activo_id = grupo_add.id
+                        g.settings_current_user.grupo_activo_id = grupo_add.id
                         flash_toast(Markup('Grupo <strong>') + grupo_add_form.nombre.data + Markup('</strong>') + ' agregado' + Markup('<br>Ahora este tu grupo activo'), 'success')
                     else:
-                        if settings().grupo_activo_id:
+                        if g.settings_current_user.grupo_activo_id:
                             flash_toast(Markup('Grupo <strong>') + grupo_add_form.nombre.data + Markup('</strong>') + ' agregado' + Markup('<br>Si deseas usar este grupo debes activarlo'), 'success')
                         else:
-                            settings().grupo_activo_id = grupo_add.id
+                            g.settings_current_user.grupo_activo_id = grupo_add.id
 
                     session_sql.commit()
                     params['collapse_grupo_add'] = False
@@ -1686,7 +1692,7 @@ def settings_grupos_html(params={}):
             if grupo_edit_form.validate():
                 grupo_edit = Grupo(nombre=grupo_edit_form.nombre.data, tutor_nombre=grupo_edit_form.tutor_nombre.data.title(), tutor_apellidos=grupo_edit_form.tutor_apellidos.data.title(), centro=grupo_edit_form.centro.data)
                 grupo_sql = session_sql.query(Grupo).filter(Grupo.id == current_grupo_id).first()
-                if grupo_sql.nombre.lower() != grupo_edit.nombre.lower() or grupo_sql.tutor_nombre.lower() != grupo_edit.tutor_nombre.lower() or grupo_sql.tutor_apellidos.lower() != grupo_edit.tutor_apellidos.lower() or grupo_sql.centro.lower() != grupo_edit.centro.lower() or str(settings().grupo_activo_id) != str(grupo_edit_grupo_activo_switch):
+                if grupo_sql.nombre.lower() != grupo_edit.nombre.lower() or grupo_sql.tutor_nombre.lower() != grupo_edit.tutor_nombre.lower() or grupo_sql.tutor_apellidos.lower() != grupo_edit.tutor_apellidos.lower() or grupo_sql.centro.lower() != grupo_edit.centro.lower() or str(g.settings_current_user.grupo_activo_id) != str(grupo_edit_grupo_activo_switch):
                     if grupo_sql.nombre.lower() != grupo_edit.nombre.lower():
                         grupo_sql.nombre = grupo_edit.nombre
                     if grupo_sql.tutor_nombre.lower() != grupo_edit.tutor_nombre.lower():
@@ -1696,9 +1702,9 @@ def settings_grupos_html(params={}):
                     if grupo_sql.centro.lower() != grupo_edit.centro.lower():
                         grupo_sql.centro = grupo_edit.centro
                     if grupo_edit_grupo_activo_switch:
-                        settings().grupo_activo_id = current_grupo_id
+                        g.settings_current_user.grupo_activo_id = current_grupo_id
                     else:
-                        settings().grupo_activo_id = None
+                        g.settings_current_user.grupo_activo_id = None
                     flash_toast(Markup('Grupo <strong>') + grupo_edit.nombre + Markup('</strong>') + ' actualizado', 'success')
                     session_sql.commit()
                     return redirect(url_for('settings_grupos_html', params=dic_encode(params)))
@@ -2033,7 +2039,7 @@ def informe_success_html(asignatura_id, tutoria_id, params={}):
     grupo = grupo_by_tutoria_id(tutoria_id)
     params['participacion_porcentaje_recent'] = cociente_porcentual(asignatura_informes_respondidos_recent_count(asignatura.id), asignatura_informes_solicitados_recent_count(asignatura.id))
     params['tutorias_sin_respuesta_by_asignatura_id'] = tutorias_sin_respuesta_by_asignatura_id(asignatura.id)
-    params['settings_global_periodo_participacion_recent'] = settings_global().periodo_participacion_recent
+    params['settings_global_periodo_participacion_recent'] = g.settings_global.periodo_participacion_recent
     return render_template(
         'informe_success.html',
         asignatura=asignatura, tutoria=tutoria, alumno=alumno, grupo=grupo, params=params)
@@ -2092,10 +2098,10 @@ def asignaturas_html(params={}):
         return redirect(url_for('asignaturas_html', params=dic_encode(params)))
 
     stats = {}
-    stats['evolucion_tutorias_exito_grupo'] = evolucion_tutorias_exito_grupo(settings().grupo_activo_id)[0]
-    stats['evolucion_tutorias_exito_grupo_media'] = evolucion_tutorias_exito_grupo(settings().grupo_activo_id)[1]
+    stats['evolucion_tutorias_exito_grupo'] = evolucion_tutorias_exito_grupo(g.settings_current_user.grupo_activo_id)[0]
+    stats['evolucion_tutorias_exito_grupo_media'] = evolucion_tutorias_exito_grupo(g.settings_current_user.grupo_activo_id)[1]
 
-    if not settings().grupo_activo_id:
+    if not g.settings_current_user.grupo_activo_id:
         params['collapse_grupo_add'] = True
         return redirect(url_for('settings_grupos_html', params=dic_encode(params)))
 
@@ -2111,7 +2117,7 @@ def asignaturas_html(params={}):
                 current_asignaturas_orden = False
             else:
                 current_asignaturas_orden = True
-            settings_edit = settings()
+            settings_edit = g.settings_current_user
             settings_edit.asignaturas_orden = current_asignaturas_orden
             session_sql.commit()
             flash_toast('Asignaturas ordenadas por ' + asignaturas_orden_switch(current_asignaturas_orden), 'success')
@@ -2123,9 +2129,9 @@ def asignaturas_html(params={}):
             params['collapse_asignatura_add'] = True
             asignatura_add_form = Asignatura_Add(request.form)
             if asignatura_add_form.validate():
-                asignatura_asignatura = session_sql.query(Asignatura).filter(Asignatura.grupo_id == settings().grupo_activo_id, unaccent(func.lower(Asignatura.asignatura)) == unaccent(func.lower(asignatura_add_form.asignatura.data))).first()
-                asignatura_email = session_sql.query(Asignatura).filter(Asignatura.grupo_id == settings().grupo_activo_id, func.lower(Asignatura.email) == func.lower(asignatura_add_form.email.data)).first()
-                asignatura_add = Asignatura(grupo_id=settings().grupo_activo_id, nombre=asignatura_add_form.nombre.data.title(), apellidos=asignatura_add_form.apellidos.data.title(), asignatura=asignatura_add_form.asignatura.data.title(), email=asignatura_add_form.email.data.lower())
+                asignatura_asignatura = session_sql.query(Asignatura).filter(Asignatura.grupo_id == g.settings_current_user.grupo_activo_id, unaccent(func.lower(Asignatura.asignatura)) == unaccent(func.lower(asignatura_add_form.asignatura.data))).first()
+                asignatura_email = session_sql.query(Asignatura).filter(Asignatura.grupo_id == g.settings_current_user.grupo_activo_id, func.lower(Asignatura.email) == func.lower(asignatura_add_form.email.data)).first()
+                asignatura_add = Asignatura(grupo_id=g.settings_current_user.grupo_activo_id, nombre=asignatura_add_form.nombre.data.title(), apellidos=asignatura_add_form.apellidos.data.title(), asignatura=asignatura_add_form.asignatura.data.title(), email=asignatura_add_form.email.data.lower())
                 session_sql.add(asignatura_add)
                 session_sql.commit()
                 flash_toast('Asignatura agregada', 'success')
@@ -2198,7 +2204,7 @@ def asignaturas_html(params={}):
             if asignatura_edit_form.validate():
                 params['collapse_asignatura_edit'] = True
                 params['anchor'] = 'anchor_asi_' + str(hashids_encode(current_asignatura_id))
-                asignatura_edit = Asignatura(grupo_id=settings().grupo_activo_id, nombre=asignatura_edit_form.nombre.data.title(), apellidos=asignatura_edit_form.apellidos.data.title(), asignatura=asignatura_edit_form.asignatura.data.title(), email=asignatura_edit_form.email.data)
+                asignatura_edit = Asignatura(grupo_id=g.settings_current_user.grupo_activo_id, nombre=asignatura_edit_form.nombre.data.title(), apellidos=asignatura_edit_form.apellidos.data.title(), asignatura=asignatura_edit_form.asignatura.data.title(), email=asignatura_edit_form.email.data)
                 asignatura_sql = session_sql.query(Asignatura).filter(Asignatura.id == current_asignatura_id).first()
                 if asignatura_sql.asignatura.lower() != asignatura_edit_form.asignatura.data.lower() or asignatura_sql.nombre.lower() != asignatura_edit_form.nombre.data.lower() or asignatura_sql.apellidos.lower() != asignatura_edit_form.apellidos.data.lower() or asignatura_sql.email.lower() != asignatura_edit_form.email.data.lower():
                     params['collapse_asignatura_edit'] = False
@@ -2262,7 +2268,7 @@ def user_add_html():
                 settings_add = Settings(user_id=user_add.id)
                 session_sql.add(settings_add)
                 preguntas_active_default(user_add.id)  # inserta las preguntas activas by default
-                settings_add.diferencial_default = settings_global().diferencial_default
+                settings_add.diferencial_default = g.settings_global.diferencial_default
                 params['current_user_id'] = user_add.id
 
                 if user_add.email == 'antonioelmatematico@gmail.com':

@@ -21,7 +21,7 @@
 							<!-- <div class="divider bg-dark"></div> -->
 							{% for pregunta in preguntas_by_categoria_id %}
 								{% with %}
-								{% set association_settings_pregunta_check = association_settings_pregunta_check(settings().id, pregunta.id) %}
+								{% set association_settings_pregunta_check = association_settings_pregunta_check(g.settings_current_user.id, pregunta.id) %}
 								{# NOTE elminado el form-group para ajustar mejor #}
 								<label class="custom-control custom-checkbox check_box_1 {% if loop.first %} mt-1 {% else %} mt-0 {% endif %} {% if loop.last %}mb-1{% else %} mb-0{% endif %}">
 									<input type="checkbox" class="custom-control-input" name="pregunta" value="{{hashids_encode(pregunta.id)}}" {% if association_settings_pregunta_check %} checked="checked" {% endif %}>

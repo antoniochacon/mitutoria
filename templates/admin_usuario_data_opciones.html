@@ -26,7 +26,7 @@
 						<span class="custom-control-description {% if not settings_current_usuario_id.show_asignaturas_analisis %}text-mutted{% endif %}">Mostrar evolución equipo educativo</span>
 					</label>
 				</div>
-				{% if settings().role=='admin'%}
+				{% if g.settings_current_user.role=='admin'%}
 					<div class="col-md-6 col-lg-4">
 						<label class="custom-control custom-checkbox check_box_1">
 							<input type="checkbox" class="custom-control-input" name="settings_edit_calendar" value="True" {% if settings_current_usuario_id.calendar %} checked="checked" {% endif %} disabled="disabled">

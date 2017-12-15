@@ -97,7 +97,7 @@
 								class="custom-control-input"
 								name="grupo_edit_grupo_activo_switch"
 								value="True"
-								{% if equal_str(grupo.id, settings().grupo_activo_id) %}
+								{% if equal_str(grupo.id, g.settings_current_user.grupo_activo_id) %}
 								checked
 								{% endif %}>
 							<span class="custom-control-indicator"></span>

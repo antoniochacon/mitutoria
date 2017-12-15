@@ -3,7 +3,7 @@
 	{%from '_macro.html' import nav_bar_top, titulo_1, nav_tabs_admin%}
 	{{ nav_bar_top(link_active='admin',params=params, current_user=current_user) }}
 	{% with %}
-	{% set settings_global_sql = settings_global() %}
+	{% set settings_global_sql = g.settings_global %}
 	<div class="paper bg-white padding_contenido">
 		{{titulo_1(bg_color='bg-dark',titulo='Admin Settings')}}
 		{{nav_tabs_admin(tab_active='Global Set')}}
