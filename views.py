@@ -593,7 +593,6 @@ def alumnos_html(params={}):
         params['tutoria_restaurar'] = False
         tutoria = tutoria_by_id(current_tutoria_id)
         tutoria.deleted = False
-        tutoria.deleted_at = ''
         session_sql.commit()
         if g.settings_current_user.calendar:
             try:
