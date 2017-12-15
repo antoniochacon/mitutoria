@@ -1192,6 +1192,7 @@ def re_send_email_tutoria_asincrono(alumno, tutoria, asignaturas_id_lista):
 # *****************************************************************
 
 
+
 def pregunta_delete(pregunta_delete_id):  # Delete pregunta
     pregunta_delete = session_sql.query(Pregunta).filter_by(id=pregunta_delete_id).first()
     session_sql.delete(pregunta_delete)
