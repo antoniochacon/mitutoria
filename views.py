@@ -50,13 +50,14 @@ def before_request_html():
     g.current_time = datetime.datetime.now()
     g.current_user = current_user
     try:
-        g.settings_current_user = session_sql.query(Settings).filter(Settings.id==current_user.id).first()
+        g.settings_current_user = session_sql.query(Settings).filter(Settings.id == current_user.id).first()
     except:
         pass
     try:
-        g.settings_global= session_sql.query(Settings_Global).first()
+        g.settings_global = session_sql.query(Settings_Global).first()
     except:
         pass
+
 
 @app.route('/getos')
 def getos():
@@ -547,7 +548,7 @@ def alumnos_html(params={}):
         abort(404)
 
     params = {}
-    g.settings_current_user=g.settings_current_user
+    g.settings_current_user = g.settings_current_user
     params['anchor'] = params_old.get('anchor', 'anchor_top')
     params['collapse_alumno_add'] = params_old.get('collapse_alumno_add', False)
     params['alumno_importar_link'] = params_old.get('alumno_importar_link', False)
@@ -896,6 +897,10 @@ def alumnos_html(params={}):
         # XXX selector_tutoria_add_close
         if request.form['selector_button'] == 'selector_tutoria_add_close':
             return redirect(url_for('alumnos_html', params=dic_encode(params)))
+
+    # XXX purgar papelera tutorias (en el futuro sera un servicio que se ejecute por las noches cuando el servidor tenga pocas visitas)
+    if g.settings_current_user.role == 'admin':
+        purgar_papelera_tutorias()
 
     # XXX sincronizar con google calendar
     tutoria_calendar_sync()
@@ -1369,7 +1374,7 @@ def analisis_html(params={}):
         tutoria_delete_sql = tutoria_by_id(current_tutoria_id)
         alumno_sql = alumno_by_id(tutoria_delete_sql.alumno_id)
         tutoria_calendar_delete(event_id=tutoria_delete_sql.calendar_event_id)
-        tutoria_delete_sql.deleted=False
+        tutoria_delete_sql.deleted = False
         session_sql.commit()
         flash_toast('Tutoria eliminada', 'success')
         return redirect(url_for('alumnos_html'))

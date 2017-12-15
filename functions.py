@@ -9,6 +9,13 @@ import config_parametros
 # *****************************************************************
 
 
+def purgar_papelera_tutorias():
+    tutorias = session_sql.query(Tutoria).filter(Tutoria.deleted == True, Tutoria.fecha < g.current_date - datetime.timedelta(days=g.settings_global.periodo_deleted_tutorias)).all()
+    for tutoria in tutorias:
+        session_sql.delete(tutoria)
+    session_sql.commit()
+
+
 def translate_fecha(fecha):
     dic = {'Jan': 'Ene', 'Jan': 'Feb', 'Mar': 'Mar', 'Apr': 'Abr', 'May': 'May', 'Jun': 'Jun', 'Jul': 'Jul', 'Aug': 'Ago', 'Sep': 'Sep', 'Oct': 'Oct', 'Nov': 'Nov', 'Dec': 'Dic',
            'Monday': 'Lunes', 'Tuesday': 'Martes', 'Wednesday': 'Miercoles', 'Thursday': 'Jueves', 'Friday': 'Viernes', 'Saturday': 'Sabado', 'Sunday': 'Domingo'}
