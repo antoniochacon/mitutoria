@@ -12,32 +12,6 @@
 				<div class="row">
 					<div class="col-md-6 mt-3">
 						<div class="card border-gray z-depth-1-1-less">
-							<div class="card-header p-2 pl-3">Gmail sender.
-								<span class="text-muted small">
-									Cuenta de Gmail usada para el envío de los emails al equipo educativo.
-								</span>
-							</div>
-							<div class="p-2">
-								<div class="form-group mt-3">
-									<div class="input-group">
-										<input
-											type="email"
-											class="form-control {% if request.method=='POST' %} {% if settings_global_edit.gmail_sender.errors %} is-invalid {% else %} is-valid {% endif %} {% endif %}"
-											name="gmail_sender"
-											value="{{settings_global_sql.gmail_sender}}"
-											placeholder="gmail sender">
-										<div class="input-group-addon {% if request.method=='POST' %} {% if settings_global_edit.gmail_sender.errors %} form_addon-warning {% else %} form_addon-success {% endif %} {% endif %}">@</div>
-									</div>
-								</div>
-								<button type="submit" name="selector_button" value="selector_autorizar_credencial" class="btn btn-outline-dark btn-sm" title="Autorizar credencial">
-									<i class="material-icons vertical-center">fingerprint</i>
-									Autorizar credencial
-								</button>
-							</div>
-						</div>
-					</div>
-					<div class="col-md-6 mt-3">
-						<div class="card border-gray z-depth-1-1-less">
 							<div class="card-header p-2 pl-3">Periodo CleanUp.
 								<span class="text-muted small">
 									Meses previos excluidos del CleanUp de tutorías.
@@ -66,6 +40,32 @@
 									{% include 'admin_settings_global_cleanup_confirmar_block.html' %}
 									<button type="submit" name="selector_button" value="selector_cleanup_update" class="btn btn-outline-dark btn-sm" title="acutalizar tutorias cleanup">
 										<i class="material-icons vertical-center">cached</i>
+									</button>
+								</div>
+							</div>
+						</div>
+						<div class="col-md-6 mt-3">
+							<div class="card border-gray z-depth-1-1-less">
+								<div class="card-header p-2 pl-3">Gmail sender.
+									<span class="text-muted small">
+										Cuenta de Gmail usada para el envío de los emails al equipo educativo.
+									</span>
+								</div>
+								<div class="p-2">
+									<div class="form-group mt-3">
+										<div class="input-group">
+											<input
+												type="email"
+												class="form-control {% if request.method=='POST' %} {% if settings_global_edit.gmail_sender.errors %} is-invalid {% else %} is-valid {% endif %} {% endif %}"
+												name="gmail_sender"
+												value="{{settings_global_sql.gmail_sender}}"
+												placeholder="gmail sender">
+											<div class="input-group-addon {% if request.method=='POST' %} {% if settings_global_edit.gmail_sender.errors %} form_addon-warning {% else %} form_addon-success {% endif %} {% endif %}">@</div>
+										</div>
+									</div>
+									<button type="submit" name="selector_button" value="selector_autorizar_credencial" class="btn btn-outline-dark btn-sm" title="Autorizar credencial">
+										<i class="material-icons vertical-center">fingerprint</i>
+										Autorizar credencial
 									</button>
 								</div>
 							</div>
