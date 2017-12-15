@@ -51,7 +51,7 @@ def get_service_calendar():  # Ejemplo de codigo para crear el servicio calendar
 
 def get_service_gmail():  # Ejemplo de codigo para crear el servicio gmail
     try:
-        oauth2_credentials = g.settings_global.oauth2_credentials
+        settings_global_sql=session_sql.query(Settings_Global).first()
         credentials = oauth2client.client.Credentials.new_from_json(oauth2_credentials)
         http = credentials.authorize(httplib2.Http())
         service = discovery.build('gmail', 'v1', http=http)
@@ -1059,15 +1059,17 @@ def connenction_check():
 # XXX: envio de mails por threading (gmail API)
 # *****************************************************************
 
+
 def send_email_tutoria(alumno, tutoria):
     try:
-        oauth2_credentials = g.settings_global.oauth2_credentials
+        settings_global_sql = session_sql.query(Settings_Global).first()
+        oauth2_credentials = settings_global_sql.oauth2_credentials
         credentials = oauth2client.client.Credentials.new_from_json(oauth2_credentials)
         http = credentials.authorize(httplib2.Http())
         service = discovery.build('gmail', 'v1', http=http)
     except:
         return redirect(url_for('oauth2callback_gmail'))
-    sender = g.settings_global.gmail_sender
+    sender = settings_global_sql.gmail_sender
 
     for asignatura in asignaturas_alumno_by_alumno_id(alumno.id):
         tutoria_asignatura_add = Association_Tutoria_Asignatura(tutoria_id=tutoria.id, asignatura_id=asignatura.id)
@@ -1115,19 +1117,20 @@ def send_email_password_reset_request_asincrono(current_user_id):
     @copy_current_request_context
     def send_email_password_reset_request_process(current_user_id):
         send_email_password_reset(current_user_id)
-    send_email_password_reset_request_threading = threading.Thread(name='send_email_password_reset_request_thread', target=send_email_password_reset_request_process, args=(current_user_id,))
+    send_email_password_reset_request_threading = threading.Thread(name='send_email_password_reset_request_thread', target=send_email_password_reset_request_process, args=(current_user_id))
     send_email_password_reset_request_threading.start()
 
 
 def send_email_validate(current_user_id):
     try:
-        oauth2_credentials = g.settings_global.oauth2_credentials
+        settings_global_sql = session_sql.query(Settings_Global).first()
+        oauth2_credentials = settings_global_sql.oauth2_credentials
         credentials = oauth2client.client.Credentials.new_from_json(oauth2_credentials)
         http = credentials.authorize(httplib2.Http())
         service = discovery.build('gmail', 'v1', http=http)
     except:
         return redirect(url_for('oauth2callback_gmail'))
-    sender = g.settings_global.gmail_sender
+    sender = settings_global_sql.gmail_sender
 
     # XXX envio de mail
     # ****************************************
@@ -1145,19 +1148,20 @@ def send_email_validate_asincrono(current_user_id):
     @copy_current_request_context
     def send_email_validate_process(current_user_id):
         send_email_validate(current_user_id)
-    send_email_validate_threading = threading.Thread(name='send_email_validate_thread', target=send_email_validate_process, args=(current_user_id,))
+    send_email_validate_threading = threading.Thread(name='send_email_validate_thread', target=send_email_validate_process, args=(current_user_id))
     send_email_validate_threading.start()
 
 
 def re_send_email_tutoria(alumno, tutoria, asignaturas_id_lista):
     try:
-        oauth2_credentials = g.settings_global.oauth2_credentials
+        settings_global_sql = session_sql.query(Settings_Global).first()
+        oauth2_credentials = settings_global_sql.oauth2_credentials
         credentials = oauth2client.client.Credentials.new_from_json(oauth2_credentials)
         http = credentials.authorize(httplib2.Http())
         service = discovery.build('gmail', 'v1', http=http)
     except:
         return redirect(url_for('oauth2callback_gmail'))
-    sender = g.settings_global.gmail_sender
+    sender = settings_global_sql.gmail_sender
 
     for asignatura_id in asignaturas_id_lista:
         asignatura = asignatura_by_id(asignatura_id)
@@ -1183,6 +1187,8 @@ def re_send_email_tutoria_asincrono(alumno, tutoria, asignaturas_id_lista):
         re_send_email_tutoria(alumno, tutoria, asignaturas_id_lista)
     re_send_email_tutoria_threading = threading.Thread(name='re_send_email_tutoria_thread', target=re_send_email_tutoria_process, args=(alumno, tutoria, asignaturas_id_lista))
     re_send_email_tutoria_threading.start()
+
+
 # *****************************************************************
 
 
@@ -1221,10 +1227,15 @@ def grupo_check():  # Comprueba si existe ya un grupo declarado como activo.
 
 
 def grupo_activo():  # (Grupo) activo de usuario
-    if g.settings_current_user:
-        grupo_activo = session_sql.query(Grupo).filter(Grupo.id == g.settings_current_user.grupo_activo_id).first()
-    return grupo_activo
-
+    try:
+        return session_sql.query(Grupo).filter(Grupo.id == settings().grupo_activo_id).first()
+    except:
+        pass
+def settings():
+    try:
+        return session_sql.query(Settings).filter_by(id=current_user.id).first()
+    except:
+        pass
 
 def grupo_activo_check(grupo_id):  # Checkea si un grupo es el activo o no
     if grupo_id == g.settings_current_user.grupo_activo_id:
