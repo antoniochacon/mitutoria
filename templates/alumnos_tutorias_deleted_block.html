@@ -6,13 +6,14 @@
 		{{singular_plural("tutoria", "tutorias", tutorias_by_grupo_id_deleted_count)}}
 	</span>
 </a>
-<div id="collapse_tutorias_deleted" class="collapse show">
+<div id="collapse_tutorias_deleted" class="collapse">
 	<div id="tutoria_papelera" class="padding_contenido pt-2">
 		{% for tutoria in tutorias_by_grupo_id_deleted %}
 			{% with %}
 			{% set tutoria_deleted_stats = tutoria_incoming(tutoria.id) %}
 			<div class="class_name">
-				<a data-toggle="collapse" class="collapse_header_1" role="tab" data-parent="#tutoria_papelera" href="#tutoria_deleted_{{hashids_encode(tutoria.id)}}" aria-expanded="false" aria-controls="tutoria_deleted_{{hashids_encode(tutoria.id)}}">
+				<a data-toggle="collapse" class="collapse_header_1" role="tab" data-parent="#tutoria_papelera" href="#tutoria_deleted_{{hashids_encode(tutoria.id)}}" aria-expanded="false" aria-controls="tutoria_deleted_{{hashids_encode(tutoria.id)}}" title="Opciones">
+					<i class="material-icons vertical-center">expand_more</i>
 					{{translate_fecha(tutoria.fecha.strftime('%A') | capitalize)}}
 					{{tutoria.fecha.strftime('%d')}}
 					[{{tutoria.hora.strftime('%H:%M')}}]

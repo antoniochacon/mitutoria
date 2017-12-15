@@ -1,6 +1,7 @@
+<div class="divider bg-dark grueso"></div>
 <div class="padding_contenido">
 	<span class="btn-group" role="group">
-		<a href="/analisis/{{dic_encode_args({'current_tutoria_id': tutoria.id})}}" role="button" class="btn btn-outline-dark btn-sm link_without_pointer" title="Restaurar tutoria">
+		<a href="/analisis/{{dic_encode_args({'current_tutoria_id': tutoria.id})}}" role="button" class="btn btn-outline-dark btn-sm link_without_pointer" title="Ver tutoria">
 			Ver informes
 		</a>
 		<a href="/alumnos/{{dic_encode_args({'current_tutoria_id': tutoria.id, 'tutoria_restaurar': True})}}" role="button" class="btn btn-outline-dark btn-sm link_without_pointer" title="Restaurar tutoria">
@@ -12,3 +13,4 @@
 		{% include 'alumnos_tutoria_delete_confirmar_block.html' %}
 	</span>
 </div>
+<div class="divider bg-dark grueso"></div>
