@@ -26,29 +26,14 @@
 		</head>
 		<!-- Set also "landscape" if you need -->
 		<body class="A4 landscape">
-			{%from '_macro.html' import highcharts_cuestionario, highcharts_asignaturas, highcharts_asignatura%}
-			{% set settings_sql = settings_sql %}
+			{%from '_macro.html' import titulo_1, highcharts_cuestionario, highcharts_asignaturas, highcharts_asignatura%}
 			<!-- Each sheet element should have the class "sheet" -->
 			<!-- "padding-**mm" is optional: you can set 10, 15, 20 or 25 -->
 			<!-- HOJA 01 -->
 			<section class="sheet padding-15mm">
-				<h5 class="strong">
-					Análisis gráfico de la tutoría de
-					{{alumno.apellidos}},
-					{{alumno.nombre}}
-					<div class="divider bg-dark grueso line-height-1"></div>
-				</h5>
-				<span class="text-mutted">Grupo:</span>
-				{{grupo.nombre}}
-				<span class="text-mutted pl-3">Tutor:</span>
-				{{grupo.tutor_apellidos}},
-				{{grupo.tutor_nombre}}
-				<span class="text-mutted pl-3">Fecha:</span>
-				{{translate_fecha(tutoria.fecha.strftime('%b')) | capitalize}}
-				{{translate_fecha(tutoria.fecha.strftime('%A') | capitalize)}}
-				{{tutoria.fecha.strftime('%d')}}
-				<span class="text-mutted pl-3">Hora:</span>
-				{{tutoria.hora.strftime('%H:%M')}}
+				{{titulo_1(bg_color='bg-dark', titulo='Análisis gráfico de la tutoría')}}
+				{% include 'analisis_paper_tutoria_datos.html' %}
+				
 				<h6>Analisis del cuestionario</h6>
 				{{highcharts_cuestionario(char_id='cuestionario', color='#ffa000', grupo=grupo, tutoria_id=tutoria.id, stats=stats,grupo_stats=grupo_stats)}}
 				<h6>Analisis comparativo de asignaturas</h6>
@@ -56,7 +41,7 @@
 			</section>
 			<!-- HOJA 02 -->
 			{% if stats['asignaturas_recibidas_lista'] %}
-			{#
+				{#
 				<section class="sheet padding-15mm">
 					<h6>
 						Analisis detallado por asignatura
@@ -76,7 +61,7 @@
 										</div>
 									</div>
 									<div class="card-body">
-										{% if diferencial_check(settings_sql.diferencial, respuestas_pregunta_alumno_lista(tutoria.id, asignatura.id, stats['asignaturas_recibidas_lista'], stats['preguntas_con_respuesta_lista'])['respuestas_pregunta_media'], notas_pruebas_evaluables_alumno(
+										{% if diferencial_check(g.settings_current_user.diferencial, respuestas_pregunta_alumno_lista(tutoria.id, asignatura.id, stats['asignaturas_recibidas_lista'], stats['preguntas_con_respuesta_lista'])['respuestas_pregunta_media'], notas_pruebas_evaluables_alumno(
 											tutoria.id,
 											asignatura.id
 										)['notas_alumno_media']) %}
@@ -84,7 +69,7 @@
 												resultados !
 											</span>
 										{% endif %}
-										{% if diferencial_check(settings_sql.diferencial, respuestas_tutoria_media_stats, respuestas_pregunta_alumno_lista(tutoria.id, asignatura.id, stats['asignaturas_recibidas_lista'], stats['preguntas_con_respuesta_lista'])['respuestas_pregunta_media']) %}
+										{% if diferencial_check(g.settings_current_user.diferencial, respuestas_tutoria_media_stats, respuestas_pregunta_alumno_lista(tutoria.id, asignatura.id, stats['asignaturas_recibidas_lista'], stats['preguntas_con_respuesta_lista'])['respuestas_pregunta_media']) %}
 											<span class="badge badge-primary float-right mr-1">
 												actitud !
 											</span>
@@ -117,7 +102,7 @@
 											</div>
 										</div>
 										<div class="card-body">
-											{% if diferencial_check(settings_sql.diferencial, respuestas_pregunta_alumno_lista(tutoria.id, asignatura.id, stats['asignaturas_recibidas_lista'], stats['preguntas_con_respuesta_lista'])['respuestas_pregunta_media'], notas_pruebas_evaluables_alumno(
+											{% if diferencial_check(g.settings_current_user.diferencial, respuestas_pregunta_alumno_lista(tutoria.id, asignatura.id, stats['asignaturas_recibidas_lista'], stats['preguntas_con_respuesta_lista'])['respuestas_pregunta_media'], notas_pruebas_evaluables_alumno(
 												tutoria.id,
 												asignatura.id
 											)['notas_alumno_media']) %}
@@ -125,7 +110,7 @@
 													resultados !
 												</span>
 											{% endif %}
-											{% if diferencial_check(settings_sql.diferencial, respuestas_tutoria_media_stats, respuestas_pregunta_alumno_lista(tutoria.id, asignatura.id, stats['asignaturas_recibidas_lista'], stats['preguntas_con_respuesta_lista'])['respuestas_pregunta_media']) %}
+											{% if diferencial_check(g.settings_current_user.diferencial, respuestas_tutoria_media_stats, respuestas_pregunta_alumno_lista(tutoria.id, asignatura.id, stats['asignaturas_recibidas_lista'], stats['preguntas_con_respuesta_lista'])['respuestas_pregunta_media']) %}
 												<span class="badge badge-primary float-right mr-1">
 													actitud !
 												</span>
@@ -142,17 +127,16 @@
 				<!-- HOJA 04 -->
 				{% if comentarios_stats %}
 					<section class="sheet padding-15mm">
-						<h6>
-							Observaciones
-							<div class="divider bg-dark line-height-1"></div>
-						</h6>
+						{{titulo_1(bg_color='bg-dark', titulo='Observaciones de la tutoría')}}
+						{% include 'analisis_paper_tutoria_datos.html' %}
 						{% for asignatura in comentarios_stats.keys() %}
 							<div class="col pb-1">
 								{{loop.index}}.&nbsp;<span class="strong">{{asignatura}}</span>
 								<span class="small">
 									|
 									{{comentarios_stats[asignatura]['docente']}}:&nbsp;</span>
-									<span class="text-justify">	{{comentarios_stats[asignatura]['comentario']}}</span>
+								<span class="text-justify">
+									{{comentarios_stats[asignatura]['comentario']}}</span>
 							</div>
 						{% endfor %}
 					</div>

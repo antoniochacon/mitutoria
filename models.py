@@ -51,6 +51,7 @@ class Settings (Base):
     show_analisis_detalles = Column(Boolean, default=False)
     show_analisis_preguntas_splines = Column(Boolean, default=False)
     show_analisis_asignaturas_splines = Column(Boolean, default=False)
+    show_analisis_detallado_por_asignatura = Column(Boolean, default=False)
     grupo_activo_id = Column(Integer)
     asignaturas_orden = Column(Boolean, default=True)
     grupos = relationship('Grupo', backref='settings', lazy='dynamic', cascade='delete')

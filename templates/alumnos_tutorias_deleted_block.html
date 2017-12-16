@@ -34,6 +34,6 @@
 		{% endfor %}
 	</div>
 	<div class="padding_contenido small pt-0">
-		Las tutorias que lleven 15 días en la Papelera se eliminarán automáticamente
+		Las tutorias que lleven {{g.settings_global.periodo_deleted_tutorias}} {{singular_plural('día','días', g.settings_global.periodo_deleted_tutorias)}} en la papelera se eliminarán automáticamente
 	</div>
 </div>

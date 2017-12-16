@@ -42,6 +42,14 @@
 							<span class="custom-control-description {% if not settings.show_analisis_detalles %}text-mutted{% endif %}">Mostrar gráficos detallados</span>
 						</label>
 					</div>
+					<div class="col-md-6">
+						{# NOTE elminado el form-group para ajustar mejor #}
+						<label class="custom-control custom-checkbox check_box_1">
+							<input type="checkbox" class="custom-control-input" name="settings_show_analisis_detallado_por_asignatura" value="True" {% if settings.show_analisis_detallado_por_asignatura %} checked="checked" {% endif %}>
+							<span class="custom-control-indicator"></span>
+							<span class="custom-control-description {% if not settings.show_analisis_detallado_por_asignatura %}text-mutted{% endif %}">Mostrar gráficos detallados por asignatura</span>
+						</label>
+					</div>
 					</div>
 
 					<div class="row">

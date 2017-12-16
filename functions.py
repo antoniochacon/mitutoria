@@ -10,7 +10,7 @@ import config_parametros
 
 
 def purgar_papelera_tutorias():
-    tutorias = session_sql.query(Tutoria).filter(Tutoria.deleted==True, Tutoria.deleted_at < g.current_date - datetime.timedelta(days=g.settings_global.periodo_deleted_tutorias)).all()
+    tutorias = session_sql.query(Tutoria).filter(Tutoria.deleted == True, Tutoria.deleted_at < g.current_date - datetime.timedelta(days=g.settings_global.periodo_deleted_tutorias)).all()
     for tutoria in tutorias:
         session_sql.delete(tutoria)
     session_sql.commit()
@@ -1096,6 +1096,43 @@ def send_email_tutoria_asincrono(alumno, tutoria):
     flash_toast('Tutoria generada para ' + Markup('<strong>') + alumno.nombre + Markup('</strong>'), 'success')
 
 
+def re_send_email_tutoria(alumno, tutoria, asignaturas_id_lista):
+    try:
+        settings_global_sql = session_sql.query(Settings_Global).first()
+        oauth2_credentials = settings_global_sql.oauth2_credentials
+        credentials = oauth2client.client.Credentials.new_from_json(oauth2_credentials)
+        http = credentials.authorize(httplib2.Http())
+        service = discovery.build('gmail', 'v1', http=http)
+    except:
+        return redirect(url_for('oauth2callback_gmail'))
+    sender = settings_global_sql.gmail_sender
+
+    for asignatura_id in asignaturas_id_lista:
+        asignatura = asignatura_by_id(asignatura_id)
+        tutoria_asignatura_add = session_sql.query(Association_Tutoria_Asignatura).filter(Association_Tutoria_Asignatura.tutoria_id == tutoria.id, Association_Tutoria_Asignatura.asignatura_id == asignatura_id).first()
+        if tutoria_asignatura_add:
+            tutoria_asignatura_add.created_at = datetime.datetime.now()
+        else:
+            tutoria_asignatura_add = Association_Tutoria_Asignatura(tutoria_id=tutoria.id, asignatura_id=asignatura_id)
+            session_sql.add(tutoria_asignatura_add)
+
+        # XXX envio de mail
+        # ****************************************
+        to = asignatura.email
+        subject = 'Tutoria | %s | %s | %s %s' % (grupo_activo().nombre, alumno.nombre, translate_fecha(tutoria.fecha.strftime('%A')), tutoria.fecha.strftime('%d'))
+        message_text = render_template('email_tutoria.html', tutoria=tutoria, alumno=alumno, asignatura=asignatura, tutoria_email_link=tutoria_email_link, index_link=index_link)
+        create_message_and_send(service, sender, to, subject, message_text)
+        time.sleep(email_time_sleep)
+
+
+def re_send_email_tutoria_asincrono(alumno, tutoria, asignaturas_id_lista):
+    @copy_current_request_context
+    def re_send_email_tutoria_process(alumno, tutoria, asignaturas_id_lista):
+        re_send_email_tutoria(alumno, tutoria, asignaturas_id_lista)
+    re_send_email_tutoria_threading = threading.Thread(name='re_send_email_tutoria_thread', target=re_send_email_tutoria_process, args=(alumno, tutoria, asignaturas_id_lista))
+    re_send_email_tutoria_threading.start()
+
+
 def send_email_password_reset(current_user_id):
     credentials = get_credentials_gmail()
     http = credentials.authorize(httplib2.Http())
@@ -1152,45 +1189,6 @@ def send_email_validate_asincrono(current_user_id):
         send_email_validate(current_user_id)
     send_email_validate_threading = threading.Thread(name='send_email_validate_thread', target=send_email_validate_process, args=(current_user_id))
     send_email_validate_threading.start()
-
-
-def re_send_email_tutoria(alumno, tutoria, asignaturas_id_lista):
-    try:
-        settings_global_sql = session_sql.query(Settings_Global).first()
-        oauth2_credentials = settings_global_sql.oauth2_credentials
-        credentials = oauth2client.client.Credentials.new_from_json(oauth2_credentials)
-        http = credentials.authorize(httplib2.Http())
-        service = discovery.build('gmail', 'v1', http=http)
-    except:
-        return redirect(url_for('oauth2callback_gmail'))
-    sender = settings_global_sql.gmail_sender
-
-    for asignatura_id in asignaturas_id_lista:
-        asignatura = asignatura_by_id(asignatura_id)
-        tutoria_asignatura_add = session_sql.query(Association_Tutoria_Asignatura).filter(Association_Tutoria_Asignatura.tutoria_id == tutoria.id, Association_Tutoria_Asignatura.asignatura_id == asignatura_id).first()
-        if tutoria_asignatura_add:
-            tutoria_asignatura_add.created_at = datetime.datetime.now()
-        else:
-            tutoria_asignatura_add = Association_Tutoria_Asignatura(tutoria_id=tutoria.id, asignatura_id=asignatura_id)
-            session_sql.add(tutoria_asignatura_add)
-
-        # XXX envio de mail
-        # ****************************************
-        to = asignatura.email
-        subject = 'Tutoria | %s | %s | %s %s' % (grupo_activo().nombre, alumno.nombre, translate_fecha(tutoria.fecha.strftime('%A')), tutoria.fecha.strftime('%d'))
-        message_text = render_template('email_tutoria.html', tutoria=tutoria, alumno=alumno, asignatura=asignatura, tutoria_email_link=tutoria_email_link, tutoria_asignatura_id=tutoria_asignatura_add.id, index_link=index_link)
-        create_message_and_send(service, sender, to, subject, message_text)
-        time.sleep(email_time_sleep)
-
-
-def re_send_email_tutoria_asincrono(alumno, tutoria, asignaturas_id_lista):
-    @copy_current_request_context
-    def re_send_email_tutoria_process(alumno, tutoria, asignaturas_id_lista):
-        re_send_email_tutoria(alumno, tutoria, asignaturas_id_lista)
-    re_send_email_tutoria_threading = threading.Thread(name='re_send_email_tutoria_thread', target=re_send_email_tutoria_process, args=(alumno, tutoria, asignaturas_id_lista))
-    re_send_email_tutoria_threading.start()
-
-
 # *****************************************************************
 
 

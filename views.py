@@ -186,6 +186,9 @@ def admin_settings_global_html(params={}):
             if str(g.settings_global.cleanup_tutorias_automatic) != str(cleanup_tutorias_automatic):
                 g.settings_global.cleanup_tutorias_automatic = cleanup_tutorias_automatic
                 commit_action = True
+            if str(g.settings_global.periodo_deleted_tutorias) != str(request.form.get('periodo_deleted_tutorias')):
+                g.settings_global.periodo_deleted_tutorias = request.form.get('periodo_deleted_tutorias')
+                commit_action = True
 
             settings_global_edit_form = Settings_Global_Add(gmail_sender=gmail_sender)
             if settings_global_edit_form.validate():
@@ -1349,9 +1352,8 @@ def analisis_html(params={}):
     params['current_tutoria_id'] = params_old.get('current_tutoria_id', 0)
     current_tutoria_id = params['current_tutoria_id']
     params['show_analisis_preguntas_splines'] = params_old.get('show_analisis_preguntas_splines', False)
-
+    params['show_analisis_detallado_por_asignatura'] = params_old.get('show_analisis_detallado_por_asignatura', False)
     params['tutoria_delete_confirmar'] = params_old.get('tutoria_delete_confirmar', False)
-
     grupo = grupo_by_tutoria_id(current_tutoria_id)
     tutoria = tutoria_by_id(current_tutoria_id)
     alumno = alumno_by_tutoria_id(current_tutoria_id)
@@ -1372,10 +1374,11 @@ def analisis_html(params={}):
 
     stats = analisis_tutoria(current_tutoria_id)
     grupo_stats = respuestas_grupo_stats(current_tutoria_id, stats['preguntas_con_respuesta_lista'], stats['asignaturas_recibidas_lista'])
-    respuestas_tutoria_media_stats = respuestas_tutoria_media(current_tutoria_id)
+    if g.settings_current_user:
+        respuestas_tutoria_media_stats = respuestas_tutoria_media(current_tutoria_id)
+    else:
+        respuestas_tutoria_media_stats= False
     evolucion_stats = evolucion_tutorias(alumno.id)
-    # abort(404)
-
     return render_template('analisis.html',
                            params=params, tutoria=tutoria, alumno=alumno, grupo=grupo,
                            stats=stats, grupo_stats=grupo_stats,
@@ -1414,6 +1417,19 @@ def analisis_tutoria_edit_html(params={}):
             session_sql.commit()
             params['anchor'] = 'anchor_comp'
             params['show_analisis_preguntas_splines'] = True
+            return redirect(url_for('analisis_html', params=dic_encode(params)))
+
+        # XXX settings_show_analisis_detallado_por_asignatura
+        if request.form['selector_button'] == 'settings_show_analisis_detallado_por_asignatura':
+            settings_show_analisis_detallado_por_asignatura = str(request.form.get('settings_show_analisis_detallado_por_asignatura'))
+            if settings_show_analisis_detallado_por_asignatura == 'True':
+                settings_show_analisis_detallado_por_asignatura = False
+            else:
+                settings_show_analisis_detallado_por_asignatura = True
+            g.settings_current_user.show_analisis_detallado_por_asignatura = settings_show_analisis_detallado_por_asignatura
+            session_sql.commit()
+            params['anchor'] = 'anchor_deta'
+            params['show_analisis_detallado_por_asignatura'] = True
             return redirect(url_for('analisis_html', params=dic_encode(params)))
 
         # XXX tutoria_acuerdo_save
@@ -1521,7 +1537,7 @@ def analisis_tutoria_edit_html(params={}):
                     tutoria_sql.activa = True
                     session_sql.commit()
                     flash_toast('Tutoria actualizada', 'success')
-                    flash_toast('Google Calendar sincronizado', 'success')
+                    # flash_toast('Google Calendar sincronizado', 'success')
                     return redirect(url_for('analisis_html', params=dic_encode(params)))
             else:
                 flash_wtforms(tutoria_edit_form, flash_toast, 'warning')
@@ -1555,6 +1571,7 @@ def settings_opciones_html(params={}):
             settings_tutoria_duracion = request.form.get('settings_tutoria_duracion')
             settings_diferencial = request.form.get('settings_diferencial')
             settings_show_analisis_detalles = request.form.get('settings_show_analisis_detalles')
+            settings_show_analisis_detallado_por_asignatura = request.form.get('settings_show_analisis_detallado_por_asignatura')
 
             if not settings_edit_tutoria_timeout:
                 settings_edit_tutoria_timeout = False
@@ -1566,6 +1583,8 @@ def settings_opciones_html(params={}):
                 g.settings_current_user.oauth2_credentials = ''
             if not settings_show_analisis_detalles:
                 settings_show_analisis_detalles = False
+            if not settings_show_analisis_detallado_por_asignatura:
+                settings_show_analisis_detallado_por_asignatura = False
 
             g.settings_current_user.tutoria_timeout = settings_edit_tutoria_timeout
             g.settings_current_user.show_asignaturas_analisis = settings_show_asignaturas_analisis
@@ -1573,6 +1592,7 @@ def settings_opciones_html(params={}):
             g.settings_current_user.diferencial = settings_diferencial
             g.settings_current_user.calendar = settings_edit_calendar
             g.settings_current_user.show_analisis_detalles = settings_show_analisis_detalles
+            g.settings_current_user.show_analisis_detallado_por_asignatura = settings_show_analisis_detallado_por_asignatura
             session_sql.commit()
             flash_toast('Configuracion actualizada', 'success')
 

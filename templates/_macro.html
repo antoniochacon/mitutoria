@@ -67,8 +67,6 @@
 {% endmacro %}
 
 {% macro highcharts_cuestionario(char_id, color, grupo, tutoria_id, stats, grupo_stats=grupo_stats) %}
-{% with %}
-{% set settings_sql = g.settings_current_user %}
 	<div id="{{char_id | safe}}" class="chart" style="height: 300px"></div>
 	<script>
 		var label_color=jQuery.parseJSON({{stats['label_color_dic'] | safe}});
@@ -80,7 +78,7 @@
 				panKey: "shift",
 			},
 			plotOptions:{
-				{% if not settings_sql.show_analisis_asignaturas_splines or stats['analisis_paper']%}
+				{% if not g.settings_current_user.show_analisis_asignaturas_splines or stats['analisis_paper']%}
 				series: {
 					borderWidth: 0,
 					states: {
@@ -107,7 +105,7 @@
 				formatter: function () {
 					var text = "";
 					if (this.series.type == "column") {
-						text = this.x + " | Media: " + Highcharts.numberFormat(this.total, 1) {% if settings_sql.show_analisis_asignaturas_splines%} + "<br>" + this.series.name + ": " + Highcharts.numberFormat(this.y * {{stats['asignaturas_recibidas_lista'] | count}}, 1){% endif %};
+						text = this.x + " | Media: " + Highcharts.numberFormat(this.total, 1) {% if g.settings_current_user.show_analisis_asignaturas_splines%} + "<br>" + this.series.name + ": " + Highcharts.numberFormat(this.y * {{stats['asignaturas_recibidas_lista'] | count}}, 1){% endif %};
 					} else {
 						text = this.x + "<br>" + this.series.name + ": " + Highcharts.numberFormat(this.y, 1);
 					}
@@ -178,7 +176,7 @@
 						lineColor: null
 					}
 				},
-				{% if settings_sql.show_analisis_asignaturas_splines and not stats['analisis_paper'] %}
+				{% if g.settings_current_user.show_analisis_asignaturas_splines and not stats['analisis_paper'] %}
 				{% for asignatura in stats['asignaturas_recibidas_lista'] %}
 				 {
 						type: "spline",
@@ -202,12 +200,9 @@
 			]
 		});
 	</script>
-{% endwith %}
 {% endmacro %}
 
 {% macro highcharts_asignaturas(char_id, color_1, color_2, grupo, tutoria_id, stats, grupo_stats) %}
-{% with %}
-{% set settings_sql = g.settings_current_user %}
 	<div id="{{char_id | safe}}" class="chart" style="height: 300px"></div>
 	<script>
 		Highcharts.chart("{{char_id | safe }}", {
@@ -226,7 +221,7 @@
 					var cuestiones_lista = {{stats['preguntas_con_respuesta_lista_enunciado_ticker'] | safe}};
 					var cuestion = this.series.name;
 					if (this.series.type == "column" && cuestiones_lista.indexOf(cuestion) >= 0) {
-						text = this.x + " | Cuestionario | Media: " + Highcharts.numberFormat(this.total, 1) {% if settings_sql.show_analisis_preguntas_splines%} + "<br>" + this.series.name + ": " + Highcharts.numberFormat(this.y * {{stats['preguntas_con_respuesta_lista'] | count}}, 1) {% endif %};
+						text = this.x + " | Cuestionario | Media: " + Highcharts.numberFormat(this.total, 1) {% if g.settings_current_user.show_analisis_preguntas_splines%} + "<br>" + this.series.name + ": " + Highcharts.numberFormat(this.y * {{stats['preguntas_con_respuesta_lista'] | count}}, 1) {% endif %};
 					} else if (this.series.type == "column") {
 						text = this.x + " | Notas | Media: " + Highcharts.numberFormat(this.y, 1) + "<br>" + this.series.name;
 					} else {
@@ -262,7 +257,7 @@
 				}
 			},
 			plotOptions: {
-				{% if not settings_sql.show_analisis_preguntas_splines or stats['analisis_paper']%}
+				{% if not g.settings_current_user.show_analisis_preguntas_splines or stats['analisis_paper']%}
 				series: {
 					borderWidth: 0,
 					states: {
@@ -342,7 +337,7 @@
 						lineColor: null
 					}
 				}
-				{% if settings_sql.show_analisis_preguntas_splines and not stats['analisis_paper']%}
+				{% if g.settings_current_user.show_analisis_preguntas_splines and not stats['analisis_paper']%}
 				{% for pregunta in stats['preguntas_con_respuesta_lista'] %}, {
 						type: "spline",
 						name: "{{pregunta.enunciado_ticker}}",
@@ -365,7 +360,6 @@
 			]
 		});
 	</script>
-{% endwith %}
 {% endmacro %}
 
 

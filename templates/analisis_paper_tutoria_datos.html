@@ -1,0 +1,9 @@
+<span class="text-mutted">Alumno:</span>
+{{alumno.apellidos}}, {{alumno.nombre}} [{{grupo.nombre}}]
+<span class="text-mutted pl-3">Tutor:</span>
+{{grupo.tutor_apellidos}},
+{{grupo.tutor_nombre}}
+<span class="text-mutted pl-3">Fecha:</span>
+{{translate_fecha(tutoria.fecha.strftime('%b')) | capitalize}}
+{{translate_fecha(tutoria.fecha.strftime('%A') | capitalize)}}
+{{tutoria.fecha.strftime('%d')}} [{{tutoria.hora.strftime('%H:%M')}} h]
