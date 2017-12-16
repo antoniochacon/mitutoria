@@ -15,8 +15,8 @@ engine = create_engine(Server_Config.engine_url, echo=False)
 Session_SQL = sessionmaker(bind=engine)
 Base = declarative_base()
 # create a Session_SQL
-Session_SQL = sessionmaker() # NOTE linea original
-# Session_SQL = scoped_session(Session_SQL)  # NOTE scoped_session es la recomendada para web apps
+# Session_SQL = sessionmaker() # NOTE linea original
+Session_SQL = scoped_session(Session_SQL)  # NOTE scoped_session es la recomendada para web apps
 Session_SQL.configure(bind=engine)
 session_sql = Session_SQL()
 
