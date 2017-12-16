@@ -1,12 +1,10 @@
 import os
 from app import app
 from flask import flash, Markup, render_template, request, copy_current_request_context, session, redirect, url_for, g, abort
-# from flask import Response
 import secrets
 from werkzeug.security import generate_password_hash, check_password_hash
 import datetime
 import time
-# import locale
 from models import *
 from forms import *
 import csv
@@ -75,7 +73,7 @@ from apiclient import discovery
 # email_validate_link = 'http://localhost:5000/email_validate/'
 # index_link = 'http://localhost:5000/'
 # password_reset_link = 'http://localhost:5000/password_reset/'
-# email_time_sleep = 3
+# email_time_sleep = 1
 
 
 # XXX Heroku_Host
@@ -83,4 +81,4 @@ tutoria_email_link = 'https://mitutoria.herokuapp.com/informe'
 email_validate_link = 'https://mitutoria.herokuapp.com/email_validate/'
 index_link = 'https://mitutoria.herokuapp.com/'
 password_reset_link = 'https://mitutoria.herokuapp.com/password_reset/'
-email_time_sleep = 3
+email_time_sleep = 1

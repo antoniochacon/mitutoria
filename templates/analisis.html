@@ -213,6 +213,7 @@
 							{% endif %}
 						{% endfor %}
 					</div>
+					{% if g.settings_current_user.show_analisis_detalles %}
 					<div class="row mb-2">
 					<div class="col float-right">
 						<input type="hidden" name="settings_show_analisis_detallado_por_asignatura" value="{{g.settings_current_user.show_analisis_detallado_por_asignatura}}">
@@ -230,6 +231,7 @@
 						</button>
 					</div>
 				</div>
+				{% endif %}
 
 				</div>
 					<a data-toggle="collapse" href="#analisis_evoluacion" class="collapse_header_1" aria-expanded="false" title="Analisis en el tiempo">

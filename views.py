@@ -1374,7 +1374,7 @@ def analisis_html(params={}):
 
     stats = analisis_tutoria(current_tutoria_id)
     grupo_stats = respuestas_grupo_stats(current_tutoria_id, stats['preguntas_con_respuesta_lista'], stats['asignaturas_recibidas_lista'])
-    if g.settings_current_user:
+    if g.settings_current_user.show_analisis_detallado_por_asignatura:
         respuestas_tutoria_media_stats = respuestas_tutoria_media(current_tutoria_id)
     else:
         respuestas_tutoria_media_stats= False
