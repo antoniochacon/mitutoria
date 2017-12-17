@@ -1123,7 +1123,7 @@ def re_send_email_tutoria(alumno, tutoria, asignaturas_id_lista):
             tutoria_asignatura_add = Association_Tutoria_Asignatura(tutoria_id=tutoria.id, asignatura_id=asignatura_id)
             session_sql.add(tutoria_asignatura_add)
             session_sql.flush()
-            tutoria_asignatura_sql=tutoria_asignatura_add
+            tutoria_asignatura_sql = tutoria_asignatura_add
             email_reenvio_number = tutoria_asignatura_sql.email_reenvio_number
 
         # XXX envio de mail

@@ -1466,6 +1466,7 @@ def analisis_tutoria_edit_html(params={}):
         if request.form['selector_button'] == 'selector_tutoria_edit_close':
             return redirect(url_for('analisis_html', params=dic_encode(params)))
 
+
         # XXX tutoria_re_enviar
         if request.form['selector_button'] == 'selector_tutoria_re_enviar':
             asignaturas_id_lista = []
