@@ -1065,6 +1065,7 @@ def connenction_check():
 def send_email_tutoria(alumno, tutoria):
     try:
         settings_global_sql = session_sql.query(Settings_Global).first()
+        settings_current_user_sql = settings()
         oauth2_credentials = settings_global_sql.oauth2_credentials
         credentials = oauth2client.client.Credentials.new_from_json(oauth2_credentials)
         http = credentials.authorize(httplib2.Http())
@@ -1072,20 +1073,22 @@ def send_email_tutoria(alumno, tutoria):
     except:
         return redirect(url_for('oauth2callback_gmail'))
     sender = settings_global_sql.gmail_sender
+    emails_enviados = settings_current_user_sql.emails_enviados
 
     for asignatura in asignaturas_alumno_by_alumno_id(alumno.id):
         tutoria_asignatura_add = Association_Tutoria_Asignatura(tutoria_id=tutoria.id, asignatura_id=asignatura.id)
         session_sql.add(tutoria_asignatura_add)
-        session_sql.flush()
         # XXX envio de mail
         # ****************************************
         to = asignatura.email
-        tutoria_dia_semana = translate_fecha(datetime.datetime.strptime(tutoria.fecha, '%Y-%m-%d').strftime('%A'))
-        tutoria_dia_mes = datetime.datetime.strptime(tutoria.fecha, '%Y-%m-%d').strftime('%d')
+        tutoria_dia_semana = translate_fecha(tutoria.fecha.strftime('%A'))
+        tutoria_dia_mes = tutoria.fecha.strftime('%d')
+        emails_enviados += 1
         subject = 'Tutoria | %s | %s | %s %s' % (grupo_activo().nombre, alumno.nombre, tutoria_dia_semana, tutoria_dia_mes)
         message_text = render_template('email_tutoria.html', tutoria_id=tutoria.id, tutoria_dia_semana=tutoria_dia_semana, tutoria_dia_mes=tutoria_dia_mes, alumno=alumno, asignatura=asignatura, tutoria_email_link=tutoria_email_link, index_link=index_link)
         create_message_and_send(service, sender, to, subject, message_text)
         time.sleep(email_time_sleep)
+    settings_current_user_sql.emails_enviados = emails_enviados
     session_sql.commit()
 
 
@@ -1100,6 +1103,7 @@ def send_email_tutoria_asincrono(alumno, tutoria):
 def re_send_email_tutoria(alumno, tutoria, asignaturas_id_lista):
     try:
         settings_global_sql = session_sql.query(Settings_Global).first()
+        settings_current_user_sql = settings()
         oauth2_credentials = settings_global_sql.oauth2_credentials
         credentials = oauth2client.client.Credentials.new_from_json(oauth2_credentials)
         http = credentials.authorize(httplib2.Http())
@@ -1107,27 +1111,35 @@ def re_send_email_tutoria(alumno, tutoria, asignaturas_id_lista):
     except:
         return redirect(url_for('oauth2callback_gmail'))
     sender = settings_global_sql.gmail_sender
+    emails_enviados = settings_current_user_sql.emails_enviados
 
     for asignatura_id in asignaturas_id_lista:
         asignatura = asignatura_by_id(asignatura_id)
-        tutoria_asignatura_add = session_sql.query(Association_Tutoria_Asignatura).filter(Association_Tutoria_Asignatura.tutoria_id == tutoria.id, Association_Tutoria_Asignatura.asignatura_id == asignatura_id).first()
-        if tutoria_asignatura_add:
-            tutoria_asignatura_add.created_at = datetime.datetime.now()
+        tutoria_asignatura_sql = session_sql.query(Association_Tutoria_Asignatura).filter(Association_Tutoria_Asignatura.tutoria_id == tutoria.id, Association_Tutoria_Asignatura.asignatura_id == asignatura_id).first()
+        if tutoria_asignatura_sql:
+            tutoria_asignatura_sql.created_at = datetime.datetime.now()
+            email_reenvio_number = tutoria_asignatura_sql.email_reenvio_number
         else:
             tutoria_asignatura_add = Association_Tutoria_Asignatura(tutoria_id=tutoria.id, asignatura_id=asignatura_id)
             session_sql.add(tutoria_asignatura_add)
+            session_sql.flush()
+            tutoria_asignatura_sql=tutoria_asignatura_add
+            email_reenvio_number = tutoria_asignatura_sql.email_reenvio_number
 
         # XXX envio de mail
         # ****************************************
         to = asignatura.email
-        # tutoria_dia_semana = translate_fecha(tutoria.fecha.strftime('%A'))
-        # tutoria_dia_mes = tutoria.fecha.strftime('%d')
-        tutoria_dia_semana = 'tutoria_dia_semana'
-        tutoria_dia_mes = 'tutoria_dia_mes'
-        subject = 'Tutoria | %s | %s | %s %s' % (grupo_activo().nombre, alumno.nombre, tutoria_dia_semana, tutoria_dia_mes)
+        tutoria_dia_semana = translate_fecha(tutoria.fecha.strftime('%A'))
+        tutoria_dia_mes = tutoria.fecha.strftime('%d')
+        emails_enviados = emails_enviados + 1
+        email_reenvio_number = email_reenvio_number + 1
+        tutoria_asignatura_sql.email_reenvio_number = email_reenvio_number
+        subject = 'Tutoria | %s | %s |  %s %s [r-%s]' % (grupo_activo().nombre, alumno.nombre, tutoria_dia_semana, tutoria_dia_mes, email_reenvio_number)
         message_text = render_template('email_tutoria.html', tutoria_id=tutoria.id, tutoria_dia_semana=tutoria_dia_semana, tutoria_dia_mes=tutoria_dia_mes, alumno=alumno, asignatura=asignatura, tutoria_email_link=tutoria_email_link, index_link=index_link)
         create_message_and_send(service, sender, to, subject, message_text)
         time.sleep(email_time_sleep)
+    settings_current_user_sql.emails_enviados = emails_enviados
+    session_sql.commit()
 
 
 def re_send_email_tutoria_asincrono(alumno, tutoria, asignaturas_id_lista):

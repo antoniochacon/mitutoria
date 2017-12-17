@@ -860,10 +860,15 @@ def alumnos_html(params={}):
                             return redirect(url_for('analisis_html', params=dic_encode(params)))
                         else:
                             session_sql.add(tutoria_add)
-                            # session_sql.commit()
                             session_sql.flush()
+                            tutoria_id = tutoria_add.id
+                            # NOTE si se desea eliminar el commit hay que usar el FLUSH y recuperar la fecha con datetime.datetime.strptime(tutoria_add.fecha, '%Y-%m-%d').strftime('%d')
+                            # tutoria_dia_semana = translate_fecha(datetime.datetime.strptime(tutoria_add.fecha, '%Y-%m-%d').strftime('%A'))
+                            # tutoria_dia_mes = datetime.datetime.strptime(tutoria_add.fecha, '%Y-%m-%d').strftime('%d')
+                            session_sql.commit()  # NOTE necesario para simplificar y unificar como traducir la fecha
+                            tutoria = tutoria_by_id(tutoria_id)
                             # NOTE anular email
-                            send_email_tutoria_asincrono(alumno, tutoria_add)  # NOTE anular temporalemente para pruebas de envio de mails.
+                            send_email_tutoria_asincrono(alumno, tutoria)  # NOTE anular temporalemente para pruebas de envio de mails.
                             flash_toast('Tutoria generada.' + Markup('<br>') + 'Enviando emails al equipo educativo.', 'info')
                             params['current_alumno_id'] = current_alumno_id
                             params['collapse_alumno'] = True
@@ -1387,7 +1392,7 @@ def analisis_html(params={}):
     if g.settings_current_user.show_analisis_detallado_por_asignatura:
         respuestas_tutoria_media_stats = respuestas_tutoria_media(current_tutoria_id)
     else:
-        respuestas_tutoria_media_stats= False
+        respuestas_tutoria_media_stats = False
     evolucion_stats = evolucion_tutorias(alumno.id)
     return render_template('analisis.html',
                            params=params, tutoria=tutoria, alumno=alumno, grupo=grupo,
@@ -1407,10 +1412,9 @@ def analisis_tutoria_edit_html(params={}):
 
         # XXX selector_tutoria_restaurar
         if request.form['selector_button'] == 'selector_tutoria_restaurar':
-            tutoria_sql.deleted=False
+            tutoria_sql.deleted = False
             session_sql.commit()
             return redirect(url_for('analisis_html', params=dic_encode(params)))
-
 
         # XXX settings_show_analisis_asignaturas_splines
         if request.form['selector_button'] == 'settings_show_analisis_asignaturas_splines':
@@ -1474,7 +1478,6 @@ def analisis_tutoria_edit_html(params={}):
             current_alumno_id = alumno.id
             if asignaturas_id_lista:
                 re_send_email_tutoria_asincrono(alumno, current_tutoria, asignaturas_id_lista)
-                session_sql.commit()
                 flash_toast('Reenviando emails a las asignaturas elegidas', 'info')
                 return redirect(url_for('analisis_html', params=dic_encode(params)))
             else:
