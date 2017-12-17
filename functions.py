@@ -8,12 +8,15 @@ import config_parametros
 # {} Valor
 # *****************************************************************
 
+
 def email_reenvio_number(tutoria_id, asignatura_id):
-    tutoria_asignatura=session_sql.query(Association_Tutoria_Asignatura).filter_by(tutoria_id=tutoria_id, asignatura_id=asignatura_id).first()
+    tutoria_asignatura = session_sql.query(Association_Tutoria_Asignatura).filter_by(tutoria_id=tutoria_id, asignatura_id=asignatura_id).first()
     if tutoria_asignatura:
         return tutoria_asignatura.email_reenvio_number
     else:
         return 0
+
+
 def purgar_papelera_tutorias():
     tutorias = session_sql.query(Tutoria).filter(Tutoria.deleted == True, Tutoria.deleted_at < g.current_date - datetime.timedelta(days=g.settings_global.periodo_deleted_tutorias)).all()
     for tutoria in tutorias:
