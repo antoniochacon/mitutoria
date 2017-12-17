@@ -34,6 +34,14 @@
 		{% endfor %}
 	</div>
 	<div class="padding_contenido small pt-0">
-		Las tutorias que lleven {{g.settings_global.periodo_deleted_tutorias}} {{singular_plural('día','días', g.settings_global.periodo_deleted_tutorias)}} en la papelera se eliminarán automáticamente
+		Las tutorias que lleven {{g.settings_global.periodo_deleted_tutorias}} {{singular_plural('día','días', g.settings_global.periodo_deleted_tutorias)}} en la papelera se eliminarán automáticamente.
+		<div class="mt-2">
+			<div class="btn-group" role="group">
+				<a data-toggle="collapse" href="#alumnos_tutorias_deleted_vaciar_papelera" class="btn btn-outline-dark btn-sm link_without_pointer rounded" aria-expanded="false" title="Vaciar papelera">
+					Vaciar papelera
+				</a>
+				{% include 'alumnos_tutorias_vaciar_papelera_confirmar_block.html' %}
+			</div>
+		</div>
 	</div>
 </div>

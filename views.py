@@ -567,6 +567,7 @@ def alumnos_html(params={}):
     params['invitado'] = params_old.get('invitado', False)
 
     params['tutoria_delete_confirmar'] = params_old.get('tutoria_delete_confirmar', False)
+    params['tutorias_deleted_vaciar_papelera'] = params_old.get('tutorias_deleted_vaciar_papelera', False)
     params['tutoria_restaurar'] = params_old.get('tutoria_restaurar', False)
     params['alumno_delete_confirmar'] = params_old.get('alumno_delete_confirmar', False)
     params['current_alumno_id'] = params_old.get('current_alumno_id', 0)
@@ -589,7 +590,16 @@ def alumnos_html(params={}):
         tutoria = tutoria_by_id(current_tutoria_id)
         session_sql.delete(tutoria)
         session_sql.commit()
-        flash_toast('Tutoria elminada', 'success')
+        flash_toast('Tutoria eliminada', 'success')
+        return redirect(url_for('alumnos_html', params=dic_encode(params)))
+
+    if params['tutorias_deleted_vaciar_papelera']:
+        params['tutorias_deleted_vaciar_papelera'] = False
+        tutorias = tutorias_by_grupo_id(g.settings_current_user.grupo_activo_id, deleted=True)
+        for tutoria in tutorias:
+            session_sql.delete(tutoria)
+        session_sql.commit()
+        flash_toast('Papelera vaciada', 'success')
         return redirect(url_for('alumnos_html', params=dic_encode(params)))
 
     if params['tutoria_restaurar']:
@@ -615,7 +625,6 @@ def alumnos_html(params={}):
         return redirect(url_for('alumnos_html', params=dic_encode(params)))
 
     if request.method == 'POST':
-        # NOTE almacena current_alumno_id para el resto de situacones
         current_alumno_id = current_id_request('current_alumno_id')
         params['current_alumno_id'] = current_alumno_id
         # XXX alumno_add
@@ -756,9 +765,10 @@ def alumnos_html(params={}):
             else:
                 if collapse_alumno_edit_asignaturas_contador != 0:
                     params['collapse_alumno_edit_asignaturas'] = True
+                    session_sql.commit()
                     flash_toast('Asignadas asignaturas a ' + Markup('<strong>') + alumno_edit_form.nombre.data + Markup('</strong>'), 'success')
                     collapse_alumno_edit_asignaturas_contador = 0
-            session_sql.commit()  # NOTE agregado en caso de no modificar datos del alumno y solo asignacion de asignaturas
+            # session_sql.commit()  # NOTE agregado en caso de no modificar datos del alumno y solo asignacion de asignaturas
 
             # ***************************************
             if alumno_edit_form.validate():
@@ -833,7 +843,6 @@ def alumnos_html(params={}):
 
             else:
                 if tutoria_add_form.validate():
-                    # FIXME da error de fecha tras el nuevo modelo locale de heroku (falla tambien en LOCAL SERVER)
                     tutoria_add_form_fecha = datetime.datetime.strptime(tutoria_add_form.fecha.data, '%d-%m-%Y').strftime('%Y-%m-%d')
                     tutoria_add = Tutoria(alumno_id=current_alumno_id, fecha=tutoria_add_form_fecha, hora=tutoria_add_form.hora.data)
                     alumno = alumno_by_id(current_alumno_id)
@@ -845,16 +854,17 @@ def alumnos_html(params={}):
                     else:
                         if tutoria_sql:
                             # NOTE tutoria ya existe y redirect a al modo de edicion de la tutoria
-                            flash_toast('Ya existe esta tutoría' + Markup('<br>') + 'Es aconsejable reenviarla', 'warning')
+                            flash_toast('Ya existe esta tutoría' + Markup('<br>') + 'Es aconsejable editarla', 'warning')
                             # FIXME: parametros_url
                             params['current_tutoria_id'] = tutoria_sql.id
                             return redirect(url_for('analisis_html', params=dic_encode(params)))
                         else:
                             session_sql.add(tutoria_add)
-                            session_sql.commit()
+                            # session_sql.commit()
+                            session_sql.flush()
                             # NOTE anular email
                             send_email_tutoria_asincrono(alumno, tutoria_add)  # NOTE anular temporalemente para pruebas de envio de mails.
-                            flash_toast('Enviando emails al equipo educativo de ' + Markup('<strong>') + alumno.nombre + Markup('</strong>'), 'info')
+                            flash_toast('Tutoria generada.' + Markup('<br>') + 'Enviando emails al equipo educativo.', 'info')
                             params['current_alumno_id'] = current_alumno_id
                             params['collapse_alumno'] = True
                             params['collapse_tutorias'] = True
@@ -1369,7 +1379,7 @@ def analisis_html(params={}):
         tutoria.deleted = True
         tutoria.deleted_at = g.current_date
         session_sql.commit()
-        flash_toast('Tutoria eliminada', 'success')
+        flash_toast('Tutoria enviada a la papelera', 'success')
         return redirect(url_for('alumnos_html'))
 
     stats = analisis_tutoria(current_tutoria_id)
@@ -1393,6 +1403,14 @@ def analisis_tutoria_edit_html(params={}):
     if request.method == 'POST':
         current_tutoria_id = current_id_request('current_tutoria_id')
         params['current_tutoria_id'] = current_tutoria_id
+        tutoria_sql = tutoria_by_id(current_tutoria_id)
+
+        # XXX selector_tutoria_restaurar
+        if request.form['selector_button'] == 'selector_tutoria_restaurar':
+            tutoria_sql.deleted=False
+            session_sql.commit()
+            return redirect(url_for('analisis_html', params=dic_encode(params)))
+
 
         # XXX settings_show_analisis_asignaturas_splines
         if request.form['selector_button'] == 'settings_show_analisis_asignaturas_splines':

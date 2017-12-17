@@ -1080,10 +1080,13 @@ def send_email_tutoria(alumno, tutoria):
         # XXX envio de mail
         # ****************************************
         to = asignatura.email
-        subject = 'Tutoria | %s | %s | %s %s' % (grupo_activo().nombre, alumno.nombre, translate_fecha(tutoria.fecha.strftime('%A')), tutoria.fecha.strftime('%d'))
-        message_text = render_template('email_tutoria.html', tutoria=tutoria, alumno=alumno, asignatura=asignatura, tutoria_email_link=tutoria_email_link, index_link=index_link)
+        tutoria_dia_semana = translate_fecha(datetime.datetime.strptime(tutoria.fecha, '%Y-%m-%d').strftime('%A'))
+        tutoria_dia_mes = datetime.datetime.strptime(tutoria.fecha, '%Y-%m-%d').strftime('%d')
+        subject = 'Tutoria | %s | %s | %s %s' % (grupo_activo().nombre, alumno.nombre, tutoria_dia_semana, tutoria_dia_mes)
+        message_text = render_template('email_tutoria.html', tutoria_id=tutoria.id, tutoria_dia_semana=tutoria_dia_semana, tutoria_dia_mes=tutoria_dia_mes, alumno=alumno, asignatura=asignatura, tutoria_email_link=tutoria_email_link, index_link=index_link)
         create_message_and_send(service, sender, to, subject, message_text)
         time.sleep(email_time_sleep)
+    session_sql.commit()
 
 
 def send_email_tutoria_asincrono(alumno, tutoria):
@@ -1092,8 +1095,6 @@ def send_email_tutoria_asincrono(alumno, tutoria):
         send_email_tutoria(alumno, tutoria)
     send_email_tutoria_threading = threading.Thread(name='send_email_tutoria_thread', target=send_email_tutoria_process, args=(alumno, tutoria))
     send_email_tutoria_threading.start()
-    session_sql.commit()
-    flash_toast('Tutoria generada para ' + Markup('<strong>') + alumno.nombre + Markup('</strong>'), 'success')
 
 
 def re_send_email_tutoria(alumno, tutoria, asignaturas_id_lista):
@@ -1119,8 +1120,12 @@ def re_send_email_tutoria(alumno, tutoria, asignaturas_id_lista):
         # XXX envio de mail
         # ****************************************
         to = asignatura.email
-        subject = 'Tutoria | %s | %s | %s %s' % (grupo_activo().nombre, alumno.nombre, translate_fecha(tutoria.fecha.strftime('%A')), tutoria.fecha.strftime('%d'))
-        message_text = render_template('email_tutoria.html', tutoria=tutoria, alumno=alumno, asignatura=asignatura, tutoria_email_link=tutoria_email_link, index_link=index_link)
+        # tutoria_dia_semana = translate_fecha(tutoria.fecha.strftime('%A'))
+        # tutoria_dia_mes = tutoria.fecha.strftime('%d')
+        tutoria_dia_semana = 'tutoria_dia_semana'
+        tutoria_dia_mes = 'tutoria_dia_mes'
+        subject = 'Tutoria | %s | %s | %s %s' % (grupo_activo().nombre, alumno.nombre, tutoria_dia_semana, tutoria_dia_mes)
+        message_text = render_template('email_tutoria.html', tutoria_id=tutoria.id, tutoria_dia_semana=tutoria_dia_semana, tutoria_dia_mes=tutoria_dia_mes, alumno=alumno, asignatura=asignatura, tutoria_email_link=tutoria_email_link, index_link=index_link)
         create_message_and_send(service, sender, to, subject, message_text)
         time.sleep(email_time_sleep)
 
