@@ -59,6 +59,16 @@ def before_request_html():
         pass
 
 
+@app.after_request
+def after_request_html(response):
+    Session_SQL.remove()
+    return response
+
+    # session_sql.remove()
+     # scoped_session.remove()
+    # return response
+
+
 @app.route('/getos')
 def getos():
     return (os.name)
@@ -1465,7 +1475,6 @@ def analisis_tutoria_edit_html(params={}):
         # XXX tutoria_edit_close
         if request.form['selector_button'] == 'selector_tutoria_edit_close':
             return redirect(url_for('analisis_html', params=dic_encode(params)))
-
 
         # XXX tutoria_re_enviar
         if request.form['selector_button'] == 'selector_tutoria_re_enviar':
