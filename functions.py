@@ -1089,8 +1089,8 @@ def send_email_tutoria(alumno, tutoria):
         tutoria_dia_semana = translate_fecha(tutoria.fecha.strftime('%A'))
         tutoria_dia_mes = tutoria.fecha.strftime('%d')
         emails_enviados += 1
-        subject = 'Tutoria | %s | %s | %s %s' % (grupo_activo().nombre, alumno.nombre, tutoria_dia_semana, tutoria_dia_mes)
-        message_text = render_template('email_tutoria.html', tutoria_id=tutoria.id, tutoria_dia_semana=tutoria_dia_semana, tutoria_dia_mes=tutoria_dia_mes, alumno=alumno, asignatura=asignatura, tutoria_email_link=tutoria_email_link, index_link=index_link)
+        subject = 'Tutoria | %s | %s | %s %s [e-%s]' % (grupo_activo().nombre, alumno.nombre, tutoria_dia_semana, tutoria_dia_mes, emails_enviados)
+        message_text = render_template('email_tutoria.html', tutoria=tutoria, alumno=alumno, asignatura=asignatura, tutoria_email_link=tutoria_email_link, index_link=index_link)
         create_message_and_send(service, sender, to, subject, message_text)
         time.sleep(email_time_sleep)
     settings_current_user_sql.emails_enviados = emails_enviados
@@ -1140,7 +1140,7 @@ def re_send_email_tutoria(alumno, tutoria, asignaturas_id_lista):
         email_reenvio_number = email_reenvio_number + 1
         tutoria_asignatura_sql.email_reenvio_number = email_reenvio_number
         subject = 'Tutoria | %s | %s |  %s %s [r-%s]' % (grupo_activo().nombre, alumno.nombre, tutoria_dia_semana, tutoria_dia_mes, email_reenvio_number)
-        message_text = render_template('email_tutoria.html', tutoria_id=tutoria.id, tutoria_dia_semana=tutoria_dia_semana, tutoria_dia_mes=tutoria_dia_mes, alumno=alumno, asignatura=asignatura, tutoria_email_link=tutoria_email_link, index_link=index_link)
+        message_text = render_template('email_tutoria.html', tutoria=tutoria.id, alumno=alumno, asignatura=asignatura, tutoria_email_link=tutoria_email_link, index_link=index_link)
         create_message_and_send(service, sender, to, subject, message_text)
         time.sleep(email_time_sleep)
     settings_current_user_sql.emails_enviados = emails_enviados
