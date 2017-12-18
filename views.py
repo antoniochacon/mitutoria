@@ -438,8 +438,31 @@ def admin_usuario_edit_html(params={}):
         'admin_usuarios.html', usuario_edit=Usuario_Edit(), params=params)
 
 # XXX admin_usuario_data_grupos
+@app.route('/admin_usuario_ficha', methods=['GET', 'POST'])
+@app.route('/admin_usuario_ficha/<params>', methods=['GET', 'POST'])
+@login_required
+def admin_usuario_ficha_html(params={}):
+    try:
+        params_old = dic_decode(params)
+    except:
+        params_old = {}
+        abort(404)
+
+    params = {}
+    params['anchor'] = params_old.get('anchor', 'anchor_top')
+    params['current_usuario_id'] = params_old.get('current_usuario_id', 0)
+    params['usuario_delete_link'] = params_old.get('usuario_delete_link', False)
+    params['usuario_edit_link'] = params_old.get('usuario_edit_link', False)
+
+    current_usuario_id = params['current_usuario_id']
+    usuario = user_by_id(current_usuario_id)
+    params['current_url'] = 'admin_usuario_data_grupos_html'
+    return render_template(
+        'admin_usuario_ficha.html', usuario_edit=Usuario_Edit(), usuario=usuario, params=params)
 
 
+
+# XXX admin_usuario_data_grupos
 @app.route('/admin_usuario_data_grupos', methods=['GET', 'POST'])
 @app.route('/admin_usuario_data_grupos/<params>', methods=['GET', 'POST'])
 @login_required

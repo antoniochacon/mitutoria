@@ -7,46 +7,80 @@
 	<div class="paper bg-white padding_contenido">
 		{{titulo_1(bg_color='bg-dark', titulo='Admin Settings')}}
 		{% include "admin_usuario_data_block.html" %}
-		{{nav_tabs(tab_active='opciones', params_args=dic_encode_args({'current_usuario_id': usuario.id}), dic={'Grupos':'admin_usuario_data_grupos', 'Cuestionario':'admin_usuario_data_cuestionario', 'Opciones':'admin_usuario_data_opciones'})}}
-		<div class="padding_3">
-			<div class="row">
-				<div class="col-md-6 col-lg-4">
+		{{nav_tabs(tab_active='Opciones', params_args=dic_encode_args({'current_usuario_id': usuario.id}), dic={'Grupos':'admin_usuario_data_grupos', 'Cuestionario':'admin_usuario_data_cuestionario', 'Opciones':'admin_usuario_data_opciones'})}}
+		<div class="row">
+			<div class="col-md-6">
+				<label class="custom-control custom-checkbox check_box_1">
 					{# NOTE elminado el form-group para ajustar mejor #}
-					<label class="custom-control custom-checkbox check_box_1">
-						<input type="checkbox" class="custom-control-input" name="settings_edit_tutoria_timeout" value="True" {% if settings_current_usuario_id.tutoria_timeout %} checked="checked" {% endif %} disabled="disabled">
-						<span class="custom-control-indicator"></span>
-						<span class="custom-control-description {% if not settings_current_usuario_id.tutoria_timeout %}text-mutted{% endif %}">Auto archivar tutorias</span>
-					</label>
-				</div>
-				<div class="col-md-6 col-lg-4">
-					{# NOTE elminado el form-group para ajustar mejor #}
-					<label class="custom-control custom-checkbox check_box_1">
-						<input type="checkbox" class="custom-control-input" name="settings_show_asignaturas_analisis" value="True" {% if settings_current_usuario_id.show_asignaturas_analisis %} checked="checked" {% endif %} disabled="disabled">
-						<span class="custom-control-indicator"></span>
-						<span class="custom-control-description {% if not settings_current_usuario_id.show_asignaturas_analisis %}text-mutted{% endif %}">Mostrar evolución equipo educativo</span>
-					</label>
-				</div>
-				{% if g.settings_current_user.role=='admin'%}
-					<div class="col-md-6 col-lg-4">
-						<label class="custom-control custom-checkbox check_box_1">
-							<input type="checkbox" class="custom-control-input" name="settings_edit_calendar" value="True" {% if settings_current_usuario_id.calendar %} checked="checked" {% endif %} disabled="disabled">
-							<span class="custom-control-indicator"></span>
-							<span class="custom-control-description {% if not settings_current_usuario_id.calendar %}text-mutted{% endif %}">Agregar eventos a la agenda</span>
-						</label>
+					<input type="checkbox" class="custom-control-input" name="settings_edit_calendar" value="True" {% if settings_current_usuario_id.calendar %} checked="checked" {% endif %} disabled="disabled">
+					<span class="custom-control-indicator"></span>
+					<span class="custom-control-description {% if not settings_current_usuario_id.calendar %}text-mutted{% endif %}">Sincronizar Google Calendar</span>
+				</label>
+			</div>
+			<div class="col-md-6">
+				{# NOTE elminado el form-group para ajustar mejor #}
+				<label class="custom-control custom-checkbox check_box_1">
+					<input type="checkbox" class="custom-control-input" name="settings_edit_tutoria_timeout" value="True" {% if settings_current_usuario_id.tutoria_timeout %} checked="checked" {% endif %} disabled="disabled">
+					<span class="custom-control-indicator"></span>
+					<span class="custom-control-description {% if not settings_current_usuario_id.tutoria_timeout %}text-mutted{% endif %}">Auto archivar tutorias</span>
+				</label>
+			</div>
+			<div class="col-md-6">
+				{# NOTE elminado el form-group para ajustar mejor #}
+				<label class="custom-control custom-checkbox check_box_1">
+					<input type="checkbox" class="custom-control-input" name="settings_show_asignaturas_analisis" value="True" {% if settings_current_usuario_id.show_asignaturas_analisis %} checked="checked" {% endif %} disabled="disabled">
+					<span class="custom-control-indicator"></span>
+					<span class="custom-control-description {% if not settings_current_usuario_id.show_asignaturas_analisis %}text-mutted{% endif %}">Mostrar evolución equipo educativo</span>
+				</label>
+			</div>
+			<div class="col-md-6">
+				{# NOTE elminado el form-group para ajustar mejor #}
+				<label class="custom-control custom-checkbox check_box_1">
+					<input type="checkbox" class="custom-control-input" name="settings_show_analisis_detalles" value="True" {% if settings_current_usuario_id.show_analisis_detalles %} checked="checked" {% endif %} disabled="disabled">
+					<span class="custom-control-indicator"></span>
+					<span class="custom-control-description {% if not settings_current_usuario_id.show_analisis_detalles %}text-mutted{% endif %}">Mostrar gráficos detallados</span>
+				</label>
+			</div>
+			<div class="col-md-6">
+				{# NOTE elminado el form-group para ajustar mejor #}
+				<label class="custom-control custom-checkbox check_box_1">
+					<input type="checkbox" class="custom-control-input" name="settings_show_analisis_detallado_por_asignatura" value="True" {% if settings_current_usuario_id.show_analisis_detallado_por_asignatura %} checked="checked" {% endif %} disabled="disabled">
+					<span class="custom-control-indicator"></span>
+					<span class="custom-control-description {% if not settings_current_usuario_id.show_analisis_detallado_por_asignatura %}text-mutted{% endif %}">Mostrar gráficos detallados por asignatura</span>
+				</label>
+			</div>
+		</div>
+		<div class="row">
+			<div class="col-md-6 mt-3">
+				<div class="card border-gray z-depth-1-1-less">
+					<div class="card-header p-2 pl-3">
+						Duración de las tutorías.
+						<span class="text-muted small">
+							Minutos de duración de las tutorias sincronizadas como eventos de tu agenda de Google.
+						</span>
 					</div>
-				{% endif %}
-				<div class="form-group col-md-12 text-center">
-					<div class="range-slider">
-						<div class="range-slider-value">0</div>
-						duración tutoría
-						<input name="tutoria_duracion" disabled="disabled" class="range-slider-range" type="range" step="1" value="{{settings_current_usuario_id.tutoria_duracion}}" min="0" max="60">
+					<div class="form-group">
+						<div class="range-slider text-center">
+							<span class="range-slider-value">0</span>
+							minutos
+							<input name="settings_tutoria_duracion" disabled="disabled" class="range-slider-range" type="range" step="5" value="{{settings_current_usuario_id.tutoria_duracion}}" min="10" max="60">
+						</div>
 					</div>
 				</div>
-				<div class="form-group col-md-12 text-center">
-					<div class="range-slider">
-						<div class="range-slider-value">0</div>
-						diferencial
-						<input name="diferencial" disabled="disabled" class="range-slider-range" type="range" step="1" value="{{settings_current_usuario_id.diferencial}}" min="0" max="100">
+			</div>
+			<div class="col-md-6 mt-3">
+				<div class="card border-gray z-depth-1-1-less">
+					<div class="card-header p-2 pl-3">Diferencial.
+						<span class="text-muted small">
+							Porcentaje de diferencias que activa las alertas del analisis individual de asignaturas. Recomendable 15-30.
+						</span>
+					</div>
+					<div class="form-group col-md-12">
+						<div class="range-slider text-center">
+							<span class="range-slider-value">0</span>
+							%
+							<input name="settings_diferencial" disabled="disabled" class="range-slider-range" type="range" step="5" value="{{settings_current_usuario_id.diferencial}}" min="5" max="50">
+						</div>
 					</div>
 				</div>
 			</div>

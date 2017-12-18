@@ -5,18 +5,29 @@
 	<div class="paper bg-white padding_contenido">
 		{{titulo_1(bg_color='bg-dark', titulo='Admin Settings')}}
 		{% include "admin_usuario_data_block.html" %}
-		{{nav_tabs(tab_active='Cuestiones', params_args=dic_encode_args({'current_usuario_id': usuario.id}), dic={'Grupos':'admin_usuario_data_grupos', 'Cuestionario':'admin_usuario_data_cuestionario', 'Opciones':'admin_usuario_data_opciones'})}}
-		<div class="row">
-			{% for pregunta in invitado_preguntas(params['current_usuario_id']) %}
-				<div class="media col-md-6 col-lg-4 pb-2">
-					<span class="capital capital-mutted">{{pregunta.orden}}</span>
-					<div class="media-body">
-						<div class="padding_2">
-							{{pregunta.enunciado_ticker}}
-						</div>
-					</div>
+		{{nav_tabs(tab_active='Cuestionario', params_args=dic_encode_args({'current_usuario_id': usuario.id}), dic={'Grupos':'admin_usuario_data_grupos', 'Cuestionario':'admin_usuario_data_cuestionario', 'Opciones':'admin_usuario_data_opciones'})}}
+		{% for categoria in categorias() %}
+			{% with %}
+			{% set invitado_preguntas_by_categoria_id_sql = invitado_preguntas_by_categoria_id(params['current_usuario_id'], categoria.id) %}
+			{% if invitado_preguntas_by_categoria_id_sql %}
+				<div class="bg-dark text-white pl-2 pt-2 pb-2 mb-2">
+					{{categoria.enunciado}}
 				</div>
-			{% endfor %}
-		</div>
+				<div class="row">
+					{% for pregunta in invitado_preguntas_by_categoria_id_sql %}
+						<div class="media col-md-6 col-lg-4 pb-2">
+							<span class="capital capital-mutted">{{pregunta.orden}}</span>
+							<div class="media-body">
+								<div class="padding_2">
+									{{pregunta.enunciado_ticker}}
+								</div>
+							</div>
+						</div>
+					{% endfor %}
+				</div>
+			{% endif %}
+			{% endwith %}
+		{% endfor %}
 	</div>
+</div>
 {% endblock %}
