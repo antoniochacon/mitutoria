@@ -784,15 +784,12 @@ def alumnos_html(params={}):
             if alumno_edit_form.validate():
                 alumno_edit = Alumno(grupo_id=g.settings_current_user.grupo_activo_id, nombre=alumno_edit_form.nombre.data.title(), apellidos=alumno_edit_form.apellidos.data.title())
                 alumno_sql = session_sql.query(Alumno).filter_by(id=current_alumno_id).first()
-                if alumno_sql.nombre.lower() != alumno_edit.nombre.lower() or alumno_sql.apellidos.lower() != alumno_edit.apellidos.lower():
-                    if alumno_sql.nombre.lower() != alumno_edit.nombre.lower():
-                        alumno_sql.nombre = alumno_edit.nombre.title()
-                        flash_toast(Markup('<strong>') + alumno_edit.nombre + Markup('</strong>') + ' actualizado', 'success')
-                    if alumno_sql.apellidos.lower() != alumno_edit.apellidos.lower():
-                        alumno_sql.apellidos = alumno_edit.apellidos.title()
-                        flash_toast(Markup('<strong>') + alumno_edit.apellidos + Markup('</strong>') + ' actualizado', 'success')
+                alumno_sql.nombre = alumno_edit.nombre.title()
+                alumno_sql.apellidos = alumno_edit.apellidos.title()
+                if session_sql.dirty:
+                    flash_toast('Alumno actualizado', 'success')
                     session_sql.commit()
-                    return redirect(url_for('alumnos_html', params=dic_encode(params)))
+                return redirect(url_for('alumnos_html', params=dic_encode(params)))
 
                 # XXX redirect a tutoria_add
                 if params['from_url'] == 'from_tutoria_add':
