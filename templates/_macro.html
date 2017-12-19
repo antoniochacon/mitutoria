@@ -1161,14 +1161,15 @@
 {% endmacro %}
 
 {% macro nav_tabs_admin(tab_active, params_args) %}
-	{{nav_tabs(tab_active, params_args=params_args, dic={'Cuestionario':'admin_cuestionario', 'Citas':'admin_citas', 'Global Set':'admin_settings_global', 'Users':'admin_usuarios', 'Stats':'admin_estadisticas'})}}
+	{{nav_tabs(tab_active, params_args=params_args, dic={'Cuestionario':'admin_cuestionario', 'Citas':'admin_citas', 'Global Set':'admin_settings_global', 'Usuarios':'admin_usuarios', 'Stats':'admin_estadisticas'})}}
 {% endmacro %}
+
 {% macro nav_tabs(tab_active, params_args, dic) %}
 	<div class="pb-2 mt-2">
 		<ul class="nav nav-tabs">
 			{% for tab_key in dic.keys() %}
 				<li class="nav-items" aria-current="page">
-					<a class="nav-link {% if tab_key==tab_active %} active {% endif %}" href="/{{dic[tab_key]}}{% if params_args %}/{{params_args}}{% endif %}">{{tab_key}}</a>
+					<a class="nav-link px-2 {% if tab_key==tab_active %} active {% endif %}" href="/{{dic[tab_key]}}{% if params_args %}/{{params_args}}{% endif %}">{{tab_key}}</a>
 				</li>
 			{% endfor %}
 		</ul>

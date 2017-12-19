@@ -1199,6 +1199,7 @@ def send_email_validate(current_user_id):
     # XXX envio de mail
     # ****************************************
     to = user_by_id(current_user_id).email
+    print('email',to)
     subject = 'Verificación de email'
     params = {}
     params['current_user_id'] = current_user_id
@@ -1321,7 +1322,7 @@ def preguntas_active_default(settings_id):  # Inserta las preguntas_active_defau
             preguntas_id_lista.append(pregunta.id)
 
     if preguntas_id_lista:
-        for pregunta in preguntas('True'):
+        for pregunta in preguntas(visible=True):
             if pregunta.id in preguntas_id_lista:
                 if not association_settings_pregunta_check(settings_id, pregunta.id):
                     association_settings_pregunta_add = Association_Settings_Pregunta(settings_id=settings_id, pregunta_id=pregunta.id)
