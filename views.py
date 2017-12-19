@@ -308,7 +308,6 @@ def admin_estadisticas_html(params={}):
         'admin_estadisticas.html', params=params, stats=stats)
 
 
-
 # # XXX usuario_delete
 # if request.form['selector_button'] == 'selector_usuario_delete':
 #     if request.form['selector_button'] == 'selector_usuario_delete':
@@ -318,7 +317,6 @@ def admin_estadisticas_html(params={}):
 #         session_sql.commit()
 #         flash_toast(Markup('Usuario <strong>') + usuario.username + Markup('</strong>') + ' elminado', 'success')
 #         return redirect(url_for('admin_usuarios_html'))
-
 
 
 # XXX admin_usuario_ficha
@@ -355,6 +353,7 @@ def admin_usuario_ficha_html(params={}):
         current_usuario_id = current_id_request('current_usuario_id')
         params['current_usuario_id'] = current_usuario_id
         usuario = user_by_id(current_usuario_id)
+        settings_sql=settings_by_id(current_usuario_id)
 
         # XXX selector_usuario_edit_link
         if request.form['selector_button'] == 'selector_usuario_edit_link':
@@ -375,19 +374,20 @@ def admin_usuario_ficha_html(params={}):
             if not settings_email_robinson:
                 settings_email_robinson = False
 
+            settings_sql.role = usuario_edit_form.role.data
+            settings_sql.ban = settings_edit_ban
+            settings_sql.email_validated = settings_email_validated
+            settings_sql.email_robinson = settings_email_robinson
+            if session_sql.dirty:
+                flash_toast('Opciones actualizadas', 'success')
+                session_sql.commit()
+
             if usuario_edit_form.validate():
-                usuario.role = usuario_edit_form.role.data
-                usuario.ban = settings_edit_ban
-                usuario.email_validated = settings_email_validated
-                usuario.email_robinson = settings_email_robinson
-
-                # usuario_sql = session_sql.query(User).filter(User.id == current_usuario_id).first()
                 usuario_password_new = usuario_edit_form.password.data
-
                 if usuario_password_new:
                     hashed_password = generate_password_hash(usuario_password_new, method='sha256')
                     usuario.password = hashed_password
-                session_sql.commit()
+                    session_sql.flush()
 
                 # NOTE usuario_username_unicidad
                 usuario_username_duplicado = session_sql.query(User).filter(User.username == usuario_edit_form.username.data).all()
@@ -398,7 +398,7 @@ def admin_usuario_ficha_html(params={}):
                             'admin_usuario_ficha.html', usuario_edit=usuario_edit_form, params=params)
                 else:
                     usuario.username = usuario_edit_form.username.data
-                    # session_sql.commit()
+                    session_sql.flush()
 
                 # NOTE usuario_email_unicidad
                 usuario_email_duplicado = session_sql.query(User).filter(User.email == usuario_edit_form.email.data).all()
@@ -409,16 +409,17 @@ def admin_usuario_ficha_html(params={}):
                             'admin_usuario_ficha.html', usuario_edit=usuario_edit_form, params=params)
                 else:
                     usuario.email = usuario_edit_form.email.data
+                    session_sql.flush()
+
+                if session_sql.dirty:
+                    flash_toast('Usuario actualizado', 'success')
                     session_sql.commit()
 
-                flash_toast(Markup('Usuario <strong>') + usuario_edit_form.username.data + Markup('</strong>') + ' actualizado', 'success')
-                session_sql.commit()
                 return redirect(url_for('admin_usuario_ficha_html', params=dic_encode(params)))
             else:
                 flash_wtforms(usuario_edit_form, flash_toast, 'warning')
             return render_template(
                 'admin_usuario_ficha.html', usuario_edit=usuario_edit_form, usuario=user_by_id(current_usuario_id), params=params)
-
 
     return render_template(
         'admin_usuario_ficha.html', usuario_edit=Usuario_Edit(), usuario=usuario, params=params)
@@ -2217,11 +2218,10 @@ def login_validacion_email_html(params={}):
     params['current_user_id'] = params_old.get('current_user_id', 0)
     current_user_id = params['current_user_id']
 
-
     if request.method == 'POST':
         params['current_user_id'] = current_id_request('current_user_id')
         current_user_id = params['current_user_id']
-        user=user_by_id(current_user_id)
+        user = user_by_id(current_user_id)
         email_validated_intentos_add = settings_by_id(current_user_id).email_validated_intentos + 1
         settings_edit = settings_by_id(current_user_id)
         settings_edit.email_validated_intentos = email_validated_intentos_add
