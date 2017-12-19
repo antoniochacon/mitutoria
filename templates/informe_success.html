@@ -24,10 +24,10 @@
 				{% if params['tutorias_sin_respuesta_by_asignatura_id']['tutorias_sin_respuesta_count'] %}
 				<a class="btn btn-outline-warning btn-sm link_without_pointer mt-1 mb-1" href="/informes_pendientes/{{hashids_encode(asignatura.id)}}" role="button">Informes pendientes: {{params['tutorias_sin_respuesta_by_asignatura_id']['tutorias_sin_respuesta_count']}}</a>
 				{% else %}
-				<span class="text-secondary small">Sin tutorias pendientes</span>
+				<span class="text-secondary small">Sin tutorias pendientes.</span>
 				{% endif %}
 
-				<div class="small text-secondary mb-2">actividad últimos {{params['settings_global_periodo_participacion_recent']}} días:</div>
+				<div class="small text-secondary mb-2">Participación últimos {{params['settings_global_periodo_participacion_recent']}} días:</div>
 				<span class="contador_animado align-middle h3 pl-2 pr-2">
 					<span class="timer" data-to="{{params['participacion_porcentaje_recent']}}" data-speed="3000"></span>%
 				</span>
