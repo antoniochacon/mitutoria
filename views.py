@@ -64,10 +64,6 @@ def after_request_html(response):
     Session_SQL.remove()
     return response
 
-    # session_sql.remove()
-    # scoped_session.remove()
-    # return response
-
 
 @app.route('/getos')
 def getos():
@@ -2198,7 +2194,8 @@ def user_add_html():
                     settings_add.role = 'admin'
                     settings_add.email_validated = True
                 session_sql.commit()
-                send_email_validate_asincrono(user_add.id)
+                send_email_validate_asincrono(user_add)
+                # params['current_user_id'] = current_user_id
                 return redirect(url_for('login_validacion_email_html', params=dic_encode(params)))
         else:
             flash_wtforms(user_add_form, flash_toast, 'warning')
@@ -2220,19 +2217,22 @@ def login_validacion_email_html(params={}):
     params['current_user_id'] = params_old.get('current_user_id', 0)
     current_user_id = params['current_user_id']
 
+
     if request.method == 'POST':
         params['current_user_id'] = current_id_request('current_user_id')
         current_user_id = params['current_user_id']
+        user=user_by_id(current_user_id)
         email_validated_intentos_add = settings_by_id(current_user_id).email_validated_intentos + 1
         settings_edit = settings_by_id(current_user_id)
         settings_edit.email_validated_intentos = email_validated_intentos_add
         session_sql.commit()
         params['email_validated_intentos'] = email_validated_intentos_add
-        send_email_validate_asincrono(current_user_id)
+        send_email_validate_asincrono(user)
         return redirect(url_for('login_validacion_email_html', params=dic_encode(params)))
-    else:
-        if current_user_id != 0:
-            params['email_validated_intentos'] = settings_by_id(current_user_id).email_validated_intentos
+    try:
+        params['email_validated_intentos'] = settings_by_id(current_user_id).email_validated_intentos
+    except:
+        abort(404)
 
     return render_template('login_validacion_email.html', params=params)
 

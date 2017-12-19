@@ -1108,6 +1108,35 @@ def send_email_tutoria_asincrono(alumno, tutoria):
     send_email_tutoria_threading.start()
 
 
+def send_email_validate(user):
+    try:
+        settings_global_sql = session_sql.query(Settings_Global).first()
+        settings_current_user_sql= settings_by_id(user.id)
+        oauth2_credentials = settings_global_sql.oauth2_credentials
+        credentials = oauth2client.client.Credentials.new_from_json(oauth2_credentials)
+        http = credentials.authorize(httplib2.Http())
+        service = discovery.build('gmail', 'v1', http=http)
+    except:
+        return redirect(url_for('oauth2callback_gmail'))
+    sender = settings_global_sql.gmail_sender
+
+    # XXX envio de mail
+    # ****************************************
+    to = user.email
+    email_validated_intentos=settings_current_user_sql.email_validated_intentos
+    subject = 'Verificación de email [e-%s]' % (email_validated_intentos)
+    message_text = render_template('email_validate.html', user=user, email_validate_link=email_validate_link, index_link=index_link)
+    create_message_and_send(service, sender, to, subject, message_text)
+
+
+def send_email_validate_asincrono(user):
+    @copy_current_request_context
+    def send_email_validate_process(user):
+        send_email_validate(user)
+    send_email_validate_threading = threading.Thread(name='send_email_validate_thread', target=send_email_validate_process, args=(user,))
+    send_email_validate_threading.start()
+
+
 def re_send_email_tutoria(alumno, tutoria, asignaturas_id_lista):
     try:
         settings_global_sql = session_sql.query(Settings_Global).first()
@@ -1181,40 +1210,8 @@ def send_email_password_reset_request_asincrono(current_user_id):
     @copy_current_request_context
     def send_email_password_reset_request_process(current_user_id):
         send_email_password_reset(current_user_id)
-    send_email_password_reset_request_threading = threading.Thread(name='send_email_password_reset_request_thread', target=send_email_password_reset_request_process, args=(current_user_id))
+    send_email_password_reset_request_threading = threading.Thread(name='send_email_password_reset_request_thread', target=send_email_password_reset_request_process, args=(current_user_id,))
     send_email_password_reset_request_threading.start()
-
-
-def send_email_validate(current_user_id):
-    try:
-        settings_global_sql = session_sql.query(Settings_Global).first()
-        oauth2_credentials = settings_global_sql.oauth2_credentials
-        credentials = oauth2client.client.Credentials.new_from_json(oauth2_credentials)
-        http = credentials.authorize(httplib2.Http())
-        service = discovery.build('gmail', 'v1', http=http)
-    except:
-        return redirect(url_for('oauth2callback_gmail'))
-    sender = settings_global_sql.gmail_sender
-
-    # XXX envio de mail
-    # ****************************************
-    to = user_by_id(current_user_id).email
-    print('email',to)
-    subject = 'Verificación de email'
-    params = {}
-    params['current_user_id'] = current_user_id
-    params['email_validate_link'] = email_validate_link
-    params['index_link'] = index_link
-    message_text = render_template('email_validate.html', params=params)
-    create_message_and_send(service, sender, to, subject, message_text)
-
-
-def send_email_validate_asincrono(current_user_id):
-    @copy_current_request_context
-    def send_email_validate_process(current_user_id):
-        send_email_validate(current_user_id)
-    send_email_validate_threading = threading.Thread(name='send_email_validate_thread', target=send_email_validate_process, args=(current_user_id))
-    send_email_validate_threading.start()
 # *****************************************************************
 
 
