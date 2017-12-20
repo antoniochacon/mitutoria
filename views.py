@@ -1288,6 +1288,7 @@ def analisis_html(params={}):
         return redirect(url_for('alumnos_html'))
 
     stats = analisis_tutoria(current_tutoria_id)
+    comentarios_stats = tutoria_comentarios(current_tutoria_id, stats['asignaturas_recibidas_lista'])
     grupo_stats = respuestas_grupo_stats(current_tutoria_id, stats['preguntas_con_respuesta_lista'], stats['asignaturas_recibidas_lista'])
     if g.settings_current_user.show_analisis_detallado_por_asignatura:
         respuestas_tutoria_media_stats = respuestas_tutoria_media(current_tutoria_id)
@@ -1297,7 +1298,7 @@ def analisis_html(params={}):
     return render_template('analisis.html',
                            params=params, tutoria=tutoria, alumno=alumno, grupo=grupo,
                            stats=stats, grupo_stats=grupo_stats,
-                           respuestas_tutoria_media_stats=respuestas_tutoria_media_stats, evolucion_stats=evolucion_stats)
+                           respuestas_tutoria_media_stats=respuestas_tutoria_media_stats, evolucion_stats=evolucion_stats, comentarios_stats=comentarios_stats)
 
 
 # XXX analisis_tutoria_edit
