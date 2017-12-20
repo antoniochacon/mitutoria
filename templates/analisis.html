@@ -216,7 +216,7 @@
 									{% endif %}
 									{% if informe_by_tutoria_id_by_asignatura_id(tutoria.id, asignatura.id).comentario %}
 										<div class="{% if g.settings_current_user.show_analisis_detallado_por_asignatura and informe_by_tutoria_id_by_asignatura_id(tutoria.id, asignatura.id).comentario %}card-footer{% else %}card-body pt-1{% endif %}">
-											<div class="strong small">Observaciones:</div>
+											<div class="strong small"><u>Observaciones:</u></div>
 											<div class="line_break page_break_before_avoid">
 												{{-informe_by_tutoria_id_by_asignatura_id(tutoria.id, asignatura.id).comentario-}}
 											</div>
