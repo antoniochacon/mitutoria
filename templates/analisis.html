@@ -173,17 +173,15 @@
 					<i class="material-icons vertical-center">expand_more</i>
 					Analisis detallado por asignatura
 				</a>
-				<div class="collapse {% if params['show_analisis_detallado_por_asignatura'] %}show{% endif %}" id="analisis_detallado_asignaturas">
-					<div class="padding_contenido pt-0">
+				<div class="collapse mt-2 {% if params['show_analisis_detallado_por_asignatura'] %}show{% endif %}" id="analisis_detallado_asignaturas">
 						{% if not stats['asignaturas_recibidas_lista'] %}
 							<div class="small">No se han recibido informes para esta tutoría.</div>
 						{% else %}
-							{% if not comentarios_stats %}
-							<div class="small pl-3 mb-2">No se han recibido comentarios para esta tutoría.</div>
+							{% if not comentarios_stats and not g.settings_current_user.show_analisis_detallado_por_asignatura%}
+								<div class="small pl-3 mb-2">No se han recibido comentarios para esta tutoría.</div>
 							{% endif %}
 						{% endif %}
-					</div>
-					<div class="row">
+					<div class="row mt-3">
 						{% for asignatura in stats['asignaturas_recibidas_lista'] %}
 						{% if g.settings_current_user.show_analisis_detallado_por_asignatura or (not g.settings_current_user.show_analisis_detallado_por_asignatura and informe_by_tutoria_id_by_asignatura_id(tutoria.id, asignatura.id).comentario) %}
 						<div class="col-sm-12 {% if g.settings_current_user.show_analisis_detallado_por_asignatura and informe_by_tutoria_id_by_asignatura_id(tutoria.id, asignatura.id).comentario %}col-md-6 col-lg-4{% else %}col-md-6 col-lg-6{% endif %} mb-2">
