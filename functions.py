@@ -205,8 +205,7 @@ def tutoria_comentarios(tutoria_id, asignaturas_lista):
     for asignatura in asignaturas_lista:
         informe = session_sql.query(Informe).filter(Informe.tutoria_id == tutoria_id, Informe.asignatura_id == asignatura.id).first()
         if informe.comentario:
-            # stats[asignatura.asignatura] = informe.comentario
-            stats[asignatura.asignatura] = {'docente': asignatura.nombre, 'comentario': informe.comentario}
+            stats[asignatura.asignatura] = {'docente': asignatura.nombre, 'comentario': informe.comentario, 'comentario_editado':informe.comentario_editado}
     return stats
 
 

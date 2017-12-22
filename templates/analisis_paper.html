@@ -33,7 +33,7 @@
 			<section class="sheet padding-15mm">
 				{{titulo_1(bg_color='bg-dark', titulo='Análisis gráfico de la tutoría')}}
 				{% include 'analisis_paper_tutoria_datos.html' %}
-				
+
 				<h6>Analisis del cuestionario</h6>
 				{{highcharts_cuestionario(char_id='cuestionario', color='#ffa000', grupo=grupo, tutoria_id=tutoria.id, stats=stats,grupo_stats=grupo_stats)}}
 				<h6>Analisis comparativo de asignaturas</h6>
@@ -136,7 +136,7 @@
 									|
 									{{comentarios_stats[asignatura]['docente']}}:&nbsp;</span>
 								<span class="text-justify">
-									{{comentarios_stats[asignatura]['comentario']}}</span>
+									{% if comentarios_stats[asignatura]['comentario_editado'] %} {{comentarios_stats[asignatura]['comentario_editado']}} {% else %} {{comentarios_stats[asignatura]['comentario']}} {% endif %}</span>
 							</div>
 						{% endfor %}
 					</div>
