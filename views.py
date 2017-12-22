@@ -353,7 +353,7 @@ def admin_usuario_ficha_html(params={}):
         current_usuario_id = current_id_request('current_usuario_id')
         params['current_usuario_id'] = current_usuario_id
         usuario = user_by_id(current_usuario_id)
-        settings_sql=settings_by_id(current_usuario_id)
+        settings_sql = settings_by_id(current_usuario_id)
 
         # XXX selector_usuario_edit_link
         if request.form['selector_button'] == 'selector_usuario_edit_link':
@@ -1269,6 +1269,8 @@ def analisis_html(params={}):
     params['show_analisis_preguntas_splines'] = params_old.get('show_analisis_preguntas_splines', False)
     params['show_analisis_detallado_por_asignatura'] = params_old.get('show_analisis_detallado_por_asignatura', False)
     params['tutoria_delete_confirmar'] = params_old.get('tutoria_delete_confirmar', False)
+    params['comentario_edit'] = params_old.get('comentario_edit', False)
+    params['current_informe_id'] = params_old.get('current_informe_id', 0)
     grupo = grupo_by_tutoria_id(current_tutoria_id)
     tutoria = tutoria_by_id(current_tutoria_id)
     alumno = alumno_by_tutoria_id(current_tutoria_id)
@@ -1295,6 +1297,8 @@ def analisis_html(params={}):
     else:
         respuestas_tutoria_media_stats = False
     evolucion_stats = evolucion_tutorias(alumno.id)
+
+
     return render_template('analisis.html',
                            params=params, tutoria=tutoria, alumno=alumno, grupo=grupo,
                            stats=stats, grupo_stats=grupo_stats,
@@ -1306,10 +1310,33 @@ def analisis_html(params={}):
 @login_required
 def analisis_tutoria_edit_html(params={}):
     params = {}
+
     if request.method == 'POST':
         current_tutoria_id = current_id_request('current_tutoria_id')
         params['current_tutoria_id'] = current_tutoria_id
         tutoria_sql = tutoria_by_id(current_tutoria_id)
+
+        # XXX comentario_edit
+        if request.form['selector_button'] == 'selector_comentario_edit':
+            current_informe_id = current_id_request('current_informe_id')
+            informe = informe_by_id(current_informe_id)
+            informe.comentario_editado = request.form.get('comentario_editado')
+            if session_sql.dirty:
+                session_sql.commit()
+            params['comentario_edit'] = True
+            params['anchor']='anchor_comentario_edit_'+str(hashids_encode(current_informe_id))
+            return redirect(url_for('analisis_html', params=dic_encode(params)))
+
+        # XXX comentario_restaurar
+        if request.form['selector_button'] == 'selector_comentario_restaurar':
+            current_informe_id = current_id_request('current_informe_id')
+            informe = informe_by_id(current_informe_id)
+            informe.comentario_editado = ''
+            if session_sql.dirty:
+                session_sql.commit()
+            params['comentario_edit'] = True
+            params['anchor']='anchor_comentario_edit_'+str(hashids_encode(current_informe_id))
+            return redirect(url_for('analisis_html', params=dic_encode(params)))
 
         # XXX selector_tutoria_restaurar
         if request.form['selector_button'] == 'selector_tutoria_restaurar':
@@ -1459,12 +1486,10 @@ def analisis_tutoria_edit_html(params={}):
                     tutoria_sql.activa = True
                     session_sql.commit()
                     flash_toast('Tutoria actualizada', 'success')
-                    # flash_toast('Google Calendar sincronizado', 'success')
                     return redirect(url_for('analisis_html', params=dic_encode(params)))
             else:
                 flash_wtforms(tutoria_edit_form, flash_toast, 'warning')
                 return redirect(url_for('analisis_html', params=dic_encode(params)))
-
     abort(404)
 
 
@@ -1847,7 +1872,6 @@ def informe_html(asignatura_id, tutoria_id, params={}):
 
     params['current_prueba_evaluable_id'] = params_old.get('current_prueba_evaluable_id', 0)
     current_prueba_evaluable_id = params['current_prueba_evaluable_id']
-    # params['pregunta_sin_respuesta'] = params_old.get('pregunta_sin_respuesta', False)
     prueba_evaluable_dic = {}
 
     if request.method == 'POST':
@@ -1887,7 +1911,6 @@ def informe_html(asignatura_id, tutoria_id, params={}):
             prueba_evaluable_delete_id = prueba_evaluable_dic[request.form['selector_button']]
             prueba_evaluable_delete_sql = session_sql.query(Prueba_Evaluable).filter(Prueba_Evaluable.id == prueba_evaluable_delete_id).first()
             session_sql.delete(prueba_evaluable_delete_sql)
-            # session_sql.commit()
             params['notas_tab'] = True
             return redirect(url_for('informe_html', tutoria_id=hashids_encode(tutoria_id), asignatura_id=hashids_encode(asignatura_id), params=dic_encode(params)))
 

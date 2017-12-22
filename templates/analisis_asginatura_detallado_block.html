@@ -1,0 +1,53 @@
+{% if g.settings_current_user.show_analisis_detallado_por_asignatura or(not g.settings_current_user.show_analisis_detallado_por_asignatura and informe_by_tutoria_id_by_asignatura_id_sql.comentario) %}
+	<div class="col-sm-12 {% if g.settings_current_user.show_analisis_detallado_por_asignatura %}col-md-6 col-lg-4{% else %}col-md-6 col-lg-6{% endif %} mb-2">
+		<div class="card border-gray z-depth-1-1-less mb-2">
+			<div class="card-header text-center strong bg-info text-dark">
+				<div class="text-truncate">
+					{{asignatura.asignatura}}
+					<span class="small">
+						|
+						{{asignatura.nombre}}</span>
+				</div>
+			</div>
+			{% if g.settings_current_user.show_analisis_detallado_por_asignatura %}
+				<div class="card-body">
+					{% if diferencial_check(g.settings_current_user.diferencial, respuestas_pregunta_alumno_lista(tutoria.id, asignatura.id, stats['asignaturas_recibidas_lista'], stats['preguntas_con_respuesta_lista'])['respuestas_pregunta_media'], notas_pruebas_evaluables_alumno(
+						tutoria.id,
+						asignatura.id
+					)['notas_alumno_media']) %}
+						<span class="badge text-white badge-secondary float-right">
+							resultados !
+						</span>
+					{% endif %}
+					{% if diferencial_check(g.settings_current_user.diferencial, respuestas_tutoria_media_stats, respuestas_pregunta_alumno_lista(tutoria.id, asignatura.id, stats['asignaturas_recibidas_lista'], stats['preguntas_con_respuesta_lista'])['respuestas_pregunta_media']) %}
+						<span class="badge badge-primary float-right mr-1">
+							actitud !
+						</span>
+					{% endif %}
+					{{highcharts_asignatura(char_id=asignatura.asignatura, asignatura=asignatura, alumno=alumno, grupo=grupo, tutoria_id=tutoria.id, stats=stats, grupo_stats=grupo_stats, notas_pruebas_evaluables_alumno=notas_pruebas_evaluables_alumno(tutoria.id, asignatura.id), notas_pruebas_evaluables_grupo=notas_pruebas_evaluables_grupo(tutoria.id, asignatura.id), respuestas_tutoria_media_stats=respuestas_tutoria_media_stats)}}
+				</div>
+			{% endif %}
+
+			{% if informe_by_tutoria_id_by_asignatura_id_sql.comentario or informe_by_tutoria_id_by_asignatura_id_sql.comentario_editado %}
+				<div class="{% if g.settings_current_user.show_analisis_detallado_por_asignatura and informe_by_tutoria_id_by_asignatura_id_sql.comentario %}card-footer{% else %}card-body pt-1{% endif %}">
+					<div class="small my-1">
+							{% if informe_by_tutoria_id_by_asignatura_id_sql.comentario_editado %}<i class="material-icons vertical-center text-secondary mr-1">comment</i>{% endif %}<u>Observaciones:</u>
+							<a data-toggle="collapse" data-parent="#parent_comentario_edit" href="#comentario_edit_{{hashids_encode(informe_by_tutoria_id_by_asignatura_id_sql.id)}}" class="btn btn-outline-gray btn-sm link_without_pointer pl-0 pr-1 py-0 float-right" aria-expanded="false" aria-controls="comentario_edit_{{hashids_encode(informe_by_tutoria_id_by_asignatura_id_sql.id)}}" title="Editar comentario">
+								<i class="material-icons vertical-center scaled_75">edit</i><small>editar</small>
+							</a>
+					</div>
+						{% if informe_by_tutoria_id_by_asignatura_id_sql.comentario_editado %}
+							<div class="line_break">
+							{{-informe_by_tutoria_id_by_asignatura_id_sql.comentario_editado-}}
+							</div>
+						{% else %}
+							<div class="line_break">
+							{{-informe_by_tutoria_id_by_asignatura_id_sql.comentario-}}
+							</div>
+						{% endif %}
+						{% include 'comentario_edit_block.html' %}
+				</div>
+			{% endif %}
+		</div>
+	</div>
+{% endif %}

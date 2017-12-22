@@ -147,6 +147,7 @@ class Informe (Base):
     respuestas = relationship('Respuesta', backref='informe', lazy='dynamic', cascade='delete')
     pruebas_evaluables = relationship('Prueba_Evaluable', backref='informe', lazy='dynamic', cascade='delete')
     comentario = Column(String)
+    comentario_editado = Column(String)
     created_at = Column(DateTime, default=datetime.datetime.now())
 
 
