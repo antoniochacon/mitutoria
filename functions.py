@@ -1195,22 +1195,30 @@ def re_send_email_tutoria_asincrono(alumno, tutoria, asignaturas_id_lista):
 
 
 def send_email_password_reset(current_user_id):
-    credentials = get_credentials_gmail()
-    http = credentials.authorize(httplib2.Http())
-    service = discovery.build('gmail', 'v1', http=http)
-    sender = 'mitutoria.email@gmail.com'
+    try:
+        settings_global_sql = session_sql.query(Settings_Global).first()
+        settings_current_user_sql = settings()
+        oauth2_credentials = settings_global_sql.oauth2_credentials
+        credentials = oauth2client.client.Credentials.new_from_json(oauth2_credentials)
+        http = credentials.authorize(httplib2.Http())
+        service = discovery.build('gmail', 'v1', http=http)
+    except:
+        return redirect(url_for('oauth2callback_gmail'))
     # XXX envio de mail
     # ****************************************
-    to = user_by_id(current_user_id).email
-    subject = 'Cambiar password'
-    params = {}
-    params['current_user_id'] = current_user_id
-    params['password_reset_link'] = password_reset_link
-    params['email_validate_link'] = email_validate_link
-    params['index_link'] = index_link
-    message_text = render_template('email_password_reset_request.html', params=params)
-    create_message_and_send(service, sender, to, subject, message_text)
-    # --------------------------------------
+    try:
+        sender = settings_global_sql.gmail_sender
+        to = user_by_id(current_user_id).email
+        subject = 'Cambiar password'
+        params = {}
+        params['current_user_id'] = current_user_id
+        params['password_reset_link'] = password_reset_link
+        params['email_validate_link'] = email_validate_link
+        params['index_link'] = index_link
+        message_text = render_template('email_password_reset_request.html', params=params)
+        create_message_and_send(service, sender, to, subject, message_text)
+    except:
+        abort(404)
 
 
 def send_email_password_reset_request_asincrono(current_user_id):
