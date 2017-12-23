@@ -1171,7 +1171,7 @@ def re_send_email_tutoria(alumno, tutoria, asignaturas_id_lista):
         service = discovery.build('gmail', 'v1', http=http)
     except:
         return redirect(url_for('oauth2callback_gmail'))
-    # sender = settings_global_sql.gmail_sender
+    sender = settings_global_sql.gmail_sender
     emails_enviados = settings_current_user_sql.emails_enviados
 
     try:
