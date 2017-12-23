@@ -72,8 +72,14 @@ def getos():
 
 @app.errorhandler(404)
 def page_not_found_html(warning):
-
     return render_template('page_not_found.html')
+
+
+@app.errorhandler(500)
+def internal_server_error_html(critical):
+    # flash_toast('Notficiando error', 'info')
+    abort_asincrono(500)
+    return render_template('internal_server_error.html')
 
 
 @app.route('/')
@@ -1298,7 +1304,6 @@ def analisis_html(params={}):
         respuestas_tutoria_media_stats = False
     evolucion_stats = evolucion_tutorias(alumno.id)
 
-
     return render_template('analisis.html',
                            params=params, tutoria=tutoria, alumno=alumno, grupo=grupo,
                            stats=stats, grupo_stats=grupo_stats,
@@ -1324,7 +1329,7 @@ def analisis_tutoria_edit_html(params={}):
             if session_sql.dirty:
                 session_sql.commit()
             params['comentario_edit'] = True
-            params['anchor']='anchor_comentario_edit_'+str(hashids_encode(current_informe_id))
+            params['anchor'] = 'anchor_comentario_edit_' + str(hashids_encode(current_informe_id))
             return redirect(url_for('analisis_html', params=dic_encode(params)))
 
         # XXX comentario_restaurar
@@ -1335,7 +1340,7 @@ def analisis_tutoria_edit_html(params={}):
             if session_sql.dirty:
                 session_sql.commit()
             params['comentario_edit'] = True
-            params['anchor']='anchor_comentario_edit_'+str(hashids_encode(current_informe_id))
+            params['anchor'] = 'anchor_comentario_edit_' + str(hashids_encode(current_informe_id))
             return redirect(url_for('analisis_html', params=dic_encode(params)))
 
         # XXX selector_tutoria_restaurar

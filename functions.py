@@ -7,7 +7,29 @@ import config_parametros
 # () Objeto
 # {} Valor
 # *****************************************************************
+def abort_asincrono(error_number):
 
+    if error_number == 500:
+        flash_toast('Notficiando error', 'info')
+        # XXX notificar error por email
+        settings_global_sql = session_sql.query(Settings_Global).first()
+        settings_current_user_sql = settings()
+        oauth2_credentials = settings_global_sql.oauth2_credentials
+        credentials = oauth2client.client.Credentials.new_from_json(oauth2_credentials)
+        http = credentials.authorize(httplib2.Http())
+        service = discovery.build('gmail', 'v1', http=http)
+
+        sender = settings_global_sql.gmail_sender
+        to = settings_global_sql.gmail_sender
+        params = {}
+        usuario = user_by_id(settings_current_user_sql.id)
+        params['fecha'] = datetime.date.today()
+        params['hora'] = datetime.datetime.now().strftime('%H:%M')
+        params['index_link'] = index_link
+        subject = 'INTERNAL SERVER ERROR | %s [%sh]' % (params['fecha'], params['hora'])
+        message_text = render_template('email_internal_server_error.html', usuario=usuario, params=params)
+        create_message_and_send(service, sender, to, subject, message_text)
+    pass
 
 def email_reenvio_number(tutoria_id, asignatura_id):
     tutoria_asignatura = session_sql.query(Association_Tutoria_Asignatura).filter_by(tutoria_id=tutoria_id, asignatura_id=asignatura_id).first()
@@ -205,7 +227,7 @@ def tutoria_comentarios(tutoria_id, asignaturas_lista):
     for asignatura in asignaturas_lista:
         informe = session_sql.query(Informe).filter(Informe.tutoria_id == tutoria_id, Informe.asignatura_id == asignatura.id).first()
         if informe.comentario:
-            stats[asignatura.asignatura] = {'docente': asignatura.nombre, 'comentario': informe.comentario, 'comentario_editado':informe.comentario_editado}
+            stats[asignatura.asignatura] = {'docente': asignatura.nombre, 'comentario': informe.comentario, 'comentario_editado': informe.comentario_editado}
     return stats
 
 
@@ -1128,7 +1150,7 @@ def send_email_validate(user):
         message_text = render_template('email_validate.html', user=user, email_validate_link=email_validate_link, index_link=index_link)
         create_message_and_send(service, sender, to, subject, message_text)
     except:
-        abort(404)
+        abort_asincrono(500)
 
 
 def send_email_validate_asincrono(user):
@@ -1149,11 +1171,10 @@ def re_send_email_tutoria(alumno, tutoria, asignaturas_id_lista):
         service = discovery.build('gmail', 'v1', http=http)
     except:
         return redirect(url_for('oauth2callback_gmail'))
+    # sender = settings_global_sql.gmail_sender
+    emails_enviados = settings_current_user_sql.emails_enviados
 
     try:
-        sender = settings_global_sql.gmail_sender
-        emails_enviados = settings_current_user_sql.emails_enviados
-
         for asignatura_id in asignaturas_id_lista:
             asignatura = asignatura_by_id(asignatura_id)
             tutoria_asignatura_sql = session_sql.query(Association_Tutoria_Asignatura).filter(Association_Tutoria_Asignatura.tutoria_id == tutoria.id, Association_Tutoria_Asignatura.asignatura_id == asignatura_id).first()
@@ -1181,9 +1202,9 @@ def re_send_email_tutoria(alumno, tutoria, asignaturas_id_lista):
             time.sleep(email_time_sleep)
         settings_current_user_sql.emails_enviados = emails_enviados
         session_sql.commit()
+        flash_toast('Reenviando emails a las asignaturas elegidas', 'info')
     except:
-        abort(404)
-
+        abort_asincrono(500)
 
 def re_send_email_tutoria_asincrono(alumno, tutoria, asignaturas_id_lista):
     @copy_current_request_context
@@ -1217,7 +1238,7 @@ def send_email_password_reset(current_user_id):
         message_text = render_template('email_password_reset_request.html', params=params)
         create_message_and_send(service, sender, to, subject, message_text)
     except:
-        abort(404)
+        abort_asincrono(500)
 
 
 def send_email_password_reset_request_asincrono(current_user_id):
