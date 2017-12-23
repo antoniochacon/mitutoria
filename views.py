@@ -77,7 +77,6 @@ def page_not_found_html(warning):
 
 @app.errorhandler(500)
 def internal_server_error_html(critical):
-    # flash_toast('Notficiando error', 'info')
     abort_asincrono(500)
     return render_template('internal_server_error.html')
 
@@ -1312,9 +1311,31 @@ def analisis_html(params={}):
 
 # XXX analisis_tutoria_edit
 @app.route('/analisis_tutoria_edit', methods=['GET', 'POST'])
+@app.route('/analisis_tutoria_edit/<params>', methods=['GET', 'POST'])
 @login_required
 def analisis_tutoria_edit_html(params={}):
+    try:
+        params_old = dic_decode(params)
+    except:
+        params_old = {}
+        abort(404)
     params = {}
+    params['informe_comentario_edit'] = params_old.get('informe_comentario_edit', False)
+
+    # XXX informe_comentario_edit
+    if params['informe_comentario_edit']:
+        params['current_informe_id'] = params_old.get('current_informe_id', 0)
+        params['current_tutoria_id'] = params_old.get('current_tutoria_id', 0)
+        current_informe_id = params['current_informe_id']
+        current_tutoria_id = params['current_tutoria_id']
+        informe = informe_by_id(current_informe_id)
+        # NOTE no evalua porque necesita request POST
+        informe.comentario_editado = request.form.get('comentario_editado_' + str(hashids_encode(int(current_informe_id))))
+        if session_sql.dirty:
+            session_sql.commit()
+        params['comentario_edit'] = True
+        params['anchor'] = 'anchor_comentario_edit_' + str(hashids_encode(current_informe_id))
+        return redirect(url_for('analisis_html', params=dic_encode(params)))
 
     if request.method == 'POST':
         current_tutoria_id = current_id_request('current_tutoria_id')
@@ -1322,10 +1343,22 @@ def analisis_tutoria_edit_html(params={}):
         tutoria_sql = tutoria_by_id(current_tutoria_id)
 
         # XXX comentario_edit
-        if request.form['selector_button'] == 'selector_comentario_edit':
-            current_informe_id = current_id_request('current_informe_id')
+        if 'selector_comentario_edit' in request.form['selector_button']:
+            # NOTE NO BORRAR muy util para capturar valores de un formulario multiple
+            # ************************************************************************
+            # comentario_editado_dic={}
+            # f = request.form
+            # for key in f.keys():
+            #     for value in f.getlist(key):
+            #         if not key.find('comentario_editado_')==-1:
+            #             print(key, ":", value)
+            #             comentario_editado_dic[key]=value
+            # print('comentario_editado_dic:',comentario_editado_dic)
+            # ---------------------------------------------------------------------------
+
+            current_informe_id = hashids_decode(request.form['selector_button'].replace('selector_comentario_edit_', ''))
             informe = informe_by_id(current_informe_id)
-            informe.comentario_editado = request.form.get('comentario_editado')
+            informe.comentario_editado = request.form.get('comentario_edit_' + str(hashids_encode(current_informe_id)))
             if session_sql.dirty:
                 session_sql.commit()
             params['comentario_edit'] = True
@@ -1333,8 +1366,8 @@ def analisis_tutoria_edit_html(params={}):
             return redirect(url_for('analisis_html', params=dic_encode(params)))
 
         # XXX comentario_restaurar
-        if request.form['selector_button'] == 'selector_comentario_restaurar':
-            current_informe_id = current_id_request('current_informe_id')
+        if 'selector_comentario_restaurar' in request.form['selector_button']:
+            current_informe_id = hashids_decode(request.form['selector_button'].replace('selector_comentario_restaurar_', ''))
             informe = informe_by_id(current_informe_id)
             informe.comentario_editado = ''
             if session_sql.dirty:
@@ -1385,6 +1418,20 @@ def analisis_tutoria_edit_html(params={}):
             session_sql.commit()
             params['anchor'] = 'anchor_deta'
             params['show_analisis_detallado_por_asignatura'] = True
+            return redirect(url_for('analisis_html', params=dic_encode(params)))
+
+        # XXX settings_informe_comentario_edit_mode
+        if request.form['selector_button'] == 'settings_informe_comentario_edit_mode':
+            settings_informe_comentario_edit_mode = str(request.form.get('settings_informe_comentario_edit_mode'))
+            if settings_informe_comentario_edit_mode == 'True':
+                settings_informe_comentario_edit_mode = False
+            else:
+                settings_informe_comentario_edit_mode = True
+            g.settings_current_user.informe_comentario_edit_mode = settings_informe_comentario_edit_mode
+            session_sql.commit()
+            params['anchor'] = 'anchor_deta'
+            params['informe_comentario_edit_mode'] = True
+            params['comentario_edit'] = True
             return redirect(url_for('analisis_html', params=dic_encode(params)))
 
         # XXX tutoria_acuerdo_save
@@ -1522,7 +1569,7 @@ def settings_opciones_html(params={}):
             settings_edit_calendar = request.form.get('settings_edit_calendar')
             settings_tutoria_duracion = request.form.get('settings_tutoria_duracion')
             settings_diferencial = request.form.get('settings_diferencial')
-            settings_show_analisis_detalles = request.form.get('settings_show_analisis_detalles')
+            settings_show_analisis_avanzado = request.form.get('settings_show_analisis_avanzado')
             settings_show_analisis_detallado_por_asignatura = request.form.get('settings_show_analisis_detallado_por_asignatura')
 
             if not settings_edit_tutoria_timeout:
@@ -1533,8 +1580,8 @@ def settings_opciones_html(params={}):
                 settings_edit_calendar = False
                 g.settings_current_user.calendar_sincronizado = False
                 g.settings_current_user.oauth2_credentials = ''
-            if not settings_show_analisis_detalles:
-                settings_show_analisis_detalles = False
+            if not settings_show_analisis_avanzado:
+                settings_show_analisis_avanzado = False
             if not settings_show_analisis_detallado_por_asignatura:
                 settings_show_analisis_detallado_por_asignatura = False
 
@@ -1543,7 +1590,7 @@ def settings_opciones_html(params={}):
             g.settings_current_user.tutoria_duracion = settings_tutoria_duracion
             g.settings_current_user.diferencial = settings_diferencial
             g.settings_current_user.calendar = settings_edit_calendar
-            g.settings_current_user.show_analisis_detalles = settings_show_analisis_detalles
+            g.settings_current_user.show_analisis_avanzado = settings_show_analisis_avanzado
             g.settings_current_user.show_analisis_detallado_por_asignatura = settings_show_analisis_detallado_por_asignatura
             session_sql.commit()
             flash_toast('Configuracion actualizada', 'success')

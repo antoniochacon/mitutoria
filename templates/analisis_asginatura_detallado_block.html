@@ -32,9 +32,11 @@
 				<div class="{% if g.settings_current_user.show_analisis_detallado_por_asignatura and informe_by_tutoria_id_by_asignatura_id_sql.comentario %}card-footer{% else %}card-body pt-1{% endif %}">
 					<div class="small my-1">
 							{% if informe_by_tutoria_id_by_asignatura_id_sql.comentario_editado %}<i class="material-icons vertical-center text-secondary mr-1">comment</i>{% endif %}<u>Observaciones:</u>
+							{% if g.settings_current_user.informe_comentario_edit_mode %}
 							<a data-toggle="collapse" data-parent="#parent_comentario_edit" href="#comentario_edit_{{hashids_encode(informe_by_tutoria_id_by_asignatura_id_sql.id)}}" class="btn btn-outline-gray btn-sm link_without_pointer pl-0 pr-1 py-0 float-right" aria-expanded="false" aria-controls="comentario_edit_{{hashids_encode(informe_by_tutoria_id_by_asignatura_id_sql.id)}}" title="Editar comentario">
 								<i class="material-icons vertical-center scaled_75">edit</i><small>editar</small>
 							</a>
+							{% endif %}
 					</div>
 						{% if informe_by_tutoria_id_by_asignatura_id_sql.comentario_editado %}
 							<div class="line_break">
@@ -45,7 +47,9 @@
 							{{-informe_by_tutoria_id_by_asignatura_id_sql.comentario-}}
 							</div>
 						{% endif %}
-						{% include 'comentario_edit_block.html' %}
+						{% if g.settings_current_user.informe_comentario_edit_mode %}
+							{% include 'analisis_informe_comentario_edit_block.html' %}
+						{% endif %}
 				</div>
 			{% endif %}
 		</div>
