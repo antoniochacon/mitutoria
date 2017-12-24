@@ -122,40 +122,13 @@
 					<i class="material-icons vertical-center">expand_more</i>
 					Analisis del cuestionario
 				</a>
-				<div class="collapse {% if tutoria.activa and not params['show_analisis_cuestionario_detallado'] and not params['comentario_edit'] %}show{% endif %}" id="analisis_cuestionario">
+				<div class="collapse {% if tutoria.activa or (params['show_analisis_cuestionario_detallado'] and not params['comentario_edit']) %}show{% endif %}" id="analisis_cuestionario">
 					<div class="col pt-4">
 						{{highcharts_cuestionario(char_id='cuestionario', color='#ffa000', grupo=grupo, tutoria_id=tutoria.id, stats=stats,grupo_stats=grupo_stats)}}
 					</div>
 					{% if g.settings_current_user.show_analisis_avanzado %}
 					<div class="row mb-2">
 						<div class="col float-right">
-							<input type="hidden" name="settings_show_analisis_comparativo_detallado" value="{{g.settings_current_user.show_analisis_comparativo_detallado}}">
-							<button
-								role="button"
-								type="submit"
-								name="selector_button"
-								value="settings_show_analisis_comparativo_detallado"
-								class="btn btn-outline-dark btn-sm float-right"
-								title="{% if g.settings_current_user.show_analisis_comparativo_detallado %}Gráfico detallado{% else %}Gráfico básico{% endif %}">
-								<i class="material-icons vertical-center">insert_chart</i>
-								{% if g.settings_current_user.show_analisis_comparativo_detallado %}Gráfico detallado{% else %}Gráfico básico{% endif %}
-							</button>
-						</div>
-					</div>
-					{% endif %}
-				</div>
-				<a id="anchor_comp"></a>
-				<a data-toggle="collapse" href="#analisis_comparativo_asignaturas" class="collapse_header_1" aria-expanded="false" title="Analisis comparativo de asignaturas">
-					<i class="material-icons vertical-center">expand_more</i>
-					Analisis comparativo de asignaturas
-				</a>
-				<div class="collapse {% if params['show_analisis_cuestionario_detallado'] %} show {% endif %}" id="analisis_comparativo_asignaturas">
-					<div class="col pt-4">
-						{{highcharts_asignaturas(char_id='asignaturas', color_1='#ec407a',color_2='#f48fb1', grupo=grupo, tutoria_id=tutoria.id, stats=stats, grupo_stats=grupo_stats)}}
-					</div>
-					{% if g.settings_current_user.show_analisis_avanzado %}
-						<div class="row mb-2">
-							<div class="col float-right">
 							<input type="hidden" name="settings_show_analisis_cuestionario_detallado" value="{{g.settings_current_user.show_analisis_cuestionario_detallado}}">
 							<button
 								role="button"
@@ -166,6 +139,33 @@
 								title="{% if g.settings_current_user.show_analisis_cuestionario_detallado %}Gráfico detallado{% else %}Gráfico básico{% endif %}">
 								<i class="material-icons vertical-center">insert_chart</i>
 								{% if g.settings_current_user.show_analisis_cuestionario_detallado %}Gráfico detallado{% else %}Gráfico básico{% endif %}
+							</button>
+						</div>
+					</div>
+					{% endif %}
+				</div>
+				<a id="anchor_comp"></a>
+				<a data-toggle="collapse" href="#analisis_comparativo_asignaturas" class="collapse_header_1" aria-expanded="false" title="Analisis comparativo de asignaturas">
+					<i class="material-icons vertical-center">expand_more</i>
+					Analisis comparativo de asignaturas
+				</a>
+				<div class="collapse {% if params['show_analisis_comparativo_detallado'] and not params['comentario_edit'] %} show {% endif %}" id="analisis_comparativo_asignaturas">
+					<div class="col pt-4">
+						{{highcharts_asignaturas(char_id='asignaturas', color_1='#ec407a',color_2='#f48fb1', grupo=grupo, tutoria_id=tutoria.id, stats=stats, grupo_stats=grupo_stats)}}
+					</div>
+					{% if g.settings_current_user.show_analisis_avanzado %}
+						<div class="row mb-2">
+							<div class="col float-right">
+							<input type="hidden" name="settings_show_analisis_comparativo_detallado" value="{{g.settings_current_user.show_analisis_comparativo_detallado}}">
+							<button
+								role="button"
+								type="submit"
+								name="selector_button"
+								value="settings_show_analisis_comparativo_detallado"
+								class="btn btn-outline-dark btn-sm float-right"
+								title="{% if g.settings_current_user.show_analisis_comparativo_detallado %}Gráfico detallado{% else %}Gráfico básico{% endif %}">
+								<i class="material-icons vertical-center">insert_chart</i>
+								{% if g.settings_current_user.show_analisis_comparativo_detallado %}Gráfico detallado{% else %}Gráfico básico{% endif %}
 							</button>
 							</div>
 						</div>

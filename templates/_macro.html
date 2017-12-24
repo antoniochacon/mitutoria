@@ -78,7 +78,7 @@
 				panKey: "shift",
 			},
 			plotOptions:{
-				{% if not g.settings_current_user.show_analisis_comparativo_detallado or stats['analisis_paper']%}
+				{% if not g.settings_current_user.show_analisis_cuestionario_detallado or stats['analisis_paper']%}
 				series: {
 					borderWidth: 0,
 					states: {
@@ -105,7 +105,7 @@
 				formatter: function () {
 					var text = "";
 					if (this.series.type == "column") {
-						text = this.x + " | Media: " + Highcharts.numberFormat(this.total, 1) {% if g.settings_current_user.show_analisis_comparativo_detallado%} + "<br>" + this.series.name + ": " + Highcharts.numberFormat(this.y * {{stats['asignaturas_recibidas_lista'] | count}}, 1){% endif %};
+						text = this.x + " | Media: " + Highcharts.numberFormat(this.total, 1) {% if g.settings_current_user.show_analisis_cuestionario_detallado%} + "<br>" + this.series.name + ": " + Highcharts.numberFormat(this.y * {{stats['asignaturas_recibidas_lista'] | count}}, 1){% endif %};
 					} else {
 						text = this.x + "<br>" + this.series.name + ": " + Highcharts.numberFormat(this.y, 1);
 					}
@@ -176,7 +176,7 @@
 						lineColor: null
 					}
 				},
-				{% if g.settings_current_user.show_analisis_comparativo_detallado and not stats['analisis_paper'] %}
+				{% if g.settings_current_user.show_analisis_cuestionario_detallado and not stats['analisis_paper'] %}
 				{% for asignatura in stats['asignaturas_recibidas_lista'] %}
 				 {
 						type: "spline",
@@ -221,7 +221,7 @@
 					var cuestiones_lista = {{stats['preguntas_con_respuesta_lista_enunciado_ticker'] | safe}};
 					var cuestion = this.series.name;
 					if (this.series.type == "column" && cuestiones_lista.indexOf(cuestion) >= 0) {
-						text = this.x + " | Cuestionario | Media: " + Highcharts.numberFormat(this.total, 1) {% if g.settings_current_user.show_analisis_cuestionario_detallado%} + "<br>" + this.series.name + ": " + Highcharts.numberFormat(this.y * {{stats['preguntas_con_respuesta_lista'] | count}}, 1) {% endif %};
+						text = this.x + " | Cuestionario | Media: " + Highcharts.numberFormat(this.total, 1) {% if g.settings_current_user.show_analisis_comparativo_detallado%} + "<br>" + this.series.name + ": " + Highcharts.numberFormat(this.y * {{stats['preguntas_con_respuesta_lista'] | count}}, 1) {% endif %};
 					} else if (this.series.type == "column") {
 						text = this.x + " | Notas | Media: " + Highcharts.numberFormat(this.y, 1) + "<br>" + this.series.name;
 					} else {
@@ -257,7 +257,7 @@
 				}
 			},
 			plotOptions: {
-				{% if not g.settings_current_user.show_analisis_cuestionario_detallado or stats['analisis_paper']%}
+				{% if not g.settings_current_user.show_analisis_comparativo_detallado or stats['analisis_paper']%}
 				series: {
 					borderWidth: 0,
 					states: {
@@ -337,7 +337,7 @@
 						lineColor: null
 					}
 				}
-				{% if g.settings_current_user.show_analisis_cuestionario_detallado and not stats['analisis_paper']%}
+				{% if g.settings_current_user.show_analisis_comparativo_detallado and not stats['analisis_paper']%}
 				{% for pregunta in stats['preguntas_con_respuesta_lista'] %}, {
 						type: "spline",
 						name: "{{pregunta.enunciado_ticker}}",

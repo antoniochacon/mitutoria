@@ -1272,6 +1272,7 @@ def analisis_html(params={}):
     params['current_tutoria_id'] = params_old.get('current_tutoria_id', 0)
     current_tutoria_id = params['current_tutoria_id']
     params['show_analisis_cuestionario_detallado'] = params_old.get('show_analisis_cuestionario_detallado', False)
+    params['show_analisis_comparativo_detallado'] = params_old.get('show_analisis_comparativo_detallado', False)
     params['show_analisis_asignaturas_detallado'] = params_old.get('show_analisis_asignaturas_detallado', False)
     params['tutoria_delete_confirmar'] = params_old.get('tutoria_delete_confirmar', False)
     params['comentario_edit'] = params_old.get('comentario_edit', False)
@@ -1391,7 +1392,8 @@ def analisis_tutoria_edit_html(params={}):
                 settings_show_analisis_comparativo_detallado = True
             g.settings_current_user.show_analisis_comparativo_detallado = settings_show_analisis_comparativo_detallado
             session_sql.commit()
-            params['anchor'] = 'anchor_cues'
+            params['anchor'] = 'anchor_comp'
+            params['show_analisis_comparativo_detallado'] = True
             return redirect(url_for('analisis_html', params=dic_encode(params)))
 
         # XXX settings_show_analisis_cuestionario_detallado
@@ -1403,7 +1405,7 @@ def analisis_tutoria_edit_html(params={}):
                 settings_show_analisis_cuestionario_detallado = True
             g.settings_current_user.show_analisis_cuestionario_detallado = settings_show_analisis_cuestionario_detallado
             session_sql.commit()
-            params['anchor'] = 'anchor_comp'
+            params['anchor'] = 'anchor_cues'
             params['show_analisis_cuestionario_detallado'] = True
             return redirect(url_for('analisis_html', params=dic_encode(params)))
 
@@ -1570,7 +1572,6 @@ def settings_opciones_html(params={}):
             settings_tutoria_duracion = request.form.get('settings_tutoria_duracion')
             settings_diferencial = request.form.get('settings_diferencial')
             settings_show_analisis_avanzado = request.form.get('settings_show_analisis_avanzado')
-            settings_show_analisis_asignaturas_detallado = request.form.get('settings_show_analisis_asignaturas_detallado')
 
             if not settings_edit_tutoria_timeout:
                 settings_edit_tutoria_timeout = False
@@ -1582,8 +1583,6 @@ def settings_opciones_html(params={}):
                 g.settings_current_user.oauth2_credentials = ''
             if not settings_show_analisis_avanzado:
                 settings_show_analisis_avanzado = False
-            if not settings_show_analisis_asignaturas_detallado:
-                settings_show_analisis_asignaturas_detallado = False
 
             g.settings_current_user.tutoria_timeout = settings_edit_tutoria_timeout
             g.settings_current_user.show_asignaturas_analisis = settings_show_asignaturas_analisis
@@ -1591,7 +1590,6 @@ def settings_opciones_html(params={}):
             g.settings_current_user.diferencial = settings_diferencial
             g.settings_current_user.calendar = settings_edit_calendar
             g.settings_current_user.show_analisis_avanzado = settings_show_analisis_avanzado
-            g.settings_current_user.show_analisis_asignaturas_detallado = settings_show_analisis_asignaturas_detallado
             session_sql.commit()
             flash_toast('Configuracion actualizada', 'success')
 
