@@ -136,11 +136,9 @@
 								name="selector_button"
 								value="settings_show_analisis_asignaturas_splines"
 								class="btn btn-outline-dark btn-sm float-right"
-								title="{% if g.settings_current_user.show_analisis_asignaturas_splines %}ocultar detalles{% else %}mostrar detalles{% endif %}">
-								<i class="material-icons vertical-center">
-									{% if g.settings_current_user.show_analisis_asignaturas_splines %}visibility_off{% else %}visibility{% endif %}
-								</i>
-								{% if g.settings_current_user.show_analisis_asignaturas_splines %}ocultar detalles{% else %}mostrar detalles{% endif %}
+								title="{% if g.settings_current_user.show_analisis_asignaturas_splines %}Gráfico detallado{% else %}Gráfico básico{% endif %}">
+								<i class="material-icons vertical-center">insert_chart</i>
+								{% if g.settings_current_user.show_analisis_asignaturas_splines %}Gráfico detallado{% else %}Gráfico básico{% endif %}
 							</button>
 						</div>
 					</div>
@@ -165,11 +163,9 @@
 								name="selector_button"
 								value="settings_show_analisis_preguntas_splines"
 								class="btn btn-outline-dark btn-sm float-right"
-								title="{% if g.settings_current_user.show_analisis_preguntas_splines %}ocultar detalles{% else %}mostrar detalles{% endif %}">
-								<i class="material-icons vertical-center">
-									{% if g.settings_current_user.show_analisis_preguntas_splines %}visibility_off{% else %}visibility{% endif %}
-								</i>
-								{% if g.settings_current_user.show_analisis_preguntas_splines %}ocultar detalles{% else %}mostrar detalles{% endif %}
+								title="{% if g.settings_current_user.show_analisis_preguntas_splines %}Gráfico detallado{% else %}Gráfico básico{% endif %}">
+								<i class="material-icons vertical-center">insert_chart</i>
+								{% if g.settings_current_user.show_analisis_preguntas_splines %}Gráfico detallado{% else %}Gráfico básico{% endif %}
 							</button>
 							</div>
 						</div>
@@ -210,11 +206,9 @@
 										name="selector_button"
 										value="settings_informe_comentario_edit_mode"
 										class="btn btn-outline-dark btn-sm float-right"
-										title="{% if g.settings_current_user.informe_comentario_edit_mode %}Desactivar Edit ON{% else %}Activar Edit ON{% endif %}">
-										<i class="material-icons vertical-center">
-											{% if g.settings_current_user.informe_comentario_edit_mode %}do_not_disturb_alt{% else %}edit{% endif %}
-										</i>
-										{% if g.settings_current_user.informe_comentario_edit_mode %}Edit OFF{% else %}Edit ON{% endif %}
+										title="{% if g.settings_current_user.informe_comentario_edit_mode %}Editar activado{% else %}Editar NO activado{% endif %}">
+										<i class="material-icons vertical-center">edit</i>
+										{% if g.settings_current_user.informe_comentario_edit_mode %}Editar activado{% else %}Editar NO activado{% endif %}
 									</button>
 									{% if g.settings_current_user.show_analisis_avanzado %}
 									<button
@@ -223,11 +217,9 @@
 										name="selector_button"
 										value="settings_show_analisis_detallado_por_asignatura"
 										class="btn btn-outline-dark btn-sm float-right"
-										title="{% if g.settings_current_user.show_analisis_detallado_por_asignatura %}ocultar detalles{% else %}mostrar detalles{% endif %}">
-										<i class="material-icons vertical-center">
-											{% if g.settings_current_user.show_analisis_detallado_por_asignatura %}visibility_off{% else %}visibility{% endif %}
-										</i>
-										{% if g.settings_current_user.show_analisis_detallado_por_asignatura %}ocultar detalles{% else %}mostrar detalles{% endif %}
+										title="{% if g.settings_current_user.show_analisis_detallado_por_asignatura %}Gráfico detallado{% else %}Gráfico básico{% endif %}">
+										<i class="material-icons vertical-center">insert_chart</i>
+										{% if g.settings_current_user.show_analisis_detallado_por_asignatura %}Gráfico detallado{% else %}Gráfico básico{% endif %}
 									</button>
 									{% endif %}
 								</div>

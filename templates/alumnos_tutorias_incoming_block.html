@@ -3,12 +3,11 @@
 {% set tutorias_by_grupo_id_incoming_count = tutorias_by_grupo_id_incoming | count %}
 <a data-toggle="collapse" class="collpase-header-secondary" role="tab" data-parent="#parent_tutorias_incoming" href="#collapse_tutorias_incoming" aria-expanded="false">
 	{% if tutorias_by_grupo_id_incoming %}
-	<i class="material-icons vertical-center">notifications</i>
-			{{singular_plural("tutoria", "tutorias", tutorias_by_grupo_id_incoming_count)}}
+	<i class="material-icons vertical-center">notifications_active</i>
+			{{singular_plural("Tutoría", "Tutorías", tutorias_by_grupo_id_incoming_count)}}
 			{{singular_plural("pendiente", "pendientes", tutorias_by_grupo_id_incoming_count)}}
 		{% else %}
-		<i class="material-icons vertical-center">wb_sunny</i>
-		&nbsp;Relax, no tienes tutorias
+		<i class="material-icons vertical-center">notifications_paused</i>Relax, no tienes tutorias
 	{% endif %}
 	<span class="badge badge-light text-secondary float-right mt-1" title="tutorias pendientes">
 		{{tutorias_by_grupo_id_incoming_count}} {{singular_plural("tutoria", "tutorias", tutorias_by_grupo_id_incoming_count)}}
