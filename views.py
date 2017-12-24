@@ -1271,8 +1271,8 @@ def analisis_html(params={}):
     params['anchor'] = params_old.get('anchor', 'anchor_top')
     params['current_tutoria_id'] = params_old.get('current_tutoria_id', 0)
     current_tutoria_id = params['current_tutoria_id']
-    params['show_analisis_preguntas_splines'] = params_old.get('show_analisis_preguntas_splines', False)
-    params['show_analisis_detallado_por_asignatura'] = params_old.get('show_analisis_detallado_por_asignatura', False)
+    params['show_analisis_cuestionario_detallado'] = params_old.get('show_analisis_cuestionario_detallado', False)
+    params['show_analisis_asignaturas_detallado'] = params_old.get('show_analisis_asignaturas_detallado', False)
     params['tutoria_delete_confirmar'] = params_old.get('tutoria_delete_confirmar', False)
     params['comentario_edit'] = params_old.get('comentario_edit', False)
     params['current_informe_id'] = params_old.get('current_informe_id', 0)
@@ -1297,7 +1297,7 @@ def analisis_html(params={}):
     stats = analisis_tutoria(current_tutoria_id)
     comentarios_stats = tutoria_comentarios(current_tutoria_id, stats['asignaturas_recibidas_lista'])
     grupo_stats = respuestas_grupo_stats(current_tutoria_id, stats['preguntas_con_respuesta_lista'], stats['asignaturas_recibidas_lista'])
-    if g.settings_current_user.show_analisis_detallado_por_asignatura:
+    if g.settings_current_user.show_analisis_asignaturas_detallado:
         respuestas_tutoria_media_stats = respuestas_tutoria_media(current_tutoria_id)
     else:
         respuestas_tutoria_media_stats = False
@@ -1382,42 +1382,42 @@ def analisis_tutoria_edit_html(params={}):
             session_sql.commit()
             return redirect(url_for('analisis_html', params=dic_encode(params)))
 
-        # XXX settings_show_analisis_asignaturas_splines
-        if request.form['selector_button'] == 'settings_show_analisis_asignaturas_splines':
-            settings_show_analisis_asignaturas_splines = str(request.form.get('settings_show_analisis_asignaturas_splines'))
-            if settings_show_analisis_asignaturas_splines == 'True':
-                settings_show_analisis_asignaturas_splines = False
+        # XXX settings_show_analisis_comparativo_detallado
+        if request.form['selector_button'] == 'settings_show_analisis_comparativo_detallado':
+            settings_show_analisis_comparativo_detallado = str(request.form.get('settings_show_analisis_comparativo_detallado'))
+            if settings_show_analisis_comparativo_detallado == 'True':
+                settings_show_analisis_comparativo_detallado = False
             else:
-                settings_show_analisis_asignaturas_splines = True
-            g.settings_current_user.show_analisis_asignaturas_splines = settings_show_analisis_asignaturas_splines
+                settings_show_analisis_comparativo_detallado = True
+            g.settings_current_user.show_analisis_comparativo_detallado = settings_show_analisis_comparativo_detallado
             session_sql.commit()
             params['anchor'] = 'anchor_cues'
             return redirect(url_for('analisis_html', params=dic_encode(params)))
 
-        # XXX settings_show_analisis_preguntas_splines
-        if request.form['selector_button'] == 'settings_show_analisis_preguntas_splines':
-            settings_show_analisis_preguntas_splines = str(request.form.get('settings_show_analisis_preguntas_splines'))
-            if settings_show_analisis_preguntas_splines == 'True':
-                settings_show_analisis_preguntas_splines = False
+        # XXX settings_show_analisis_cuestionario_detallado
+        if request.form['selector_button'] == 'settings_show_analisis_cuestionario_detallado':
+            settings_show_analisis_cuestionario_detallado = str(request.form.get('settings_show_analisis_cuestionario_detallado'))
+            if settings_show_analisis_cuestionario_detallado == 'True':
+                settings_show_analisis_cuestionario_detallado = False
             else:
-                settings_show_analisis_preguntas_splines = True
-            g.settings_current_user.show_analisis_preguntas_splines = settings_show_analisis_preguntas_splines
+                settings_show_analisis_cuestionario_detallado = True
+            g.settings_current_user.show_analisis_cuestionario_detallado = settings_show_analisis_cuestionario_detallado
             session_sql.commit()
             params['anchor'] = 'anchor_comp'
-            params['show_analisis_preguntas_splines'] = True
+            params['show_analisis_cuestionario_detallado'] = True
             return redirect(url_for('analisis_html', params=dic_encode(params)))
 
-        # XXX settings_show_analisis_detallado_por_asignatura
-        if request.form['selector_button'] == 'settings_show_analisis_detallado_por_asignatura':
-            settings_show_analisis_detallado_por_asignatura = str(request.form.get('settings_show_analisis_detallado_por_asignatura'))
-            if settings_show_analisis_detallado_por_asignatura == 'True':
-                settings_show_analisis_detallado_por_asignatura = False
+        # XXX settings_show_analisis_asignaturas_detallado
+        if request.form['selector_button'] == 'settings_show_analisis_asignaturas_detallado':
+            settings_show_analisis_asignaturas_detallado = str(request.form.get('settings_show_analisis_asignaturas_detallado'))
+            if settings_show_analisis_asignaturas_detallado == 'True':
+                settings_show_analisis_asignaturas_detallado = False
             else:
-                settings_show_analisis_detallado_por_asignatura = True
-            g.settings_current_user.show_analisis_detallado_por_asignatura = settings_show_analisis_detallado_por_asignatura
+                settings_show_analisis_asignaturas_detallado = True
+            g.settings_current_user.show_analisis_asignaturas_detallado = settings_show_analisis_asignaturas_detallado
             session_sql.commit()
             params['anchor'] = 'anchor_deta'
-            params['show_analisis_detallado_por_asignatura'] = True
+            params['show_analisis_asignaturas_detallado'] = True
             return redirect(url_for('analisis_html', params=dic_encode(params)))
 
         # XXX settings_informe_comentario_edit_mode
@@ -1570,7 +1570,7 @@ def settings_opciones_html(params={}):
             settings_tutoria_duracion = request.form.get('settings_tutoria_duracion')
             settings_diferencial = request.form.get('settings_diferencial')
             settings_show_analisis_avanzado = request.form.get('settings_show_analisis_avanzado')
-            settings_show_analisis_detallado_por_asignatura = request.form.get('settings_show_analisis_detallado_por_asignatura')
+            settings_show_analisis_asignaturas_detallado = request.form.get('settings_show_analisis_asignaturas_detallado')
 
             if not settings_edit_tutoria_timeout:
                 settings_edit_tutoria_timeout = False
@@ -1582,8 +1582,8 @@ def settings_opciones_html(params={}):
                 g.settings_current_user.oauth2_credentials = ''
             if not settings_show_analisis_avanzado:
                 settings_show_analisis_avanzado = False
-            if not settings_show_analisis_detallado_por_asignatura:
-                settings_show_analisis_detallado_por_asignatura = False
+            if not settings_show_analisis_asignaturas_detallado:
+                settings_show_analisis_asignaturas_detallado = False
 
             g.settings_current_user.tutoria_timeout = settings_edit_tutoria_timeout
             g.settings_current_user.show_asignaturas_analisis = settings_show_asignaturas_analisis
@@ -1591,7 +1591,7 @@ def settings_opciones_html(params={}):
             g.settings_current_user.diferencial = settings_diferencial
             g.settings_current_user.calendar = settings_edit_calendar
             g.settings_current_user.show_analisis_avanzado = settings_show_analisis_avanzado
-            g.settings_current_user.show_analisis_detallado_por_asignatura = settings_show_analisis_detallado_por_asignatura
+            g.settings_current_user.show_analisis_asignaturas_detallado = settings_show_analisis_asignaturas_detallado
             session_sql.commit()
             flash_toast('Configuracion actualizada', 'success')
 

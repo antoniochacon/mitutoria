@@ -1,5 +1,5 @@
-{% if g.settings_current_user.show_analisis_detallado_por_asignatura or(not g.settings_current_user.show_analisis_detallado_por_asignatura and informe_by_tutoria_id_by_asignatura_id_sql.comentario) %}
-	<div class="col-sm-12 {% if g.settings_current_user.show_analisis_detallado_por_asignatura %}col-md-6 col-lg-4{% else %}col-md-6 col-lg-6{% endif %} mb-2">
+{% if g.settings_current_user.show_analisis_asignaturas_detallado or(not g.settings_current_user.show_analisis_asignaturas_detallado and informe_by_tutoria_id_by_asignatura_id_sql.comentario) %}
+	<div class="col-sm-12 {% if g.settings_current_user.show_analisis_asignaturas_detallado %}col-md-6 col-lg-4{% else %}col-md-6 col-lg-6{% endif %} mb-2">
 		<div class="card border-gray z-depth-1-1-less mb-2">
 			<div class="card-header text-center strong bg-info text-dark">
 				<div class="text-truncate">
@@ -9,7 +9,7 @@
 						{{asignatura.nombre}}</span>
 				</div>
 			</div>
-			{% if g.settings_current_user.show_analisis_detallado_por_asignatura %}
+			{% if g.settings_current_user.show_analisis_asignaturas_detallado %}
 				<div class="card-body">
 					{% if diferencial_check(g.settings_current_user.diferencial, respuestas_pregunta_alumno_lista(tutoria.id, asignatura.id, stats['asignaturas_recibidas_lista'], stats['preguntas_con_respuesta_lista'])['respuestas_pregunta_media'], notas_pruebas_evaluables_alumno(
 						tutoria.id,
@@ -29,7 +29,7 @@
 			{% endif %}
 
 			{% if informe_by_tutoria_id_by_asignatura_id_sql.comentario or informe_by_tutoria_id_by_asignatura_id_sql.comentario_editado %}
-				<div class="{% if g.settings_current_user.show_analisis_detallado_por_asignatura and informe_by_tutoria_id_by_asignatura_id_sql.comentario %}card-footer{% else %}card-body pt-1{% endif %}">
+				<div class="{% if g.settings_current_user.show_analisis_asignaturas_detallado and informe_by_tutoria_id_by_asignatura_id_sql.comentario %}card-footer{% else %}card-body pt-1{% endif %}">
 					<div class="small my-1">
 							{% if informe_by_tutoria_id_by_asignatura_id_sql.comentario_editado %}<i class="material-icons vertical-center text-secondary mr-1">comment</i>{% endif %}<u>Observaciones:</u>
 							{% if g.settings_current_user.informe_comentario_edit_mode %}
