@@ -1,7 +1,7 @@
 {% if g.settings_current_user.show_analisis_asignaturas_detallado or(not g.settings_current_user.show_analisis_asignaturas_detallado and informe_by_tutoria_id_by_asignatura_id_sql.comentario) %}
 	<div class="col-sm-12 {% if g.settings_current_user.show_analisis_asignaturas_detallado %}col-md-6 col-lg-4{% else %}col-md-6 col-lg-6{% endif %} mb-2">
 		<div class="card border-gray z-depth-1-1-less mb-2">
-			<div class="card-header text-center strong bg-info text-dark">
+			<div class="card-header text-center strong bg-info text-dark py-1">
 				<div class="text-truncate">
 					{{asignatura.asignatura}}
 					<span class="small">
@@ -27,29 +27,57 @@
 					{{highcharts_asignatura(char_id=asignatura.asignatura, asignatura=asignatura, alumno=alumno, grupo=grupo, tutoria_id=tutoria.id, stats=stats, grupo_stats=grupo_stats, notas_pruebas_evaluables_alumno=notas_pruebas_evaluables_alumno(tutoria.id, asignatura.id), notas_pruebas_evaluables_grupo=notas_pruebas_evaluables_grupo(tutoria.id, asignatura.id), respuestas_tutoria_media_stats=respuestas_tutoria_media_stats)}}
 				</div>
 			{% endif %}
-
 			{% if informe_by_tutoria_id_by_asignatura_id_sql.comentario or informe_by_tutoria_id_by_asignatura_id_sql.comentario_editado %}
 				<div class="{% if g.settings_current_user.show_analisis_asignaturas_detallado and informe_by_tutoria_id_by_asignatura_id_sql.comentario %}card-footer{% else %}card-body pt-1{% endif %}">
-					<div class="small my-1">
-							{% if informe_by_tutoria_id_by_asignatura_id_sql.comentario_editado %}<i class="material-icons vertical-center text-secondary mr-1">comment</i>{% endif %}<u>Observaciones:</u>
-							{% if g.settings_current_user.informe_comentario_edit_mode %}
-							<a data-toggle="collapse" data-parent="#parent_comentario_edit" href="#comentario_edit_{{hashids_encode(informe_by_tutoria_id_by_asignatura_id_sql.id)}}" class="btn btn-outline-gray btn-sm link_without_pointer pl-0 pr-1 py-0 float-right" aria-expanded="false" aria-controls="comentario_edit_{{hashids_encode(informe_by_tutoria_id_by_asignatura_id_sql.id)}}" title="Editar comentario">
-								<i class="material-icons vertical-center scaled_75">edit</i><small>editar</small>
-							</a>
-							{% endif %}
-					</div>
+					{% if g.settings_current_user.informe_comentario_edit_mode %}
+					<nav class="nav nav-tabs mb-2 small">
+						<a
+						class="nav-link active px-2 py-1"
+						data-toggle="tab"
+						role="tab"
+						title="Observaciones"
+						href="#observaciones_originales_{{hashids_encode(informe_by_tutoria_id_by_asignatura_id_sql.id)}}">
 						{% if informe_by_tutoria_id_by_asignatura_id_sql.comentario_editado %}
-							<div class="line_break">
-							{{-informe_by_tutoria_id_by_asignatura_id_sql.comentario_editado-}}
-							</div>
-						{% else %}
-							<div class="line_break">
-							{{-informe_by_tutoria_id_by_asignatura_id_sql.comentario-}}
-							</div>
+							<i class="material-icons vertical-center text-secondary_XXX mr-1">comment</i>
 						{% endif %}
+						Observaciones
+						</a>
+						<a class="nav-link px-2 py-1"
+						data-toggle="tab"
+						role="tab"
+						title="Editar observaciones"
+						href="#observaciones_editar_{{hashids_encode(informe_by_tutoria_id_by_asignatura_id_sql.id)}}">
+						Editar
+						</a>
+					</nav>
+					{% else %}
+					<div class="small pb-2">
+						{% if informe_by_tutoria_id_by_asignatura_id_sql.comentario_editado %}
+							<i class="material-icons vertical-center mr-1">comment</i>
+						{% endif %}
+						<u>Observaciones:</u>
+					</div>
+					{% endif %}
+
+					<div class="tab-content">
+						<div class="tab-pane fade show active" id="observaciones_originales_{{hashids_encode(informe_by_tutoria_id_by_asignatura_id_sql.id)}}" role="tabpanel">
+							{% if informe_by_tutoria_id_by_asignatura_id_sql.comentario_editado %}
+								<div class="line_break">
+									{{-informe_by_tutoria_id_by_asignatura_id_sql.comentario_editado-}}
+								</div>
+							{% else %}
+								<div class="line_break">
+									{{-informe_by_tutoria_id_by_asignatura_id_sql.comentario-}}
+								</div>
+							{% endif %}
+						</div>
 						{% if g.settings_current_user.informe_comentario_edit_mode %}
-							{% include 'analisis_informe_comentario_edit_block.html' %}
+							<div class="tab-pane fade" id="observaciones_editar_{{hashids_encode(informe_by_tutoria_id_by_asignatura_id_sql.id)}}" role="tabpanel">
+								{% include 'analisis_informe_comentario_edit_block.html' %}
+							</div>
 						{% endif %}
+					</div>
+
 				</div>
 			{% endif %}
 		</div>
