@@ -313,17 +313,6 @@ def admin_estadisticas_html(params={}):
         'admin_estadisticas.html', params=params, stats=stats)
 
 
-# # XXX usuario_delete
-# if request.form['selector_button'] == 'selector_usuario_delete':
-#     if request.form['selector_button'] == 'selector_usuario_delete':
-#         current_usuario_id = current_id_request('current_usuario_id')
-#         usuario = session_sql.query(User).filter(User.id == current_usuario_id).first()
-#         session_sql.delete(usuario)
-#         session_sql.commit()
-#         flash_toast(Markup('Usuario <strong>') + usuario.username + Markup('</strong>') + ' elminado', 'success')
-#         return redirect(url_for('admin_usuarios_html'))
-
-
 # XXX admin_usuario_ficha
 @app.route('/admin_usuario_ficha', methods=['GET', 'POST'])
 @app.route('/admin_usuario_ficha/<params>', methods=['GET', 'POST'])
