@@ -1,20 +1,14 @@
-<div class="border border-mutted rounded z-depth-1-1-less p-2 mt-3">
-	<div class="small text-mutted_XXX">
-		Observacies originales:
-	</div>
-	<div class="small text-mutted_XXX">
-		{{-informe_by_tutoria_id_by_asignatura_id_sql.comentario-}}
-	</div>
-	<div class="divider bg-info my-2"></div>
-	<textarea class="form-control" name="comentario_edit_{{hashids_encode(informe_by_tutoria_id_by_asignatura_id_sql.id)}}">{% if informe_by_tutoria_id_by_asignatura_id_sql.comentario_editado %}{{-informe_by_tutoria_id_by_asignatura_id_sql.comentario_editado-}}{% else %}{{-informe_by_tutoria_id_by_asignatura_id_sql.comentario-}}{% endif %}</textarea>
-	<div class="btn-group my-2" role="group">
-		<button role="button" type="submit" class="btn btn-outline-dark btn-sm" name="selector_button" value="selector_comentario_edit_{{hashids_encode(informe_by_tutoria_id_by_asignatura_id_sql.id)}}" title="Guardar">
-			<i class="material-icons vertical-center">save</i>
-			Guardar
-		</button>
-		<button role="button" type="submit" class="btn btn-outline-dark btn-sm" name="selector_button" value="selector_comentario_restaurar_{{hashids_encode(informe_by_tutoria_id_by_asignatura_id_sql.id)}}" title="Restaurar">
-			<i class="material-icons vertical-center">rotate_left</i>
-			Restuarar
-		</button>
-	</div>
+<div class="mb-2">
+	<span class="small strong">Original: </span>{{-informe_by_tutoria_id_by_asignatura_id_sql.comentario-}}
+</div>
+<textarea class="form-control" name="comentario_edit_{{hashids_encode(informe_by_tutoria_id_by_asignatura_id_sql.id)}}">{% if informe_by_tutoria_id_by_asignatura_id_sql.comentario_editado %}{{-informe_by_tutoria_id_by_asignatura_id_sql.comentario_editado-}}{% else %}{{-informe_by_tutoria_id_by_asignatura_id_sql.comentario-}}{% endif %}</textarea>
+<div class="btn-group my-2" role="group">
+	<button role="button" type="submit" class="btn btn-outline-dark btn-sm" name="selector_button" value="selector_comentario_edit_{{hashids_encode(informe_by_tutoria_id_by_asignatura_id_sql.id)}}" title="Guardar">
+		<i class="material-icons vertical-center">save</i>
+		Guardar
+	</button>
+	<button role="button" type="submit" class="btn btn-outline-dark btn-sm" name="selector_button" value="selector_comentario_restaurar_{{hashids_encode(informe_by_tutoria_id_by_asignatura_id_sql.id)}}" title="Restaurar">
+		<i class="material-icons vertical-center">rotate_left</i>
+		Restuarar
+	</button>
 </div>
