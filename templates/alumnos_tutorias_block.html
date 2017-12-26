@@ -15,18 +15,19 @@
 					{{tutoria.fecha.strftime('%d')}}
 					[{{tutoria.hora.strftime('%H:%M')}}]
 				</span>
-				<span class="badge float-right mt-1 {% if tutoria.activa %} badge-secondary {% else %} badge-info{% endif %}" title="{{tutoria_incoming['porcentaje']}}% de los informes recibidos">
+				<span class="badge float-right {% if tutoria.activa %} badge-secondary {% else %} badge-info{% endif %}" title="{{tutoria_incoming['porcentaje']}}% de los informes recibidos">
 					{{tutoria_incoming['porcentaje']}}%
 				</span>
+				<div class="progress rounded-0 mt-1">
+					<div
+						class="progress-bar {% if tutoria.activa %} bg-secondary progress-bar-striped progress-bar-animated {% else %} bg-mutted {% endif %}"
+						role="progressbar"
+						aria-valuemin="0"
+						aria-valuemax="100"
+						style="height:5px; width: {{tutoria_incoming['porcentaje']}}%;"></div>
+				</div>
 			</a>
-			<div class="progress rounded-0">
-				<div
-					class="progress-bar {% if tutoria.activa %} bg-secondary progress-bar-striped progress-bar-animated {% else %} bg-mutted {% endif %}"
-					role="progressbar"
-					aria-valuemin="0"
-					aria-valuemax="100"
-					style="height:5px; width: {{tutoria_incoming['porcentaje']}}%;"></div>
-			</div>
+
 			{% endwith %}
 		{% endfor %}
 	{% endif %}
