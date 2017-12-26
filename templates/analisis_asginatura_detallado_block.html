@@ -28,8 +28,7 @@
 				</div>
 			{% endif %}
 			{% if informe_by_tutoria_id_by_asignatura_id_sql.comentario or informe_by_tutoria_id_by_asignatura_id_sql.comentario_editado %}
-				<div class="{% if g.settings_current_user.show_analisis_asignaturas_detallado and informe_by_tutoria_id_by_asignatura_id_sql.comentario%} card-footer {% else %} card-body {% endif %} p-2">
-					<nav class="nav nav-tabs mb-2 small">
+					<nav class="nav nav-tabs small mx-2 {% if not g.settings_current_user.show_analisis_asignaturas_detallado %} mt-2 {% endif %}">
 						<a
 						class="nav-link active px-2 py-1 {% if not g.settings_current_user.informe_comentario_edit_mode %} link_without_pointer {% endif %}"
 						data-toggle="tab"
@@ -49,8 +48,12 @@
 						href="#observaciones_editar_{{hashids_encode(informe_by_tutoria_id_by_asignatura_id_sql.id)}}">
 						Editar
 						</a>
-					{% endif %}
+						{% endif %}
 					</nav>
+					{#
+					<div class="p-2 {% if not g.settings_current_user.show_analisis_asignaturas_detallado %} bg-light border border-gray border-top-0 rounded-bottom mx-2 mt-0 mb-2 {% endif %}">
+					#}
+					<div class="p-2">
 					<div class="tab-content px-2">
 						<div class="tab-pane fade show active" id="observaciones_originales_{{hashids_encode(informe_by_tutoria_id_by_asignatura_id_sql.id)}}" role="tabpanel">
 							{% if informe_by_tutoria_id_by_asignatura_id_sql.comentario_editado %}
@@ -69,8 +72,7 @@
 							</div>
 						{% endif %}
 					</div>
-
-				</div>
+					</div>
 			{% endif %}
 		</div>
 	</div>
