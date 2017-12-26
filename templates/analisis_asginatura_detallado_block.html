@@ -28,20 +28,20 @@
 				</div>
 			{% endif %}
 			{% if informe_by_tutoria_id_by_asignatura_id_sql.comentario or informe_by_tutoria_id_by_asignatura_id_sql.comentario_editado %}
-				<div class="{% if g.settings_current_user.show_analisis_asignaturas_detallado and informe_by_tutoria_id_by_asignatura_id_sql.comentario %}card-footer{% else %}card-body pt-1{% endif %}">
-					{% if g.settings_current_user.informe_comentario_edit_mode %}
+				<div class="{% if g.settings_current_user.show_analisis_asignaturas_detallado and informe_by_tutoria_id_by_asignatura_id_sql.comentario%} card-footer {% else %} card-body {% endif %} p-2">
 					<nav class="nav nav-tabs mb-2 small">
 						<a
-						class="nav-link active px-2 py-1"
+						class="nav-link active px-2 py-1 {% if not g.settings_current_user.informe_comentario_edit_mode %} link_without_pointer {% endif %}"
 						data-toggle="tab"
 						role="tab"
 						title="Observaciones"
 						href="#observaciones_originales_{{hashids_encode(informe_by_tutoria_id_by_asignatura_id_sql.id)}}">
 						{% if informe_by_tutoria_id_by_asignatura_id_sql.comentario_editado %}
-							<i class="material-icons vertical-center text-secondary_XXX mr-1">comment</i>
+							<i class="material-icons vertical-center">comment</i>
 						{% endif %}
 						Observaciones
 						</a>
+						{% if g.settings_current_user.informe_comentario_edit_mode %}
 						<a class="nav-link px-2 py-1"
 						data-toggle="tab"
 						role="tab"
@@ -49,20 +49,12 @@
 						href="#observaciones_editar_{{hashids_encode(informe_by_tutoria_id_by_asignatura_id_sql.id)}}">
 						Editar
 						</a>
-					</nav>
-					{% else %}
-					<div class="small mb-1 mt-2">
-						{% if informe_by_tutoria_id_by_asignatura_id_sql.comentario_editado %}
-							<i class="material-icons vertical-center mr-1">comment</i>
-						{% endif %}
-						<u>Observaciones:</u>
-					</div>
 					{% endif %}
-
-					<div class="tab-content">
+					</nav>
+					<div class="tab-content px-2">
 						<div class="tab-pane fade show active" id="observaciones_originales_{{hashids_encode(informe_by_tutoria_id_by_asignatura_id_sql.id)}}" role="tabpanel">
 							{% if informe_by_tutoria_id_by_asignatura_id_sql.comentario_editado %}
-								<div class="line_break">
+								<div class="line_break text-secondary">
 									{{-informe_by_tutoria_id_by_asignatura_id_sql.comentario_editado-}}
 								</div>
 							{% else %}
