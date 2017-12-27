@@ -97,7 +97,6 @@
 								{% include 'analisis_tutoria_delete_confirmar_block.html' %}
 							</div>
 						{% endif %}
-						{# NOTE badge #}
 						<span class="badge {% if tutoria.activa and not tutoria.deleted %}badge-secondary{% else %}badge-info text-white{% endif %} float-right" title="{{tutoria_incoming['porcentaje']}}% de los informes recibidos">
 							<span class="align-middle pr-1 {% if tutoria.activa and not tutoria.deleted %}color_secondary_lighten{% else %}badge-info text-mutted{% endif %}">{{stats['asignaturas_recibidas_lista'] | count}}
 								|
@@ -118,9 +117,12 @@
 				{% include 'analisis_tutoria_edit_block.html' %}
 				{% include 'analisis_re_enviar_block.html' %}
 				<a id="anchor_cues"></a>
-				<a data-toggle="collapse" href="#analisis_cuestionario" class="collapse_header_1 " aria-expanded="true" title="Analisis del cuestionario">
-					<i class="material-icons vertical-center">expand_more</i>
-					Analisis del cuestionario
+				<a data-toggle="collapse" href="#analisis_cuestionario" class="collapse_header_1" aria-expanded="true" title="Analisis del cuestionario">
+					<i class="material-icons align-middle">expand_more</i>
+					Cuestionario
+					{% if g.settings_current_user.show_analisis_cuestionario_detallado %}
+						{% include 'analisis_badge_grafico_avanzado_block.html' %}
+					{% endif %}
 				</a>
 				<div class="collapse {% if tutoria.activa or (params['show_analisis_cuestionario_detallado'] and not params['comentario_edit']) %}show{% endif %}" id="analisis_cuestionario">
 					<div class="col pt-4">
@@ -135,10 +137,9 @@
 								type="submit"
 								name="selector_button"
 								value="settings_show_analisis_cuestionario_detallado"
-								class="btn btn-outline-dark btn-sm float-right"
-								title="{% if g.settings_current_user.show_analisis_cuestionario_detallado %}Gráfico detallado{% else %}Gráfico básico{% endif %}">
+								class="btn {% if g.settings_current_user.show_analisis_cuestionario_detallado %} btn-outline-dark {% else %} btn-outline-mutted {% endif %} btn-sm float-right"
+								title="{% if g.settings_current_user.show_analisis_cuestionario_detallado %} Desactivar {% else %} Activar {% endif %}gráfico avanzado">
 								<i class="material-icons vertical-center">insert_chart</i>
-								{% if g.settings_current_user.show_analisis_cuestionario_detallado %}Gráfico detallado{% else %}Gráfico básico{% endif %}
 							</button>
 						</div>
 					</div>
@@ -147,7 +148,10 @@
 				<a id="anchor_comp"></a>
 				<a data-toggle="collapse" href="#analisis_comparativo_asignaturas" class="collapse_header_1" aria-expanded="false" title="Analisis comparativo de asignaturas">
 					<i class="material-icons vertical-center">expand_more</i>
-					Analisis comparativo de asignaturas
+					Comparativa de asignaturas
+					{% if g.settings_current_user.show_analisis_comparativo_detallado %}
+						{% include 'analisis_badge_grafico_avanzado_block.html' %}
+					{% endif %}
 				</a>
 				<div class="collapse {% if params['show_analisis_comparativo_detallado'] and not params['comentario_edit'] %} show {% endif %}" id="analisis_comparativo_asignaturas">
 					<div class="col pt-4">
@@ -162,10 +166,9 @@
 								type="submit"
 								name="selector_button"
 								value="settings_show_analisis_comparativo_detallado"
-								class="btn btn-outline-dark btn-sm float-right"
-								title="{% if g.settings_current_user.show_analisis_comparativo_detallado %}Gráfico detallado{% else %}Gráfico básico{% endif %}">
+								class="btn {% if g.settings_current_user.show_analisis_comparativo_detallado %} btn-outline-dark {% else %} btn-outline-mutted {% endif %} btn-sm float-right"
+								title="{% if g.settings_current_user.show_analisis_comparativo_detallado %} Desactivar {% else %} Activar {% endif %}gráfico avanzado">
 								<i class="material-icons vertical-center">insert_chart</i>
-								{% if g.settings_current_user.show_analisis_comparativo_detallado %}Gráfico detallado{% else %}Gráfico básico{% endif %}
 							</button>
 							</div>
 						</div>
@@ -175,7 +178,10 @@
 				<a id="anchor_deta"></a>
 				<a data-toggle="collapse" href="#analisis_detallado_asignaturas" class="collapse_header_1" aria-expanded="false" title="Analisis detallado por asignaturas">
 					<i class="material-icons vertical-center">expand_more</i>
-					Analisis detallado por asignatura
+					Asignaturas detalladas
+					{% if g.settings_current_user.show_analisis_asignaturas_detallado %}
+						{% include 'analisis_badge_grafico_avanzado_block.html' %}
+					{% endif %}
 				</a>
 				<div class="collapse mt-2 {% if params['show_analisis_asignaturas_detallado'] or params['comentario_edit'] %} show {% endif %}" id="analisis_detallado_asignaturas">
 					{% if not stats['asignaturas_recibidas_lista'] %}
@@ -205,10 +211,9 @@
 										type="submit"
 										name="selector_button"
 										value="settings_informe_comentario_edit_mode"
-										class="btn btn-outline-dark btn-sm float-right"
-										title="{% if g.settings_current_user.informe_comentario_edit_mode %}Editar activado{% else %}Editar NO activado{% endif %}">
-										<i class="material-icons vertical-center">edit</i>
-										{% if g.settings_current_user.informe_comentario_edit_mode %}Editar activado{% else %}Editar NO activado{% endif %}
+										class="btn {% if g.settings_current_user.informe_comentario_edit_mode %} btn-outline-dark {% else %} btn-outline-mutted {% endif %} btn-sm float-right"
+										title="{% if g.settings_current_user.informe_comentario_edit_mode %}Desactivar {% else %} Activar {% endif %}edición de observaciones">
+										<i class="material-icons vertical-center">comment</i>
 									</button>
 									{% if g.settings_current_user.show_analisis_avanzado %}
 									<button
@@ -216,10 +221,9 @@
 										type="submit"
 										name="selector_button"
 										value="settings_show_analisis_asignaturas_detallado"
-										class="btn btn-outline-dark btn-sm float-right"
-										title="{% if g.settings_current_user.show_analisis_asignaturas_detallado %}Gráfico detallado{% else %}Gráfico básico{% endif %}">
+										class="btn {% if g.settings_current_user.show_analisis_asignaturas_detallado %} btn-outline-dark {% else %} btn-outline-mutted {% endif %} btn-sm float-right"
+										title="{% if g.settings_current_user.show_analisis_asignaturas_detallado %}Desactivar {% else %} Activar {% endif %}gráfico avanzado">
 										<i class="material-icons vertical-center">insert_chart</i>
-										{% if g.settings_current_user.show_analisis_asignaturas_detallado %}Gráfico detallado{% else %}Gráfico básico{% endif %}
 									</button>
 									{% endif %}
 								</div>
@@ -229,7 +233,7 @@
 
 				<a data-toggle="collapse" href="#analisis_evoluacion" class="collapse_header_1" aria-expanded="false" title="Analisis en el tiempo">
 					<i class="material-icons vertical-center">expand_more</i>
-					Analisis en el tiempo
+					Evolución
 				</a>
 				<div class="collapse" id="analisis_evoluacion">
 					<div class="col pt-4 pb-3">
