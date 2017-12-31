@@ -5,7 +5,7 @@
 	<div class="paper bg-white padding_contenido">
 		{{titulo_1(bg_color='bg-dark',titulo='Admin Settings')}}
 		{{nav_tabs_admin(tab_active='Cuestiones')}}
-		<div id="parent_pregunta">
+		<div id="parent_categoria">
 			<div>
 				{# XXX: categoria_add #}
 				<a id="anchor_cat_add"></a>
@@ -19,14 +19,16 @@
 	</div>
 	<br>
 	<div class="paper bg-white padding_contenido">
-		<div>
-			{# XXX: pregunta_add #}
-			<a id="anchor_pre_add"></a>
-			{% include 'admin_cuestionario_pregunta_add_block.html' %}
-		</div>
-		<div>
-			{# XXX: preguntas_listado #}
-			{% include 'admin_cuestionario_pregunta_block.html' %}
+		<div id="parent_pregunta">
+			<div>
+				{# XXX: pregunta_add #}
+				<a id="anchor_pre_add"></a>
+				{% include 'admin_cuestionario_pregunta_add_block.html' %}
+			</div>
+			<div>
+				{# XXX: preguntas_listado #}
+				{% include 'admin_cuestionario_pregunta_block.html' %}
+			</div>
 		</div>
 	</div>
 </div>
