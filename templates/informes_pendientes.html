@@ -27,7 +27,7 @@
 			{% for tutoria in params['tutorias_pendites'] %}
 				{% with %}
 				{% set tutoria_incoming = tutoria_incoming(tutoria.id) %}
-				<a href="/informe/{{hashids_encode(asignatura.id)}}/{{hashids_encode(tutoria.id)}}/" class="collapse_header_2" title="ver informe">
+				<a href="/informe/{{hashids_encode(asignatura.id)}}/{{hashids_encode(tutoria.id)}}/" class="collapse_header_2 pb-1" title="ver informe">
 					{{translate_fecha(tutoria.fecha.strftime('%A') | capitalize)}}
 					{{tutoria.fecha.strftime('%d')}}
 					[{{tutoria.hora.strftime('%H:%M')}}]

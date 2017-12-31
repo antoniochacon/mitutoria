@@ -20,7 +20,7 @@
 				{% for tutoria in tutorias_by_grupo_id_incoming %}
 					{% with %}
 					{% set tutoria_incoming_stats = tutoria_incoming(tutoria.id) %}
-					<a href="/analisis/{{dic_encode_args({'current_tutoria_id': tutoria.id})}}" class="collapse_header_2" title="Ver informes">
+					<a href="/analisis/{{dic_encode_args({'current_tutoria_id': tutoria.id})}}" class="collapse_header_2 pb-1" title="Ver informes">
 						{{translate_fecha(tutoria.fecha.strftime('%A') | capitalize)}}
 						{{tutoria.fecha.strftime('%d')}}
 						[{{tutoria.hora.strftime('%H:%M')}}]
