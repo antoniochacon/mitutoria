@@ -176,7 +176,6 @@
 									<i class="material-icons vertical-center">save</i>
 									guardar
 								</button>
-								{# <button role="button" type="submit" name="selector_button" value="selector_pregunta_edit_rollback" class="btn btn-outline-dark btn-sm" title="deshacer cambios"> <i class="material-icons vertical-center">settings_backup_restore</i> </button> #}
 								<button role="button" type="submit" name="selector_button" value="selector_pregunta_delete_link" class="btn btn-outline-dark btn-sm" title="eliminar pregunta">
 									<i class="material-icons vertical-center">delete</i>
 								</button>
@@ -187,9 +186,9 @@
 						{% endif %}
 					{% else %}
 						<div class="btn-group" role="group" aria-label="...">
-							<button role="button" type="submit" name="selector_button" class="btn btn-outline-dark btn-sm" value="selector_pregunta_edit_link" title="editar ficha">
+							<button role="button" type="submit" name="selector_button" class="btn btn-outline-dark btn-sm" value="selector_pregunta_edit_link" title="Editar pregunta">
 								<i class="material-icons vertical-center">edit</i>
-								editar ficha
+								Editar pregunta
 							</button>
 							{% if equal_str(pregunta.id,params['current_pregunta_id']) and params['collapse_pregunta_edit']%}
 								<button role="button" type="submit" name="selector_button" class="btn btn-outline-dark btn-sm" value="selector_pregunta_edit_close" title="cerrar ficha">
