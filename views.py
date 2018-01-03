@@ -223,7 +223,7 @@ def tutorias_html(params={}):
                             session_sql.commit()  # NOTE necesario para simplificar y unificar como traducir la fecha
                             tutoria = tutoria_by_id(tutoria_id)
                             # NOTE anular email
-                            # send_email_tutoria_asincrono(alumno, tutoria)  # NOTE anular temporalemente para pruebas de envio de mails.
+                            send_email_tutoria_asincrono(alumno, tutoria)  # NOTE anular temporalemente para pruebas de envio de mails.
                             params['tutoria_solicitar'] = False
                             flash_toast('Tutoria generada.' + Markup('<br>') + 'Enviando emails al equipo educativo.', 'info')
                             params['current_alumno_id'] = current_alumno_id
@@ -2275,7 +2275,6 @@ def user_add_html():
                     settings_add.email_validated = True
                 session_sql.commit()
                 send_email_validate_asincrono(user_add)
-                # params['current_user_id'] = current_user_id
                 return redirect(url_for('login_validacion_email_html', params=dic_encode(params)))
         else:
             flash_wtforms(user_add_form, flash_toast, 'warning')
