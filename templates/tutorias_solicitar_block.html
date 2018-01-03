@@ -1,9 +1,18 @@
 <a data-toggle="collapse" class="collpase-header-primary" role="tab" data-parent="#parent_tutorias_solicitar" href="#collapse_tutorias_solicitar" aria-expanded="false">
-	<i class="material-icons vertical-center">send</i>
+	<i class="material-icons vertical-center">schedule</i>
 	Solicitar tutoría
 </a>
-<div id="collapse_tutorias_solicitar" class="collapse show">
+<div id="collapse_tutorias_solicitar" class="collapse {% if params['tutoria_solicitar'] %} show {% endif %}">
 	<div class="padding_contenido">
+		{% if params['alumnos_tutorias_solicitar'] %}
+
+
+		{% else %}
+
+
+		{% endif %}
+
+
 		{% include 'tutorias_solicitar_formulario_block.html' %}
 		{# XXX script necesario para el autocomplete #}
 		<script>

@@ -23,7 +23,7 @@
 		}
 	</script>
 	{%from '_macro.html' import nav_bar_top, titulo_1, highcharts_asignatura, highcharts_cuestionario, highcharts_asignaturas, highcharts_evolucion%}
-	{{ nav_bar_top(link_active='alumnos',params=params, current_user=current_user) }}
+	{{ nav_bar_top(link_active='',params=params, current_user=current_user) }}
 	<div class="paper bg-white padding_contenido">
 		{% if grupo and alumno and tutoria %}
 			{{titulo_1(bg_color='bg-dark', titulo='Análisis gráfico de la tutoría')}}

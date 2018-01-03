@@ -9,7 +9,7 @@
 		{% include 'tutorias_solicitar_block.html' %}
 	</div>
 	<div class="paper bg-white mb-3">
-		{% include 'tutorias_incoming_block.html' %}
+		{% include 'tutorias_solicitadas_block.html' %}
 	</div>
 	{% with %}
 	{% set tutorias_by_grupo_id_deleted = tutorias_by_grupo_id(grupo_activo_sql.id, deleted = True) %}

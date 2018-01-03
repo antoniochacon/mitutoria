@@ -27,6 +27,7 @@
 <div id="alumno_{{hashids_encode_alumno_id}}" class="collapse {% if equal_str(alumno.id, params['current_alumno_id']) and params['collapse_alumno'] %} show {% endif %}">
 	<div class="divider bg-primary grueso"></div>
 	<div class="padding_3" id="alumno_set_{{hashids_encode_alumno_id}}" aria-multiselectable="true">
+		{#
 		<div>
 			<a id="anchor_tut_add_{{hashids_encode_alumno_id}}"></a>
 			<a data-toggle="collapse" class="collapse_header_1" role="tab" data-parent="#alumno_set_{{hashids_encode_alumno_id}}" href="#tutoria_add_{{hashids_encode_alumno_id}}" aria-expanded="false">
@@ -36,6 +37,7 @@
 				{% include 'alumnos_tutoria_add_block.html' %}
 			</div>
 		</div>
+		 #}
 		<div>
 			<a id="anchor_tutorias_{{hashids_encode_alumno_id}}"></a>
 			<a data-toggle="collapse" class="collapse_header_1" role="tab" data-parent="#alumno_set_{{hashids_encode_alumno_id}}" href="#tutorias_listado_{{hashids_encode_alumno_id}}" aria-expanded="false">
@@ -46,7 +48,7 @@
 					</span>
 				{% endif %}
 			</a>
-			<div id="tutorias_listado_{{hashids_encode_alumno_id}}" class="collapse {% if (equal_str(alumno.id, params['current_alumno_id']) and (params['collapse_tutorias']) or tutorias_by_alumno_id_true) %} show {% endif %}">
+			<div id="tutorias_listado_{{hashids_encode_alumno_id}}" class="collapse">
 				{% include 'alumnos_tutorias_block.html' %}
 			</div>
 		</div>
@@ -57,7 +59,17 @@
 			</a>
 			<div id="alumno_ficha_{{hashids_encode_alumno_id}}" class="collapse {% if equal_str(alumno.id, params['current_alumno_id']) and params['collapse_alumno_edit'] %} show {% endif %}">
 				{% include 'alumnos_ficha_block.html' %}
+				<div class="divider bg-info"></div>
 			</div>
+		</div>
+		<div class="d-flex flex-row-reverse my-3">
+			<a
+				href="/tutorias/{{dic_encode_args({'current_alumno_id':alumno.id, 'alumnos_tutorias_solicitar':True})}}"
+				role="button"
+				class="btn btn-primary btn-sm link_without_pointer float-right"
+				title="Solicitar tutoría">
+				<i class="material-icons vertical-center">local_post_office</i> Solicitar tutoría
+			</a>
 		</div>
 	</div>
 	<div class="divider bg-primary grueso"></div>

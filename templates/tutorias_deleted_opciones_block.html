@@ -4,10 +4,10 @@
 		<a href="/analisis/{{dic_encode_args({'current_tutoria_id': tutoria.id})}}" role="button" class="btn btn-outline-dark btn-sm link_without_pointer" title="Ver tutoria">
 			Informes
 		</a>
-		<a href="/alumnos/{{dic_encode_args({'current_tutoria_id': tutoria.id, 'tutoria_restaurar': True})}}" role="button" class="btn btn-outline-dark btn-sm link_without_pointer" title="Restaurar tutoria">
+		<a href="/tutorias/{{dic_encode_args({'current_tutoria_id': tutoria.id, 'tutoria_restaurar': True})}}" role="button" class="btn btn-outline-dark btn-sm link_without_pointer" title="Restaurar tutoria">
 			Restaurar
 		</a>
-		<a data-toggle="collapse" href="#alumnos_tutoria_delete_confirmar_{{hashids_encode(tutoria.id)}}" class="btn btn-outline-dark btn-sm link_without_pointer" aria-expanded="false" title="Eliminar tutoria">
+		<a data-toggle="collapse" href="#tutoria_delete_confirmar_{{hashids_encode(tutoria.id)}}" class="btn btn-outline-dark btn-sm link_without_pointer" aria-expanded="false" title="Eliminar tutoria">
 			<i class="material-icons vertical-center">delete</i>
 		</a>
 		{% include 'tutorias_delete_confirmar_block.html' %}
