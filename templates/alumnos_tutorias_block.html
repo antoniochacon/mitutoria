@@ -27,9 +27,18 @@
 						style="height:5px; width: {{tutoria_incoming['porcentaje']}}%;"></div>
 				</div>
 			</a>
-
 			{% endwith %}
 		{% endfor %}
 	{% endif %}
+	<div class="row my-2">
+		<a
+			href="/tutorias/{{dic_encode_args({'current_alumno_id':alumno.id, 'alumnos_tutorias_solicitar':True})}}"
+			role="button"
+			class="btn btn-outline-dark btn-sm link_without_pointer"
+			title="Menu solicitar tutoría">
+			<i class="material-icons vertical-center">schedule</i> Nueva tutoría
+		</a>
+	</div>
 </div>
+<div class="divider bg-info"></div>
 {% endwith %}

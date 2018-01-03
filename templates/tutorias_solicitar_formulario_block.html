@@ -10,7 +10,7 @@
 			data-item_label="alumno_nombre"
 			autocomplete="off">
 		<span class="input-group-addon">
-			<i class="material-icons vertical-center">person</i>
+			<i class="material-icons vertical-center text-gray">person</i>
 		</span>
 	</div>
 	<input type="hidden" class="form-control" id="alumno_id" name="alumno_id" value="{% if params['current_alumno_id'] %}{{params['current_alumno_id']}}{% endif %}" readonly="readonly">
@@ -25,10 +25,12 @@
 					style="background-color: white"
 					value="{% if request.method=='POST' and tutoria_add.fecha.data %}{{tutoria_add.fecha.data}}{% else %}{{g.current_date.strftime('%d-%m-%Y')}}{% endif %}"
 					placeholder="{{tutoria_add.fecha.label.text}}">
-				<span class="input-group-addon {% if request.method=='POST' %} {% if tutoria_add.fecha.errors %} form_addon-warning {% else %} form_addon-success {% endif %} {% endif %}">fecha</span>
+				<span class="input-group-addon {% if request.method=='POST' %} {% if tutoria_add.fecha.errors %} form_addon-warning {% else %} form_addon-success {% endif %} {% endif %}">
+					<i class="material-icons vertical-center text-gray">today</i>
+				</span>
 			</div>
 		</div>
-		<div class="form-group col-md-3 mb-3">
+		<div class="form-group col-md-6 mb-3">
 			<div class="input-group">
 				<input
 					type="text"
@@ -38,11 +40,13 @@
 					name="{{tutoria_add.hora.name}}"
 					value="{% if request.method=='POST' and tutoria_add.hora.data %}{{tutoria_add.hora.data}}{% else %}{{g.current_time.strftime('%H:%M')}}{% endif %}"
 					placeholder="{{tutoria_add.hora.label.text}}">
-				<span class="input-group-addon {% if request.method=='POST' %} {% if tutoria_add.hora.errors %} form_addon-warning {% else %} form_addon-success {% endif %} {% endif %}">hora</span>
+				<span class="input-group-addon {% if request.method=='POST' %} {% if tutoria_add.hora.errors %} form_addon-warning {% else %} form_addon-success {% endif %} {% endif %}">
+					<i class="material-icons vertical-center text-gray">schedule</i>
+				</span>
 			</div>
 		</div>
-		<div class="btn-group col-md-3 mb-3" role="group" aria-label="...">
-			<button role="button" type="submit" class="btn btn-outline-primary btn-sm" name="selector_button" value="selector_tutoria_add" title="solicitar tutoria">
+		<div class="col-sm-12">
+			<button role="button" type="submit" class="btn btn-outline-dark btn-sm" name="selector_button" value="selector_tutoria_add" title="solicitar tutoria">
 				<i class="material-icons vertical-center">local_post_office</i>
 				Solicitar tutoría</button>
 		</div>

@@ -1,4 +1,4 @@
-<a data-toggle="collapse" class="collpase-header-primary" role="tab" data-parent="#parent_tutorias_solicitar" href="#collapse_tutorias_solicitar" aria-expanded="false">
+<a data-toggle="collapse" class="collpase-header-dark" role="tab" data-parent="#parent_tutorias_solicitar" href="#collapse_tutorias_solicitar" aria-expanded="false">
 	<i class="material-icons vertical-center">schedule</i>
 	Solicitar tutoría
 </a>
@@ -58,6 +58,7 @@
 						response: function () {
 							feedback_icon.hide();
 						},
+						// el focus hace que autoseleccione la primera busqueda
 						// focus: function (event, ui) { 	_this.val(ui.item[_data.item_label]); 	event.preventDefault(); },
 						select: function (event, ui) {
 							_this.val(ui.item[_data.item_label]);
@@ -67,7 +68,6 @@
 					}).data('ui-autocomplete')._renderItem = function (ul, item) {
 						return $('<li></li>').data("item.autocomplete", item).append('<a>' + item[_data.item_label] + '</a>').appendTo(ul);
 					};
-					// end autocomplete
 				});
 			})();
 		</script>

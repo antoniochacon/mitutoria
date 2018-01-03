@@ -13,7 +13,7 @@
 		{{tutorias_by_grupo_id_incoming_count}} {{singular_plural("tutoria", "tutorias", tutorias_by_grupo_id_incoming_count)}}
 	</span>
 </a>
-<div id="collapse_tutorias_incoming" class="collapse {% if tutorias_by_grupo_id_incoming %} show {% endif %}">
+<div id="collapse_tutorias_incoming" class="collapse {% if tutorias_by_grupo_id_incoming and not params['alumno_apellidos_nombre'] %} show {% endif %}">
 	{% if tutorias_by_grupo_id_incoming %}
 		<div class="m-0 p-0">
 			<div class="padding_contenido pt-2">

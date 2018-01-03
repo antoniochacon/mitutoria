@@ -1,11 +1,12 @@
 {% with %}
-{% set tutorias_by_alumno_id_true = tutorias_by_alumno_id(alumno.id, deleted=False, activa=True) | count %}
-{% set tutorias_by_alumno_id_all = tutorias_by_alumno_id(alumno.id, deleted=False) | count %}
+{% set tutorias_by_alumno_id_true = tutorias_by_alumno_id(alumno.id, deleted = False, activa = True) | count %}
+{% set tutorias_by_alumno_id_all = tutorias_by_alumno_id(alumno.id, deleted = False) | count %}
 {% set hashids_encode_alumno_id = hashids_encode(alumno.id) %}
 <a id="anchor_alu_{{hashids_encode_alumno_id}}"></a>
 <a data-toggle="collapse" data-parent="#parent_alumno" href="#alumno_{{hashids_encode_alumno_id}}" class="collapse_header_1" aria-expanded="false" title="{{alumno.apellidos}}, {{alumno.nombre}}">
 	<div class="media">
-		<span class="capital {% if not asignaturas_alumno_by_alumno_id(alumno.id) %} capital-warning {% elif tutorias_by_alumno_id_all %}
+		<span
+			class="capital {% if not asignaturas_alumno_by_alumno_id(alumno.id) %} capital-warning {% elif tutorias_by_alumno_id_all %}
 		{% if tutorias_by_alumno_id_true %} capital-primary {% else %} capital-gray{% endif %}
 			 {% else %} capital-info {% endif %}">{{alumno.apellidos | first | upper}}</span>
 		<div class="media-body">
@@ -27,17 +28,6 @@
 <div id="alumno_{{hashids_encode_alumno_id}}" class="collapse {% if equal_str(alumno.id, params['current_alumno_id']) and params['collapse_alumno'] %} show {% endif %}">
 	<div class="divider bg-primary grueso"></div>
 	<div class="padding_3" id="alumno_set_{{hashids_encode_alumno_id}}" aria-multiselectable="true">
-		{#
-		<div>
-			<a id="anchor_tut_add_{{hashids_encode_alumno_id}}"></a>
-			<a data-toggle="collapse" class="collapse_header_1" role="tab" data-parent="#alumno_set_{{hashids_encode_alumno_id}}" href="#tutoria_add_{{hashids_encode_alumno_id}}" aria-expanded="false">
-				<i class="material-icons vertical-center">expand_more</i>Solicitar tutoria
-			</a>
-			<div id="tutoria_add_{{hashids_encode_alumno_id}}" class="collapse {% if equal_str(alumno.id, params['current_alumno_id']) and params['collapse_tutoria_add'] %} show {% endif %}">
-				{% include 'alumnos_tutoria_add_block.html' %}
-			</div>
-		</div>
-		 #}
 		<div>
 			<a id="anchor_tutorias_{{hashids_encode_alumno_id}}"></a>
 			<a data-toggle="collapse" class="collapse_header_1" role="tab" data-parent="#alumno_set_{{hashids_encode_alumno_id}}" href="#tutorias_listado_{{hashids_encode_alumno_id}}" aria-expanded="false">
@@ -59,17 +49,7 @@
 			</a>
 			<div id="alumno_ficha_{{hashids_encode_alumno_id}}" class="collapse {% if equal_str(alumno.id, params['current_alumno_id']) and params['collapse_alumno_edit'] %} show {% endif %}">
 				{% include 'alumnos_ficha_block.html' %}
-				<div class="divider bg-info"></div>
 			</div>
-		</div>
-		<div class="d-flex flex-row-reverse my-3">
-			<a
-				href="/tutorias/{{dic_encode_args({'current_alumno_id':alumno.id, 'alumnos_tutorias_solicitar':True})}}"
-				role="button"
-				class="btn btn-primary btn-sm link_without_pointer float-right"
-				title="Menu solicitar tutoría">
-				<i class="material-icons vertical-center">schedule</i> Menu solicitar tutoría
-			</a>
 		</div>
 	</div>
 	<div class="divider bg-primary grueso"></div>
