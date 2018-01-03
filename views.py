@@ -211,7 +211,6 @@ def tutorias_html(params={}):
                             flash_toast('Ya existe esta tutoría' + Markup('<br>') + 'Es aconsejable editarla', 'warning')
                             # FIXME: parametros_url
                             params['current_tutoria_id'] = tutoria_sql.id
-                            # return redirect(url_for('analisis_html', params=dic_encode(params)))
                             return redirect(url_for('tutorias_html', params=dic_encode(params)))
                         else:
                             session_sql.add(tutoria_add)
@@ -223,7 +222,7 @@ def tutorias_html(params={}):
                             session_sql.commit()  # NOTE necesario para simplificar y unificar como traducir la fecha
                             tutoria = tutoria_by_id(tutoria_id)
                             # NOTE anular email
-                            # send_email_tutoria_asincrono(alumno, tutoria)  # NOTE anular temporalemente para pruebas de envio de mails.
+                            send_email_tutoria_asincrono(alumno, tutoria)  # NOTE anular temporalemente para pruebas de envio de mails.
                             params['tutoria_solicitar'] = False
                             flash_toast('Tutoria generada.' + Markup('<br>') + 'Enviando emails al equipo educativo.', 'info')
                             params['current_alumno_id'] = current_alumno_id

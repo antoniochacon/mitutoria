@@ -1,5 +1,5 @@
 {% with %}
-{% set tutorias_by_alumno_id = tutorias_by_alumno_id(alumno.id, deleted=False) %}
+{% set tutorias_by_alumno_id = tutorias_by_alumno_id(alumno.id, deleted = False) %}
 <div class="padding_3 my-2">
 	{% if not tutorias_by_alumno_id %}
 		<div class="text-muted">Sin tutorias</div>
@@ -30,15 +30,12 @@
 			{% endwith %}
 		{% endfor %}
 	{% endif %}
-	<div class="row my-2">
-		<a
-			href="/tutorias/{{dic_encode_args({'current_alumno_id':alumno.id, 'alumnos_tutorias_solicitar':True})}}"
-			role="button"
-			class="btn btn-outline-dark btn-sm link_without_pointer"
-			title="Menu solicitar tutoría">
-			<i class="material-icons vertical-center">schedule</i> Nueva tutoría
-		</a>
-	</div>
+</div>
+<div class="col-sm-12 my-2">
+	<a href="/tutorias/{{dic_encode_args({'current_alumno_id':alumno.id, 'alumnos_tutorias_solicitar':True})}}" role="button" class="btn btn-outline-dark btn-sm link_without_pointer" title="Menu solicitar tutoría">
+		<i class="material-icons vertical-center">schedule</i>
+		Nueva tutoría
+	</a>
 </div>
 <div class="divider bg-info"></div>
 {% endwith %}
