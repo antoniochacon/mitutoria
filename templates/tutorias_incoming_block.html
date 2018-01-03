@@ -5,7 +5,7 @@
 	{% if tutorias_by_grupo_id_incoming %}
 	<i class="material-icons vertical-center">notifications_active</i>
 			{{singular_plural("Tutoría", "Tutorías", tutorias_by_grupo_id_incoming_count)}}
-			{{singular_plural("pendiente", "pendientes", tutorias_by_grupo_id_incoming_count)}}
+			{{singular_plural("solicitada", "solicitadas", tutorias_by_grupo_id_incoming_count)}}
 		{% else %}
 		<i class="material-icons vertical-center">notifications_paused</i>Relax, no tienes tutorias
 	{% endif %}

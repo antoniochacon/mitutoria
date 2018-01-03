@@ -18,7 +18,6 @@
 							<div class="bg-dark text-white p-2 mt-3">
 								{{categoria.enunciado}}
 							</div>
-							<!-- <div class="divider bg-dark"></div> -->
 							{% for pregunta in preguntas_by_categoria_id %}
 								{% with %}
 								{% set association_settings_pregunta_check = association_settings_pregunta_check(g.settings_current_user.id, pregunta.id) %}

@@ -2,15 +2,18 @@
 {% block body %}
 	{% with %}
 	{% set gupo_alumnos = alumnos("apellidos", "nombre")%}
-	{% from "_macro.html" import nav_bar_top,
-	titulo_1 %}
+	{% set grupo_activo_sql = grupo_activo()%}
+	{% from "_macro.html" import nav_bar_top,titulo_1 %}
 	{{ nav_bar_top(link_active='alumnos',params=params, current_user=current_user) }}
-	{% if gupo_alumnos %}
+	{#
+	{% if grupo_alumnos %}
+
 		<div class="paper bg-white mb-3">
 			{% include 'alumnos_tutorias_incoming_block.html' %}
 		</div>
+
 		{% with %}
-		{% set tutorias_by_grupo_id_deleted = tutorias_by_grupo_id(grupo_activo().id, deleted=True) %}
+		{% set tutorias_by_grupo_id_deleted = tutorias_by_grupo_id(grupo_activo_sql.id, deleted=True) %}
 		{% set tutorias_by_grupo_id_deleted_count = tutorias_by_grupo_id_deleted | count %}
 		{% if tutorias_by_grupo_id_deleted %}
 		<div class="paper bg-white mb-3">
@@ -19,11 +22,9 @@
 		{% endif %}
 		{% endwith %}
 	{% endif %}
+	#}
 	<div class="paper bg-white padding_contenido">
-		{% with %}
-		{% set grupo_activo = grupo_activo()%}
-		{{titulo_1(url="alumnos",bg_color="bg-dark",titulo=grupo_activo.nombre, subtitulo=[ grupo_activo.centro, [ grupo_activo.curso_academico, grupo_activo.curso_academico +1 ]|join("-") ]|join(": "))}}
-		{% endwith %}
+		{{titulo_1(url="alumnos",bg_color="bg-dark",titulo=grupo_activo_sql.nombre, subtitulo=[ grupo_activo_sql.centro, [ grupo_activo_sql.curso_academico, grupo_activo_sql.curso_academico +1 ]|join("-") ]|join(": "))}}
 		<div id="parent_alumno">
 			<div>
 				{% include 'alumnos_add_block.html' %}

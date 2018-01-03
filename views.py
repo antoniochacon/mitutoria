@@ -83,11 +83,118 @@ def internal_server_error_html(critical):
 
 @app.route('/')
 def index_html():
-    return redirect(url_for('alumnos_html'))
+    # return redirect(url_for('alumnos_html'))
+    return redirect(url_for('tutorias_html'))
+
+
+@app.route('/tutorias', methods=['GET', 'POST'])
+@app.route('/tutorias/<params>', methods=['GET', 'POST'])
+@login_required
+def tutorias_html(params={}):
+    try:
+        params_old = dic_decode(params)
+    except:
+        params_old = {}
+        abort(404)
+    params = {}
+    # params['alumno_buscador'] = params_old.get('alumno_buscador', '')
+    alumnos = session_sql.query(Alumno).filter_by(grupo_id=g.settings_current_user.grupo_activo_id).all()  # FIXME habra que filtrar por grupo_activo
+    alumnos_autocomplete = []
+
+    if request.method == 'POST':
+        if request.form['selector_button'] == 'selector_tutoria_add':
+            current_alumno_id = request.form.get('alumno_id')
+            current_tutoria_id = current_id_request('current_tutoria_id')
+            params['current_tutoria_id'] = current_tutoria_id
+            params['anchor'] = 'anchor_alu_' + str(hashids_encode(current_alumno_id))
+            params['collapse_alumno'] = True
+            params['collapse_tutoria_add'] = True
+            tutoria_add_form = Tutoria_Add(current_alumno_id=current_alumno_id, fecha=request.form.get('fecha'), hora=request.form.get('hora'))
+
+            # NOTE check si hay asignaturas asignadas al grupo
+            if not asignaturas_not_sorted():
+                params['collapse_asignatura_add'] = True
+                flash_toast('Tutoria no solicitada' + Markup('<br>') + 'Debes asignar alguna asignatura', 'warning')
+                return redirect(url_for('asignaturas_html', params=dic_encode(params)))
+
+            # NOTE check si hay asignaturas asignadas al alumno
+            if not asignaturas_alumno_by_alumno_id(current_alumno_id):
+                params['collapse_alumno_edit'] = True
+                params['alumno_edit_link'] = True
+                params['collapse_alumno_edit_asignaturas'] = True
+                flash_toast('Tutoria no solicitada' + Markup('<br>') + 'Debes asignar alguna asignatura', 'warning')
+                return redirect(url_for('tutorias_html', params=dic_encode(params)))
+
+            # NOTE check si hay preguntas asignadas en el cuestionario
+            if not informe_preguntas():
+                params['current_alumno_id'] = current_alumno_id
+                flash_toast('Tutoria no solicitada' + Markup('<br>') + 'Debes asignar preguntas al cuestionario', 'warning')
+                return redirect(url_for('settings_cuestionario_html', params=dic_encode(params)))
+
+            else:
+                if tutoria_add_form.validate():
+                    tutoria_add_form_fecha = datetime.datetime.strptime(tutoria_add_form.fecha.data, '%d-%m-%Y').strftime('%Y-%m-%d')
+                    tutoria_add = Tutoria(alumno_id=current_alumno_id, fecha=tutoria_add_form_fecha, hora=tutoria_add_form.hora.data)
+                    alumno = alumno_by_id(current_alumno_id)
+                    tutoria_sql = session_sql.query(Tutoria).filter(Tutoria.alumno_id == current_alumno_id, Tutoria.fecha == tutoria_add_form_fecha).first()
+                    # NOTE tutorias_timeout (tutoria_add)
+                    if datetime.datetime.strptime(tutoria_add_form_fecha, '%Y-%m-%d').date() < g.current_date:
+                        tutoria_add_form.fecha.errors = ['Fecha ya pasada.']
+                        flash_toast('Tutoria no generada' + Markup('<br>') + 'Fecha pasada', 'warning')
+                    else:
+                        if tutoria_sql:
+                            # NOTE tutoria ya existe y redirect a al modo de edicion de la tutoria
+                            flash_toast('Ya existe esta tutoría' + Markup('<br>') + 'Es aconsejable editarla', 'warning')
+                            # FIXME: parametros_url
+                            params['current_tutoria_id'] = tutoria_sql.id
+                            return redirect(url_for('analisis_html', params=dic_encode(params)))
+                        else:
+                            session_sql.add(tutoria_add)
+                            session_sql.flush()
+                            tutoria_id = tutoria_add.id
+                            # NOTE si se desea eliminar el commit hay que usar el FLUSH y recuperar la fecha con datetime.datetime.strptime(tutoria_add.fecha, '%Y-%m-%d').strftime('%d')
+                            # tutoria_dia_semana = translate_fecha(datetime.datetime.strptime(tutoria_add.fecha, '%Y-%m-%d').strftime('%A'))
+                            # tutoria_dia_mes = datetime.datetime.strptime(tutoria_add.fecha, '%Y-%m-%d').strftime('%d')
+                            session_sql.commit()  # NOTE necesario para simplificar y unificar como traducir la fecha
+                            tutoria = tutoria_by_id(tutoria_id)
+                            # NOTE anular email
+                            send_email_tutoria_asincrono(alumno, tutoria)  # NOTE anular temporalemente para pruebas de envio de mails.
+                            flash_toast('Tutoria generada.' + Markup('<br>') + 'Enviando emails al equipo educativo.', 'info')
+                            params['current_alumno_id'] = current_alumno_id
+                            params['collapse_alumno'] = True
+                            params['collapse_tutorias'] = True
+                            params['anchor'] = 'anchor_top'
+                            # NOTE comprobar permisos de oauth2
+                            if g.settings_current_user.calendar:
+                                try:
+                                    credentials = oauth2client.client.Credentials.new_from_json(g.settings_current_user.oauth2_credentials)
+                                    http = httplib2.Http()
+                                    http = credentials.authorize(http)
+                                    service = discovery.build('calendar', 'v3', http=http)
+                                except:
+                                    return redirect(url_for('oauth2callback_calendar'))
+
+                               # NOTE agregar eventos a la agenda
+                                tutoria_hora = datetime.datetime.strptime(tutoria_add_form.hora.data, '%H:%M')
+                                tutoria_fecha = tutoria_add_form.fecha.data
+                                alumno_nombre = alumno.nombre
+
+                                calendar_datetime_utc_start = (datetime.datetime.strptime(tutoria_fecha, '%d-%m-%Y') + datetime.timedelta(hours=tutoria_hora.hour) + datetime.timedelta(minutes=tutoria_hora.minute)).timestamp()
+                                calendar_datetime_utc_start_arrow = str(arrow.get(calendar_datetime_utc_start).replace(tzinfo='Europe/Madrid'))
+                                calendar_datetime_utc_end = (datetime.datetime.strptime(tutoria_fecha, '%d-%m-%Y') + datetime.timedelta(hours=tutoria_hora.hour) + datetime.timedelta(minutes=(tutoria_hora.minute + g.settings_current_user.tutoria_duracion))).timestamp()
+                                calendar_datetime_utc_end_arrow = str(arrow.get(calendar_datetime_utc_end).replace(tzinfo='Europe/Madrid'))
+
+                                tutoria_calendar_add(service, tutoria_add, calendar_datetime_utc_start_arrow, calendar_datetime_utc_end_arrow, alumno_nombre)
+                            return redirect(url_for('tutorias_html', params=dic_encode(params)))
+                else:
+                    flash_wtforms(tutoria_add_form, flash_toast, 'warning')
+            return render_template(
+                'tutorias.html', alumno_add=Alumno_Add(), alumno_edit=Alumno_Add(),
+                tutoria_add=tutoria_add_form, params=params)
+    return render_template('tutorias.html', alumnos_autocomplete=alumnos, tutoria_add=Tutoria_Add(), params=params)
 
 
 # XXX pruebas
-
 
 @app.route('/test', methods=['GET', 'POST'])
 @login_required
@@ -96,7 +203,6 @@ def test_html():
     # XXX alumno_add
     if request.method == 'POST':
         if request.form['selector_button'] == 'selector_alumno_add':
-            pass
             alumno_add_form = Alumno_Add(grupo_id=6, nombre=request.form.get('nombre'), apellidos=request.form.get('apellidos'))
             if alumno_add_form.validate():
                 alumno_add = Alumno(grupo_id=6, apellidos=alumno_add_form.apellidos.data, nombre=alumno_add_form.nombre.data)
