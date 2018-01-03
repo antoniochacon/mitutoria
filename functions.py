@@ -313,6 +313,7 @@ def respuestas_grupo_stats(tutoria_id, preguntas_lista, asignaturas_lista):
     pruebas_evaluables_lista = []
     respuestas_pregunta_grupo_media = 'sin_notas'
     respuestas_asignatura_grupo_media = 'sin_notas'
+    alumno=alumno_by_tutoria_id(tutoria_id)
     grupo = grupo_by_tutoria_id(tutoria_id)
     preguntas = preguntas_lista
     asignaturas = asignaturas_lista
@@ -322,7 +323,7 @@ def respuestas_grupo_stats(tutoria_id, preguntas_lista, asignaturas_lista):
     for pregunta in preguntas:
         respuestas_pregunta_lista = []
         for asignatura in asignaturas:
-            respuestas = session_sql.query(Respuesta).join(Informe).join(Tutoria).join(Alumno).join(Grupo).filter(Respuesta.pregunta_id == pregunta.id, Informe.asignatura_id == asignatura.id, Informe.tutoria_id != tutoria_id, Grupo.id == grupo.id, Tutoria.deleted == False).all()
+            respuestas = session_sql.query(Respuesta).join(Informe).join(Tutoria).join(Alumno).join(Grupo).filter(Respuesta.pregunta_id == pregunta.id, Informe.asignatura_id == asignatura.id, Alumno.id != alumno.id, Grupo.id == grupo.id, Tutoria.deleted == False).all()
             for respuesta in respuestas:
                 if respuesta:
                     resultado = respuesta.resultado
@@ -341,7 +342,7 @@ def respuestas_grupo_stats(tutoria_id, preguntas_lista, asignaturas_lista):
     for asignatura in asignaturas:
         respuestas_asignatura_lista = []
         for pregunta in preguntas:
-            respuestas = session_sql.query(Respuesta).join(Informe).join(Tutoria).join(Alumno).join(Grupo).filter(Respuesta.pregunta_id == pregunta.id, Informe.asignatura_id == asignatura.id, Informe.tutoria_id != tutoria_id, Grupo.id == grupo.id, Tutoria.deleted == False).all()
+            respuestas = session_sql.query(Respuesta).join(Informe).join(Tutoria).join(Alumno).join(Grupo).filter(Respuesta.pregunta_id == pregunta.id, Informe.asignatura_id == asignatura.id, Alumno.id != alumno.id, Grupo.id == grupo.id, Tutoria.deleted == False).all()
             for respuesta in respuestas:
                 if respuesta:
                     resultado = respuesta.resultado
