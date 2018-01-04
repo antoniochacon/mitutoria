@@ -1,0 +1,25 @@
+{% with %}
+{% set tutorias_by_grupo_id_incoming = tutorias_by_grupo_id(grupo_activo().id, activa = False, deleted = False) %}
+{% set tutorias_by_grupo_id_incoming_count = tutorias_by_grupo_id_incoming | count %}
+<a data-toggle="collapse" class="collpase-header-gray" role="tab" data-parent="#parent_tutorias_historial" href="#collapse_tutorias_historial" aria-expanded="false">
+	<i class="material-icons vertical-center">view_list</i>
+	Historial de tutorias recientes
+	<span class="badge badge-light text-gray float-right mt-1" title="Tutorías recientes">
+		{{tutorias_by_grupo_id_incoming_count}}
+		{{singular_plural("tutoria", "tutorias", tutorias_by_grupo_id_incoming_count)}}
+	</span>
+</a>
+<div id="collapse_tutorias_historial" class="collapse">
+	{% if tutorias_by_grupo_id_incoming %}
+		<div class="padding_contenido pt-2">
+			{% for tutoria in tutorias_by_grupo_id_incoming[0:20] %}
+				{% include 'tutoria_link_block.html' %}
+			{% endfor %}
+		</div>
+	{% else %}
+		<div class="padding_contenido text-mutted">
+			Historial vacío.
+		</div>
+	{% endif %}
+</div>
+{% endwith %}
