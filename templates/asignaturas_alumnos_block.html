@@ -6,7 +6,7 @@
 		|
 		{{alumnos_not_sorted()|count}}</span>
 </a>
-<div id="asignatura_alumnos_{{hashids_encode(asignatura.id)}}" class="collapse show">
+<div id="asignatura_alumnos_{{hashids_encode(asignatura.id)}}" class="collapse {% if equal_str(asignatura.id, params['current_asignatura_id']) and params['asignatura_edit_link'] %} show {% endif %}">
 	<div class="padding_3">
 		<br>
 		{% if not alumnos('apellidos', 'nombre') %}
