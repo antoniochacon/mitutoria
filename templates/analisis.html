@@ -27,7 +27,7 @@
 	<div class="paper bg-white padding_contenido">
 		{% if grupo and alumno and tutoria %}
 			{{titulo_1(bg_color='bg-dark', titulo='Análisis gráfico de la tutoría')}}
-			<form action="/analisis_tutoria_edit" method="POST">
+			<form action="/tutoria_edit" method="POST">
 				{% with %}
 				{% set tutoria_incoming = tutoria_incoming(tutoria.id) %}
 				<div class="row mb-2 mt-2">
@@ -58,9 +58,9 @@
 						{% if tutoria.deleted %}
 						<div class="btn-group" role="group">
 								<button role="button" type="submit" name="selector_button" value="selector_tutoria_restaurar" class="btn btn-sm btn-outline-dark ml-1" title="Restaurar tutoría">
-									restaurar
+									Restaurar
 								</button>
-								<a data-toggle="collapse" href="#tutoria_delete_confirmar_{{hashids_encode(tutoria.id)}}" class="btn btn-outline-dark btn-sm link_without_pointer" aria-expanded="false" title="Eliminar tutoria">
+								<a data-toggle="collapse" href="#tutoria_delete_confirmar_{{hashids_encode(tutoria.id)}}" class="btn btn-outline-dark btn-sm link_without_pointer rounded-right" aria-expanded="false" title="Eliminar tutoria definitivamente">
 									<i class="material-icons vertical-center">delete_forever</i>
 								</a>
 								{% include 'tutorias_delete_confirmar_block.html' %}
@@ -91,15 +91,10 @@
 									title="imprimir">
 									<i class="material-icons vertical-center {% if tutoria.activa %} color-gray-darken-1 {% endif %}">print</i>
 								</span>
-								<a
-									data-toggle="collapse"
-									href="#tutoria_delete_confirmar_{{hashids_encode(tutoria.id)}}"
-									class="btn {% if tutoria.activa %} btn-outline-dark{% else %} btn-outline-mutted{% endif %} btn-sm link_without_pointer"
-									aria-expanded="false"
-									title="Enviar a la papelera">
+
+								<button class="btn btn-outline-dark btn-sm" type="submit" name="selector_button" value="selector_tutoria_enviar_papelera" title="Enviar a papelera">
 									<i class="material-icons vertical-center">delete_sweep</i>
-								</a>
-								{% include 'analisis_tutoria_delete_confirmar_block.html' %}
+								</button>
 							</div>
 						{% endif %}
 						<span class="badge {% if tutoria.activa and not tutoria.deleted %}badge-secondary{% else %}badge-info text-white{% endif %} float-right" title="{{tutoria_incoming['porcentaje']}}% de los informes recibidos">

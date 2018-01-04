@@ -100,22 +100,15 @@ def tutorias_html(params={}):
     params['anchor'] = params_old.get('anchor', 'anchor_top')
     params['current_alumno_id'] = params_old.get('current_alumno_id', 0)
     params['current_tutoria_id'] = params_old.get('current_tutoria_id', 0)
-    params['tutoria_delete_confirmar'] = params_old.get('tutoria_delete_confirmar', False)
     params['tutorias_deleted_vaciar_papelera'] = params_old.get('tutorias_deleted_vaciar_papelera', False)
-    params['tutoria_restaurar'] = params_old.get('tutoria_restaurar', False)
-    params['alumno_delete_confirmar'] = params_old.get('alumno_delete_confirmar', False)
-    params['current_alumno_id'] = params_old.get('current_alumno_id', 0)
     params['tutoria_solicitar'] = params_old.get('tutoria_solicitar', False)
     params['alumnos_tutorias_solicitar'] = params_old.get('alumnos_tutorias_solicitar', False)
     params['alumno_apellidos_nombre'] = params_old.get('alumno_apellidos_nombre', False)
-    params['alumno_nombre']=params_old.get('alumno_nombre', False)
+    params['alumno_nombre'] = params_old.get('alumno_nombre', False)
     params['tutoria_ya_existe'] = params_old.get('tutoria_ya_existe', False)
 
     current_alumno_id = params['current_alumno_id']
     current_tutoria_id = params['current_tutoria_id']
-
-    alumnos = session_sql.query(Alumno).filter_by(grupo_id=g.settings_current_user.grupo_activo_id).all()  # FIXME habra que filtrar por grupo_activo
-    alumnos_autocomplete = []
 
     if params['tutorias_deleted_vaciar_papelera']:
         params['tutorias_deleted_vaciar_papelera'] = False
@@ -126,34 +119,6 @@ def tutorias_html(params={}):
         flash_toast('Papelera vaciada', 'success')
         return redirect(url_for('tutorias_html', params=dic_encode(params)))
 
-    if params['tutoria_restaurar']:
-        params['tutoria_restaurar'] = False
-        tutoria = tutoria_by_id(current_tutoria_id)
-        tutoria.deleted = False
-        session_sql.commit()
-        if g.settings_current_user.calendar:
-            try:
-                credentials = oauth2client.client.Credentials.new_from_json(g.settings_current_user.oauth2_credentials)
-                http = httplib2.Http()
-                http = credentials.authorize(http)
-                service = discovery.build('calendar', 'v3', http=http)
-            except:
-                return redirect(url_for('oauth2callback_calendar'))
-            alumno_nombre = alumno_by_tutoria_id(current_tutoria_id).nombre
-            calendar_datetime_utc_start_arrow = str(arrow.get(tutoria.fecha).shift(hours=tutoria.hora.hour, minutes=tutoria.hora.minute).replace(tzinfo='Europe/Madrid'))
-            calendar_datetime_utc_end_arrow = str(arrow.get(tutoria.fecha).shift(hours=tutoria.hora.hour, minutes=tutoria.hora.minute + g.settings_current_user.tutoria_duracion).replace(tzinfo='Europe/Madrid'))
-            tutoria_calendar_add(service, tutoria, calendar_datetime_utc_start_arrow, calendar_datetime_utc_end_arrow, alumno_nombre)
-        flash_toast('Tutoria restaurada', 'success')
-        return redirect(url_for('tutorias_html', params=dic_encode(params)))
-
-    if params['tutoria_delete_confirmar']:
-        params['tutoria_delete_confirmar'] = False
-        tutoria = tutoria_by_id(current_tutoria_id)
-        session_sql.delete(tutoria)
-        session_sql.commit()
-        flash_toast('Tutoria eliminada', 'success')
-        return redirect(url_for('tutorias_html', params=dic_encode(params)))
-
     if params['alumnos_tutorias_solicitar']:
         params['alumnos_tutorias_solicitar'] = False
         params['tutoria_solicitar'] = True
@@ -161,9 +126,10 @@ def tutorias_html(params={}):
         params['alumno_apellidos_nombre'] = alumno.apellidos + ', ' + alumno.nombre
         return redirect(url_for('tutorias_html', params=dic_encode(params)))
 
+    alumnos = session_sql.query(Alumno).filter_by(grupo_id=g.settings_current_user.grupo_activo_id).all()  # FIXME habra que filtrar por grupo_activo
+    alumnos_autocomplete = []
     if request.method == 'POST':
         current_alumno_id = request.form.get('alumno_id')
-
         if request.form['selector_button'] == 'selector_tutoria_add':
             params['tutoria_solicitar'] = True
             if not current_alumno_id:
@@ -640,14 +606,9 @@ def alumnos_html(params={}):
     params['collapse_alumno_edit'] = params_old.get('collapse_alumno_edit', False)
     params['collapse_alumno_edit_asignaturas'] = params_old.get('collapse_alumno_edit_asignaturas', False)
     params['current_alumno_id'] = params_old.get('current_alumno_id', 0)
-    params['from_url'] = params_old.get('from_url', False)
     params['collapse_tutorias'] = params_old.get('collapse_tutorias', False)
-    params['collapse_tutoria_no_activas'] = params_old.get('collapse_tutoria_no_activas', False)
     params['current_tutoria_id'] = params_old.get('current_tutoria_id', 0)
     current_tutoria_id = params['current_tutoria_id']
-    params['tutoria_delete_confirmar'] = params_old.get('tutoria_delete_confirmar', False)
-    params['tutorias_deleted_vaciar_papelera'] = params_old.get('tutorias_deleted_vaciar_papelera', False)
-    params['tutoria_restaurar'] = params_old.get('tutoria_restaurar', False)
     params['alumno_delete_confirmar'] = params_old.get('alumno_delete_confirmar', False)
     params['current_alumno_id'] = params_old.get('current_alumno_id', 0)
     current_alumno_id = params['current_alumno_id']
@@ -1281,7 +1242,7 @@ def analisis_html(params={}):
     params['show_analisis_cuestionario_detallado'] = params_old.get('show_analisis_cuestionario_detallado', False)
     params['show_analisis_comparativo_detallado'] = params_old.get('show_analisis_comparativo_detallado', False)
     params['show_analisis_asignaturas_detallado'] = params_old.get('show_analisis_asignaturas_detallado', False)
-    params['tutoria_delete_confirmar'] = params_old.get('tutoria_delete_confirmar', False)
+
     params['comentario_edit'] = params_old.get('comentario_edit', False)
     params['current_informe_id'] = params_old.get('current_informe_id', 0)
     grupo = grupo_by_tutoria_id(current_tutoria_id)
@@ -1290,17 +1251,6 @@ def analisis_html(params={}):
 
     if not tutoria or not alumno:
         return redirect(url_for('analisis_tutoria_no_disponible_html'))
-
-    if params['tutoria_delete_confirmar']:
-        params['tutoria_delete_confirmar'] = False
-        tutoria = tutoria_by_id(current_tutoria_id)
-        alumno_sql = alumno_by_id(tutoria.alumno_id)
-        tutoria_calendar_delete(event_id=tutoria.calendar_event_id)
-        tutoria.deleted = True
-        tutoria.deleted_at = g.current_date
-        session_sql.commit()
-        flash_toast('Tutoria enviada a la papelera', 'success')
-        return redirect(url_for('tutorias_html'))
 
     stats = analisis_tutoria(current_tutoria_id)
     comentarios_stats = tutoria_comentarios(current_tutoria_id, stats['asignaturas_recibidas_lista'])
@@ -1317,11 +1267,11 @@ def analisis_html(params={}):
                            respuestas_tutoria_media_stats=respuestas_tutoria_media_stats, evolucion_stats=evolucion_stats, comentarios_stats=comentarios_stats)
 
 
-# XXX analisis_tutoria_edit
-@app.route('/analisis_tutoria_edit', methods=['GET', 'POST'])
-@app.route('/analisis_tutoria_edit/<params>', methods=['GET', 'POST'])
+# XXX tutoria_edit
+@app.route('/tutoria_edit', methods=['GET', 'POST'])
+@app.route('/tutoria_edit/<params>', methods=['GET', 'POST'])
 @login_required
-def analisis_tutoria_edit_html(params={}):
+def tutoria_edit_html(params={}):
     try:
         params_old = dic_decode(params)
     except:
@@ -1329,21 +1279,8 @@ def analisis_tutoria_edit_html(params={}):
         abort(404)
     params = {}
     params['informe_comentario_edit'] = params_old.get('informe_comentario_edit', False)
-
-    # XXX informe_comentario_edit
-    if params['informe_comentario_edit']:
-        params['current_informe_id'] = params_old.get('current_informe_id', 0)
-        params['current_tutoria_id'] = params_old.get('current_tutoria_id', 0)
-        current_informe_id = params['current_informe_id']
-        current_tutoria_id = params['current_tutoria_id']
-        informe = informe_by_id(current_informe_id)
-        # NOTE no evalua porque necesita request POST
-        informe.comentario_editado = request.form.get('comentario_editado_' + str(hashids_encode(int(current_informe_id))))
-        if session_sql.dirty:
-            session_sql.commit()
-        params['comentario_edit'] = True
-        params['anchor'] = 'anchor_comentario_edit_' + str(hashids_encode(current_informe_id))
-        return redirect(url_for('analisis_html', params=dic_encode(params)))
+    params['current_tutoria_id'] = params_old.get('current_tutoria_id', 0)
+    current_tutoria_id = params['current_tutoria_id']
 
     if request.method == 'POST':
         current_tutoria_id = current_id_request('current_tutoria_id')
@@ -1363,7 +1300,6 @@ def analisis_tutoria_edit_html(params={}):
             #             comentario_editado_dic[key]=value
             # print('comentario_editado_dic:',comentario_editado_dic)
             # ---------------------------------------------------------------------------
-
             current_informe_id = hashids_decode(request.form['selector_button'].replace('selector_comentario_edit_', ''))
             informe = informe_by_id(current_informe_id)
             informe.comentario_editado = request.form.get('comentario_edit_' + str(hashids_encode(current_informe_id)))
@@ -1384,10 +1320,40 @@ def analisis_tutoria_edit_html(params={}):
             params['anchor'] = 'anchor_comentario_edit_' + str(hashids_encode(current_informe_id))
             return redirect(url_for('analisis_html', params=dic_encode(params)))
 
+        # XXX selector_tutoria_enviar_papelera
+        if request.form['selector_button'] == 'selector_tutoria_enviar_papelera':
+            alumno_sql = alumno_by_id(tutoria_sql.alumno_id)
+            tutoria_calendar_delete(event_id=tutoria_sql.calendar_event_id)
+            tutoria_sql.deleted = True
+            tutoria_sql.deleted_at = g.current_date
+            session_sql.commit()
+            flash_toast('Tutoria enviada a la papelera', 'success')
+            return redirect(url_for('analisis_html', params=dic_encode(params)))
+
+        # XXX selector_tutoria_eliminar
+        if request.form['selector_button'] == 'selector_tutoria_eliminar':
+            session_sql.delete(tutoria_sql)
+            session_sql.commit()
+            flash_toast('Tutoría eliminada definitivamente', 'success')
+            return redirect(url_for('tutorias_html', params=dic_encode(params)))
+
         # XXX selector_tutoria_restaurar
         if request.form['selector_button'] == 'selector_tutoria_restaurar':
             tutoria_sql.deleted = False
             session_sql.commit()
+            if g.settings_current_user.calendar:
+                try:
+                    credentials = oauth2client.client.Credentials.new_from_json(g.settings_current_user.oauth2_credentials)
+                    http = httplib2.Http()
+                    http = credentials.authorize(http)
+                    service = discovery.build('calendar', 'v3', http=http)
+                except:
+                    return redirect(url_for('oauth2callback_calendar'))
+                alumno_nombre = alumno_by_tutoria_id(current_tutoria_id).nombre
+                calendar_datetime_utc_start_arrow = str(arrow.get(tutoria_sql.fecha).shift(hours=tutoria_sql.hora.hour, minutes=tutoria_sql.hora.minute).replace(tzinfo='Europe/Madrid'))
+                calendar_datetime_utc_end_arrow = str(arrow.get(tutoria_sql.fecha).shift(hours=tutoria_sql.hora.hour, minutes=tutoria_sql.hora.minute + g.settings_current_user.tutoria_duracion).replace(tzinfo='Europe/Madrid'))
+                tutoria_calendar_add(service, tutoria_sql, calendar_datetime_utc_start_arrow, calendar_datetime_utc_end_arrow, alumno_nombre)
+            flash_toast('Tutoría restaurada', 'success')
             return redirect(url_for('analisis_html', params=dic_encode(params)))
 
         # XXX settings_show_analisis_comparativo_detallado
@@ -2228,13 +2194,6 @@ def asignaturas_html(params={}):
             return render_template(
                 'asignaturas.html', asignatura_add=Asignatura_Add(), asignatura_edit=asignatura_edit_form,
                 params=params, stats=stats)
-
-        # XXX asignatura_edit_rollback
-        # if request.form['selector_button'] == 'selector_asignatura_edit_rollback':
-        #     params['asignatura_edit_link'] = True
-        #     params['anchor'] = 'anchor_asi_' + str(hashids_encode(current_asignatura_id))
-        #     session_sql.rollback()
-        #     return redirect(url_for('asignaturas_html', params=dic_encode(params)))
 
         # XXX asignatura_delete_close
         if request.form['selector_button'] == 'selector_asignatura_delete_close':
