@@ -47,6 +47,7 @@ class Settings (Base):
     cleanup_tutorias_status = Column(Boolean, default=False)
     tutoria_duracion = Column(Integer, default=20)
     tutoria_timeout = Column(Boolean, default=True)
+    tutorias_historial = Column(Integer, default=10)
     show_asignaturas_analisis = Column(Boolean, default=True)
     diferencial = Column(Integer, default=15)
     informe_comentario_edit_mode = Column(Boolean, default=True)

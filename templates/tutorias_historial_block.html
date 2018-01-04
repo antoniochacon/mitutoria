@@ -12,7 +12,7 @@
 <div id="collapse_tutorias_historial" class="collapse">
 	{% if tutorias_by_grupo_id_incoming %}
 		<div class="padding_contenido pt-2">
-			{% for tutoria in tutorias_by_grupo_id_incoming[0:20] %}
+			{% for tutoria in tutorias_by_grupo_id_incoming[0:g.settings_current_user.tutorias_historial] %}
 				{% include 'tutoria_link_block.html' %}
 			{% endfor %}
 		</div>

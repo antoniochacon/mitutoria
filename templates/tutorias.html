@@ -11,9 +11,11 @@
 	<div class="paper bg-white mb-3">
 		{% include 'tutorias_solicitadas_block.html' %}
 	</div>
-	<div class="paper bg-white mb-3">
-		{% include 'tutorias_historial_block.html' %}
-	</div>
+	{% if g.settings_current_user.tutorias_historial %}
+		<div class="paper bg-white mb-3">
+			{% include 'tutorias_historial_block.html' %}
+		</div>
+	{% endif %}
 	{% with %}
 	{% set tutorias_by_grupo_id_deleted = tutorias_by_grupo_id(grupo_activo_sql.id, deleted = True) %}
 	{% set tutorias_by_grupo_id_deleted_count = tutorias_by_grupo_id_deleted | count %}
