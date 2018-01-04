@@ -4,6 +4,9 @@
 </a>
 <div id="collapse_tutorias_solicitar" class="collapse {% if params['tutoria_solicitar'] %} show {% endif %}">
 	<div class="padding_contenido">
+		{% if params['tutoria_ya_existe'] %}
+			{% include 'tutorias_ya_exite_block.html' %}
+		{% endif %}
 		{% include 'tutorias_solicitar_formulario_block.html' %}
 		{# XXX script necesario para el autocomplete #}
 		<script>
@@ -58,8 +61,7 @@
 						response: function () {
 							feedback_icon.hide();
 						},
-						// el focus hace que autoseleccione la primera busqueda
-						// focus: function (event, ui) { 	_this.val(ui.item[_data.item_label]); 	event.preventDefault(); },
+						// el focus hace que autoseleccione la primera busqueda focus: function (event, ui) { 	_this.val(ui.item[_data.item_label]); 	event.preventDefault(); },
 						select: function (event, ui) {
 							_this.val(ui.item[_data.item_label]);
 							_hidden_field.val(ui.item[_data.item_id]);

@@ -108,6 +108,8 @@ def tutorias_html(params={}):
     params['tutoria_solicitar'] = params_old.get('tutoria_solicitar', False)
     params['alumnos_tutorias_solicitar'] = params_old.get('alumnos_tutorias_solicitar', False)
     params['alumno_apellidos_nombre'] = params_old.get('alumno_apellidos_nombre', False)
+    params['alumno_nombre']=params_old.get('alumno_nombre', False)
+    params['tutoria_ya_existe'] = params_old.get('tutoria_ya_existe', False)
 
     current_alumno_id = params['current_alumno_id']
     current_tutoria_id = params['current_tutoria_id']
@@ -157,7 +159,6 @@ def tutorias_html(params={}):
         params['tutoria_solicitar'] = True
         alumno = alumno_by_id(current_alumno_id)
         params['alumno_apellidos_nombre'] = alumno.apellidos + ', ' + alumno.nombre
-        print('alumno: ', params['alumno_apellidos_nombre'])
         return redirect(url_for('tutorias_html', params=dic_encode(params)))
 
     if request.method == 'POST':
@@ -207,10 +208,13 @@ def tutorias_html(params={}):
                         flash_toast('Tutoria no generada' + Markup('<br>') + 'Fecha pasada', 'warning')
                     else:
                         if tutoria_sql:
-                            # NOTE tutoria ya existe y redirect a al modo de edicion de la tutoria
-                            flash_toast('Ya existe esta tutoría' + Markup('<br>') + 'Es aconsejable editarla', 'warning')
-                            # FIXME: parametros_url
+                            # NOTE tutoria ya existe y muestra dicha tutoria
+                            params['tutoria_ya_existe'] = True
                             params['current_tutoria_id'] = tutoria_sql.id
+                            params['current_alumno_id'] = current_alumno_id
+                            params['alumno_nombre'] = alumno.nombre
+                            params['alumno_apellidos_nombre'] = alumno.apellidos + ', ' + alumno.nombre
+                            flash_toast(alumno.nombre + ' ya tiene tutoría ese día', 'warning')
                             return redirect(url_for('tutorias_html', params=dic_encode(params)))
                         else:
                             session_sql.add(tutoria_add)
@@ -254,8 +258,7 @@ def tutorias_html(params={}):
                 else:
                     flash_wtforms(tutoria_add_form, flash_toast, 'warning')
             return render_template(
-                'tutorias.html', alumno_add=Alumno_Add(), alumno_edit=Alumno_Add(),
-                tutoria_add=tutoria_add_form, params=params)
+                'tutorias.html', alumnos_autocomplete=alumnos, tutoria_add=tutoria_add_form, params=params)
 
     # XXX purgar papelera tutorias (en el futuro sera un servicio que se ejecute por las noches cuando el servidor tenga pocas visitas)
     if g.settings_current_user.role == 'admin':

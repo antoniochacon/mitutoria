@@ -56,12 +56,17 @@
 					<input type="hidden" name="current_tutoria_id" value="{{hashids_encode(tutoria.id)}}">
 					<div class="col-sm-12 col-md-6">
 						{% if tutoria.deleted %}
-							<span class="text-warning small">
-								Tutoría en la papelera
-								<button role="button" type="submit" name="selector_button" value="selector_tutoria_restaurar" class="btn btn-sm btn-outline-warning ml-1" title="restaurar tutoria">
+						<div class="btn-group" role="group">
+								<button role="button" type="submit" name="selector_button" value="selector_tutoria_restaurar" class="btn btn-sm btn-outline-dark ml-1" title="Restaurar tutoría">
 									restaurar
 								</button>
-							</span>
+								<a data-toggle="collapse" href="#tutoria_delete_confirmar_{{hashids_encode(tutoria.id)}}" class="btn btn-outline-dark btn-sm link_without_pointer" aria-expanded="false" title="Eliminar tutoria">
+									<i class="material-icons vertical-center">delete_forever</i>
+								</a>
+								{% include 'tutorias_delete_confirmar_block.html' %}
+						</div>
+
+
 						{% else %}
 							<div class="btn-group mb-1" role="group">
 								<a data-toggle="collapse" href="#tutoria_edit_{{hashids_encode(tutoria.id)}}" class="btn {% if tutoria.activa %} btn-outline-dark{% else %} btn-outline-mutted{% endif %} btn-sm link_without_pointer" aria-expanded="false" title="cambiar fecha y hora">
@@ -91,8 +96,8 @@
 									href="#tutoria_delete_confirmar_{{hashids_encode(tutoria.id)}}"
 									class="btn {% if tutoria.activa %} btn-outline-dark{% else %} btn-outline-mutted{% endif %} btn-sm link_without_pointer"
 									aria-expanded="false"
-									title="eliminar tutoria">
-									<i class="material-icons vertical-center">delete</i>
+									title="Enviar a la papelera">
+									<i class="material-icons vertical-center">delete_sweep</i>
 								</a>
 								{% include 'analisis_tutoria_delete_confirmar_block.html' %}
 							</div>

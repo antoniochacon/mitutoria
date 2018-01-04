@@ -5,29 +5,7 @@
 		<div class="text-muted">Sin tutorias</div>
 	{% else %}
 		{% for tutoria in tutorias_by_alumno_id %}
-			{% with %}
-			{% set tutoria_incoming = tutoria_incoming(tutoria.id) %}
-			<a id="anchor_tut_{{hashids_encode(tutoria.id)}}"></a>
-			<a href="/analisis/{{dic_encode_args({'current_tutoria_id': tutoria.id})}}" class="collapse_header_2 pb-1" title="ver informe">
-				<span class="{% if tutoria.activa %} h6 strong {% else %} text-mutted {% endif %}">
-					{{translate_fecha(tutoria.fecha.strftime('%b')) | capitalize}}
-					{{translate_fecha(tutoria.fecha.strftime('%A') | capitalize)}}
-					{{tutoria.fecha.strftime('%d')}}
-					[{{tutoria.hora.strftime('%H:%M')}}]
-				</span>
-				<span class="badge float-right {% if tutoria.activa %} badge-secondary {% else %} badge-info{% endif %}" title="{{tutoria_incoming['porcentaje']}}% de los informes recibidos">
-					{{tutoria_incoming['porcentaje']}}%
-				</span>
-				<div class="progress rounded-0 mt-1">
-					<div
-						class="progress-bar {% if tutoria.activa %} bg-secondary progress-bar-striped progress-bar-animated {% else %} bg-mutted {% endif %}"
-						role="progressbar"
-						aria-valuemin="0"
-						aria-valuemax="100"
-						style="height:5px; width: {{tutoria_incoming['porcentaje']}}%;"></div>
-				</div>
-			</a>
-			{% endwith %}
+			{% include 'tutoria_link_block.html' %}
 		{% endfor %}
 	{% endif %}
 </div>
