@@ -1,5 +1,5 @@
 <form action="/tutorias" method="POST">
-	<div class="input-group mb-3">
+	<div class="input-group mb-2">
 		<input
 			class="form-control bs-autocomplete border-right-0"
 			value="{% if params['alumno_apellidos_nombre'] %}{{params['alumno_apellidos_nombre']}}{% endif %}"
@@ -15,7 +15,7 @@
 	</div>
 	<input type="hidden" class="form-control" id="alumno_id" name="alumno_id" value="{% if params['current_alumno_id'] %}{{params['current_alumno_id']}}{% endif %}" readonly="readonly">
 	<div class="row">
-		<div class="form-group col-md-6 mb-3">
+		<div class="form-group col-7">
 			<div class="input-group">
 				<input
 					type="text"
@@ -30,7 +30,7 @@
 				</span>
 			</div>
 		</div>
-		<div class="form-group col-md-6 mb-3">
+		<div class="form-group col-5">
 			<div class="input-group">
 				<input
 					type="text"
