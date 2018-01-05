@@ -4,12 +4,10 @@
 		<meta charset='utf-8'>
 		<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no, user-scalable=no">
 		<meta name="google-site-verification" content="AXTN5_WXlxKPXLBt-WUrX53GUVa-uiEqeU1xbHSgr8Q"/>
-		<title>mi tutoria</title>
+		<title>{% if page_tittle %}page_tittle{% else %}mi tutoria{% endif %}</title>
 		<link rel='shortcut icon' href='{{ url_for("static", filename="image/favicon.ico")}}'>
 		{# jQuery ha de ser cargado primero #}
 		<script src='https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js'></script>
-		{# jQuery-UI necesario para el autocomplete #}
-		<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
 		{# bootstrap JS #}
 		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.3/js/bootstrap.min.js" integrity="sha384-a5N7Y/aK3qNeh15eJKGWxsqtnX/wWdSZSKp+81YjTmS15nvnvxKHuzaWwXHDli+4" crossorigin="anonymous"></script>
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>

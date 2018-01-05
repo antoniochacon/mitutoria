@@ -1546,25 +1546,29 @@ def settings_opciones_html(params={}):
             settings_diferencial = request.form.get('settings_diferencial')
             settings_show_analisis_avanzado = request.form.get('settings_show_analisis_avanzado')
             settings_tutorias_historial = request.form.get('settings_tutorias_historial')
+            settings_tutorias_papelera = request.form.get('settings_tutorias_papelera')
 
             if not settings_edit_tutoria_timeout:
                 settings_edit_tutoria_timeout = False
             if not settings_show_asignaturas_analisis:
                 settings_show_asignaturas_analisis = False
+            if not settings_show_analisis_avanzado:
+                settings_show_analisis_avanzado = False
             if not settings_edit_calendar:
                 settings_edit_calendar = False
                 g.settings_current_user.calendar_sincronizado = False
                 g.settings_current_user.oauth2_credentials = ''
-            if not settings_show_analisis_avanzado:
-                settings_show_analisis_avanzado = False
 
+            # NOTE es necesario eval() para pasar de string 'TRUE' Boolean TRUE
             g.settings_current_user.tutoria_timeout = eval(settings_edit_tutoria_timeout)
-            g.settings_current_user.show_asignaturas_analisis =eval(settings_show_asignaturas_analisis)
-            g.settings_current_user.tutoria_duracion = settings_tutoria_duracion
-            g.settings_current_user.diferencial = settings_diferencial
+            g.settings_current_user.show_asignaturas_analisis = eval(settings_show_asignaturas_analisis)
             g.settings_current_user.calendar = eval(settings_edit_calendar)
             g.settings_current_user.show_analisis_avanzado = eval(settings_show_analisis_avanzado)
-            g.settings_current_user.tutorias_historial = eval(settings_tutorias_historial)
+
+            g.settings_current_user.tutoria_duracion = settings_tutoria_duracion
+            g.settings_current_user.diferencial = settings_diferencial
+            g.settings_current_user.tutorias_historial = settings_tutorias_historial
+            g.settings_current_user.tutorias_papelera = settings_tutorias_papelera
 
             if session_sql.dirty:
                 session_sql.commit()
