@@ -224,7 +224,7 @@ def tutorias_html(params={}):
                 else:
                     flash_wtforms(tutoria_add_form, flash_toast, 'warning')
             return render_template(
-                'tutorias.html', alumnos_autocomplete=alumnos, tutoria_add=tutoria_add_form, params=params)
+                'tutorias.html',alumnos_autocomplete=alumnos, tutoria_add=tutoria_add_form, params=params)
 
     # XXX purgar papelera tutorias (en el futuro sera un servicio que se ejecute por las noches cuando el servidor tenga pocas visitas)
     if g.settings_current_user.role == 'admin':

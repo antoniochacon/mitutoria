@@ -1,0 +1,11 @@
+{% if cita_random() %}
+	<div class="p-2 text-justify small">
+		<span>
+			"{{cita_random().frase}}"
+		</span>
+		<span class="text-gray">
+			-
+			{{cita_random().autor}}
+		</span>
+	</div>
+{% endif %}

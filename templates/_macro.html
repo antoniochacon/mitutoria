@@ -1177,9 +1177,9 @@
 {% endmacro %}
 {% macro nav_bar_top(link_active, params, current_user) %}
 	{% if current_user.is_authenticated %}
-		{{nav_bar(link_active, params=params, dic={'ayuda':'wellcome', 'tutorias':'tutorias', 'alumnos':'alumnos', 'asignaturas':'asignaturas', 'opciones':'settings_cuestionario', 'admin':'admin_estadisticas', 'logout':'logout'})}}
+		{{nav_bar(link_active, params=params, dic={'Ayuda':'wellcome', 'Tutorías':'tutorias', 'Alumnos':'alumnos', 'Asignaturas':'asignaturas', 'Opciones':'settings_opciones', 'Admin':'admin_estadisticas', 'Logout':'logout'})}}
 	{% else %}
-		{{nav_bar(link_active, params=params,  dic = {'inciar sesión': 'login','nueva cuenta': 'user_add'})}}
+		{{nav_bar(link_active, params=params,  dic = {'Inciar sesión':'login', 'Nueva cuenta':'user_add'})}}
 	{% endif %}
 {% endmacro %}
 
@@ -1189,25 +1189,25 @@
 		<button class="navbar-toggler" role="button" type="button" data-toggle="collapse" data-target="#navbar" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
 			<span class="navbar-toggler-icon"></span>
 		</button>
-		<a class="navbar-brand py-0" href="/">
-		<img src="../../static/image/nav_logo_64.gif" width="40" height="40" title="Inicio">
+		<a class="navbar-brand py-0 mr-2" href="/">
+		<img src="../../static/image/nav_logo_64.gif" width="35" height="35" title="Inicio">
 		</a>
 		<div class="collapse navbar-collapse" id="navbar">
 			<ul class="navbar-nav mr-auto">
 				{% for link_key in dic.keys() %}
-					{% if link_key != "admin" and link_key != "ayuda" %}
+					{% if link_key != "Admin" and link_key != "Ayuda" %}
 						<li class="nav-item {% if link_key==link_active %} active strong {% endif %}">
 							<a class="nav-link" href="/{{dic[link_key]}}{% if params_args %}/{{params_args}}{% endif %}">{{link_key}}
-								{% if link_key == 'logout' %}
+								{% if link_key == 'Logout' %}
 									[{{user_by_id(g.settings_current_user.id).username}}]
 								{% endif %}
 							</a>
 						</li>
-					{% elif link_key == 'ayuda' and g.settings_current_user.visit_number <= 50 %}
+					{% elif link_key == 'Ayuda' and g.settings_current_user.visit_number <= 50 %}
 						<li class="nav-item {% if link_key==link_active %} active strong {% endif %}">
 							<a class="nav-link" href="/{{dic[link_key]}}{% if params_args %}/{{params_args}}{% endif %}">{{link_key}}</a>
 						</li>
-					{% elif link_key == 'admin' and g.settings_current_user.role == 'admin' %}
+					{% elif link_key == 'Admin' and g.settings_current_user.role == 'admin' %}
 						<li class="nav-item {% if link_key==link_active %} active strong {% endif %}">
 							<a class="nav-link" href="/{{dic[link_key]}}{% if params_args %}/{{params_args}}{% endif %}">{{link_key}}</a>
 						</li>

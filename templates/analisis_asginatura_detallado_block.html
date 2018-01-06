@@ -54,11 +54,11 @@
 					<div class="tab-content px-2">
 						<div class="tab-pane fade show active" id="observaciones_originales_{{hashids_encode(informe_by_tutoria_id_by_asignatura_id_sql.id)}}" role="tabpanel">
 							{% if informe_by_tutoria_id_by_asignatura_id_sql.comentario_editado %}
-								<div class="line_break text-secondary">
+								<div class="line_break text-secondary text-justify">
 									{{-informe_by_tutoria_id_by_asignatura_id_sql.comentario_editado-}}
 								</div>
 							{% else %}
-								<div class="line_break">
+								<div class="line_break text-justify">
 									{{-informe_by_tutoria_id_by_asignatura_id_sql.comentario-}}
 								</div>
 							{% endif %}

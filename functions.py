@@ -7,6 +7,8 @@ import config_parametros
 # () Objeto
 # {} Valor
 # *****************************************************************
+
+
 def abort_asincrono(error_number):
 
     if error_number == 500:
@@ -30,6 +32,7 @@ def abort_asincrono(error_number):
         message_text = render_template('email_internal_server_error.html', usuario=usuario, params=params)
         create_message_and_send(service, sender, to, subject, message_text)
     pass
+
 
 def email_reenvio_number(tutoria_id, asignatura_id):
     tutoria_asignatura = session_sql.query(Association_Tutoria_Asignatura).filter_by(tutoria_id=tutoria_id, asignatura_id=asignatura_id).first()
@@ -313,7 +316,7 @@ def respuestas_grupo_stats(tutoria_id, preguntas_lista, asignaturas_lista):
     pruebas_evaluables_lista = []
     respuestas_pregunta_grupo_media = 'sin_notas'
     respuestas_asignatura_grupo_media = 'sin_notas'
-    alumno=alumno_by_tutoria_id(tutoria_id)
+    alumno = alumno_by_tutoria_id(tutoria_id)
     grupo = grupo_by_tutoria_id(tutoria_id)
     preguntas = preguntas_lista
     asignaturas = asignaturas_lista
@@ -407,7 +410,8 @@ def notas_pruebas_evaluables_grupo(tutoria_id, asignatura_id):
     notas_pruebas_evaluables_lista = []
     nota_pruebas_evaluables_media = 'sin_notas'
     grupo = grupo_by_tutoria_id(tutoria_id)
-    pruebas_evaluables = session_sql.query(Prueba_Evaluable).join(Informe).join(Tutoria).filter(Informe.asignatura_id == asignatura_id, Tutoria.id != tutoria_id, Tutoria.deleted == False).all()
+    alumno = alumno_by_tutoria_id(tutoria_id)
+    pruebas_evaluables = session_sql.query(Prueba_Evaluable).join(Informe).join(Tutoria).filter(Informe.asignatura_id == asignatura_id, Tutoria.alumno_id != alumno.id, Tutoria.deleted == False).all()
 
     for prueba_evaluable in pruebas_evaluables:
         if prueba_evaluable:
@@ -1206,6 +1210,7 @@ def re_send_email_tutoria(alumno, tutoria, asignaturas_id_lista):
         flash_toast('Reenviando emails a las asignaturas elegidas', 'info')
     except:
         abort_asincrono(500)
+
 
 def re_send_email_tutoria_asincrono(alumno, tutoria, asignaturas_id_lista):
     @copy_current_request_context

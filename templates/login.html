@@ -1,7 +1,7 @@
 {% extends '_layout.html' %}
 {% block body %}
 	{%from '_macro.html' import nav_bar_top,titulo_1%}
-	{{nav_bar_top(link_active='inciar sesión', current_user=current_user)}}
+	{{nav_bar_top(link_active='Inciar sesión', current_user=current_user)}}
 	<div class="container">
 		<div class="paper bg-white padding_contenido">
 			{{titulo_1(bg_color='bg-dark', titulo='Iniciar sesion')}}
@@ -39,20 +39,11 @@
 					</button>
 				</div>
 			</form>
-			{% if cita_random()and not params['login_fail'] %}
-				<br>
-				<span class="small">
-					"{{cita_random().frase}}"
-				</span>
-				<span class="text-gray small">
-					-
-					{{cita_random().autor}}
-				</span>
+			{% if cita_random() and not params['login_fail'] %}
+				{% include 'cita_block.html' %}
 			{% endif %}
 			{% if params['login_fail'] and not params['ban'] %}
-				<br>
-				<div class="divider bg-primary grueso"></div>
-				<br>
+				<div class="divider bg-info my-3"></div>
 				<div class="text-center">
 					<div class="btn-group" role="group" aria-label="...">
 						<a href="/user_add" class="btn btn-outline-dark btn-sm" title="crear nueva cuenta">
@@ -67,9 +58,7 @@
 				<br>
 			{% endif %}
 			{% if params['ban'] %}
-				<br>
-				<div class="divider bg-dark"></div>
-				<br>
+				<div class="divider bg-info my-3"></div>
 				<div class="text-center text-warning">
 					Su cuenta ha sido suspendida de servicio
 					<br>
@@ -78,9 +67,7 @@
 				<br>
 			{% endif %}
 			{% if params['email_robinson'] %}
-				<br>
-				<div class="divider bg-dark"></div>
-				<br>
+			<div class="divider bg-info my-3"></div>
 				<div class="text-center text-warning">
 					Su cuenta se encuentra en nuestra lista Robinson
 					<br>

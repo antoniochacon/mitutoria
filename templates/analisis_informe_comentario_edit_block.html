@@ -1,5 +1,5 @@
 <div class="mb-3">
-	<span class="small text-mutted mr-1"><u>Original</u>:</span><span>{{-informe_by_tutoria_id_by_asignatura_id_sql.comentario-}}</span>
+	<span class="small text-mutted mr-1 text-justify"><u>Original</u>:</span><span>{{-informe_by_tutoria_id_by_asignatura_id_sql.comentario-}}</span>
 </div>
 <textarea class="form-control text-secondary" name="comentario_edit_{{hashids_encode(informe_by_tutoria_id_by_asignatura_id_sql.id)}}">{% if informe_by_tutoria_id_by_asignatura_id_sql.comentario_editado %}{{-informe_by_tutoria_id_by_asignatura_id_sql.comentario_editado-}}{% else %}{{-informe_by_tutoria_id_by_asignatura_id_sql.comentario-}}{% endif %}</textarea>
 <div class="btn-group mb-1 mt-2" role="group">
