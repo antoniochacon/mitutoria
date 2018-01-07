@@ -14,28 +14,29 @@
 {% endmacro %}
 {% macro titulo_1(url, text_color, bg_color, titulo, subtitulo) %}
 	<div class="d-flex justify-content-between align-items-center {{text_color}}">
-		<div class="d-flex flex-row">
+	<div class="d-flex flex-row">
+		<div class="strong h5 mb-0">
+			{{titulo}}
+		</div>
+		{% if url == "asignaturas" %}
+			<div>
+				<form action="/asignaturas" method="POST">
+					<input type="hidden" name="asignaturas_orden" value="{{g.settings_current_user.asignaturas_orden}}">
+					<button
+						role="button"
+						type="submit"
+						name="selector_button"
+						value="asignaturas_orden_switch"
+						class="btn btn-outline-dark btn-sm py-0 px-1 ml-1 border-bottom-0 rounded-0 rounded-top"
+						title="Orden por {{ asignaturas_orden_switch(g.settings_current_user.asignaturas_orden) }}">
+						<i class="material-icons vertical-center">wrap_text</i>
+					</button>
+				</form>
+			</div>
+		{% endif %}
+	</div>
 
-	<div class="strong h5 mb-0">
-		{{titulo}}
-	</div>
-	{% if url == "asignaturas" %}
-	<div>
-		<form action="/asignaturas" method="POST">
-			<input type="hidden" name="asignaturas_orden" value="{{g.settings_current_user.asignaturas_orden}}">
-			<button
-				role="button"
-				type="submit"
-				name="selector_button"
-				value="asignaturas_orden_switch"
-				class="btn btn-outline-dark btn-sm py-0 px-1 ml-1 border-bottom-0 rounded-0 rounded-top"
-				title="Orden por {{ asignaturas_orden_switch(g.settings_current_user.asignaturas_orden) }}">
-				<i class="material-icons vertical-center">wrap_text</i>
-			</button>
-		</form>
-	</div>
-	{% endif %}
-</div>
+	{% if url in ['alumnos', 'asignaturas'] %}
 		<div class="nav nav-tabs">
 			<div class="nav-item">
 				<div class="nav-link active mouse_pointer small py-0 px-2" role="tab" data-toggle="collapse" data-parent="{% if url == "alumnos" %}#parent_alumno{% elif url == "asignaturas" %}#parent_asignatura{% endif %}" href="{% if url == "alumnos" %}#alumno_add{% elif url == "asignaturas" %}#asignatura_add{% endif %}" aria-expanded="false" title="Agregar {% if url == "alumnos" %}alumno{% elif url == "asignaturas" %}asignatura{% endif %}">
@@ -44,6 +45,7 @@
 				</div>
 			</div>
 		</div>
+	{% endif %}
 	</div>
 	<div class="divider {{bg_color}} grueso"></div>
 {% endmacro %}
