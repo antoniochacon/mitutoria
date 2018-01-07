@@ -1,37 +1,27 @@
 {% extends "_layout.html" %}
 {% block body %}
 	{% with %}
-	{% set grupo_activo_sql = grupo_activo()%}
+	{% set asignaturas_sql = asignaturas_ordenadas(g.settings_current_user.asignaturas_orden) %}
 	{%from "_macro.html" import nav_bar_top, titulo_1%}
 	{%from "_macro_highcharts.html" import highcharts_admin_profesores_activos_evolucion%}
-	{{ nav_bar_top(link_active='Asignaturas',params=params, current_user=current_user) }}
+	{{ nav_bar_top(link_active='Asignaturas', params=params, current_user=current_user) }}
 	<div class="paper bg-white padding_contenido">
-		{{titulo_1(url='asignaturas',bg_color='bg-dark',titulo='Asignaturas')}}
+		<a id="anchor_asi_add"></a>
+		{{titulo_1(url='asignaturas',bg_color='bg-dark',titulo='Asignaturas ['+ asignaturas_sql|count|string + ']')}}
 		<div id="parent_asignatura">
-			<a id="anchor_asi_add"></a>
-			<div class="mt-4">
-				<a data-toggle="collapse" data-parent="#parent_asignatura" href="#asignatura_add" class="collapse_header_1" aria-expanded="false" title="Agregar asignatura">
-				<span class="pl-1"><i class="material-icons vertical-center">import_contacts</i><span class="padding_2">agregar nueva asignatura</span></span>
-				</a>
-				<div id="asignatura_add" class="collapse {% if params['collapse_asignatura_add'] %} show {% endif %}">
-					{# TODO: asignaturas_add #}
-					{% include 'asignaturas_add_block.html' %}
-				</div>
-			</div>
 			<div>
-				{% for asignatura in asignaturas_ordenadas(g.settings_current_user.asignaturas_orden) %}
-					{# TODO: asignaturas_listado #}
+				{% include 'asignaturas_add_block.html' %}
+			</div>
+			<div class="mt-2">
+				{% for asignatura in asignaturas_sql %}
 					{% include 'asignaturas_block.html' %}
 				{% endfor %}
 			</div>
 		</div>
-	</div>
-
+		<br>
 		{% if g.settings_current_user.show_asignaturas_analisis %}
-			<div class="paper bg-white">
-				{% include 'asignaturas_analisis_block.html' %}
-			</div>
+			{% include 'asignaturas_analisis_block.html' %}
 		{% endif %}
-
+	</div>
 	{% endwith %}
 {% endblock %}

@@ -1,0 +1,99 @@
+<div id="asignatura_{{hashids_encode_asignatura_id}}" class="collapse {% if equal_str(asignatura.id, params['current_asignatura_id'])%} show {% endif %}">
+	<div class="card border-gray z-depth-1-1-less my-2">
+		<div class="card-body p-2">
+			<form action="/asignaturas" method="POST">
+				<div class="row">
+					<div class="form-group col-md-6 mb-3">
+						<div class="input-group">
+							<input
+								type="text"
+								{% if not equal_str(asignatura.id, params['current_asignatura_id']) or not params['asignatura_edit_link'] %}
+								readonly="readonly"
+								{% endif %}
+								class="form-control {% if request.method=='POST' and params['collapse_asignatura_edit'] and equal_str(asignatura.id, params['current_asignatura_id']) %} {% if asignatura_edit.asignatura.errors %} is-invalid {% else %} is-valid {% endif %} {% endif %}"
+								name="{{asignatura_edit.asignatura.name}}"
+								value="{% if request.method=='POST' and params['collapse_asignatura_edit'] and equal_str(asignatura.id, params['current_asignatura_id']) %}{{asignatura_edit.asignatura.data}}{% else %}{{asignatura.asignatura}}{% endif %}"
+								placeholder="{{asignatura_edit.asignatura.label.text}}">
+							<span
+								class="input-group-addon {% if request.method=='POST' and params['collapse_asignatura_edit'] and equal_str(asignatura.id, params['current_asignatura_id']) %} {% if asignatura_edit.asignatura.errors %} form_addon-warning {% else %} form_addon-success {% endif %} {% endif %}">asignatura</span>
+						</div>
+					</div>
+					<div class="form-group col-md-6 mb-3">
+						<div class="input-group">
+							<input
+								type="text"
+								{% if not equal_str(asignatura.id, params['current_asignatura_id']) or not params['asignatura_edit_link'] %}
+								readonly="readonly"
+								{% endif %}
+								class="form-control {% if request.method=='POST' and params['collapse_asignatura_edit'] and equal_str(asignatura.id, params['current_asignatura_id']) %} {% if asignatura_edit.email.errors %} is-invalid {% else %} is-valid {% endif %} {% endif %}"
+								name="{{asignatura_edit.email.name}}"
+								value="{% if request.method=='POST' and params['collapse_asignatura_edit'] and equal_str(asignatura.id, params['current_asignatura_id']) %}{{asignatura_edit.email.data}}{% else %}{{asignatura.email}}{% endif %}"
+								placeholder="{{asignatura_edit.email.label.text}}">
+							<span
+								class="input-group-addon {% if request.method=='POST' and params['collapse_asignatura_edit'] %} and equal_str(asignatura.id, params['current_asignatura_id']) {% if asignatura_edit.email.errors %} form_addon-warning {% else %} form_addon-success {% endif %} {% endif %}">email</span>
+						</div>
+					</div>
+					<div class="form-group col-md-6 mb-3">
+						<div class="input-group">
+							<input
+								type="text"
+								{% if not equal_str(asignatura.id, params['current_asignatura_id']) or not params['asignatura_edit_link'] %}
+								readonly="readonly"
+								{% endif %}
+								class="form-control {% if request.method=='POST' and params['collapse_asignatura_edit'] and equal_str(asignatura.id, params['current_asignatura_id']) %} {% if asignatura_edit.nombre.errors %} is-invalid {% else %} is-valid {% endif %} {% endif %}"
+								name="{{asignatura_edit.nombre.name}}"
+								value="{% if request.method=='POST' and params['collapse_asignatura_edit'] and equal_str(asignatura.id, params['current_asignatura_id']) %}{{asignatura_edit.nombre.data}}{% else %}{{asignatura.nombre}}{% endif %}"
+								placeholder="{{asignatura_edit.nombre.label.text}}">
+							<span
+								class="input-group-addon {% if request.method=='POST' and params['collapse_asignatura_edit'] and equal_str(asignatura.id, params['current_asignatura_id']) %} {% if asignatura_edit.nombre.errors %} form_addon-warning {% else %} form_addon-success {% endif %} {% endif %}">nombre</span>
+						</div>
+					</div>
+					<div class="form-group col-md-6 mb-3">
+						<div class="input-group">
+							<input
+								type="text"
+								{% if not equal_str(asignatura.id, params['current_asignatura_id']) or not params['asignatura_edit_link'] %}
+								readonly="readonly"
+								{% endif %}
+								class="form-control {% if request.method=='POST' and params['collapse_asignatura_edit'] and equal_str(asignatura.id, params['current_asignatura_id']) %} {% if asignatura_edit.apellidos.errors %} is-invalid {% else %} is-valid {% endif %} {% endif %}"
+								name="{{asignatura_edit.apellidos.name}}"
+								value="{% if request.method=='POST' and params['collapse_asignatura_edit'] and equal_str(asignatura.id, params['current_asignatura_id']) %}{{asignatura_edit.apellidos.data}}{% else %}{{asignatura.apellidos}}{% endif %}"
+								placeholder="{{asignatura_edit.apellidos.label.text}}">
+							<span
+								class="input-group-addon {% if request.method=='POST' and params['collapse_asignatura_edit'] and equal_str(asignatura.id, params['current_asignatura_id']) %} {% if asignatura_edit.apellidos.errors %} form_addon-warning {% else %} form_addon-success {% endif %} {% endif %}">apellidos</span>
+						</div>
+					</div>
+				</div>
+				<input type="hidden" name="current_asignatura_id" value="{{hashids_encode_asignatura_id}}">
+				{% include 'asignaturas_alumnos_block.html' %}
+				{% if equal_str(asignatura.id, params['current_asignatura_id'])and params['asignatura_edit_link'] %}
+					<div class="btn-group" role="group">
+						<button role="button" type="submit" name="selector_button" value="selector_asignatura_edit" class="btn btn-outline-primary btn-sm" title="guardar cambios">
+							<i class="material-icons vertical-center">save</i>
+							guardar</button>
+						<a data-toggle="collapse" href="#asignatura_delete_confirmar_{{hashids_encode(asignatura.id)}}" class="btn btn-outline-dark btn-sm link_without_pointer" aria-expanded="false" title="Eliminar asignatura">
+							<i class="material-icons vertical-center">delete</i>
+						</a>
+						{% include 'asignaturas_delete_confirmar_block.html' %}
+						<button role="button" type="submit" name="selector_button" value="selector_asignatura_edit_link_close" class="btn btn-outline-dark btn-sm" title="cerrar edición">
+							<i class="material-icons vertical-center">close</i>
+						</button>
+					</div>
+				{% else %}
+					<div class="d-flex flex-row-reverse mt-2">
+						<div class="btn-group" role="group">
+							<button role="button" type="submit" name="selector_button" value="selector_asignatura_edit_link" class="btn btn-outline-dark btn-sm" title="Editar asignatura">
+								<i class="material-icons vertical-center">edit</i>
+								Editar asignatura</button>
+							{% if equal_str(asignatura.id, params['current_asignatura_id'])and params['collapse_asignatura_edit'] %}
+								<button role="button" type="submit" name="selector_button" value="selector_asignatura_edit_close" class="btn btn-outline-dark btn-sm" title="cerrar">
+									<i class="material-icons vertical-center">close</i>
+								</button>
+							{% endif %}
+						</div>
+					</div>
+				{% endif %}
+			</form>
+		</div>
+	</div>
+</div>

@@ -1,4 +1,6 @@
 {# NOTE NO se puede usar g.settings_current_user en lugar de g.settings_current_user porque esta barra se puede acceder como invitado #}
+{# NOTE NO se puede hacer auto-indent  #}
+
 {% macro nav_tabs_disable(tab_active, params_args, dic) %}
 	<div class="pb-2 mt-2">
 		<ul class="nav nav-tabs">
@@ -15,29 +17,18 @@
 		<div class="strong h5 mb-0">
 			{{titulo}}
 		</div>
-		{% if url == "alumnos" %}
-			{% with %}
-			{% set alumnos_not_sorted_count = alumnos_not_sorted() | count %}
-			{% set tutorias_by_grupo_id_all_count = tutorias_by_grupo_id(grupo_activo().id, deleted = False) | count %}
-			<div class="d-flex flex-row-reverse">
-				<div>
-					<span class="badge badge-dark">{{alumnos_not_sorted_count}}
-						{{singular_plural("alumno", "alumnos",alumnos_not_sorted_count)}}
-						|
-						{{tutorias_by_grupo_id_all_count}}
-						{{singular_plural("tutoria", "tutorias", tutorias_by_grupo_id_all_count)}}
-					</span>
+
+
+			<div class="nav nav-tabs">
+				<div class="nav-item">
+					<div class="nav-link active mouse_pointer small py-0 px-2" role="tab" data-toggle="collapse" data-parent="{% if url == "alumnos" %}#parent_alumno{% elif url == "asignaturas" %}#parent_asignatura{% endif %}" href="{% if url == "alumnos" %}#alumno_add{% elif url == "asignaturas" %}#asignatura_add{% endif %}" aria-expanded="false" title="Agregar {% if url == "alumnos" %}alumno{% elif url == "asignaturas" %}asignatura{% endif %}">
+						<i class="material-icons vertical-center">person_add</i>
+						Agregar
+					</div>
 				</div>
 			</div>
-			{% endwith %}
-		{% elif url == "asignaturas" %}
-			{% with %}
-			{% set asignaturas_count = asignaturas("apellidos", "nombre", "asignatura") | count %}
-			<span class="badge badge-dark float-right font-weight-normal mt-1">{{asignaturas_count}}
-				{{singular_plural("asignatura", "asignaturas", asignaturas_count)}}
-			</span>
-			{% endwith %}
-		{% endif %}
+		
+
 	</div>
 	<div class="divider {{bg_color}} grueso"></div>
 {% endmacro %}

@@ -712,7 +712,7 @@ def alumnos_html(params={}):
             params['collapse_alumno'] = True
             params['collapse_alumno_edit'] = True
             params['alumno_edit_link'] = True
-            params['anchor'] = 'anchor_ficha_' + str(hashids_encode(current_alumno_id))
+            params['anchor'] = 'anchor_alu_' + str(hashids_encode(current_alumno_id))
             if not asignaturas_alumno_by_alumno_id(current_alumno_id):
                 params['collapse_alumno_edit_asignaturas'] = True
             return redirect(url_for('alumnos_html', params=dic_encode(params)))

@@ -7,8 +7,7 @@
 		{{alumnos_not_sorted()|count}}</span>
 </a>
 <div id="asignatura_alumnos_{{hashids_encode(asignatura.id)}}" class="collapse {% if equal_str(asignatura.id, params['current_asignatura_id']) and params['asignatura_edit_link'] %} show {% endif %}">
-	<div class="padding_3">
-		<br>
+	<div class="padding_3 py-2">
 		{% if not alumnos('apellidos', 'nombre') %}
 			<span class="text-warning">Grupo aun sin alumnos</span>
 		{% else %}
@@ -25,11 +24,12 @@
 							{% endif %}
 						{% endfor %}
 					{% else %}
-						<span class="text-warning">Asignatura sin alumnos asignados</span>
+						<div class="col-sm-12">
+							<div class="text-warning small">Asignatura sin alumnos asignados</div>
+						</div>
 					{% endif %}
 				{% endif %}
 			</div>
 		{% endif %}
 	</div>
 </div>
-<br>
