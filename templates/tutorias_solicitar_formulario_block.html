@@ -21,7 +21,7 @@
 			<div class="input-group">
 				<input
 					type="text"
-					class="form-control datepicker cursor {% if request.method=='POST' %} {% if tutoria_add.fecha.errors %} is-invalid {% else %} is-valid {% endif %} {% endif %}"
+					class="form-control datepicker mouse_pointer {% if request.method=='POST' %} {% if tutoria_add.fecha.errors %} is-invalid {% else %} is-valid {% endif %} {% endif %}"
 					name="{{tutoria_add.fecha.name}}"
 					readonly="true"
 					style="background-color: white"

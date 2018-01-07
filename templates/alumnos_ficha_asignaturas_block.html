@@ -9,8 +9,8 @@
 	</span>
 </a>
 <div id="alumno_asignatura_{{hashids_encode(alumno.id)}}" class="collapse {% if equal_str(alumno.id, params['current_alumno_id']) and params['alumno_edit_link'] %} show {% endif %}">
-	<div class="padding_3">
-		<br>
+	<div class="padding_3 my-2">
+
 		{% if not asignaturas('asignatura', 'nombre', 'apellidos') %}
 			<span class="text-warning">Grupo sin asignaturas</span>
 		{% else %}
@@ -34,5 +34,5 @@
 		{% endif %}
 	</div>
 </div>
-<br>
+
 {% endwith %}

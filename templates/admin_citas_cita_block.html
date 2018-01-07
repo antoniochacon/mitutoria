@@ -54,7 +54,7 @@
 				</div>
 				{% if equal_str(cita.id, params['current_cita_id'])and params['cita_edit_link'] %}
 					{% if params['cita_delete_link'] %}
-						<div class="btn-group" role="group" aria-label="...">
+						<div class="btn-group" role="group">
 							<button role="button" type="submit" name="selector_button" value="selector_cita_delete" class="btn btn-outline-warning btn-sm" title="confirmar eliminar cita">
 								<i class="material-icons vertical-center">delete</i>
 								confirmar eliminar
@@ -67,7 +67,7 @@
 						<span class="text-warning small">
 							Una vez elminada no podra ser recuperada.</span>
 					{% else %}
-						<div class="btn-group" role="group" aria-label="...">
+						<div class="btn-group" role="group">
 							<button role="button" type="submit" name="selector_button" value="selector_cita_edit" class="btn btn-outline-primary btn-sm" title="guardar cambios">
 								<i class="material-icons vertical-center">save</i>
 								guardar
@@ -81,7 +81,7 @@
 						</div>
 					{% endif %}
 				{% else %}
-					<div class="btn-group" role="group" aria-label="...">
+					<div class="btn-group" role="group">
 						<button role="button" type="submit" name="selector_button" class="btn btn-outline-dark btn-sm" value="selector_cita_edit_link" title="Editar cita">
 							<i class="material-icons vertical-center">edit</i>
 							Editar cita

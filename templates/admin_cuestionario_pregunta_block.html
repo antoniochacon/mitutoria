@@ -158,7 +158,7 @@
 					</div>
 					{% if equal_str(pregunta.id, params['current_pregunta_id'])and params['pregunta_edit_link'] %}
 						{% if params['pregunta_delete_link'] %}
-							<div class="btn-group" role="group" aria-label="...">
+							<div class="btn-group" role="group">
 								<button role="button" type="submit" name="selector_button" value="selector_pregunta_delete" class="btn btn-outline-warning btn-sm" title="confirmar eliminar pregunta">
 									<i class="material-icons vertical-center">delete</i>
 									confirmar eliminar
@@ -171,7 +171,7 @@
 							<span class="text-warning small">
 								Una vez elminada no podra ser recuperada.</span>
 						{% else %}
-							<div class="btn-group" role="group" aria-label="...">
+							<div class="btn-group" role="group">
 								<button role="button" type="submit" name="selector_button" value="selector_pregunta_edit" class="btn btn-outline-primary btn-sm" title="guardar cambios">
 									<i class="material-icons vertical-center">save</i>
 									guardar
@@ -185,7 +185,7 @@
 							</div>
 						{% endif %}
 					{% else %}
-						<div class="btn-group" role="group" aria-label="...">
+						<div class="btn-group" role="group">
 							<button role="button" type="submit" name="selector_button" class="btn btn-outline-dark btn-sm" value="selector_pregunta_edit_link" title="Editar pregunta">
 								<i class="material-icons vertical-center">edit</i>
 								Editar pregunta

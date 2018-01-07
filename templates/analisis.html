@@ -22,7 +22,8 @@
 			document.body.appendChild(oHiddFrame);
 		}
 	</script>
-	{%from '_macro.html' import nav_bar_top, titulo_1, highcharts_asignatura, highcharts_cuestionario, highcharts_asignaturas, highcharts_evolucion%}
+	{%from '_macro.html' import nav_bar_top, titulo_1%}
+	{%from '_macro_highcharts.html' import highcharts_asignatura, highcharts_cuestionario, highcharts_asignaturas, highcharts_evolucion%}
 	{{ nav_bar_top(link_active='',params=params, current_user=current_user) }}
 	<div class="paper bg-white padding_contenido">
 		{% if grupo and alumno and tutoria %}
@@ -262,7 +263,7 @@
 		<div class="padding_3 text-warning text-center">
 			Esta tutoría ha sido descartada.
 			<br><br>
-			<div class="btn-group" role="group" aria-label="...">
+			<div class="btn-group" role="group">
 				<a class="btn btn-outline-dark btn-sm" href="/alumnos" role="button">ir a inicio</a>
 			</div>
 		</div>

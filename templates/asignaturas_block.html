@@ -96,7 +96,7 @@
 			<input type="hidden" name="current_asignatura_id" value="{{hashids_encode_asignatura_id}}">
 			{% include 'asignaturas_alumnos_block.html' %}
 			{% if equal_str(asignatura.id, params['current_asignatura_id'])and params['asignatura_edit_link'] %}
-					<div class="btn-group" role="group" aria-label="...">
+					<div class="btn-group" role="group">
 						<button role="button" type="submit" name="selector_button" value="selector_asignatura_edit" class="btn btn-outline-primary btn-sm" title="guardar cambios">
 							<i class="material-icons vertical-center">save</i>
 							guardar</button>
@@ -112,7 +112,7 @@
 					</div>
 
 			{% else %}
-				<div class="btn-group" role="group" aria-label="...">
+				<div class="btn-group" role="group">
 					<button role="button" type="submit" name="selector_button" value="selector_asignatura_edit_link" class="btn btn-outline-dark btn-sm" title="Editar asignatura">
 						<i class="material-icons vertical-center">edit</i>
 						Editar asignatura</button>

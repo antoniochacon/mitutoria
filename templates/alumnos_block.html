@@ -26,32 +26,26 @@
 	</div>
 </a>
 <div id="alumno_{{hashids_encode_alumno_id}}" class="collapse {% if equal_str(alumno.id, params['current_alumno_id']) and params['collapse_alumno'] %} show {% endif %}">
-	<div class="divider bg-primary grueso"></div>
-	<div class="padding_3" id="alumno_set_{{hashids_encode_alumno_id}}" aria-multiselectable="true">
-		<div>
-			<a id="anchor_tutorias_{{hashids_encode_alumno_id}}"></a>
-			<a data-toggle="collapse" class="collapse_header_1" role="tab" data-parent="#alumno_set_{{hashids_encode_alumno_id}}" href="#tutorias_listado_{{hashids_encode_alumno_id}}" aria-expanded="false">
-				<i class="material-icons vertical-center">expand_more</i>Tutorias
-				{% if tutorias_by_alumno_id_all %}
-					<span class="badge badge-info float-right mt-1" title="{{tutorias_by_alumno_id_all}} {{singular_plural('tutoria','tutorias', tutorias_by_alumno_id_all)}} en total">
-						{{tutorias_by_alumno_id_all}}
-					</span>
-				{% endif %}
-			</a>
-			<div id="tutorias_listado_{{hashids_encode_alumno_id}}" class="collapse">
-				{% include 'alumnos_tutorias_block.html' %}
-			</div>
+	<ul class="nav nav-tabs border border-0 pb-0 mt-3" role="tablist">
+		<li class="nav-item">
+			<a
+				class="nav-link {% if not equal_str(alumno.id, params['current_alumno_id']) or not params['collapse_alumno_edit'] %} active {% endif %}"
+				data-toggle="tab"
+				href="#alumno_tutorias_{{hashids_encode_alumno_id}}"
+				role="tab"
+				title="Tutorías de {{alumno.nombre}}">Tutorías</a>
+		</li>
+		<li class="nav-item">
+			<a class="nav-link {% if equal_str(alumno.id, params['current_alumno_id']) and params['collapse_alumno_edit'] %} active {% endif %}" data-toggle="tab" href="#alumno_ficha_{{hashids_encode_alumno_id}}" role="tab" title="Ficha de {{alumno.nombre}}">Ficha</a>
+		</li>
+	</ul>
+	<div class="tab-content card border-gray z-depth-1-1-less mb-3">
+		<div class="tab-pane fade {% if not equal_str(alumno.id, params['current_alumno_id']) or not params['collapse_alumno_edit'] %} active show {% endif %}" id="alumno_tutorias_{{hashids_encode_alumno_id}}" role="tabpanel">
+			{% include 'alumnos_tutorias_block.html' %}
 		</div>
-		<div>
-			<a id="anchor_ficha_{{hashids_encode_alumno_id}}"></a>
-			<a data-toggle="collapse" class="collapse_header_1" role="tab" data-parent="#alumno_set_{{hashids_encode_alumno_id}}" href="#alumno_ficha_{{hashids_encode_alumno_id}}" aria-expanded="false">
-				<i class="material-icons vertical-center">expand_more</i>Ficha
-			</a>
-			<div id="alumno_ficha_{{hashids_encode_alumno_id}}" class="collapse {% if equal_str(alumno.id, params['current_alumno_id']) and params['collapse_alumno_edit'] %} show {% endif %}">
-				{% include 'alumnos_ficha_block.html' %}
-			</div>
+		<div class="tab-pane fade {% if equal_str(alumno.id, params['current_alumno_id']) and params['collapse_alumno_edit'] %} active show {% endif %}" id="alumno_ficha_{{hashids_encode_alumno_id}}" role="tabpanel">
+			{% include 'alumnos_ficha_block.html' %}
 		</div>
 	</div>
-	<div class="divider bg-primary grueso"></div>
 </div>
 {% endwith %}

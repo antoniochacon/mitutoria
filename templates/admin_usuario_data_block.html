@@ -103,7 +103,7 @@
 				<input type="hidden" name="current_usuario_id" value="{{hashids_encode(usuario.id)}}">
 			</div>
 			{% if params['usuario_edit_link'] %}
-					<div class="btn-group" role="group" aria-label="...">
+					<div class="btn-group" role="group">
 						<button role="button" type="submit" name="selector_button" value="selector_usuario_edit" class="btn btn-outline-primary btn-sm" title="guardar cambios">
 							<i class="material-icons vertical-center">save</i>
 							guardar
@@ -119,7 +119,7 @@
 						</a>
 					</div>
 			{% else %}
-				<div class="btn-group" role="group" aria-label="...">
+				<div class="btn-group" role="group">
 					<button role="button" type="submit" name="selector_button" class="btn btn-outline-dark btn-sm" value="selector_usuario_edit_link" title="Editar usuario">
 						<i class="material-icons vertical-center">edit</i>
 						Editar usuario
