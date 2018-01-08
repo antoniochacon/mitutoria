@@ -25,7 +25,7 @@
 	{%from '_macro.html' import nav_bar_top, titulo_1%}
 	{%from '_macro_highcharts.html' import highcharts_asignatura, highcharts_cuestionario, highcharts_asignaturas, highcharts_evolucion%}
 	{{ nav_bar_top(link_active='',params=params, current_user=current_user) }}
-	<div class="paper bg-white padding_contenido">
+	<div class="paper bg-white padding_3 py-3">
 		{% if grupo and alumno and tutoria %}
 			{{titulo_1(bg_color='bg-dark', titulo='Análisis gráfico de la tutoría')}}
 			<form action="/tutoria_edit" method="POST">
@@ -118,7 +118,7 @@
 				{% include 'analisis_tutoria_edit_block.html' %}
 				{% include 'analisis_re_enviar_block.html' %}
 				<a id="anchor_cues"></a>
-				<a data-toggle="collapse" href="#analisis_cuestionario" class="collapse_header_1" aria-expanded="true" title="Analisis del cuestionario">
+				<a data-toggle="collapse" href="#analisis_cuestionario" class="collapse_header border_bottom" aria-expanded="true" title="Analisis del cuestionario">
 					<i class="material-icons align-middle">expand_more</i>
 					Cuestionario
 					{% if g.settings_current_user.show_analisis_cuestionario_detallado %}
@@ -147,7 +147,7 @@
 					{% endif %}
 				</div>
 				<a id="anchor_comp"></a>
-				<a data-toggle="collapse" href="#analisis_comparativo_asignaturas" class="collapse_header_1" aria-expanded="false" title="Analisis comparativo de asignaturas">
+				<a data-toggle="collapse" href="#analisis_comparativo_asignaturas" class="collapse_header border_bottom" aria-expanded="false" title="Analisis comparativo de asignaturas">
 					<i class="material-icons vertical-center">expand_more</i>
 					Comparativa de asignaturas
 					{% if g.settings_current_user.show_analisis_comparativo_detallado %}
@@ -177,7 +177,7 @@
 				</div>
 
 				<a id="anchor_deta"></a>
-				<a data-toggle="collapse" href="#analisis_detallado_asignaturas" class="collapse_header_1" aria-expanded="false" title="Analisis detallado por asignaturas">
+				<a data-toggle="collapse" href="#analisis_detallado_asignaturas" class="collapse_header border_bottom" aria-expanded="false" title="Analisis detallado por asignaturas">
 					<i class="material-icons vertical-center">expand_more</i>
 					Asignaturas detalladas
 					{% if g.settings_current_user.show_analisis_asignaturas_detallado %}
@@ -232,7 +232,7 @@
 						</div>
 				</div>
 
-				<a data-toggle="collapse" href="#analisis_evoluacion" class="collapse_header_1" aria-expanded="false" title="Analisis en el tiempo">
+				<a data-toggle="collapse" href="#analisis_evoluacion" class="collapse_header border_bottom" aria-expanded="false" title="Analisis en el tiempo">
 					<i class="material-icons vertical-center">expand_more</i>
 					Evolución
 				</a>
@@ -242,7 +242,7 @@
 					</div>
 				</div>
 
-				<a data-toggle="collapse" href="#analisis_acuerdo" class="collapse_header_1" aria-expanded="false" title="acuerdo">
+				<a data-toggle="collapse" href="#analisis_acuerdo" class="collapse_header border_bottom" aria-expanded="false" title="acuerdo">
 					<i class="material-icons vertical-center">expand_more</i>
 					Acuerdos
 				</a>

@@ -1,10 +1,10 @@
 {% for cita in citas %}
 	<a id="anchor_cit_{{hashids_encode(cita.id)}}"></a>
-	<a data-toggle="collapse" data-parent="#parent_cita" href="#cita_{{hashids_encode(cita.id)}}" class="collapse_header_1" aria-expanded="false" title="{{cita.autor}}">
+	<a data-toggle="collapse" data-parent="#parent_cita" href="#cita_{{hashids_encode(cita.id)}}" class="collapse_header border_bottom" aria-expanded="false" title="{{cita.autor}}">
 		<div class="media">
 			<span class="capital capital-mutted">{{loop.index}}</span>
 			<div class="media-body">
-				<div class="padding_2">
+				<div class="padding_l_2">
 					<span>
 						"{{cita.frase}}" .
 					</span>

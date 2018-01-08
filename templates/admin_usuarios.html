@@ -2,7 +2,7 @@
 {% block body %}
 	{%from '_macro.html' import nav_bar_top, titulo_1, nav_tabs_admin%}
 	{{ nav_bar_top(link_active='Admin',params=params, current_user=current_user) }}
-	<div class="paper bg-white padding_contenido">
+	<div class="paper bg-white padding_3 py-3">
 		{{titulo_1(bg_color='bg-dark',titulo='Admin Settings')}}
 		{{nav_tabs_admin(tab_active='Usuarios')}}
 		<div id="parent_usuario">
@@ -12,11 +12,11 @@
 					{% with %}
 					{% set settings_by_usuario_id = settings_by_id(usuario.id) %}
 					<a id="anchor_usu_{{hashids_encode(usuario.id)}}"></a>
-					<a href="/admin_usuario_ficha/{{dic_encode_args({'current_usuario_id': usuario.id})}}" class="collapse_header_1" title="{{usuario.username}}">
+					<a href="/admin_usuario_ficha/{{dic_encode_args({'current_usuario_id': usuario.id})}}" class="collapse_header border_bottom" title="{{usuario.username}}">
 						<div class="media">
 							<span class="capital {% if not settings_by_usuario_id.ban %}capital-mutted{% else %}capital-warning active{% endif %}">{{loop.index}}</span>
 							<div class="media-body">
-								<div class="padding_2">
+								<div class="padding_l_2">
 									{{user_by_id(usuario.id).username}}
 									{# NOTE badge #}
 									<span class="badge badge-info float-right border border-dark" title="total de visitas">{{usuario.visit_number}}

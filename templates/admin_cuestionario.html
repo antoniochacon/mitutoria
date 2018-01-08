@@ -2,7 +2,7 @@
 {% block body %}
 	{%from '_macro.html' import nav_bar_top, titulo_1, nav_tabs_admin %}
 	{{ nav_bar_top(link_active='Admin',params=params, current_user=current_user) }}
-	<div class="paper bg-white padding_contenido">
+	<div class="paper bg-white padding_3 py-3">
 		{{titulo_1(bg_color='bg-dark',titulo='Admin Settings')}}
 		{{nav_tabs_admin(tab_active='Cuestionario')}}
 		<div id="parent_categoria">
@@ -18,7 +18,7 @@
 		</div>
 	</div>
 	<br>
-	<div class="paper bg-white padding_contenido">
+	<div class="paper bg-white padding_3 py-3">
 		<div id="parent_pregunta">
 			<div>
 				{# XXX: pregunta_add #}

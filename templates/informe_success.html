@@ -4,7 +4,7 @@
 	{%from '_macro_highcharts.html' import highcharts_participacion_recent%}
 	{{nav_bar_top(current_user=current_user)}}
 	<div class="container">
-		<div class="paper bg-white padding_contenido">
+		<div class="paper bg-white padding_3 py-3">
 			{{titulo_1(bg_color='bg-dark', titulo='Informe de tutoría enviado')}}
 			{% include 'informe_datos_tutoria_block.html' %}
 			<div class="text-center mt-1 mb-1">

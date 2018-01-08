@@ -6,11 +6,11 @@
 	</div>
 	{% for pregunta in preguntas_by_categoria_id(categoria.id) %}
 		<a id="anchor_pre_{{hashids_encode(pregunta.id)}}"></a>
-		<a data-toggle="collapse" data-parent="#parent_pregunta" href="#pregunta_{{hashids_encode(pregunta.id)}}" class="collapse_header_1" aria-expanded="false" title="{{pregunta.enunciado_ticker}}">
+		<a data-toggle="collapse" data-parent="#parent_pregunta" href="#pregunta_{{hashids_encode(pregunta.id)}}" class="collapse_header border_bottom" aria-expanded="false" title="{{pregunta.enunciado_ticker}}">
 			<div class="media">
 				<span class="capital {% if pregunta.visible %}capital-mutted{% else %}capital-warning{% endif %}">{{pregunta.orden}}</span>
 				<div class="media-body">
-					<div class="padding_2">
+					<div class="padding_l_2">
 						<span style="color:{{categoria.color}};">{{pregunta.enunciado}}</span>
 						{# NOTE badge #}
 						{% if pregunta.active_default %}
@@ -86,7 +86,7 @@
 								</div>
 							</div>
 							<div class="media-body">
-								<div class="padding_2">
+								<div class="padding_l_2">
 									<div class="btn-group-vertical">
 										<button
 											role="button"

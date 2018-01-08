@@ -1,10 +1,10 @@
 {% for categoria in categorias() %}
 	<a id="anchor_cat_{{hashids_encode(categoria.id)}}"></a>
-	<a data-toggle="collapse" data-parent="#parent_categoria" href="#categoria_{{hashids_encode(categoria.id)}}" class="collapse_header_1" aria-expanded="false" title="{{categoria.enunciado}}">
+	<a data-toggle="collapse" data-parent="#parent_categoria" href="#categoria_{{hashids_encode(categoria.id)}}" class="collapse_header border_bottom" aria-expanded="false" title="{{categoria.enunciado}}">
 		<div class="media">
 			<span class="capital {% if preguntas_by_categoria_id(categoria.id) %}capital-mutted{% else %}capital-warning{% endif %}">{{categoria.orden}}</span>
 			<div class="media-body">
-				<div class="padding_2">
+				<div class="padding_l_2">
 					{{categoria.enunciado}}
 				</div>
 			</div>
@@ -62,7 +62,7 @@
 							</div>
 						</div>
 						<div class="media-body">
-							<div class="padding_2">
+							<div class="padding_l_2">
 								<div class="btn-group-vertical">
 									<button
 										role="button"

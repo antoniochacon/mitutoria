@@ -3,14 +3,14 @@
 {% set tutorias_by_alumno_id_all = tutorias_by_alumno_id(alumno.id, deleted = False) | count %}
 {% set hashids_encode_alumno_id = hashids_encode(alumno.id) %}
 <a id="anchor_alu_{{hashids_encode_alumno_id}}"></a>
-<a data-toggle="collapse" data-parent="#parent_alumno" href="#alumno_{{hashids_encode_alumno_id}}" class="collapse_header_1" aria-expanded="false" title="{{alumno.apellidos}}, {{alumno.nombre}}">
+<a data-toggle="collapse" data-parent="#parent_alumno" href="#alumno_{{hashids_encode_alumno_id}}" class="collapse_header border_bottom" aria-expanded="false" title="{{alumno.apellidos}}, {{alumno.nombre}}">
 	<div class="media">
 		<span
 			class="capital {% if not asignaturas_alumno_by_alumno_id(alumno.id) %} capital-warning {% elif tutorias_by_alumno_id_all %}
 		{% if tutorias_by_alumno_id_true %} capital-primary {% else %} capital-gray{% endif %}
 			 {% else %} capital-info {% endif %}">{{alumno.apellidos | first | upper}}</span>
 		<div class="media-body">
-			<div class="padding_2">
+			<div class="padding_l_2">
 				{{alumno.apellidos}},
 				<span class="text-truncate">
 					{{alumno.nombre}}

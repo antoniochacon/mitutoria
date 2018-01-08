@@ -2,7 +2,7 @@
 {% block body %}
 	{%from '_macro.html' import nav_bar_top, titulo_1, nav_tabs %}
 	{{ nav_bar_top(link_active='Opciones',params=params, current_user=current_user) }}
-	<div class='paper bg-white padding_contenido'>
+	<div class='paper bg-white padding_3 py-3'>
 		{{titulo_1(bg_color='bg-dark',titulo='Opciones')}}
 		{{nav_tabs(tab_active='Grupos', dic={'Cuestionario':'settings_cuestionario', 'Grupos':'settings_grupos', 'Opciones':'settings_opciones'})}}
 		<div id="parent_grupo">

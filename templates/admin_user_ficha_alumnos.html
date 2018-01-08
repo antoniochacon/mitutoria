@@ -1,7 +1,7 @@
 {% extends '_layout.html' %}
 {% block body %}
 	{%from '_macro.html' import titulo_user_ficha, nav_tabs %}
-	<div class="paper bg-white padding_contenido">
+	<div class="paper bg-white padding_3 py-3">
 		{{titulo_user_ficha(bg_color='bg-primary', titulo='Admin Settings', user=user)}}
 		{{nav_tabs(tab_active='alumnos', params_args=dic_encode_args({'current_user_id': user.id}), dic={'Grupos':'user_ficha_grupos', 'alumnos':'user_ficha_alumnos', 'Tutorias':'user_ficha_tutorias', 'Cuestionario':'user_ficha_cuestionario'})}}
 	</div>
