@@ -1,4 +1,4 @@
-<a data-toggle="collapse" class="collpase-header-gray" role="tab" data-parent="#parent_tutorias" href="#collapse_tutorias_deleted" aria-expanded="false">
+<a data-toggle="collapse" class="collapse_header bg-mutted text-white" role="tab" data-parent="#parent_tutorias" href="#collapse_tutorias_deleted" aria-expanded="false">
 	<i class="material-icons vertical-center">delete_sweep</i>
 	Papelera
 	<span class="badge badge-light text-gray float-right mt-1" title="tutorias eliminadas">
@@ -7,13 +7,16 @@
 	</span>
 </a>
 <div id="collapse_tutorias_deleted" class="collapse">
-	<div id="tutoria_papelera" class="padding_3 pt-2">
+	<div class="pt-2">
 		{% for tutoria in tutorias_by_grupo_id_deleted %}
 			{% include 'tutoria_link_block.html' %}
 		{% endfor %}
 	</div>
-	<div class="padding_3 small pt-0">
-		Las tutorias que lleven {{g.settings_global.periodo_deleted_tutorias}} {{singular_plural('día','días', g.settings_global.periodo_deleted_tutorias)}} en la papelera se eliminarán automáticamente.
+	<div class="p-2 small">
+		Las tutorias que lleven
+		{{g.settings_global.periodo_deleted_tutorias}}
+		{{singular_plural('día','días', g.settings_global.periodo_deleted_tutorias)}}
+		en la papelera se eliminarán automáticamente.
 		<div class="mt-2">
 			<div class="btn-group" role="group">
 				<a data-toggle="collapse" href="#alumnos_tutorias_deleted_vaciar_papelera" class="btn btn-outline-dark btn-sm link_without_pointer rounded-right" aria-expanded="false" title="Vaciar papelera">

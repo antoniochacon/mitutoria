@@ -1,28 +1,15 @@
 {% with %}
 {% set tutorias_by_grupo_id_incoming = tutorias_by_grupo_id(grupo_activo().id, activa = True, deleted = False) %}
-{% set tutorias_by_grupo_id_incoming_count = tutorias_by_grupo_id_incoming | count %}
-<a data-toggle="collapse" class="collpase-header-secondary" role="tab" data-parent="#parent_tutorias_incoming" href="#collapse_tutorias_incoming" aria-expanded="false">
-	{% if tutorias_by_grupo_id_incoming %}
-		<i class="material-icons vertical-center">notifications_active</i>
-		{{singular_plural("Tutoría", "Tutorías", tutorias_by_grupo_id_incoming_count)}}
-		{{singular_plural("solicitada", "solicitadas", tutorias_by_grupo_id_incoming_count)}}
-	{% else %}
-		<i class="material-icons vertical-center">notifications_paused</i>Relax, no tienes tutorias
-	{% endif %}
-	<span class="badge badge-light text-secondary float-right mt-1" title="tutorias pendientes">
-		{{tutorias_by_grupo_id_incoming_count}}
-		{{singular_plural("tutoria", "tutorias", tutorias_by_grupo_id_incoming_count)}}
-	</span>
-</a>
-<div id="collapse_tutorias_incoming" class="collapse {% if tutorias_by_grupo_id_incoming and not params['alumno_apellidos_nombre'] %} show {% endif %}">
-	{% if tutorias_by_grupo_id_incoming %}
-		<div class="padding_3 pt-2">
-			{% for tutoria in tutorias_by_grupo_id_incoming %}
-				{% include 'tutoria_link_block.html' %}
-			{% endfor %}
-		</div>
-	{% else %}
-		{% include 'cita_block.html' %}
-	{% endif %}
+{% if tutorias_by_grupo_id_incoming %}
+	<div class="mt-2 mb-3">
+		{% for tutoria in tutorias_by_grupo_id_incoming %}
+			{% include 'tutoria_link_block.html' %}
+		{% endfor %}
+	</div>
+{% else %}
+<div class="text-secondary text-justify px-2 mt-2">
+	<i class="material-icons vertical-center ">wb_sunny</i> Relax, no tienes tutorías.
 </div>
+	{% include 'cita_block.html' %}
+{% endif %}
 {% endwith %}

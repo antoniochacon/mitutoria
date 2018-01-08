@@ -1,23 +1,23 @@
 {% with %}
 {% set tutorias_by_grupo_id_incoming = tutorias_by_grupo_id(grupo_activo().id, activa = False, deleted = False) %}
 {% set tutorias_by_grupo_id_incoming_count = tutorias_by_grupo_id_incoming | count %}
-<a data-toggle="collapse" class="collpase-header-gray" role="tab" data-parent="#parent_tutorias_historial" href="#collapse_tutorias_historial" aria-expanded="false">
+<a data-toggle="collapse" class="collapse_header bg-gray text-white" role="tab" data-parent="#parent_tutorias_historial" href="#collapse_tutorias_historial" aria-expanded="false">
 	<i class="material-icons vertical-center">view_list</i>
-	Historial reciente
-	<span class="badge badge-light text-gray float-right mt-1" title="Tutorías recientes">
+	Historial
+	<span class="badge badge-light text-gray float-right mt-1" title="Historial de tutorías">
 		{{tutorias_by_grupo_id_incoming_count}}
 		{{singular_plural("tutoria", "tutorias", tutorias_by_grupo_id_incoming_count)}}
 	</span>
 </a>
-<div id="collapse_tutorias_historial" class="collapse">
+<div id="collapse_tutorias_historial" class="collapse mb-3">
 	{% if tutorias_by_grupo_id_incoming %}
-		<div class="padding_3 pt-2">
-			{% for tutoria in tutorias_by_grupo_id_incoming[0:g.settings_current_user.tutorias_historial] %}
+		<div class="pt-2">
+			{% for tutoria in tutorias_by_grupo_id_incoming[0 : g.settings_current_user.tutorias_historial] %}
 				{% include 'tutoria_link_block.html' %}
 			{% endfor %}
 		</div>
 	{% else %}
-		<div class="padding_3 text-mutted">
+		<div class="text-mutted small p-2">
 			Historial vacío.
 		</div>
 	{% endif %}

@@ -1,0 +1,75 @@
+<div id="tutoria_add" class="collapse {% if params['tutoria_solicitar'] %} show {% endif %}">
+	<div class="border border-gray border-top-0 rounded-bottom z-depth-1-1-less">
+		<div class="card-body p-2">
+			{% if params['tutoria_ya_existe'] %}
+				{% include 'tutorias_ya_exite_block.html' %}
+			{% endif %}
+			{% include 'tutorias_add_formulario_block.html' %}
+			{# XXX script necesario para el autocomplete #}
+			<script>
+				$.widget("ui.autocomplete", $.ui.autocomplete, {
+					_renderMenu: function (ul, items) {
+						var that = this;
+						ul.attr("class", "bs-autocomplete-menu form-control");
+						$.each(items, function (index, item) {
+							that._renderItemData(ul, item);
+						});
+					},
+					_resizeMenu: function () {
+						var ul = this.menu.element;
+						ul.outerWidth(Math.min(
+							// Firefox wraps long text (possibly a rounding bug) so we add 1px to avoid the wrapping (#7513)
+							ul.width("").outerWidth() + 1,
+							this.element.outerWidth()
+						));
+					}
+				});
+				(function () {
+					"use strict";
+					var alumnos_buscador = [
+						{% for alumno in alumnos_autocomplete %}
+							{
+								"id": {{alumno.id}},
+								"alumno_nombre": "{{alumno.apellidos}}, {{alumno.nombre}}"
+							},
+						{% endfor %}
+					];
+					$('.bs-autocomplete').each(function () {
+						var _this = $(this),
+							_data = _this.data(),
+							_hidden_field = $('#' + _data.hidden_field_id);
+						_this.after('<span class="bs-autocomplete-feedback form-control-feedback input-group-addon"><span class="loader">Loading...</span></span>').parent('.form-group').addClass('has-feedback');
+						var feedback_icon = _this.next('.bs-autocomplete-feedback');
+						feedback_icon.hide();
+						_this.autocomplete({
+							minLength: 2,
+							autoFocus: true,
+							source: function (request, response) {
+								var _regexp = new RegExp(request.term.normalize('NFD').replace(/[\u0300-\u036f]/g, "").toLowerCase());
+								var data = alumnos_buscador.filter(function (item) {
+									return item.alumno_nombre.normalize('NFD').replace(/[\u0300-\u036f]/g, "").toLowerCase().match(_regexp);
+								});
+								response(data);
+							},
+							search: function () {
+								feedback_icon.show();
+								_hidden_field.val('');
+							},
+							response: function () {
+								feedback_icon.hide();
+							},
+							// el focus hace que autoseleccione la primera busqueda focus: function (event, ui) { 	_this.val(ui.item[_data.item_label]); 	event.preventDefault(); },
+							select: function (event, ui) {
+								_this.val(ui.item[_data.item_label]);
+								_hidden_field.val(ui.item[_data.item_id]);
+								event.preventDefault();
+							}
+						}).data('ui-autocomplete')._renderItem = function (ul, item) {
+							return $('<li></li>').data("item.autocomplete", item).append('<a>' + item[_data.item_label] + '</a>').appendTo(ul);
+						};
+					});
+				})();
+			</script>
+		</div>
+	</div>
+</div>

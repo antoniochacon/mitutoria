@@ -130,35 +130,33 @@ def tutorias_html(params={}):
     alumnos_autocomplete = []
     if request.method == 'POST':
         current_alumno_id = request.form.get('alumno_id')
+        if request.form['selector_button'] == 'selector_tutoria_add_close':
+            return redirect(url_for('tutorias_html'))
+
         if request.form['selector_button'] == 'selector_tutoria_add':
             params['tutoria_solicitar'] = True
             if not current_alumno_id:
                 flash_toast('Debes asignar un alumno', 'warning')
                 return redirect(url_for('tutorias_html', params=dic_encode(params)))
-            current_tutoria_id = current_id_request('current_tutoria_id')
-            params['current_tutoria_id'] = current_tutoria_id
-            params['anchor'] = 'anchor_alu_' + str(hashids_encode(current_alumno_id))
-            params['collapse_alumno'] = True
-            params['collapse_tutoria_add'] = True
+            params['current_alumno_id'] = current_alumno_id
+            alumno = alumno_by_id(current_alumno_id)
+            params['alumno_nombre'] = alumno.nombre
+            params['alumno_apellidos_nombre'] = alumno.apellidos + ', ' + alumno.nombre
             tutoria_add_form = Tutoria_Add(current_alumno_id=current_alumno_id, fecha=request.form.get('fecha'), hora=request.form.get('hora'))
 
             # NOTE check si hay asignaturas asignadas al grupo
             if not asignaturas_not_sorted():
                 params['collapse_asignatura_add'] = True
-                flash_toast('Tutoria no solicitada' + Markup('<br>') + 'Debes asignar alguna asignatura', 'warning')
+                flash_toast('Tutoria no solicitada' + Markup('<br>') + 'Debes asignar alguna asignatura al grupo', 'warning')
                 return redirect(url_for('asignaturas_html', params=dic_encode(params)))
 
             # NOTE check si hay asignaturas asignadas al alumno
             if not asignaturas_alumno_by_alumno_id(current_alumno_id):
-                params['collapse_alumno_edit'] = True
-                params['alumno_edit_link'] = True
-                params['collapse_alumno_edit_asignaturas'] = True
                 flash_toast('Tutoria no solicitada' + Markup('<br>') + 'Debes asignar alguna asignatura', 'warning')
                 return redirect(url_for('tutorias_html', params=dic_encode(params)))
 
             # NOTE check si hay preguntas asignadas en el cuestionario
             if not informe_preguntas():
-                params['current_alumno_id'] = current_alumno_id
                 flash_toast('Tutoria no solicitada' + Markup('<br>') + 'Debes asignar preguntas al cuestionario', 'warning')
                 return redirect(url_for('settings_cuestionario_html', params=dic_encode(params)))
 
@@ -177,9 +175,6 @@ def tutorias_html(params={}):
                             # NOTE tutoria ya existe y muestra dicha tutoria
                             params['tutoria_ya_existe'] = True
                             params['current_tutoria_id'] = tutoria_sql.id
-                            params['current_alumno_id'] = current_alumno_id
-                            params['alumno_nombre'] = alumno.nombre
-                            params['alumno_apellidos_nombre'] = alumno.apellidos + ', ' + alumno.nombre
                             flash_toast(alumno.nombre + ' ya tiene tutoría ese día', 'warning')
                             return redirect(url_for('tutorias_html', params=dic_encode(params)))
                         else:
@@ -195,10 +190,6 @@ def tutorias_html(params={}):
                             send_email_tutoria_asincrono(alumno, tutoria)  # NOTE anular temporalemente para pruebas de envio de mails.
                             params['tutoria_solicitar'] = False
                             flash_toast('Tutoria generada.' + Markup('<br>') + 'Enviando emails al equipo educativo.', 'info')
-                            params['current_alumno_id'] = current_alumno_id
-                            params['collapse_alumno'] = True
-                            params['collapse_tutorias'] = True
-                            params['anchor'] = 'anchor_top'
                             # NOTE comprobar permisos de oauth2
                             if g.settings_current_user.calendar:
                                 try:
@@ -224,7 +215,7 @@ def tutorias_html(params={}):
                 else:
                     flash_wtforms(tutoria_add_form, flash_toast, 'warning')
             return render_template(
-                'tutorias.html',alumnos_autocomplete=alumnos, tutoria_add=tutoria_add_form, params=params)
+                'tutorias.html', alumnos_autocomplete=alumnos, tutoria_add=tutoria_add_form, params=params)
 
     # XXX purgar papelera tutorias (en el futuro sera un servicio que se ejecute por las noches cuando el servidor tenga pocas visitas)
     if g.settings_current_user.role == 'admin':

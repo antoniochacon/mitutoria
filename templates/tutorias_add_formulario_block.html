@@ -48,9 +48,16 @@
 			</div>
 		</div>
 		<div class="col-sm-12">
-			<button role="button" type="submit" class="btn btn-outline-dark btn-sm" name="selector_button" value="selector_tutoria_add" title="solicitar tutoria">
-				<i class="material-icons vertical-center">local_post_office</i>
-				Solicitar tutoría</button>
+			<div class="btn-group" role="group">
+				<button role="button" type="submit" class="btn btn-outline-dark btn-sm" name="selector_button" value="selector_tutoria_add" title="Solicitar tutoría">
+					<i class="material-icons vertical-center">local_post_office</i>
+					Solicitar tutoría</button>
+				{% if params['tutoria_solicitar'] %}
+					<button role="button" type="submit" class="btn btn-outline-dark btn-sm" name="selector_button" value="selector_tutoria_add_close" title="Cerrar">
+						<i class="material-icons vertical-center">close</i>
+					</button>
+				{% endif %}
+			</div>
 		</div>
 	</div>
 </form>

@@ -1,10 +1,11 @@
 {% with %}
 {% set tutoria = tutoria_by_id(params['current_tutoria_id'])%}
-<div class="card border-gray z-depth-1-1-less mb-3">
-	<div class="card-header text-warning mb-2">
-		{{params['alumno_nombre']}} ya tiene tutoría ese día.
+<div class="card border-gray mb-3">
+	<div class="card-header bg-warning text-white small py-1 px-3">
+		{{params['alumno_nombre']}}
+		ya tiene tutoría ese día.
 	</div>
-	<div class="p-2 mb-2">
+	<div class="card-body p-0">
 		{% include 'tutoria_link_block.html' %}
 	</div>
 </div>

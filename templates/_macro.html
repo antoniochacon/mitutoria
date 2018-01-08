@@ -36,12 +36,12 @@
 		{% endif %}
 	</div>
 
-	{% if url in ['alumnos', 'asignaturas'] %}
+	{% if url in ['alumnos', 'asignaturas', 'tutorias'] %}
 		<div class="nav nav-tabs">
 			<div class="nav-item">
-				<div class="nav-link active mouse_pointer small py-0 px-2" role="tab" data-toggle="collapse" data-parent="{% if url == "alumnos" %}#parent_alumno{% elif url == "asignaturas" %}#parent_asignatura{% endif %}" href="{% if url == "alumnos" %}#alumno_add{% elif url == "asignaturas" %}#asignatura_add{% endif %}" aria-expanded="false" title="Agregar {% if url == "alumnos" %}alumno{% elif url == "asignaturas" %}asignatura{% endif %}">
-					<i class="material-icons vertical-center">person_add</i>
-					Agregar
+				<div class="nav-link active mouse_pointer small py-0 px-2" role="tab" data-toggle="collapse" data-parent="{% if url == "alumnos" %}#parent_alumno{% elif url == "asignaturas" %}#parent_asignatura{% elif url == "asignaturas" %}#parent_tutoria{% endif %}" href="{% if url == "alumnos" %}#alumno_add{% elif url == "asignaturas" %}#asignatura_add{% elif url == "tutorias" %}#tutoria_add{% endif %}" aria-expanded="false" title="Agregar {% if url == "alumnos" %}alumno{% elif url == "asignaturas" %}asignatura{% elif url == "tutorias" %}tutoria{% endif %}">
+						<i class="material-icons vertical-center">{% if url in ['alumnos', 'asignaturas'] %}person_add{% elif url == "tutorias" %}schedule{% endif %}</i>
+				Agregar
 				</div>
 			</div>
 		</div>
