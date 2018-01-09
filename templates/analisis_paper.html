@@ -26,7 +26,8 @@
 		</head>
 		<!-- Set also "landscape" if you need -->
 		<body class="A4 landscape">
-			{%from '_macro.html' import titulo_1, highcharts_cuestionario, highcharts_asignaturas, highcharts_asignatura%}
+			{%from '_macro.html' import titulo_1%}
+			{%from '_macro_highcharts.html' import highcharts_cuestionario, highcharts_asignaturas, highcharts_asignatura%}
 			<!-- Each sheet element should have the class "sheet" -->
 			<!-- "padding-**mm" is optional: you can set 10, 15, 20 or 25 -->
 			<!-- HOJA 01 -->
