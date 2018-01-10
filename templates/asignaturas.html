@@ -5,7 +5,7 @@
 	{%from "_macro.html" import nav_bar_top, titulo_1%}
 	{%from "_macro_highcharts.html" import highcharts_admin_profesores_activos_evolucion%}
 	{{ nav_bar_top(link_active='Asignaturas', params=params, current_user=current_user) }}
-	<div class="paper bg-white padding_3 py-3 mb-3">
+	<div class="paper bg-white padding_3 py-3">
 		<a id="anchor_asi_add"></a>
 		{{titulo_1(url='asignaturas',bg_color='bg-dark',titulo='Asignaturas ['+ asignaturas_sql|count|string + ']')}}
 		<div id="parent_asignatura">

@@ -6,7 +6,7 @@
 	{% from "_macro.html" import nav_bar_top,
 	titulo_1 %}
 	{{ nav_bar_top(link_active='Tutorías',params=params, current_user=current_user) }}
-	<div class="paper bg-white padding_3 py-3 mb-3">
+	<div class="paper bg-white padding_3 py-3">
 		<a id="anchor_tuto_add"></a>
 		{{titulo_1(url="tutorias",bg_color="bg-dark",titulo='Tutorías [' + tutorias_by_grupo_id_incoming_count|string + ']')}}
 		{% include 'tutorias_add_block.html' %}

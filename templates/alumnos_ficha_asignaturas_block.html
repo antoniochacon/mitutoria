@@ -12,7 +12,7 @@
 	<div class="padding_3 my-2">
 
 		{% if not asignaturas('asignatura', 'nombre', 'apellidos') %}
-			<span class="text-warning">Grupo sin asignaturas</span>
+			<span class="text-warning small">Grupo sin asignaturas</span>
 		{% else %}
 			<div class="row">
 				{% if equal_str(alumno.id, params['current_alumno_id'])and params['alumno_edit_link'] %}

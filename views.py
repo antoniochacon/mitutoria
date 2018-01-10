@@ -2,7 +2,6 @@ from app import app
 from functions import *
 import functions
 # *************************************
-
 # Fuerza el reload de los archivos de static
 # **********************************************
 
@@ -110,13 +109,18 @@ def tutorias_html(params={}):
     current_alumno_id = params['current_alumno_id']
     current_tutoria_id = params['current_tutoria_id']
 
+    if not g.settings_current_user.grupo_activo_id or not grupos():
+        params['collapse_grupo_add'] = True
+        return redirect(url_for('settings_grupos_html', params=dic_encode(params)))
+
     if params['tutorias_deleted_vaciar_papelera']:
         params['tutorias_deleted_vaciar_papelera'] = False
         tutorias = tutorias_by_grupo_id(g.settings_current_user.grupo_activo_id, deleted=True)
         for tutoria in tutorias:
             session_sql.delete(tutoria)
-        session_sql.commit()
-        flash_toast('Papelera vaciada', 'success')
+        if session_sql.dirty:
+            flash_toast('Papelera vaciada', 'success')
+            session_sql.commit()
         return redirect(url_for('tutorias_html', params=dic_encode(params)))
 
     if params['alumnos_tutorias_solicitar']:
@@ -184,7 +188,8 @@ def tutorias_html(params={}):
                             # NOTE si se desea eliminar el commit hay que usar el FLUSH y recuperar la fecha con datetime.datetime.strptime(tutoria_add.fecha, '%Y-%m-%d').strftime('%d')
                             # tutoria_dia_semana = translate_fecha(datetime.datetime.strptime(tutoria_add.fecha, '%Y-%m-%d').strftime('%A'))
                             # tutoria_dia_mes = datetime.datetime.strptime(tutoria_add.fecha, '%Y-%m-%d').strftime('%d')
-                            session_sql.commit()  # NOTE necesario para simplificar y unificar como traducir la fecha
+                            if session_sql.dirty:
+                                session_sql.commit()  # NOTE necesario para simplificar y unificar como traducir la fecha
                             tutoria = tutoria_by_id(tutoria_id)
                             # NOTE anular email
                             send_email_tutoria_asincrono(alumno, tutoria)  # NOTE anular temporalemente para pruebas de envio de mails.
@@ -242,8 +247,9 @@ def test_html():
             if alumno_add_form.validate():
                 alumno_add = Alumno(grupo_id=6, apellidos=alumno_add_form.apellidos.data, nombre=alumno_add_form.nombre.data)
                 session_sql.add(alumno_add)
-                session_sql.commit()
-                flash_toast(alumno_add_form.nombre.data + ' agregado', 'success')
+                if session_sql.dirty:
+                    flash_toast(alumno_add_form.nombre.data + ' agregado', 'success')
+                    session_sql.commit()
                 return redirect(url_for('test_html'))
             else:
                 flash_wtforms(alumno_add_form, flash_toast, 'warning')
@@ -270,7 +276,8 @@ def oauth2callback_calendar():
         auth_code = request.args.get('code')
         credentials = flow.step2_exchange(auth_code)
         g.settings_current_user.oauth2_credentials = credentials.to_json()
-        session_sql.commit()
+        if session_sql.dirty:
+            session_sql.commit()
     return redirect(url_for('settings_opciones_html'))
 
 
@@ -286,7 +293,8 @@ def oauth2callback_gmail():
         auth_code = request.args.get('code')
         credentials = flow.step2_exchange(auth_code)
         g.settings_global.oauth2_credentials = credentials.to_json()
-        session_sql.commit()
+        if session_sql.dirty:
+            session_sql.commit()
     return redirect(url_for('admin_settings_global_html'))
 
 
@@ -303,7 +311,6 @@ def admin_settings_global_html(params={}):
     params = {}
     params['anchor'] = params_old.get('anchor', 'anchor_top')
     tutorias_clenaup_count = session_sql.query(Tutoria).filter(Tutoria.fecha < g.current_date - datetime.timedelta(days=30 * g.settings_global.periodo_cleanup_tutorias)).count()
-    # session.clear()
     if request.method == 'POST':
         periodo_cleanup_tutorias = int(request.form.get('periodo_cleanup_tutorias'))
         cleanup_tutorias_automatic = request.form.get('cleanup_tutorias_automatic')
@@ -315,12 +322,12 @@ def admin_settings_global_html(params={}):
         if request.form['selector_button'] == 'selector_autorizar_credencial':
             return redirect(url_for('oauth2callback_gmail'))
 
-            # XXX selector_cleanup_update
+        # XXX selector_cleanup_update
         if request.form['selector_button'] == 'selector_cleanup_update':
-            if g.settings_global.periodo_cleanup_tutorias != periodo_cleanup_tutorias:
-                g.settings_global.periodo_cleanup_tutorias = periodo_cleanup_tutorias
-                session_sql.commit()
+            g.settings_global.periodo_cleanup_tutorias = periodo_cleanup_tutorias
+            if session_sql.dirty:
                 flash_toast('Tutorias CleanUp actualizado', 'success')
+                session_sql.commit()
             return redirect(url_for('admin_settings_global_html'))
 
         # XXX selector_global_set_edit
@@ -479,8 +486,9 @@ def admin_usuario_ficha_html(params={}):
 
     if params['admin_usuario_data_delete_confirmar']:
         session_sql.delete(usuario)
-        session_sql.commit()
-        flash_toast('Usuario elminado', 'success')
+        if session_sql.dirty:
+            flash_toast('Usuario elminado', 'success')
+            session_sql.commit()
         return redirect(url_for('admin_usuarios_html'))
 
     if request.method == 'POST':
@@ -612,8 +620,9 @@ def alumnos_html(params={}):
         params['alumno_delete_confirmar'] = False
         alumno_delete_sql = alumno_by_id(current_alumno_id)
         session_sql.delete(alumno_delete_sql)
-        session_sql.commit()
-        flash_toast(Markup('<strong>') + alumno_delete_sql.nombre + Markup('</strong>') + ' elminado', 'success')
+        if session_sql.dirty:
+            flash_toast(Markup('<strong>') + alumno_delete_sql.nombre + Markup('</strong>') + ' elminado', 'success')
+            session_sql.commit()
         return redirect(url_for('alumnos_html', params=dic_encode(params)))
 
     if request.method == 'POST':
@@ -636,8 +645,9 @@ def alumnos_html(params={}):
                     params['collapse_alumno_add'] = False
                     alumno_add = Alumno(grupo_id=g.settings_current_user.grupo_activo_id, apellidos=alumno_add_form.apellidos.data.title(), nombre=alumno_add_form.nombre.data.title())
                     session_sql.add(alumno_add)
-                    session_sql.commit()
-                    flash_toast(Markup('<strong>') + alumno_add_form.nombre.data.title() + Markup('</strong>') + ' agregado', 'success')
+                    if session_sql.dirty:
+                        flash_toast(Markup('<strong>') + alumno_add_form.nombre.data.title() + Markup('</strong>') + ' agregado', 'success')
+                        session_sql.commit()
                     return redirect(url_for('alumnos_html', params=dic_encode(params)))
             else:
                 params['anchor'] = 'anchor_alu_add'
@@ -1530,40 +1540,57 @@ def settings_opciones_html(params={}):
     if request.method == 'POST':
         # XXX settings_edit
         if request.form['selector_button'] == 'selector_settings_edit':
-            settings_edit_tutoria_timeout = request.form.get('settings_edit_tutoria_timeout')
-            settings_show_asignaturas_analisis = request.form.get('settings_show_asignaturas_analisis')
-            settings_edit_calendar = request.form.get('settings_edit_calendar')
-            settings_tutoria_duracion = request.form.get('settings_tutoria_duracion')
-            settings_diferencial = request.form.get('settings_diferencial')
-            settings_show_analisis_avanzado = request.form.get('settings_show_analisis_avanzado')
-            settings_tutorias_historial = request.form.get('settings_tutorias_historial')
-            settings_tutorias_papelera = request.form.get('settings_tutorias_papelera')
 
-            if not settings_edit_tutoria_timeout:
-                settings_edit_tutoria_timeout = False
-            if not settings_show_asignaturas_analisis:
-                settings_show_asignaturas_analisis = False
-            if not settings_show_analisis_avanzado:
-                settings_show_analisis_avanzado = False
-            if not settings_edit_calendar:
+            if request.form.get('settings_edit_calendar'):
+                settings_edit_calendar = True
+            else:
                 settings_edit_calendar = False
-                g.settings_current_user.calendar_sincronizado = False
-                g.settings_current_user.oauth2_credentials = ''
 
-            # NOTE es necesario eval() para pasar de string 'TRUE' Boolean TRUE
-            g.settings_current_user.tutoria_timeout = eval(settings_edit_tutoria_timeout)
-            g.settings_current_user.show_asignaturas_analisis = eval(settings_show_asignaturas_analisis)
-            g.settings_current_user.calendar = eval(settings_edit_calendar)
-            g.settings_current_user.show_analisis_avanzado = eval(settings_show_analisis_avanzado)
+            if g.settings_current_user.calendar != settings_edit_calendar:
+                g.settings_current_user.calendar = settings_edit_calendar
 
-            g.settings_current_user.tutoria_duracion = settings_tutoria_duracion
-            g.settings_current_user.diferencial = settings_diferencial
-            g.settings_current_user.tutorias_historial = settings_tutorias_historial
-            g.settings_current_user.tutorias_papelera = settings_tutorias_papelera
+            if g.settings_current_user.calendar == False:
+                if g.settings_current_user.calendar_sincronizado:
+                    g.settings_current_user.calendar_sincronizado = False
+                if g.settings_current_user.oauth2_credentials:
+                    g.settings_current_user.oauth2_credentials = ''
+
+            if request.form.get('settings_edit_tutoria_timeout'):
+                settings_edit_tutoria_timeout = True
+            else:
+                settings_edit_tutoria_timeout = False
+            if g.settings_current_user.tutoria_timeout != settings_edit_tutoria_timeout:
+                g.settings_current_user.tutoria_timeout = settings_edit_tutoria_timeout
+
+            if request.form.get('settings_show_asignaturas_analisis'):
+                settings_show_asignaturas_analisis = True
+            else:
+                settings_show_asignaturas_analisis = False
+            if g.settings_current_user.show_asignaturas_analisis != settings_show_asignaturas_analisis:
+                g.settings_current_user.show_asignaturas_analisis = settings_show_asignaturas_analisis
+
+            if request.form.get('settings_show_analisis_avanzado'):
+                settings_show_analisis_avanzado = True
+            else:
+                settings_show_analisis_avanzado = False
+            if g.settings_current_user.show_analisis_avanzado != settings_show_analisis_avanzado:
+                g.settings_current_user.show_analisis_avanzado = settings_show_analisis_avanzado
+
+            if g.settings_current_user.tutoria_duracion != int(request.form.get('settings_tutoria_duracion')):
+                g.settings_current_user.tutoria_duracion = request.form.get('settings_tutoria_duracion')
+
+            if g.settings_current_user.diferencial != int(request.form.get('settings_diferencial')):
+                g.settings_current_user.diferencial = request.form.get('settings_diferencial')
+
+            if g.settings_current_user.tutorias_historial != int(request.form.get('settings_tutorias_historial')):
+                g.settings_current_user.tutorias_historial = request.form.get('settings_tutorias_historial')
+
+            if g.settings_current_user.tutorias_papelera != int(request.form.get('settings_tutorias_papelera')):
+                g.settings_current_user.tutorias_papelera = request.form.get('settings_tutorias_papelera')
 
             if session_sql.dirty:
                 session_sql.commit()
-            flash_toast('Configuracion actualizada', 'success')
+                flash_toast('Configuracion actualizada', 'success')
 
             if g.settings_current_user.calendar:
                 try:

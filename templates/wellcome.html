@@ -2,7 +2,7 @@
 {% block body %}
 	{%from '_macro.html' import nav_bar_top, titulo_1, nav_tabs%}
 	{{ nav_bar_top(link_active='Ayuda',params=params, current_user=current_user) }}
-	<div class="paper bg-white padding_3 py-3 mb-3">
+	<div class="paper bg-white padding_3 py-3">
 		{{titulo_1(bg_color='bg-dark',titulo='Ayuda')}}
 		<div class="padding_3">
 			<div class="mt-2">
@@ -85,11 +85,9 @@
 			</div>
 			<br>
 			<div class="d-flex flex-row-reverse">
-				<!-- <div class="col-sm-12"> -->
-				<a href="/alumnos" class="btn btn-outline-dark py-1 pr-1">
+				<a href="/" class="btn btn-outline-dark py-1 pr-1">
 					Comenzar<i class="material-icons vertical-center">navigate_next</i>
 				</a>
-				<!-- </div> -->
 			</div>
 		</div>
 	</div>

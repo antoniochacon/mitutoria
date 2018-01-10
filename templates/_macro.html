@@ -1,6 +1,3 @@
-{# NOTE NO se puede usar g.settings_current_user en lugar de g.settings_current_user porque esta barra se puede acceder como invitado #}
-{# NOTE NO se puede hacer auto-indent  #}
-
 {% macro nav_tabs_disable(tab_active, params_args, dic) %}
 	<div class="pb-2 mt-2">
 		<ul class="nav nav-tabs">
@@ -14,40 +11,49 @@
 {% endmacro %}
 {% macro titulo_1(url, text_color, bg_color, titulo, subtitulo) %}
 	<div class="d-flex justify-content-between align-items-center {{text_color}}">
-	<div class="d-flex flex-row">
-		<div class="strong h5 mb-0">
-			{{titulo}}
-		</div>
-		{% if url == "asignaturas" %}
-			<div>
-				<form action="/asignaturas" method="POST">
-					<input type="hidden" name="asignaturas_orden" value="{{g.settings_current_user.asignaturas_orden}}">
-					<button
-						role="button"
-						type="submit"
-						name="selector_button"
-						value="asignaturas_orden_switch"
-						class="btn btn-outline-dark btn-sm py-0 px-1 ml-1 border-bottom-0 rounded-0 rounded-top"
-						title="Orden por {{ asignaturas_orden_switch(g.settings_current_user.asignaturas_orden) }}">
-						<i class="material-icons vertical-center">wrap_text</i>
-					</button>
-				</form>
+		<div class="d-flex flex-row">
+			<div class="strong h5 mb-0">
+				{{titulo}}
 			</div>
+			{% if url == "asignaturas" %}
+				<div>
+					<form action="/asignaturas" method="POST">
+						<input type="hidden" name="asignaturas_orden" value="{{g.settings_current_user.asignaturas_orden}}">
+						<button
+							role="button"
+							type="submit"
+							name="selector_button"
+							value="asignaturas_orden_switch"
+							class="btn btn-outline-dark btn-sm py-0 px-1 ml-1 border-bottom-0 rounded-0 rounded-top"
+							title="Orden por {{ asignaturas_orden_switch(g.settings_current_user.asignaturas_orden) }}">
+							<i class="material-icons vertical-center">wrap_text</i>
+						</button>
+					</form>
+				</div>
+			{% endif %}
+		</div>
+		{%from '_macro.html' import nav_tabs_add %}
+		{% if url == 'tutorias' %}
+			{{nav_tabs_add(url='tutorias',data_parent='parent_tutoria',href='tutoria_add',icon='schedule', title='tutoría')}}
+		{% elif url == 'alumnos' %}
+			{{nav_tabs_add(url='alumnos',data_parent='parent_alumno',href='alumno_add',icon='person_add', title='alumno')}}
+		{% elif url == 'asignaturas' %}
+			{{nav_tabs_add(url='asignaturas',data_parent='parent_asignatura',href='asignatura_add',icon='person_add', title='asignatura')}}
 		{% endif %}
 	</div>
-
-	{% if url in ['alumnos', 'asignaturas', 'tutorias'] %}
-		<div class="nav nav-tabs">
-			<div class="nav-item">
-				<div class="nav-link active mouse_pointer small py-0 px-2" role="tab" data-toggle="collapse" data-parent="{% if url == "alumnos" %}#parent_alumno{% elif url == "asignaturas" %}#parent_asignatura{% elif url == "asignaturas" %}#parent_tutoria{% endif %}" href="{% if url == "alumnos" %}#alumno_add{% elif url == "asignaturas" %}#asignatura_add{% elif url == "tutorias" %}#tutoria_add{% endif %}" aria-expanded="false" title="Agregar {% if url == "alumnos" %}alumno{% elif url == "asignaturas" %}asignatura{% elif url == "tutorias" %}tutoria{% endif %}">
-						<i class="material-icons vertical-center">{% if url in ['alumnos', 'asignaturas'] %}person_add{% elif url == "tutorias" %}schedule{% endif %}</i>
+	<div class="divider {{bg_color}} grueso"></div>
+{% endmacro %}
+{% macro nav_tabs_add(url, data_parent, href, icon, title) %}
+	<div class="nav nav-tabs">
+		<div class="nav-item">
+			<div class="nav-link active mouse_pointer small py-0 px-2" role="tab" data-toggle="collapse" data-parent="#{{data_parent}}" href="#{{href}}" aria-expanded="false" title="Agregar {{title}}">
+				<i class="material-icons vertical-center">
+					{{icon}}
+				</i>
 				Agregar
-				</div>
 			</div>
 		</div>
-	{% endif %}
 	</div>
-	<div class="divider {{bg_color}} grueso"></div>
 {% endmacro %}
 {% macro nav_tabs_admin(tab_active, params_args) %}
 	{{nav_tabs(tab_active, params_args=params_args, dic={'Cuestionario':'admin_cuestionario', 'Citas':'admin_citas', 'Global Set':'admin_settings_global', 'Usuarios':'admin_usuarios', 'Stats':'admin_estadisticas'})}}

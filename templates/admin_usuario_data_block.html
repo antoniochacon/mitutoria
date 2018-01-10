@@ -102,8 +102,15 @@
 				</div>
 				<input type="hidden" name="current_usuario_id" value="{{hashids_encode(usuario.id)}}">
 			</div>
+			<div class="">
+				<span class="small text-mutted">Emails enviados:</span>
+				{{settings_by_usuario_id.emails_enviados}}
+				|
+				<span class="small text-mutted">Ultima visita:</span>
+				{{settings_by_usuario_id.visit_last.strftime('%d-%m-%Y')}}
+			</div>
 			{% if params['usuario_edit_link'] %}
-					<div class="btn-group" role="group">
+					<div class="btn-group mt-3" role="group">
 						<button role="button" type="submit" name="selector_button" value="selector_usuario_edit" class="btn btn-outline-dark btn-sm" title="Guardar cambios">
 							<i class="material-icons vertical-center">save</i>
 							Guardar
@@ -119,22 +126,16 @@
 						</a>
 					</div>
 			{% else %}
+			<div class="d-flex flex-row-reverse mt-3">
 				<div class="btn-group" role="group">
 					<button role="button" type="submit" name="selector_button" class="btn btn-outline-dark btn-sm" value="selector_usuario_edit_link" title="Editar usuario">
 						<i class="material-icons vertical-center">edit</i>
 						Editar usuario
 					</button>
 				</div>
+			</div>
 			{% endif %}
-				<div class="float-right">
-					<span class="small text-mutted">Emails enviados:</span>
-					{{settings_by_usuario_id.emails_enviados}}
-					|
-					<span class="small text-mutted">Ultima visita:</span>
-					{{settings_by_usuario_id.visit_last.strftime('%d-%m-%Y')}}
-				</div>
 		</form>
 	</div>
-	<br>
 	<div class="divider grueso bg-primary"></div>
 </div>
