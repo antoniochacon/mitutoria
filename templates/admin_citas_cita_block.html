@@ -55,11 +55,11 @@
 				{% if equal_str(cita.id, params['current_cita_id'])and params['cita_edit_link'] %}
 					{% if params['cita_delete_link'] %}
 						<div class="btn-group" role="group">
-							<button role="button" type="submit" name="selector_button" value="selector_cita_delete" class="btn btn-outline-warning btn-sm" title="confirmar eliminar cita">
+							<button role="button" type="submit" name="selector_button" value="selector_cita_delete" class="btn btn-outline-warning btn-sm" title="Confirmar eliminar cita">
 								<i class="material-icons vertical-center">delete</i>
 								confirmar eliminar
 							</button>
-							<button role="button" type="submit" name="selector_button" value="selector_cita_delete_close" class="btn btn-outline-dark btn-sm" title="cancelar eliminar">
+							<button role="button" type="submit" name="selector_button" value="selector_cita_delete_close" class="btn btn-outline-dark btn-sm" title="Cancelar eliminar">
 								<i class="material-icons vertical-center">close</i>
 							</button>
 						</div>
@@ -68,14 +68,14 @@
 							Una vez elminada no podra ser recuperada.</span>
 					{% else %}
 						<div class="btn-group" role="group">
-							<button role="button" type="submit" name="selector_button" value="selector_cita_edit" class="btn btn-outline-primary btn-sm" title="guardar cambios">
+							<button role="button" type="submit" name="selector_button" value="selector_cita_edit" class="btn btn-outline-dark btn-sm" title="Guardar cambios">
 								<i class="material-icons vertical-center">save</i>
-								guardar
+								Guardar
 							</button>
-							<button role="button" type="submit" name="selector_button" value="selector_cita_delete_link" class="btn btn-outline-dark btn-sm" title="eliminar cita">
+							<button role="button" type="submit" name="selector_button" value="selector_cita_delete_link" class="btn btn-outline-dark btn-sm" title="Eliminar cita">
 								<i class="material-icons vertical-center">delete</i>
 							</button>
-							<button role="button" type="submit" name="selector_button" value="selector_cita_edit_link_close" class="btn btn-outline-dark btn-sm" title="cerrar edición">
+							<button role="button" type="submit" name="selector_button" value="selector_cita_edit_link_close" class="btn btn-outline-dark btn-sm" title="Cerrar edición">
 								<i class="material-icons vertical-center">close</i>
 							</button>
 						</div>
@@ -87,7 +87,7 @@
 							Editar cita
 						</button>
 						{% if equal_str(cita.id,params['current_cita_id']) and params['collapse_cita_edit']%}
-							<button role="button" type="submit" name="selector_button" class="btn btn-outline-dark btn-sm" value="selector_cita_edit_close" title="cerrar ficha">
+							<button role="button" type="submit" name="selector_button" class="btn btn-outline-dark btn-sm" value="selector_cita_edit_close" title="Cerrar ficha">
 								<i class="material-icons vertical-center">close</i>
 							</button>
 						{% endif %}

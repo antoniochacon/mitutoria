@@ -70,7 +70,7 @@
 										name="selector_button"
 										value="selector_move_up_categoria"
 										class="btn btn-outline-dark btn-sm"
-										title="subir posición"
+										title="Subir posición"
 										{% if equal_str(categoria.id, params['current_categoria_id'])and params['collapse_categoria_edit'] %}
 										{% if not params['categoria_edit_link'] %}
 										disabled
@@ -89,7 +89,7 @@
 										name="selector_button"
 										value="selector_move_down_categoria"
 										class="btn btn-outline-dark btn-sm"
-										title="bajar posición"
+										title="Bajar posición"
 										{% if equal_str(categoria.id, params['current_categoria_id'])and params['collapse_categoria_edit'] %}
 										{% if not params['categoria_edit_link'] %}
 										disabled
@@ -111,11 +111,11 @@
 				{% if equal_str(categoria.id, params['current_categoria_id'])and params['categoria_edit_link'] %}
 					{% if params['categoria_delete_link'] %}
 						<div class="btn-group" role="group">
-							<button role="button" type="submit" name="selector_button" value="selector_categoria_delete" class="btn btn-outline-warning btn-sm" title="confirmar eliminar categoria">
+							<button role="button" type="submit" name="selector_button" value="selector_categoria_delete" class="btn btn-outline-warning btn-sm" title="Confirmar eliminar categoria">
 								<i class="material-icons vertical-center">delete</i>
 								confirmar eliminar
 							</button>
-							<button role="button" type="submit" name="selector_button" value="selector_categoria_delete_close" class="btn btn-outline-dark btn-sm" title="cancelar eliminar">
+							<button role="button" type="submit" name="selector_button" value="selector_categoria_delete_close" class="btn btn-outline-dark btn-sm" title="Cancelar eliminar">
 								<i class="material-icons vertical-center">close</i>
 							</button>
 						</div>
@@ -124,14 +124,14 @@
 							Una vez elminada no podra ser recuperada.</span>
 					{% else %}
 						<div class="btn-group" role="group">
-							<button role="button" type="submit" name="selector_button" value="selector_categoria_edit" class="btn btn-outline-primary btn-sm" title="guardar cambios">
+							<button role="button" type="submit" name="selector_button" value="selector_categoria_edit" class="btn btn-outline-dark btn-sm" title="Guardar cambios">
 								<i class="material-icons vertical-center">save</i>
-								guardar
+								Guardar
 							</button>
-							<button role="button" type="submit" name="selector_button" value="selector_categoria_delete_link" class="btn btn-outline-dark btn-sm" title="eliminar categoria">
+							<button role="button" type="submit" name="selector_button" value="selector_categoria_delete_link" class="btn btn-outline-dark btn-sm" title="Eliminar categoria">
 								<i class="material-icons vertical-center">delete</i>
 							</button>
-							<button role="button" type="submit" name="selector_button" value="selector_categoria_edit_link_close" class="btn btn-outline-dark btn-sm" title="cerrar edición">
+							<button role="button" type="submit" name="selector_button" value="selector_categoria_edit_link_close" class="btn btn-outline-dark btn-sm" title="Cerrar edición">
 								<i class="material-icons vertical-center">close</i>
 							</button>
 						</div>
@@ -143,7 +143,7 @@
 							Editar categoría
 						</button>
 						{% if equal_str(categoria.id,params['current_categoria_id']) and params['collapse_categoria_edit']%}
-							<button role="button" type="submit" name="selector_button" class="btn btn-outline-dark btn-sm" value="selector_categoria_edit_close" title="cerrar ficha">
+							<button role="button" type="submit" name="selector_button" class="btn btn-outline-dark btn-sm" value="selector_categoria_edit_close" title="Cerrar ficha">
 								<i class="material-icons vertical-center">close</i>
 							</button>
 						{% endif %}

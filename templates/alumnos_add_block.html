@@ -41,24 +41,24 @@
 					<div class="col-sm-12">
 						<div class="btn-group" role="group">
 							{% if params['alumno_importar_link'] %}
-								<button class="btn btn-outline-primary btn-sm" type="submit" name="selector_button" value="selector_alumno_importar" title="guardar alumnos">
+								<button class="btn btn-outline-dark btn-sm" type="submit" name="selector_button" value="selector_alumno_importar" title="Guardar alumnos">
 									<i class="material-icons vertical-center">people</i>
-									guardar
+									Guardar
 								</button>
-								<button class="btn btn-outline-dark btn-sm" type="submit" name="selector_button" value="selector_alumno_importar_cerrar" title="cerrar">
+								<button class="btn btn-outline-dark btn-sm" type="submit" name="selector_button" value="selector_alumno_importar_Cerrar" title="Cerrar">
 									<i class="material-icons vertical-center">close</i>
 								</button>
 							{% else %}
-								<button class="btn btn-outline-primary btn-sm" type="submit" name="selector_button" value="selector_alumno_add" title="agregar alumno">
+								<button class="btn btn-outline-dark btn-sm" type="submit" name="selector_button" value="selector_alumno_add" title="Agregar alumno">
 									<i class="material-icons vertical-center">save</i>
-									guardar
+									Guardar
 								</button>
-								<button class="btn btn-outline-dark btn-sm" type="submit" name="selector_button" value="selector_alumno_importar_link" title="importar Séneca">
+								<button class="btn btn-outline-dark btn-sm" type="submit" name="selector_button" value="selector_alumno_importar_link" title="Importar Séneca">
 									<i class="material-icons vertical-center">people</i>
-									importar de Séneca
+									Importar de Séneca
 								</button>
 								{% if request.method == "POST" and params['collapse_alumno_add'] %}
-									<button class="btn btn-outline-dark btn-sm" type="submit" name="selector_button" value="selector_alumno_add_cerrar" title="cerrar">
+									<button class="btn btn-outline-dark btn-sm" type="submit" name="selector_button" value="selector_alumno_add_Cerrar" title="Cerrar">
 										<i class="material-icons vertical-center">close</i>
 									</button>
 								{% endif %}

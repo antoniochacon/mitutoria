@@ -4,7 +4,7 @@
 		<div class="media-body">
 			<div class="padding_l_2">
 				agregar nueva cita
-				<span class="badge float-right {% if citas %}badge-mutted{% else %}badge-warning text-white{% endif %}" title="activa por defecto">
+				<span class="badge float-right {% if citas %}badge-mutted{% else %}badge-warning text-white{% endif %}" title="Activada por defecto">
 					{{citas | count}}
 					{{singular_plural('cita','citas', citas | count)}}
 				</span>
@@ -43,12 +43,12 @@
 				</div>
 			</div>
 			<div class="btn-group pb-3" role="group">
-				<button role="button" type="submit" name="selector_button" value="selector_cita_add" class="btn btn-outline-primary btn-sm" title="agregar cita">
+				<button role="button" type="submit" name="selector_button" value="selector_cita_add" class="btn btn-outline-dark btn-sm" title="Agregar cita">
 					<i class="material-icons vertical-center">person</i>
 					agregar
 				</button>
 				{% if params['collapse_cita_add']and request.method == 'POST' %}
-					<button role="button" type="submit" name="selector_button" value="selector_cita_add_close" class="btn btn-outline-dark btn-sm" title="cerrar">
+					<button role="button" type="submit" name="selector_button" value="selector_cita_add_close" class="btn btn-outline-dark btn-sm" title="Cerrar">
 						<i class="material-icons vertical-center">close</i>
 					</button>
 				{% endif %}

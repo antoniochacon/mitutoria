@@ -19,22 +19,22 @@
 								<div class="padding_l_2">
 									{{user_by_id(usuario.id).username}}
 									{# NOTE badge #}
-									<span class="badge badge-info float-right border border-dark" title="total de visitas">{{usuario.visit_number}}
-										visitas
+									<span class="badge badge-info float-right border border-dark" title="Total de visitas">{{usuario.visit_number}}
+										Visitas
 									</span>
 									{% if not settings_by_usuario_id.email_validated %}
-										<span class="badge border border-dark bg-white text-dark float-right mr-2" title="no validado">
-											no validado
+										<span class="badge border border-dark bg-white text-dark float-right mr-2" title="No validado">
+											No validado
 										</span>
 									{% endif %}
 									{% if usuario.email_robinson %}
-										<span class="badge  border border-warning bg-white text-warning float-right mr-2" title="robinson">
-											robinson
+										<span class="badge  border border-warning bg-white text-warning float-right mr-2" title="Robinson">
+											Robinson
 										</span>
 									{% endif %}
 									{% if usuario.ban %}
-										<span class="badge badge-warning text-white float-right mr-2" title="banned">
-											banned
+										<span class="badge badge-warning text-white float-right mr-2" title="Banned">
+											Banned
 										</span>
 									{% endif %}
 								</div>

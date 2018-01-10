@@ -14,7 +14,7 @@
 						<span style="color:{{categoria.color}};">{{pregunta.enunciado}}</span>
 						{# NOTE badge #}
 						{% if pregunta.active_default %}
-							<span class="badge badge-info float-right" title="activa por defecto">
+							<span class="badge badge-info float-right" title="Activada por defecto">
 								default
 							</span>
 						{% endif %}
@@ -94,7 +94,7 @@
 											name="selector_button"
 											value="selector_move_up_pregunta"
 											class="btn btn-outline-dark btn-sm"
-											title="subir posición"
+											title="Subir posición"
 											{% if equal_str(pregunta.id, params['current_pregunta_id'])and params['collapse_pregunta_edit'] %}
 											{% if not params['pregunta_edit_link'] %}
 											disabled
@@ -113,7 +113,7 @@
 											name="selector_button"
 											value="selector_move_down_pregunta"
 											class="btn btn-outline-dark btn-sm"
-											title="bajar posición"
+											title="Bajar posición"
 											{% if equal_str(pregunta.id, params['current_pregunta_id'])and params['collapse_pregunta_edit'] %}
 											{% if not params['pregunta_edit_link'] %}
 											disabled
@@ -159,11 +159,11 @@
 					{% if equal_str(pregunta.id, params['current_pregunta_id'])and params['pregunta_edit_link'] %}
 						{% if params['pregunta_delete_link'] %}
 							<div class="btn-group" role="group">
-								<button role="button" type="submit" name="selector_button" value="selector_pregunta_delete" class="btn btn-outline-warning btn-sm" title="confirmar eliminar pregunta">
+								<button role="button" type="submit" name="selector_button" value="selector_pregunta_delete" class="btn btn-outline-warning btn-sm" title="Confirmar eliminar pregunta">
 									<i class="material-icons vertical-center">delete</i>
 									confirmar eliminar
 								</button>
-								<button role="button" type="submit" name="selector_button" value="selector_pregunta_delete_close" class="btn btn-outline-dark btn-sm" title="cancelar eliminar">
+								<button role="button" type="submit" name="selector_button" value="selector_pregunta_delete_close" class="btn btn-outline-dark btn-sm" title="Cancelar eliminar">
 									<i class="material-icons vertical-center">close</i>
 								</button>
 							</div>
@@ -172,14 +172,14 @@
 								Una vez elminada no podra ser recuperada.</span>
 						{% else %}
 							<div class="btn-group" role="group">
-								<button role="button" type="submit" name="selector_button" value="selector_pregunta_edit" class="btn btn-outline-primary btn-sm" title="guardar cambios">
+								<button role="button" type="submit" name="selector_button" value="selector_pregunta_edit" class="btn btn-outline-dark btn-sm" title="Guardar cambios">
 									<i class="material-icons vertical-center">save</i>
-									guardar
+									Guardar
 								</button>
-								<button role="button" type="submit" name="selector_button" value="selector_pregunta_delete_link" class="btn btn-outline-dark btn-sm" title="eliminar pregunta">
+								<button role="button" type="submit" name="selector_button" value="selector_pregunta_delete_link" class="btn btn-outline-dark btn-sm" title="Eliminar pregunta">
 									<i class="material-icons vertical-center">delete</i>
 								</button>
-								<button role="button" type="submit" name="selector_button" value="selector_pregunta_edit_link_close" class="btn btn-outline-dark btn-sm" title="cerrar edición">
+								<button role="button" type="submit" name="selector_button" value="selector_pregunta_edit_link_close" class="btn btn-outline-dark btn-sm" title="Cerrar edición">
 									<i class="material-icons vertical-center">close</i>
 								</button>
 							</div>
@@ -191,7 +191,7 @@
 								Editar pregunta
 							</button>
 							{% if equal_str(pregunta.id,params['current_pregunta_id']) and params['collapse_pregunta_edit']%}
-								<button role="button" type="submit" name="selector_button" class="btn btn-outline-dark btn-sm" value="selector_pregunta_edit_close" title="cerrar ficha">
+								<button role="button" type="submit" name="selector_button" class="btn btn-outline-dark btn-sm" value="selector_pregunta_edit_close" title="Cerrar ficha">
 									<i class="material-icons vertical-center">close</i>
 								</button>
 							{% endif %}

@@ -3,7 +3,7 @@
 {% set categorias_count = categorias | count %}
 <div class="bg-dark text-white p-2 mb-2">
 	Categorias
-	<span class="badge float-right {% if categorias %}badge-mutted{% else %}badge-warning text-white{% endif %}" title="activa por defecto">
+	<span class="badge float-right {% if categorias %}badge-mutted{% else %}badge-warning text-white{% endif %}" title="Activada por defecto">
 		{{categorias_count}}
 		{{singular_plural('categoria','categorias', categorias_count)}}
 	</span>
@@ -60,12 +60,12 @@
 				</div>
 			</div>
 			<div class="btn-group pb-3" role="group">
-				<button role="button" type="submit" name="selector_button" value="selector_categoria_add" class="btn btn-outline-primary btn-sm" title="agregar categoria">
+				<button role="button" type="submit" name="selector_button" value="selector_categoria_add" class="btn btn-outline-dark btn-sm" title="Agregar categoria">
 					<i class="material-icons vertical-center">person</i>
 					agregar
 				</button>
 				{% if params['collapse_categoria_add'] and request.method == 'POST' %}
-					<button role="button" type="submit" name="selector_button" value="selector_categoria_add_close" class="btn btn-outline-dark btn-sm" title="cerrar">
+					<button role="button" type="submit" name="selector_button" value="selector_categoria_add_close" class="btn btn-outline-dark btn-sm" title="Cerrar">
 						<i class="material-icons vertical-center">close</i>
 					</button>
 				{% endif %}

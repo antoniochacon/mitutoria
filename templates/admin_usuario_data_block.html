@@ -1,22 +1,22 @@
 <a data-toggle="collapse" data-parent="#parent_usuario" href="#usuario_{{hashids_encode(usuario.id)}}" class="collapse_header border_bottom" aria-expanded="false" title="{{usuario.email}}">
 	<strong>Datos de ususario</strong>
 	{# NOTE badge #}
-	<span class="badge badge-info float-right border border-dark" title="total de visitas">{{settings_by_usuario_id.visit_number}}
+	<span class="badge badge-info float-right border border-dark" title="Total de visitas">{{settings_by_usuario_id.visit_number}}
 		visitas
 	</span>
 	{% if not settings_by_usuario_id.email_validated %}
-		<span class="badge border border-dark bg-white text-dark float-right mr-2" title="no validado">
-			no validado
+		<span class="badge border border-dark bg-white text-dark float-right mr-2" title="No validado">
+			No validado
 		</span>
 	{% endif %}
 	{% if settings_by_usuario_id.email_robinson %}
-		<span class="badge border border-warning bg-white text-warning float-right mr-2" title="robinson">
-			robinson
+		<span class="badge border border-warning bg-white text-warning float-right mr-2" title="Robinson">
+			Robinson
 		</span>
 	{% endif %}
 	{% if settings_by_usuario_id.ban %}
-		<span class="badge badge-warning text-white float-right mr-2" title="banned">
-			banned
+		<span class="badge badge-warning text-white float-right mr-2" title="Banned">
+			Banned
 		</span>
 	{% endif %}
 </a>
@@ -104,9 +104,9 @@
 			</div>
 			{% if params['usuario_edit_link'] %}
 					<div class="btn-group" role="group">
-						<button role="button" type="submit" name="selector_button" value="selector_usuario_edit" class="btn btn-outline-primary btn-sm" title="guardar cambios">
+						<button role="button" type="submit" name="selector_button" value="selector_usuario_edit" class="btn btn-outline-dark btn-sm" title="Guardar cambios">
 							<i class="material-icons vertical-center">save</i>
-							guardar
+							Guardar
 						</button>
 
 						<a data-toggle="collapse" href="#admin_usuario_data_delete_confirmar" class="btn btn-outline-dark btn-sm link_without_pointer" aria-expanded="false" title="Eliminar tutoria">
@@ -114,7 +114,7 @@
 						</a>
 						{% include 'admin_usuario_data_delete_confirmar_block.html' %}
 
-						<a href="/admin_usuario_ficha/{{dic_encode_args({'current_usuario_id': usuario.id})}}" role="button"  class="btn btn-outline-dark btn-sm" title="cerrar edición">
+						<a href="/admin_usuario_ficha/{{dic_encode_args({'current_usuario_id': usuario.id})}}" role="button"  class="btn btn-outline-dark btn-sm" title="Cerrar edición">
 							<i class="material-icons vertical-center">close</i>
 						</a>
 					</div>

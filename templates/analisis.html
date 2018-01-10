@@ -70,18 +70,18 @@
 
 						{% else %}
 							<div class="btn-group mb-1" role="group">
-								<a data-toggle="collapse" href="#tutoria_edit_{{hashids_encode(tutoria.id)}}" class="btn {% if tutoria.activa %} btn-outline-dark{% else %} btn-outline-mutted{% endif %} btn-sm link_without_pointer" aria-expanded="false" title="cambiar fecha y hora">
+								<a data-toggle="collapse" href="#tutoria_edit_{{hashids_encode(tutoria.id)}}" class="btn {% if tutoria.activa %} btn-outline-dark{% else %} btn-outline-mutted{% endif %} btn-sm link_without_pointer" aria-expanded="false" title="Cambiar fecha y hora">
 									<i class="material-icons vertical-center {% if tutoria.activa %} color-gray-darken-1 {% endif %}">edit</i>
 								</a>
-								<a data-toggle="collapse" href="#tutoria_reenviar_{{hashids_encode(tutoria.id)}}" class="btn {% if tutoria.activa %} btn-outline-dark{% else %} btn-outline-mutted{% endif %} btn-sm link_without_pointer" aria-expanded="false" title="reenviar tutoria">
+								<a data-toggle="collapse" href="#tutoria_reenviar_{{hashids_encode(tutoria.id)}}" class="btn {% if tutoria.activa %} btn-outline-dark{% else %} btn-outline-mutted{% endif %} btn-sm link_without_pointer" aria-expanded="false" title="Re-enviar tutoria">
 									<i class="material-icons vertical-center {% if tutoria.activa %} color-gray-darken-1 {% endif %}">email</i>
 								</a>
 								{% if tutoria.activa %}
-									<button role="button" type="submit" name="selector_button" value="selector_tutoria_archivar" class="btn btn-sm {% if tutoria.activa %} btn-outline-dark{% else %} btn-outline-mutted{% endif %}" title="archivar tutoria">
+									<button role="button" type="submit" name="selector_button" value="selector_tutoria_archivar" class="btn btn-sm {% if tutoria.activa %} btn-outline-dark{% else %} btn-outline-mutted{% endif %}" title="Archivar tutoria">
 										<i class="material-icons vertical-center {% if tutoria.activa %} color-gray-darken-1 {% endif %}">file_download</i>
 									</button>
 								{% else %}
-									<button role="button" type="submit" name="selector_button" value="selector_tutoria_activar" class="btn btn-outline-dark btn-sm" title="activar tutoria">
+									<button role="button" type="submit" name="selector_button" value="selector_tutoria_activar" class="btn btn-outline-dark btn-sm" title="Activar tutoria">
 										<i class="material-icons vertical-center">file_upload</i>
 									</button>
 								{% endif %}
@@ -89,7 +89,7 @@
 									onclick="printPage('/analisis_paper/{{dic_encode_args({'current_tutoria_id': tutoria.id})}}');"
 									role="button"
 									class="link_without_pointer btn btn-sm {% if tutoria.activa %} btn-outline-dark{% else %} btn-outline-mutted{% endif %}"
-									title="imprimir">
+									title="Imprimir">
 									<i class="material-icons vertical-center {% if tutoria.activa %} color-gray-darken-1 {% endif %}">print</i>
 								</span>
 
@@ -251,8 +251,8 @@
 						<textarea class="form-control" name="acuerdo" placeholder="Escriba aquí sus acuerdos">{% if tutoria.acuerdo %}{{-tutoria.acuerdo-}}{% endif %}</textarea>
 					</div>
 					<div class="col">
-						<button role="button" type="submit" name="selector_button" value="selector_acuerdo_save" class="btn btn-outline-dark btn-sm" title="guardar acuerdo">
-							<i class="material-icons vertical-center mr-1">local_post_office</i>guardar acuerdo
+						<button role="button" type="submit" name="selector_button" value="selector_acuerdo_save" class="btn btn-outline-dark btn-sm" title="Guardar acuerdo">
+							<i class="material-icons vertical-center mr-1">local_post_office</i>Guardar acuerdo
 						</button>
 					</div>
 				</div>
