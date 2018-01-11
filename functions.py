@@ -859,7 +859,8 @@ def tutoria_calendar_add(service, tutoria_add, calendar_datetime_utc_start_arrow
     tutoria_add_id = tutoria_add.id
     tutoria_sql = tutoria_by_id(tutoria_add_id)
     tutoria_sql.calendar_event_id = event['id']
-    session_sql.commit()
+    if session_sql.is_modified(tutoria_sql):
+        session_sql.commit()
 
 
 def cleanpup_tutorias(periodo_cleanup_tutorias):
