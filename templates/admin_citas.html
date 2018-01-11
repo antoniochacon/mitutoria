@@ -1,6 +1,6 @@
 {% extends '_layout.html' %}
 {% block body %}
-	{%from '_macro.html' import nav_bar_top, titulo_1, nav_tabs_admin%}
+	{%from '_macro.html' import nav_bar_top, titulo_1, nav_tabs_admin, nav_tabs_add%}
 	{{ nav_bar_top(link_active='Admin',params=params, current_user=current_user) }}
 	<div class="paper bg-white padding_3 py-3">
 		{{titulo_1(bg_color='bg-dark',titulo='Admin Settings')}}
@@ -8,11 +8,9 @@
 		<div id="parent_cita">
 			<a id="anchor_pre_add"></a>
 			<div>
-				{# XXX: cita_add #}
 				{% include 'admin_citas_add_block.html' %}
 			</div>
-			<div>
-				{# XXX: citas_listado #}
+			<div class="mt-2">
 				{% include 'admin_citas_cita_block.html' %}
 			</div>
 		</div>

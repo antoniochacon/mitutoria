@@ -1,59 +1,53 @@
-<a data-toggle="collapse" data-parent="#parent_cita" href="#cita_add" class="collapse_header border_bottom" aria-expanded="true" aria-controls="collapsecita_add" title="Agregar cita">
-	<div class="media">
-		&nbsp;<i class="material-icons vertical-center">playlist_add</i>&nbsp;
-		<div class="media-body">
-			<div class="padding_l_2">
-				agregar nueva cita
-				<span class="badge float-right {% if citas %}badge-mutted{% else %}badge-warning text-white{% endif %}" title="Activada por defecto">
-					{{citas | count}}
-					{{singular_plural('cita','citas', citas | count)}}
-				</span>
-			</div>
+<div class="d-flex mt-2">
+	<div class="strong">
+		Listado de citas [{{citas | count}}]:
+	</div>
+	<div class="ml-auto">
+		{{nav_tabs_add(data_parent='parent_cita',href='cita_add',icon='playlist_add', title='cita')}}
+	</div>
+</div>
+<div class="collapse {% if params['collapse_cita_add'] %} show {% endif %}" id="cita_add">
+	<div class="border border-gray rounded-bottom z-depth-1-1-less">
+		<div class="card-body p-2">
+			<form action="/admin_citas" method="POST">
+				<div class="row">
+					<div class="form-group col-md-12 mb-3">
+						<div class="input-group">
+							<input
+								type="text"
+								class="form-control {% if request.method=='POST' and params['collapse_cita_add'] %}{% if cita_add.frase.errors %} is-invalid {% else %} is-valid {% endif %}{% endif %}"
+								name="{{cita_add.frase.name}}"
+								value="{% if request.method=='POST' and params['collapse_cita_add'] %}{{cita_add.frase.data}}{% endif %}"
+								placeholder="{{cita_add.frase.label.text}}">
+							<span class="input-group-addon {% if request.method=='POST' and params['collapse_cita_add'] %} {% if cita_add.frase.errors %} form_addon-warning {% else %} form_addon-success {% endif %} {% endif %}">{{cita_add.frase.label.text}}</span>
+						</div>
+					</div>
+					<div class="form-group col-md-12 mb-3">
+						<div class="input-group">
+							<input
+								type="text"
+								class="form-control {% if request.method=='POST' and params['collapse_cita_add'] %}{% if cita_add.autor.errors %} is-invalid {% else %} is-valid {% endif %}{% endif %}"
+								name="{{cita_add.autor.name}}"
+								{% if request.method=='POST' %}
+								value="{% if request.method=='POST' and params['collapse_cita_add'] %}{{cita_add.autor.data}}{% endif %}"
+								{% endif %}
+								placeholder="{{cita_add.autor.label.text}}">
+							<span class="input-group-addon {% if request.method=='POST' and params['collapse_cita_add'] %} {% if cita_add.autor.errors %} form_addon-warning {% else %} form_addon-success {% endif %} {% endif %}">{{cita_add.autor.label.text}}</span>
+						</div>
+					</div>
+				</div>
+				<div class="btn-group" role="group">
+					<button role="button" type="submit" name="selector_button" value="selector_cita_add" class="btn btn-outline-dark btn-sm" title="Guardar cita">
+						<i class="material-icons vertical-center">person</i>
+						Guardar
+					</button>
+					{% if params['collapse_cita_add'] and request.method == 'POST' %}
+						<button role="button" type="submit" name="selector_button" value="selector_cita_add_close" class="btn btn-outline-dark btn-sm" title="Cerrar">
+							<i class="material-icons vertical-center">close</i>
+						</button>
+					{% endif %}
+				</div>
+			</form>
 		</div>
 	</div>
-</a>
-<div class="collapse {% if params['collapse_cita_add'] %} show {% endif %}" id="cita_add">
-	<br>
-	<div class="padding_3">
-		<form action="/admin_citas" method="POST">
-			<div class="row">
-				<div class="form-group col-md-12 mb-3">
-					<div class="input-group">
-						<input
-							type="text"
-							class="form-control {% if request.method=='POST' and params['collapse_cita_add'] %}{% if cita_add.frase.errors %} is-invalid {% else %} is-valid {% endif %}{% endif %}"
-							name="{{cita_add.frase.name}}"
-							value="{% if request.method=='POST' and params['collapse_cita_add'] %}{{cita_add.frase.data}}{% endif %}"
-							placeholder="{{cita_add.frase.label.text}}">
-						<span class="input-group-addon {% if request.method=='POST' and params['collapse_cita_add'] %} {% if cita_add.frase.errors %} form_addon-warning {% else %} form_addon-success {% endif %} {% endif %}">{{cita_add.frase.label.text}}</span>
-					</div>
-				</div>
-				<div class="form-group col-md-12 mb-3">
-					<div class="input-group">
-						<input
-							type="text"
-							class="form-control {% if request.method=='POST' and params['collapse_cita_add'] %}{% if cita_add.autor.errors %} is-invalid {% else %} is-valid {% endif %}{% endif %}"
-							name="{{cita_add.autor.name}}"
-							{% if request.method=='POST' %}
-							value="{% if request.method=='POST' and params['collapse_cita_add'] %}{{cita_add.autor.data}}{% endif %}"
-							{% endif %}
-							placeholder="{{cita_add.autor.label.text}}">
-						<span class="input-group-addon {% if request.method=='POST' and params['collapse_cita_add'] %} {% if cita_add.autor.errors %} form_addon-warning {% else %} form_addon-success {% endif %} {% endif %}">{{cita_add.autor.label.text}}</span>
-					</div>
-				</div>
-			</div>
-			<div class="btn-group pb-3" role="group">
-				<button role="button" type="submit" name="selector_button" value="selector_cita_add" class="btn btn-outline-dark btn-sm" title="Agregar cita">
-					<i class="material-icons vertical-center">person</i>
-					agregar
-				</button>
-				{% if params['collapse_cita_add']and request.method == 'POST' %}
-					<button role="button" type="submit" name="selector_button" value="selector_cita_add_close" class="btn btn-outline-dark btn-sm" title="Cerrar">
-						<i class="material-icons vertical-center">close</i>
-					</button>
-				{% endif %}
-			</div>
-		</form>
-	</div>
-	<div class="divider grueso bg-primary"></div>
 </div>

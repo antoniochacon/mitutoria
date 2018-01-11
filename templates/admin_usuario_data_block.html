@@ -1,6 +1,5 @@
 <a data-toggle="collapse" data-parent="#parent_usuario" href="#usuario_{{hashids_encode(usuario.id)}}" class="collapse_header border_bottom" aria-expanded="false" title="{{usuario.email}}">
 	<strong>Datos de ususario</strong>
-	{# NOTE badge #}
 	<span class="badge badge-info float-right border border-dark" title="Total de visitas">{{settings_by_usuario_id.visit_number}}
 		visitas
 	</span>
@@ -21,7 +20,8 @@
 	{% endif %}
 </a>
 <div id="usuario_{{hashids_encode(usuario.id)}}" class="collapse show">
-	<div class="padding_3 pt-3 pb-3">
+	<div class="border border-gray rounded-bottom z-depth-1-1-less mt-2">
+		<div class="card-body p-2">
 		<form action="/admin_usuario_ficha" method="POST">
 			<div class="row">
 				<div class="form-group col-md-12">
@@ -137,5 +137,6 @@
 			{% endif %}
 		</form>
 	</div>
-	<div class="divider grueso bg-primary"></div>
+	</div>
+	<!-- <div class="divider grueso bg-primary"></div> -->
 </div>
