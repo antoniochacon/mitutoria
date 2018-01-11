@@ -118,9 +118,8 @@ def tutorias_html(params={}):
         tutorias = tutorias_by_grupo_id(g.settings_current_user.grupo_activo_id, deleted=True)
         for tutoria in tutorias:
             session_sql.delete(tutoria)
-        if session_sql.dirty:
-            flash_toast('Papelera vaciada', 'success')
-            session_sql.commit()
+        flash_toast('Papelera vaciada', 'success')
+        session_sql.commit()
         return redirect(url_for('tutorias_html', params=dic_encode(params)))
 
     if params['alumnos_tutorias_solicitar']:
@@ -188,8 +187,8 @@ def tutorias_html(params={}):
                             # NOTE si se desea eliminar el commit hay que usar el FLUSH y recuperar la fecha con datetime.datetime.strptime(tutoria_add.fecha, '%Y-%m-%d').strftime('%d')
                             # tutoria_dia_semana = translate_fecha(datetime.datetime.strptime(tutoria_add.fecha, '%Y-%m-%d').strftime('%A'))
                             # tutoria_dia_mes = datetime.datetime.strptime(tutoria_add.fecha, '%Y-%m-%d').strftime('%d')
-                            if session_sql.dirty:
-                                session_sql.commit()  # NOTE necesario para simplificar y unificar como traducir la fecha
+                            # NOTE no usar if session_sql.is_modified:
+                            session_sql.commit()  # NOTE necesario para simplificar y unificar como traducir la fecha
                             tutoria = tutoria_by_id(tutoria_id)
                             # NOTE anular email
                             send_email_tutoria_asincrono(alumno, tutoria)  # NOTE anular temporalemente para pruebas de envio de mails.
@@ -247,9 +246,8 @@ def test_html():
             if alumno_add_form.validate():
                 alumno_add = Alumno(grupo_id=6, apellidos=alumno_add_form.apellidos.data, nombre=alumno_add_form.nombre.data)
                 session_sql.add(alumno_add)
-                if session_sql.dirty:
-                    flash_toast(alumno_add_form.nombre.data + ' agregado', 'success')
-                    session_sql.commit()
+                flash_toast(alumno_add_form.nombre.data + ' agregado', 'success')
+                session_sql.commit()
                 return redirect(url_for('test_html'))
             else:
                 flash_wtforms(alumno_add_form, flash_toast, 'warning')
@@ -276,7 +274,7 @@ def oauth2callback_calendar():
         auth_code = request.args.get('code')
         credentials = flow.step2_exchange(auth_code)
         g.settings_current_user.oauth2_credentials = credentials.to_json()
-        if session_sql.dirty:
+        if session_sql.is_modified(g.settings_current_user):
             session_sql.commit()
     return redirect(url_for('settings_opciones_html'))
 
@@ -293,7 +291,7 @@ def oauth2callback_gmail():
         auth_code = request.args.get('code')
         credentials = flow.step2_exchange(auth_code)
         g.settings_global.oauth2_credentials = credentials.to_json()
-        if session_sql.dirty:
+        if session_sql.is_modified(g.settings_global):
             session_sql.commit()
     return redirect(url_for('admin_settings_global_html'))
 
@@ -312,10 +310,9 @@ def admin_settings_global_html(params={}):
     params['anchor'] = params_old.get('anchor', 'anchor_top')
     tutorias_clenaup_count = session_sql.query(Tutoria).filter(Tutoria.fecha < g.current_date - datetime.timedelta(days=30 * g.settings_global.periodo_cleanup_tutorias)).count()
     if request.method == 'POST':
-        periodo_cleanup_tutorias = int(request.form.get('periodo_cleanup_tutorias'))
-        cleanup_tutorias_automatic = request.form.get('cleanup_tutorias_automatic')
-        gmail_sender = request.form.get('gmail_sender')
-        if not cleanup_tutorias_automatic:
+        if request.form.get('cleanup_tutorias_automatic'):
+            cleanup_tutorias_automatic = True
+        else:
             cleanup_tutorias_automatic = False
 
         # XXX selector_autorizar_credencial
@@ -324,44 +321,34 @@ def admin_settings_global_html(params={}):
 
         # XXX selector_cleanup_update
         if request.form['selector_button'] == 'selector_cleanup_update':
-            g.settings_global.periodo_cleanup_tutorias = periodo_cleanup_tutorias
-            if session_sql.dirty:
+            g.settings_global.periodo_cleanup_tutorias = request.form.get('periodo_cleanup_tutorias')
+            if session_sql.is_modified(g.settings_global):
                 flash_toast('Tutorias CleanUp actualizado', 'success')
                 session_sql.commit()
             return redirect(url_for('admin_settings_global_html'))
 
         # XXX selector_global_set_edit
         if request.form['selector_button'] == 'selector_global_set_edit':
-            commit_action = False
-            if g.settings_global.periodo_cleanup_tutorias != int(periodo_cleanup_tutorias):
-                g.settings_global.periodo_cleanup_tutorias = periodo_cleanup_tutorias
-                commit_action = True
-            if g.settings_global.periodo_participacion_recent != int(request.form.get('periodo_participacion_recent')):
-                g.settings_global.periodo_participacion_recent = request.form.get('periodo_participacion_recent')
-                commit_action = True
-            if g.settings_global.diferencial_default != int(request.form.get('diferencial_default')):
-                g.settings_global.diferencial_default = request.form.get('diferencial_default')
-                commit_action = True
-            if str(g.settings_global.cleanup_tutorias_automatic) != str(cleanup_tutorias_automatic):
-                g.settings_global.cleanup_tutorias_automatic = cleanup_tutorias_automatic
-                commit_action = True
-            if str(g.settings_global.periodo_deleted_tutorias) != str(request.form.get('periodo_deleted_tutorias')):
-                g.settings_global.periodo_deleted_tutorias = request.form.get('periodo_deleted_tutorias')
-                commit_action = True
+            g.settings_global.periodo_cleanup_tutorias = int(request.form.get('periodo_cleanup_tutorias'))
+            g.settings_global.periodo_participacion_recent = int(request.form.get('periodo_participacion_recent'))
+            g.settings_global.diferencial_default = int(request.form.get('diferencial_default'))
+            g.settings_global.cleanup_tutorias_automatic = cleanup_tutorias_automatic
+            g.settings_global.periodo_deleted_tutorias = int(request.form.get('periodo_deleted_tutorias'))
 
-            settings_global_edit_form = Settings_Global_Add(gmail_sender=gmail_sender)
+            settings_global_edit_form = Settings_Global_Add(gmail_sender=request.form.get('gmail_sender'))
             if settings_global_edit_form.validate():
-                settings_global_edit = Settings_Global_Add(gmail_sender=gmail_sender)
-                if g.settings_global.gmail_sender != gmail_sender:
-                    g.settings_global.gmail_sender = gmail_sender
-                    commit_action = True
+                settings_global_edit = Settings_Global_Add(gmail_sender=request.form.get('gmail_sender'))
+                g.settings_global.gmail_sender = request.form.get('gmail_sender')
+
             else:
                 flash_wtforms(settings_global_edit_form, flash_toast, 'warning')
                 return render_template('admin_settings_global.html',
                                        settings_global_edit=settings_global_edit_form)
-            if commit_action:
+
+            if session_sql.is_modified(g.settings_global):
+                flash_toast('Opciones actualizadas', 'success')
                 session_sql.commit()
-                flash_toast('Global Set actualizado', 'success')
+
             return redirect(url_for('admin_settings_global_html'))
 
         if request.form['selector_button'] == 'selector_cleanup_tutorias':
@@ -486,9 +473,8 @@ def admin_usuario_ficha_html(params={}):
 
     if params['admin_usuario_data_delete_confirmar']:
         session_sql.delete(usuario)
-        if session_sql.dirty:
-            flash_toast('Usuario elminado', 'success')
-            session_sql.commit()
+        flash_toast('Usuario elminado', 'success')
+        session_sql.commit()
         return redirect(url_for('admin_usuarios_html'))
 
     if request.method == 'POST':
@@ -510,18 +496,27 @@ def admin_usuario_ficha_html(params={}):
             settings_email_robinson = usuario_edit_form.email_robinson.data
 
             params['usuario_edit_link'] = True
-            if not settings_edit_ban:
+            if settings_edit_ban:
+                settings_edit_ban = True
+            else:
                 settings_edit_ban = False
-            if not settings_email_validated:
+
+            if settings_email_validated:
+                settings_email_validated = True
+            else:
                 settings_email_validated = False
-            if not settings_email_robinson:
+
+            if settings_email_robinson:
+                settings_email_robinson = True
+            else:
                 settings_email_robinson = False
 
             settings_sql.role = usuario_edit_form.role.data
             settings_sql.ban = settings_edit_ban
             settings_sql.email_validated = settings_email_validated
             settings_sql.email_robinson = settings_email_robinson
-            if session_sql.dirty:
+
+            if session_sql.is_modified(g.settings_current_user):
                 flash_toast('Opciones actualizadas', 'success')
                 session_sql.commit()
 
@@ -554,7 +549,7 @@ def admin_usuario_ficha_html(params={}):
                     usuario.email = usuario_edit_form.email.data
                     session_sql.flush()
 
-                if session_sql.dirty:
+                if session_sql.is_modified(usuario):
                     flash_toast('Usuario actualizado', 'success')
                     session_sql.commit()
 
@@ -620,9 +615,8 @@ def alumnos_html(params={}):
         params['alumno_delete_confirmar'] = False
         alumno_delete_sql = alumno_by_id(current_alumno_id)
         session_sql.delete(alumno_delete_sql)
-        if session_sql.dirty:
-            flash_toast(Markup('<strong>') + alumno_delete_sql.nombre + Markup('</strong>') + ' elminado', 'success')
-            session_sql.commit()
+        flash_toast(Markup('<strong>') + alumno_delete_sql.nombre + Markup('</strong>') + ' elminado', 'success')
+        session_sql.commit()
         return redirect(url_for('alumnos_html', params=dic_encode(params)))
 
     if request.method == 'POST':
@@ -645,9 +639,8 @@ def alumnos_html(params={}):
                     params['collapse_alumno_add'] = False
                     alumno_add = Alumno(grupo_id=g.settings_current_user.grupo_activo_id, apellidos=alumno_add_form.apellidos.data.title(), nombre=alumno_add_form.nombre.data.title())
                     session_sql.add(alumno_add)
-                    if session_sql.dirty:
-                        flash_toast(Markup('<strong>') + alumno_add_form.nombre.data.title() + Markup('</strong>') + ' agregado', 'success')
-                        session_sql.commit()
+                    flash_toast(Markup('<strong>') + alumno_add_form.nombre.data.title() + Markup('</strong>') + ' agregado', 'success')
+                    session_sql.commit()
                     return redirect(url_for('alumnos_html', params=dic_encode(params)))
             else:
                 params['anchor'] = 'anchor_alu_add'
@@ -769,7 +762,7 @@ def alumnos_html(params={}):
                 alumno_sql = session_sql.query(Alumno).filter_by(id=current_alumno_id).first()
                 alumno_sql.nombre = alumno_edit.nombre.title()
                 alumno_sql.apellidos = alumno_edit.apellidos.title()
-                if session_sql.dirty:
+                if session_sql.is_modified(alumno_sql):
                     flash_toast('Alumno actualizado', 'success')
                     session_sql.commit()
                 return redirect(url_for('alumnos_html', params=dic_encode(params)))
@@ -994,8 +987,8 @@ def admin_cuestionario_html(params={}):
                         categoria_add=Categoria_Add(), categoria_edit=Categoria_Add(), params=params)
                 else:
                     session_sql.add(pregunta_add)
-                    session_sql.commit()
                     flash_toast('Pregunta agregada', 'success')
+                    session_sql.commit()
                     return redirect(url_for('admin_cuestionario_html', params=dic_encode(params)))
             else:
                 params['collapse_pregunta_add'] = True
@@ -1114,8 +1107,8 @@ def admin_cuestionario_html(params={}):
             current_pregunta_id = current_id_request('current_pregunta_id')
             pregunta_delete = pregunta_by_id(current_pregunta_id)
             session_sql.delete(pregunta_delete)
-            session_sql.commit()
             flash_toast('Pregunta elminada', 'success')
+            session_sql.commit()
             return redirect(url_for('admin_cuestionario_html'))
 
         # XXX pregunta_delete_close
@@ -1304,7 +1297,7 @@ def tutoria_edit_html(params={}):
             current_informe_id = hashids_decode(request.form['selector_button'].replace('selector_comentario_edit_', ''))
             informe = informe_by_id(current_informe_id)
             informe.comentario_editado = request.form.get('comentario_edit_' + str(hashids_encode(current_informe_id)))
-            if session_sql.dirty:
+            if session_sql.is_modified(informe):
                 session_sql.commit()
             params['comentario_edit'] = True
             params['anchor'] = 'anchor_comentario_edit_' + str(hashids_encode(current_informe_id))
@@ -1315,7 +1308,7 @@ def tutoria_edit_html(params={}):
             current_informe_id = hashids_decode(request.form['selector_button'].replace('selector_comentario_restaurar_', ''))
             informe = informe_by_id(current_informe_id)
             informe.comentario_editado = ''
-            if session_sql.dirty:
+            if session_sql.is_modified(informe):
                 session_sql.commit()
             params['comentario_edit'] = True
             params['anchor'] = 'anchor_comentario_edit_' + str(hashids_encode(current_informe_id))
@@ -1327,7 +1320,8 @@ def tutoria_edit_html(params={}):
             tutoria_calendar_delete(event_id=tutoria_sql.calendar_event_id)
             tutoria_sql.deleted = True
             tutoria_sql.deleted_at = g.current_date
-            session_sql.commit()
+            if session_sql.is_modified(tutoria_sql):
+                session_sql.commit()
             flash_toast('Tutoria enviada a la papelera', 'success')
             return redirect(url_for('analisis_html', params=dic_encode(params)))
 
@@ -1341,7 +1335,8 @@ def tutoria_edit_html(params={}):
         # XXX selector_tutoria_restaurar
         if request.form['selector_button'] == 'selector_tutoria_restaurar':
             tutoria_sql.deleted = False
-            session_sql.commit()
+            if session_sql.is_modified(tutoria_sql):
+                session_sql.commit()
             if g.settings_current_user.calendar:
                 try:
                     credentials = oauth2client.client.Credentials.new_from_json(g.settings_current_user.oauth2_credentials)
@@ -1365,7 +1360,8 @@ def tutoria_edit_html(params={}):
             else:
                 settings_show_analisis_comparativo_detallado = True
             g.settings_current_user.show_analisis_comparativo_detallado = settings_show_analisis_comparativo_detallado
-            session_sql.commit()
+            if session_sql.is_modified(g.settings_current_user):
+                session_sql.commit()
             params['anchor'] = 'anchor_comp'
             params['show_analisis_comparativo_detallado'] = True
             return redirect(url_for('analisis_html', params=dic_encode(params)))
@@ -1378,7 +1374,8 @@ def tutoria_edit_html(params={}):
             else:
                 settings_show_analisis_cuestionario_detallado = True
             g.settings_current_user.show_analisis_cuestionario_detallado = settings_show_analisis_cuestionario_detallado
-            session_sql.commit()
+            if session_sql.is_modified(g.settings_current_user):
+                session_sql.commit()
             params['anchor'] = 'anchor_cues'
             params['show_analisis_cuestionario_detallado'] = True
             return redirect(url_for('analisis_html', params=dic_encode(params)))
@@ -1391,7 +1388,8 @@ def tutoria_edit_html(params={}):
             else:
                 settings_show_analisis_asignaturas_detallado = True
             g.settings_current_user.show_analisis_asignaturas_detallado = settings_show_analisis_asignaturas_detallado
-            session_sql.commit()
+            if session_sql.is_modified(g.settings_current_user):
+                session_sql.commit()
             params['anchor'] = 'anchor_deta'
             params['show_analisis_asignaturas_detallado'] = True
             return redirect(url_for('analisis_html', params=dic_encode(params)))
@@ -1404,7 +1402,8 @@ def tutoria_edit_html(params={}):
             else:
                 settings_informe_comentario_edit_mode = True
             g.settings_current_user.informe_comentario_edit_mode = settings_informe_comentario_edit_mode
-            session_sql.commit()
+            if session_sql.is_modified(g.settings_current_user):
+                session_sql.commit()
             params['anchor'] = 'anchor_deta'
             params['informe_comentario_edit_mode'] = True
             params['comentario_edit'] = True
@@ -1415,7 +1414,8 @@ def tutoria_edit_html(params={}):
             acuerdo = request.form.get('acuerdo')
             tutoria_sql = tutoria_by_id(current_tutoria_id)
             tutoria_sql.acuerdo = acuerdo
-            session_sql.commit()
+            if session_sql.is_modified(tutoria_sql):
+                session_sql.commit()
             return redirect(url_for('analisis_html', params=dic_encode(params)))
 
         # XXX tutoria_edit_close
@@ -1446,8 +1446,9 @@ def tutoria_edit_html(params={}):
         if request.form['selector_button'] == 'selector_tutoria_archivar':
             tutoria_to_move = tutoria_by_id(current_tutoria_id)
             tutoria_to_move.activa = False
-            session_sql.commit()
-            flash_toast('Tutoria archivada', 'success')
+            if session_sql.is_modified(tutoria_to_move):
+                flash_toast('Tutoria archivada', 'success')
+                session_sql.commit()
             return redirect(url_for('analisis_html', params=dic_encode(params)))
 
         # XXX tutoria_activar
@@ -1457,16 +1458,18 @@ def tutoria_edit_html(params={}):
                 flash_toast('No se puede activar una tutoria pasada' + Markup('<br>') + 'Debe cambiar fecha', 'warning')
             else:
                 tutoria_to_move.activa = True
-                session_sql.commit()
-                flash_toast('Tutoria activada', 'success')
+                if session_sql.is_modified(tutoria_to_move):
+                    flash_toast('Tutoria activada', 'success')
+                    session_sql.commit()
             return redirect(url_for('analisis_html', params=dic_encode(params)))
 
         # XXX selector_tutoria_delete_archivar
         if request.form['selector_button'] == 'selector_tutoria_delete_archivar':
             tutoria_to_move = tutoria_by_id(current_tutoria_id)
             tutoria_to_move.activa = False
-            session_sql.commit()
-            flash_toast('Tutoria archivada', 'success')
+            if session_sql.is_modified(tutoria_to_move):
+                flash_toast('Tutoria archivada', 'success')
+                session_sql.commit()
             return redirect(url_for('analisis_html', params=dic_encode(params)))
 
         # XXX tutoria_edit
@@ -1512,8 +1515,9 @@ def tutoria_edit_html(params={}):
                     tutoria_sql.fecha = tutoria_edit_form_fecha
                     tutoria_sql.hora = string_to_time(tutoria_edit_form.hora.data)
                     tutoria_sql.activa = True
-                    session_sql.commit()
-                    flash_toast('Tutoria actualizada', 'success')
+                    if session_sql.is_modified(tutoria_sql):
+                        flash_toast('Tutoria actualizada', 'success')
+                        session_sql.commit()
                     return redirect(url_for('analisis_html', params=dic_encode(params)))
             else:
                 flash_wtforms(tutoria_edit_form, flash_toast, 'warning')
@@ -1559,44 +1563,35 @@ def settings_opciones_html(params={}):
                 settings_edit_tutoria_timeout = True
             else:
                 settings_edit_tutoria_timeout = False
-            if g.settings_current_user.tutoria_timeout != settings_edit_tutoria_timeout:
-                g.settings_current_user.tutoria_timeout = settings_edit_tutoria_timeout
+            g.settings_current_user.tutoria_timeout = settings_edit_tutoria_timeout
 
             if request.form.get('settings_show_asignaturas_analisis'):
                 settings_show_asignaturas_analisis = True
             else:
                 settings_show_asignaturas_analisis = False
-            if g.settings_current_user.show_asignaturas_analisis != settings_show_asignaturas_analisis:
-                g.settings_current_user.show_asignaturas_analisis = settings_show_asignaturas_analisis
+            g.settings_current_user.show_asignaturas_analisis = settings_show_asignaturas_analisis
 
             if request.form.get('settings_show_analisis_avanzado'):
                 settings_show_analisis_avanzado = True
             else:
                 settings_show_analisis_avanzado = False
-            if g.settings_current_user.show_analisis_avanzado != settings_show_analisis_avanzado:
-                g.settings_current_user.show_analisis_avanzado = settings_show_analisis_avanzado
+            g.settings_current_user.show_analisis_avanzado = settings_show_analisis_avanzado
 
-            if g.settings_current_user.tutoria_duracion != int(request.form.get('settings_tutoria_duracion')):
-                g.settings_current_user.tutoria_duracion = request.form.get('settings_tutoria_duracion')
+            g.settings_current_user.tutoria_duracion = request.form.get('settings_tutoria_duracion')
+            g.settings_current_user.diferencial = request.form.get('settings_diferencial')
+            g.settings_current_user.tutorias_historial = request.form.get('settings_tutorias_historial')
+            g.settings_current_user.tutorias_papelera = request.form.get('settings_tutorias_papelera')
 
-            if g.settings_current_user.diferencial != int(request.form.get('settings_diferencial')):
-                g.settings_current_user.diferencial = request.form.get('settings_diferencial')
-
-            if g.settings_current_user.tutorias_historial != int(request.form.get('settings_tutorias_historial')):
-                g.settings_current_user.tutorias_historial = request.form.get('settings_tutorias_historial')
-
-            if g.settings_current_user.tutorias_papelera != int(request.form.get('settings_tutorias_papelera')):
-                g.settings_current_user.tutorias_papelera = request.form.get('settings_tutorias_papelera')
-
-            if session_sql.dirty:
-                session_sql.commit()
+            if session_sql.is_modified(g.settings_current_user):
                 flash_toast('Configuracion actualizada', 'success')
+                session_sql.commit()
 
             if g.settings_current_user.calendar:
                 try:
                     credentials = oauth2client.client.Credentials.new_from_json(g.settings_current_user.oauth2_credentials)
                     g.settings_current_user.oauth2_credentials = credentials.to_json()
-                    session_sql.commit()
+                    if session_sql.is_modified(g.settings_current_user):
+                        session_sql.commit()
                     http = credentials.authorize(httplib2.Http())
                     service = discovery.build('calendar', 'v3', http=http)
                 except:
@@ -1656,7 +1651,8 @@ def settings_grupos_html(params={}):
                         else:
                             g.settings_current_user.grupo_activo_id = grupo_add.id
 
-                    session_sql.commit()
+                    if session_sql.is_modified(g.settings_current_user):
+                        session_sql.commit()
                     params['collapse_grupo_add'] = False
                     if params['login']:
                         return redirect(url_for('alumnos_html', params=dic_encode(params)))
@@ -1700,8 +1696,9 @@ def settings_grupos_html(params={}):
                         g.settings_current_user.grupo_activo_id = current_grupo_id
                     else:
                         g.settings_current_user.grupo_activo_id = None
-                    flash_toast(Markup('Grupo <strong>') + grupo_edit.nombre + Markup('</strong>') + ' actualizado', 'success')
-                    session_sql.commit()
+                    if session_sql.is_modified(g.settings_current_user) or session_sql.is_modified(grupo_sql):
+                        flash_toast(Markup('Grupo <strong>') + grupo_edit.nombre + Markup('</strong>') + ' actualizado', 'success')
+                        session_sql.commit()
                     return redirect(url_for('settings_grupos_html', params=dic_encode(params)))
             else:
                 flash_wtforms(grupo_edit_form, flash_toast, 'warning')
@@ -1817,16 +1814,13 @@ def admin_citas_html(params={}):
             if cita_edit_form.validate():
                 cita_edit = Cita(frase=cita_edit_form.frase.data, autor=cita_edit_form.autor.data, visible=cita_edit_visible)
                 cita = session_sql.query(Cita).filter(Cita.id == current_cita_id).first()
-                if cita.frase.lower() != cita_edit.frase.lower() or cita.autor.lower() != cita_edit.autor.lower() or str(cita.visible) != str(cita_edit_visible):
-                    if cita.frase.lower() != cita_edit.frase.lower():
-                        cita.frase = cita_edit.frase
-                    if cita.autor.lower() != cita_edit.autor.lower():
-                        cita.autor = cita_edit.autor
-                    if cita.visible != cita_edit_visible:
-                        cita.visible = cita_edit_visible
+                cita.frase = cita_edit.frase
+                cita.autor = cita_edit.autor
+                cita.visible = cita_edit_visible
+                if session_sql.is_modified(cita):
                     flash_toast('Cita actualizada', 'success')
                     session_sql.commit()
-                    return redirect(url_for('admin_citas_html', params=dic_encode(params)))
+                return redirect(url_for('admin_citas_html', params=dic_encode(params)))
             else:
                 flash_wtforms(cita_edit_form, flash_toast, 'warning')
             return render_template(
@@ -1998,8 +1992,8 @@ def informe_html(asignatura_id, tutoria_id, params={}):
             return redirect(url_for('informe_html', tutoria_id=hashids_encode(tutoria_id), asignatura_id=hashids_encode(asignatura_id), params=dic_encode(params)))
 
         if request.form['selector_button'] == 'selector_enviar_informe':
-            session_sql.commit()
             flash_toast('Infome de ' + Markup('<strong>') + alumno.nombre + Markup('</strong>') + ' enviado', 'success')
+            session_sql.commit()
             return redirect(url_for(
                 'informe_success_html',
                 asignatura_id=hashids_encode(asignatura_id), tutoria_id=hashids_encode(tutoria_id),
@@ -2106,14 +2100,16 @@ def asignaturas_html(params={}):
         # XXX selector_asignaturas_orden_switch
         if request.form['selector_button'] == 'asignaturas_orden_switch':
             current_asignaturas_orden = request.form.get('asignaturas_orden')
-            if current_asignaturas_orden == 'True':
+
+            if eval(current_asignaturas_orden):
                 current_asignaturas_orden = False
             else:
                 current_asignaturas_orden = True
-            settings_edit = g.settings_current_user
-            settings_edit.asignaturas_orden = current_asignaturas_orden
-            session_sql.commit()
-            flash_toast('Asignaturas ordenadas por ' + asignaturas_orden_switch(current_asignaturas_orden), 'success')
+            g.settings_current_user.asignaturas_orden = current_asignaturas_orden
+
+            if session_sql.is_modified(g.settings_current_user):
+                flash_toast('Asignaturas ordenadas por ' + asignaturas_orden_switch(current_asignaturas_orden), 'success')
+                session_sql.commit()
             return redirect(url_for('asignaturas_html'))
 
         # XXX selector_asignatura_add
@@ -2199,21 +2195,14 @@ def asignaturas_html(params={}):
                 params['anchor'] = 'anchor_asi_' + str(hashids_encode(current_asignatura_id))
                 asignatura_edit = Asignatura(grupo_id=g.settings_current_user.grupo_activo_id, nombre=asignatura_edit_form.nombre.data.title(), apellidos=asignatura_edit_form.apellidos.data.title(), asignatura=asignatura_edit_form.asignatura.data.title(), email=asignatura_edit_form.email.data)
                 asignatura_sql = session_sql.query(Asignatura).filter(Asignatura.id == current_asignatura_id).first()
-                if asignatura_sql.asignatura.lower() != asignatura_edit_form.asignatura.data.lower() or asignatura_sql.nombre.lower() != asignatura_edit_form.nombre.data.lower() or asignatura_sql.apellidos.lower() != asignatura_edit_form.apellidos.data.lower() or asignatura_sql.email.lower() != asignatura_edit_form.email.data.lower():
-                    params['collapse_asignatura_edit'] = False
-                    if asignatura_sql.asignatura.lower() != asignatura_edit_form.asignatura.data.lower():
-                        asignatura_sql.asignatura = asignatura_edit_form.asignatura.data.title()
-                        flash_toast(Markup('<strong>') + asignatura_edit_form.asignatura.data + Markup('</strong>') + ' actualizado', 'success')
-                    if asignatura_sql.nombre.lower() != asignatura_edit_form.nombre.data.lower():
-                        asignatura_sql.nombre = asignatura_edit_form.nombre.data.title()
-                        flash_toast(Markup('<strong>') + asignatura_edit_form.nombre.data + Markup('</strong>') + ' actualizado', 'success')
-                    if asignatura_sql.apellidos.lower() != asignatura_edit_form.apellidos.data.lower():
-                        asignatura_sql.apellidos = asignatura_edit_form.apellidos.data.title()
-                        flash_toast(Markup('<strong>') + asignatura_edit_form.apellidos.data + Markup('</strong>') + ' actualizado', 'success')
-                    if asignatura_sql.email.lower() != asignatura_edit_form.email.data.lower():
-                        asignatura_sql.email = asignatura_edit_form.email.data
-                        flash_toast(Markup('<strong>') + asignatura_edit_form.email.data + Markup('</strong>') + ' actualizado', 'success')
-                session_sql.commit()
+                params['collapse_asignatura_edit'] = False
+                asignatura_sql.asignatura = asignatura_edit_form.asignatura.data.title()
+                asignatura_sql.nombre = asignatura_edit_form.nombre.data.title()
+                asignatura_sql.apellidos = asignatura_edit_form.apellidos.data.title()
+                asignatura_sql.email = asignatura_edit_form.email.data
+                if session_sql.is_modified(asignatura_sql):
+                    flash_toast('Asignatura actualizada', 'success')
+                    session_sql.commit()
                 return redirect(url_for('asignaturas_html', params=dic_encode(params)))
             else:
                 flash_wtforms(asignatura_edit_form, flash_toast, 'warning')
@@ -2290,7 +2279,8 @@ def login_validacion_email_html(params={}):
         email_validated_intentos_add = settings_by_id(current_user_id).email_validated_intentos + 1
         settings_edit = settings_by_id(current_user_id)
         settings_edit.email_validated_intentos = email_validated_intentos_add
-        session_sql.commit()
+        if session_sql.is_modified(settings_edit):
+            session_sql.commit()
         params['email_validated_intentos'] = email_validated_intentos_add
         send_email_validate_asincrono(user)
         return redirect(url_for('login_validacion_email_html', params=dic_encode(params)))
@@ -2326,15 +2316,17 @@ def email_validate_html(params={}):
     user_sql = session_sql.query(User).filter(User.id == current_user_id).first()
     if user_sql:
         if params['email_robinson']:
-            settings_by_id(user_sql.id).email_robinson = True
-            session_sql.commit()
+            settings_edit=settings_by_id(user_sql.id)
+            settings_edit.email_robinson = True
+            if session_sql.is_modified(settings_edit):
+                session_sql.commit()
             return redirect(url_for('lista_robinson_html'))
         else:
-            settings_by_id(user_sql.id).email_validated = True
-            settings_by_id(user_sql.id).email_robinson = False
-            if settings_by_id(user_sql.id).email_validated_intentos != 1:
-                settings_by_id(user_sql.id).email_validated_intentos = 1
-            session_sql.commit()
+            settings_edit.email_validated = True
+            settings_edit.email_robinson = False
+            settings_edit.email_validated_intentos = 1
+            if session_sql.is_modified(settings_edit):
+                session_sql.commit()
             login_user(user_sql, remember=True)
             flash_toast('Enhorabuena, cuenta activada.', 'success')
             flash_toast('Bienvenido ' + current_user.username, 'success')
@@ -2445,7 +2437,8 @@ def login_html(params={}):
                     settings = settings_by_id(user_sql.id)
                     settings.visit_last = datetime.datetime.now()
                     settings.visit_number = settings.visit_number + 1
-                    session_sql.commit()
+                    if session_sql.is_modified(settings):
+                        session_sql.commit()
                     if settings.ban:
                         params['ban'] = True
                         params['login_fail'] = False
@@ -2461,8 +2454,9 @@ def login_html(params={}):
                         params['login_fail'] = False
                         params['email_validated_intentos'] = settings.email_validated_intentos
                         settings.email_validated_intentos = settings.email_validated_intentos + 1
+                        if session_sql.is_modified(settings):
+                            session_sql.commit()
                         logout_user()
-                        session_sql.commit()
                         return redirect(url_for('login_validacion_email_html', params=dic_encode(params)))
                     else:
                         pass

@@ -107,7 +107,6 @@
 				{% endif %}
 				<input type="hidden" name="current_grupo_id" value="{{hashids_encode(grupo.id)}}">
 			</div>
-			<!-- ************************************* -->
 			{% if equal_str(grupo.id, params['current_grupo_id'])and params['grupo_edit_link'] %}
 				{% if params['grupo_delete_link'] %}
 					<div class="btn-group" role="group">
@@ -135,9 +134,9 @@
 						</button>
 					</div>
 				{% endif %}
-				<!-- ********************************* -->
 			{% else %}
-				<div class="btn-group" role="group">
+			<div class="d-flex flex-row-reverse">
+					<div class="btn-group" role="group">
 					<button role="button" type="submit" name="selector_button" class="btn btn-outline-dark btn-sm" value="selector_grupo_edit_link" title="Editar grupo">
 						<i class="material-icons vertical-center">edit</i>
 						Editar grupo
@@ -148,6 +147,7 @@
 						</button>
 					{% endif %}
 				</div>
+			</div>
 			{% endif %}
 		</form>
 	</div>
