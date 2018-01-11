@@ -1896,7 +1896,6 @@ def informe_html(asignatura_id, tutoria_id, params={}):
     params['anchor'] = params_old.get('anchor', 'anchor_top')
     params['pregunta_sin_respuesta'] = params_old.get('pregunta_sin_respuesta', False)
     params['selector_guardar_cuestionario'] = params_old.get('selector_guardar_cuestionario', False)
-    print('selector_guardar_cuestionario:', params['selector_guardar_cuestionario'])
 
     tutoria = tutoria_by_id(tutoria_id)
     asignatura = asignatura_by_id(asignatura_id)
@@ -1975,10 +1974,15 @@ def informe_html(asignatura_id, tutoria_id, params={}):
                     session_sql.add(respuesta)
                     # session_sql.flush()
                     params['notas_tab'] = True
+
+                    # NOTE necesario si se quiere guardar el cuestionario sin rellenar notas y comentario
+                    # session_sql.commit()
+
             return redirect(url_for(
                 'informe_html',
                 asignatura_id=hashids_encode(asignatura_id), tutoria_id=hashids_encode(tutoria_id),
                 params=dic_encode(params)))
+
         if request.form['selector_button'] == 'selector_prueba_evaluable_add':
             params['collapse_prueba_evaluable_add'] = True
             prueba_evaluable_nombre = ''
