@@ -111,7 +111,7 @@ class Categoria (Base):
     enunciado = Column(String)
     color = Column(String, default='#343a40')
     orden = Column(Integer)
-    preguntas = relationship('Pregunta', backref='categoria', lazy='dynamic', cascade='delete')
+    preguntas = relationship('Pregunta', backref='categoria', lazy='dynamic')
 
 
 class Association_Settings_Pregunta (Base):

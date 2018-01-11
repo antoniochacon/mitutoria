@@ -1348,8 +1348,8 @@ def categoria_by_id(categoria_id):
     return session_sql.query(Categoria).filter(Categoria.id == categoria_id).first()
 
 
-def categorias():
-    return session_sql.query(Categoria).order_by('orden').all()
+def categorias(**kwargs):
+    return session_sql.query(Categoria).filter_by(**kwargs).order_by('orden').all()
 
 
 def preguntas_active_default(settings_id):  # Inserta las preguntas_active_default

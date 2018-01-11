@@ -805,16 +805,34 @@ def admin_cuestionario_html(params={}):
     params['anchor'] = params_old.get('anchor', 'anchor_top')
 
     params['current_categoria_id'] = params_old.get('current_categoria_id', 0)
+    current_categoria_id = params['current_categoria_id']
     params['collapse_categoria_edit'] = params_old.get('collapse_categoria_edit', False)
-    params['categoria_delete_link'] = params_old.get('categoria_delete_link', False)
     params['collapse_categoria_add'] = params_old.get('collapse_categoria_add', False)
     params['categoria_edit_link'] = params_old.get('categoria_edit_link', False)
+    params['categoria_delete_confirmar'] = params_old.get('categoria_delete_confirmar', False)
 
     params['current_pregunta_id'] = params_old.get('current_pregunta_id', 0)
+    current_pregunta_id=params['current_pregunta_id']
     params['collapse_pregunta_edit'] = params_old.get('collapse_pregunta_edit', False)
-    params['pregunta_delete_link'] = params_old.get('pregunta_delete_link', False)
+    params['pregunta_delete_confirmar'] = params_old.get('pregunta_delete_confirmar', False)
     params['collapse_pregunta_add'] = params_old.get('collapse_pregunta_add', False)
     params['pregunta_edit_link'] = params_old.get('pregunta_edit_link', False)
+
+    if params['categoria_delete_confirmar']:
+        params['categoria_delete_confirmar'] = False
+        categoria_delete_sql = categoria_by_id(current_categoria_id)
+        session_sql.delete(categoria_delete_sql)
+        flash_toast('Categoría elminada', 'success')
+        session_sql.commit()
+        return redirect(url_for('admin_cuestionario_html', params=dic_encode(params)))
+
+    if params['pregunta_delete_confirmar']:
+        params['pregunta_delete_confirmar'] = False
+        pregunta_delete_sql = pregunta_by_id(current_pregunta_id)
+        session_sql.delete(pregunta_delete_sql)
+        flash_toast('Pregunta elminada', 'success')
+        session_sql.commit()
+        return redirect(url_for('admin_cuestionario_html', params=dic_encode(params)))
 
     if request.method == 'POST':
         current_categoria_id = current_id_request('current_categoria_id')
@@ -919,26 +937,6 @@ def admin_cuestionario_html(params={}):
         # XXX selector_categoria_edit_close
         if request.form['selector_button'] == 'selector_categoria_edit_close':
             return redirect(url_for('admin_cuestionario_html'))
-
-        # XXX selector_categoria_edit_rollback
-        if request.form['selector_button'] == 'selector_categoria_edit_rollback':
-            current_categoria_id = current_id_request('current_categoria_id')
-            params['current_categoria_id'] = current_categoria_id
-            params['collapse_categoria_edit'] = True
-            params['anchor'] = 'anchor_cat_' + str(hashids_encode(current_categoria_id))
-            session_sql.rollback()
-            return redirect(url_for('admin_cuestionario_html', params=dic_encode(params)))
-
-        # XXX selector_categoria_delete_link
-        if request.form['selector_button'] == 'selector_categoria_delete_link':
-            current_categoria_id = current_id_request('current_categoria_id')
-            params['current_categoria_id'] = current_categoria_id
-            params['collapse_categoria_edit'] = True
-            params['anchor'] = 'anchor_cat_' + str(hashids_encode(current_categoria_id))
-            params['categoria_edit_link'] = True
-            params['categoria_delete_link'] = True
-            flash_toast('Debe confirmar la aliminacion', 'warning')
-            return redirect(url_for('admin_cuestionario_html', params=dic_encode(params)))
 
         # XXX categoria_delete
         if request.form['selector_button'] == 'selector_categoria_delete':
@@ -1081,35 +1079,16 @@ def admin_cuestionario_html(params={}):
         if request.form['selector_button'] == 'selector_pregunta_edit_close':
             return redirect(url_for('admin_cuestionario_html'))
 
-        # XXX selector_pregunta_edit_rollback
-        if request.form['selector_button'] == 'selector_pregunta_edit_rollback':
-            current_pregunta_id = current_id_request('current_pregunta_id')
-            params['current_pregunta_id'] = current_pregunta_id
-            params['collapse_pregunta_edit'] = True
-            params['anchor'] = 'anchor_pre_' + str(hashids_encode(current_pregunta_id))
-            session_sql.rollback()
-            return redirect(url_for('admin_cuestionario_html', params=dic_encode(params)))
-
-        # XXX selector_pregunta_delete_link
-        if request.form['selector_button'] == 'selector_pregunta_delete_link':
-            current_pregunta_id = current_id_request('current_pregunta_id')
-            params['current_pregunta_id'] = current_pregunta_id
-            params['collapse_pregunta_edit'] = True
-            params['anchor'] = 'anchor_pre_' + str(hashids_encode(current_pregunta_id))
-            params['pregunta_edit_link'] = True
-            params['pregunta_delete_link'] = True
-            flash_toast('Debe confirmar la aliminacion', 'warning')
-            return redirect(url_for('admin_cuestionario_html', params=dic_encode(params)))
 
         # XXX pregunta_delete
-        if request.form['selector_button'] == 'selector_pregunta_delete':
-            pregunta_delete_form = Pregunta_Add(request.form)
-            current_pregunta_id = current_id_request('current_pregunta_id')
-            pregunta_delete = pregunta_by_id(current_pregunta_id)
-            session_sql.delete(pregunta_delete)
-            flash_toast('Pregunta elminada', 'success')
-            session_sql.commit()
-            return redirect(url_for('admin_cuestionario_html'))
+        # if request.form['selector_button'] == 'selector_pregunta_delete':
+        #     pregunta_delete_form = Pregunta_Add(request.form)
+        #     current_pregunta_id = current_id_request('current_pregunta_id')
+        #     pregunta_delete = pregunta_by_id(current_pregunta_id)
+        #     session_sql.delete(pregunta_delete)
+        #     flash_toast('Pregunta elminada', 'success')
+        #     session_sql.commit()
+        #     return redirect(url_for('admin_cuestionario_html'))
 
         # XXX pregunta_delete_close
         if request.form['selector_button'] == 'selector_pregunta_delete_close':
@@ -2319,18 +2298,18 @@ def email_validate_html(params={}):
     params['email_robinson'] = params_old.get('email_robinson', False)
     user_sql = session_sql.query(User).filter(User.id == current_user_id).first()
     if user_sql:
+        settings_edit = settings_by_id(user_sql.id)
         if params['email_robinson']:
-            settings_edit=settings_by_id(user_sql.id)
             settings_edit.email_robinson = True
-            if session_sql.is_modified(settings_edit):
-                session_sql.commit()
+            # if session_sql.is_modified(settings_edit):
+            session_sql.commit()
             return redirect(url_for('lista_robinson_html'))
         else:
             settings_edit.email_validated = True
             settings_edit.email_robinson = False
             settings_edit.email_validated_intentos = 1
-            if session_sql.is_modified(settings_edit):
-                session_sql.commit()
+            # if session_sql.is_modified(settings_edit):
+            session_sql.commit()
             login_user(user_sql, remember=True)
             flash_toast('Enhorabuena, cuenta activada.', 'success')
             flash_toast('Bienvenido ' + current_user.username, 'success')
@@ -2410,8 +2389,6 @@ def password_reset_html(params={}):
 
 
 # XXX login
-
-
 @app.route('/login', methods=['GET', 'POST'])
 @app.route('/login/<params>', methods=['GET', 'POST'])
 def login_html(params={}):
@@ -2441,8 +2418,7 @@ def login_html(params={}):
                     settings = settings_by_id(user_sql.id)
                     settings.visit_last = datetime.datetime.now()
                     settings.visit_number = settings.visit_number + 1
-                    if session_sql.is_modified(settings):
-                        session_sql.commit()
+                    session_sql.commit()
                     if settings.ban:
                         params['ban'] = True
                         params['login_fail'] = False
@@ -2458,8 +2434,7 @@ def login_html(params={}):
                         params['login_fail'] = False
                         params['email_validated_intentos'] = settings.email_validated_intentos
                         settings.email_validated_intentos = settings.email_validated_intentos + 1
-                        if session_sql.is_modified(settings):
-                            session_sql.commit()
+                        session_sql.commit()
                         logout_user()
                         return redirect(url_for('login_validacion_email_html', params=dic_encode(params)))
                     else:

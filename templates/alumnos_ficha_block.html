@@ -32,7 +32,7 @@
 		</div>
 		<input type="hidden" name="current_alumno_id" value="{{hashids_encode(alumno.id)}}">
 		{% include 'alumnos_ficha_asignaturas_block.html' %}
-		{% if equal_str(alumno.id, params['current_alumno_id'])and params['alumno_edit_link'] %}
+		{% if equal_str(alumno.id, params['current_alumno_id']) and params['alumno_edit_link'] %}
 			<div class="btn-group" role="group">
 				<button role="button" type="submit" name="selector_button" value="selector_alumno_edit" class="btn btn-outline-dark btn-sm" title="Guardar cambios">
 					<i class="material-icons vertical-center">save</i>
