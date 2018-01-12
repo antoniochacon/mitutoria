@@ -1,13 +1,6 @@
-<div class="d-flex mt-2">
-	<div class="strong">
-		Listado de citas [{{citas | count}}]:
-	</div>
-	<div class="ml-auto">
-		{{nav_tabs_add(data_parent='parent_cita',href='cita_add',icon='playlist_add', title='cita')}}
-	</div>
-</div>
+{{titulo_1(url="admin_citas",indice=1, bg_color="bg-dark",titulo='Citas [' + citas|count|string + ']')}}
 <div class="collapse {% if params['collapse_cita_add'] %} show {% endif %}" id="cita_add">
-	<div class="border border-gray rounded-bottom z-depth-1-1-less">
+	<div class="border border-gray border-top-0 rounded-bottom z-depth-1-1-less">
 		<div class="card-body p-2">
 			<form action="/admin_citas" method="POST">
 				<div class="row">

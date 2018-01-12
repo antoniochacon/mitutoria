@@ -1077,17 +1077,8 @@ def admin_cuestionario_html(params={}):
 
         # XXX selector_pregunta_edit_close
         if request.form['selector_button'] == 'selector_pregunta_edit_close':
-            return redirect(url_for('admin_cuestionario_html'))
-
-        # XXX pregunta_delete
-        # if request.form['selector_button'] == 'selector_pregunta_delete':
-        #     pregunta_delete_form = Pregunta_Add(request.form)
-        #     current_pregunta_id = current_id_request('current_pregunta_id')
-        #     pregunta_delete = pregunta_by_id(current_pregunta_id)
-        #     session_sql.delete(pregunta_delete)
-        #     flash_toast('Pregunta elminada', 'success')
-        #     session_sql.commit()
-        #     return redirect(url_for('admin_cuestionario_html'))
+            params['collapse_pregunta_edit'] = True
+            return redirect(url_for('admin_cuestionario_html', params=dic_encode(params)))
 
         # XXX pregunta_delete_close
         if request.form['selector_button'] == 'selector_pregunta_delete_close':

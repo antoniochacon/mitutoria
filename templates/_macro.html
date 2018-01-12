@@ -1,6 +1,49 @@
 {# NOTE no hacer auto-indent #}
+{% macro titulo_1(url, text_color, bg_color, titulo, indice) %}
+	<div class="d-flex justify-content-between align-items-center {{text_color}}">
+		<div class="d-flex flex-row">
+			<div class="{% if indice==1 %}h6{% else %}strong h5{% endif %} mb-0">
+				{{titulo}}
+			</div>
+			{% if url == "asignaturas" %}
+				<div class="small">
+					<form action="/asignaturas" method="POST">
+						<input type="hidden" name="asignaturas_orden" value="{{g.settings_current_user.asignaturas_orden}}">
+						<button
+							role="button"
+							type="submit"
+							name="selector_button"
+							value="asignaturas_orden_switch"
+							class="btn btn-outline-dark btn-sm py-0 px-1 ml-1 border-bottom-0 rounded-0 rounded-top"
+							title="Ordenadas por {{ asignaturas_orden_switch(g.settings_current_user.asignaturas_orden) }}">
+							<i class="material-icons vertical-center">wrap_text</i>
+						</button>
+					</form>
+				</div>
+			{% endif %}
+		</div>
+		{%from '_macro.html' import nav_tabs_add %}
+		{% if url == 'tutorias' %}
+			{{nav_tabs_add(url='tutorias',data_parent='parent_tutoria',href='tutoria_add',icon='schedule', title='tutoría')}}
+		{% elif url == 'alumnos' %}
+			{{nav_tabs_add(url='alumnos',data_parent='parent_alumno',href='alumno_add',icon='person_add', title='alumno')}}
+		{% elif url == 'asignaturas' %}
+			{{nav_tabs_add(url='asignaturas',data_parent='parent_asignatura',href='asignatura_add',icon='person_add', title='asignatura')}}
+		{% elif url == 'admin_citas' %}
+			{{nav_tabs_add(data_parent='parent_cita',href='cita_add',icon='playlist_add', title='cita')}}
+		{% elif url == 'admin_categorias' %}
+			{{nav_tabs_add(data_parent='parent_categoria',href='categoria_add',icon='view_list', title='categoría')}}
+		{% elif url == 'admin_preguntas' %}
+			{{nav_tabs_add(data_parent='parent_pregunta',href='pregunta_add',icon='playlist_add', title='pregunta')}}
+		{% elif url == 'settings_grupos' %}
+			{{nav_tabs_add(url='grupos',data_parent='parent_grupo',href='grupo_add',icon='group_add', title='grupo')}}
+		{% endif %}
+	</div>
+	<div class="divider {{bg_color}} {% if indice==1 %}{% else %}grueso{% endif %}"></div>
+{% endmacro %}
+
 {% macro admin_cuestionario_pregunta(bg_color,pregunta_edit,pregunta_add,categorias_sql, categoria_id,categoria_enunciado,categoria_color, params) %}
-<div class="bg-{{bg_color}} pl-3 pt-2 pb-2 mt-2 mb-2 {% if not preguntas_by_categoria_id(categoria_id, visible=True) %} text-warning {% else %} text-white {% endif %}">
+<div class="bg-{{bg_color}} pl-3 pt-1 pb-1 mt-2 mb-2 {% if not preguntas_by_categoria_id(categoria_id, visible=True) %} text-warning {% else %} text-white {% endif %}">
 	{{categoria_enunciado}}
 </div>
 {% for pregunta in preguntas_by_categoria_id(categoria_id) %}
@@ -190,7 +233,6 @@
 {% endfor %}
 {% endmacro %}
 
-
 {% macro nav_tabs_disable(tab_active, params_args, dic) %}
 	<div class="pb-2 mt-2">
 		<ul class="nav nav-tabs">
@@ -202,44 +244,11 @@
 		</ul>
 	</div>
 {% endmacro %}
-{% macro titulo_1(url, text_color, bg_color, titulo, subtitulo) %}
-	<div class="d-flex justify-content-between align-items-center {{text_color}}">
-		<div class="d-flex flex-row">
-			<div class="strong h5 mb-0">
-				{{titulo}}
-			</div>
-			{% if url == "asignaturas" %}
-				<div>
-					<form action="/asignaturas" method="POST">
-						<input type="hidden" name="asignaturas_orden" value="{{g.settings_current_user.asignaturas_orden}}">
-						<button
-							role="button"
-							type="submit"
-							name="selector_button"
-							value="asignaturas_orden_switch"
-							class="btn btn-outline-dark btn-sm py-0 px-1 ml-1 border-bottom-0 rounded-0 rounded-top"
-							title="Orden por {{ asignaturas_orden_switch(g.settings_current_user.asignaturas_orden) }}">
-							<i class="material-icons vertical-center">wrap_text</i>
-						</button>
-					</form>
-				</div>
-			{% endif %}
-		</div>
-		{%from '_macro.html' import nav_tabs_add %}
-		{% if url == 'tutorias' %}
-			{{nav_tabs_add(url='tutorias',data_parent='parent_tutoria',href='tutoria_add',icon='schedule', title='tutoría')}}
-		{% elif url == 'alumnos' %}
-			{{nav_tabs_add(url='alumnos',data_parent='parent_alumno',href='alumno_add',icon='person_add', title='alumno')}}
-		{% elif url == 'asignaturas' %}
-			{{nav_tabs_add(url='asignaturas',data_parent='parent_asignatura',href='asignatura_add',icon='person_add', title='asignatura')}}
-		{% endif %}
-	</div>
-	<div class="divider {{bg_color}} grueso"></div>
-{% endmacro %}
+
 {% macro nav_tabs_add(url, data_parent, href, icon, title) %}
 	<div class="nav nav-tabs">
 		<div class="nav-item">
-			<div class="nav-link active mouse_pointer small py-0 px-2" role="tab" data-toggle="collapse" data-parent="#{{data_parent}}" href="#{{href}}" aria-expanded="false" title="Agregar {{title}}">
+			<div class="nav-link nav_tabs_add border border-dark border-bottom-0 mouse_pointer small py-0 px-2" role="tab" data-toggle="collapse" data-parent="#{{data_parent}}" href="#{{href}}" aria-expanded="false" title="Agregar {{title}}">
 				<i class="material-icons vertical-center">
 					{{icon}}
 				</i>
