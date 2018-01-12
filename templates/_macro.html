@@ -298,7 +298,7 @@
 								{% endif %}
 							</a>
 						</li>
-					{% elif link_key == 'Ayuda' and g.settings_current_user.visit_number <= 50 %}
+					{% elif link_key == 'Ayuda' and g.settings_current_user.visit_number <= 20 %}
 						<li class="nav-item {% if link_key==link_active %} active strong {% endif %}">
 							<a class="nav-link" href="/{{dic[link_key]}}{% if params_args %}/{{params_args}}{% endif %}">{{link_key}}</a>
 						</li>
