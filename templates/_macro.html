@@ -1,5 +1,6 @@
-{% macro admin_cuestionario_pregunta(pregunta_edit,pregunta_add,categorias_sql, categoria_id,categoria_enunciado,categoria_color, params) %}
-<div class="bg-dark pl-3 pt-2 pb-2 mt-2 mb-2 {% if not preguntas_by_categoria_id(categoria_id, visible=True) %} text-warning {% else %} text-white {% endif %}">
+{# NOTE no hacer auto-indent #}
+{% macro admin_cuestionario_pregunta(bg_color,pregunta_edit,pregunta_add,categorias_sql, categoria_id,categoria_enunciado,categoria_color, params) %}
+<div class="bg-{{bg_color}} pl-3 pt-2 pb-2 mt-2 mb-2 {% if not preguntas_by_categoria_id(categoria_id, visible=True) %} text-warning {% else %} text-white {% endif %}">
 	{{categoria_enunciado}}
 </div>
 {% for pregunta in preguntas_by_categoria_id(categoria_id) %}

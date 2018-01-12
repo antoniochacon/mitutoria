@@ -1,8 +1,10 @@
 {% with %}
 {% set categorias_sql = categorias() %}
 {# NOTE hay que recurrir a una macro para no repetir tanto codigo #}
-{{admin_cuestionario_pregunta(pregunta_edit=pregunta_edit,pregunta_add=pregunta_add,categorias_sql=categorias_sql,categoria_id=None,categoria_enunciado='Sin Categoría',categoria_color='black', params=params)}}
+{% if preguntas(categoria_id=None) %}
+{{admin_cuestionario_pregunta(bg_color='warning',pregunta_edit=pregunta_edit,pregunta_add=pregunta_add,categorias_sql=categorias_sql,categoria_id=None,categoria_enunciado='Sin Categoría',categoria_color='black', params=params)}}
+{% endif %}
 {% for categoria in categorias_sql%}
-	{{admin_cuestionario_pregunta(pregunta_edit=pregunta_edit,pregunta_add=pregunta_add,categorias_sql=categorias_sql,categoria_id=categoria.id,categoria_enunciado=categoria.enunciado,categoria_color=categoria.color, params=params)}}
+	{{admin_cuestionario_pregunta(bg_color='dark',pregunta_edit=pregunta_edit,pregunta_add=pregunta_add,categorias_sql=categorias_sql,categoria_id=categoria.id,categoria_enunciado=categoria.enunciado,categoria_color=categoria.color, params=params)}}
 {% endfor %}
 {% endwith %}
