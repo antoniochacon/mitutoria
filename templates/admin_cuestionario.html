@@ -1,6 +1,6 @@
 {% extends '_layout.html' %}
 {% block body %}
-	{%from '_macro.html' import nav_bar_top, titulo_1, nav_tabs_admin, nav_tabs_add %}
+	{%from '_macro.html' import nav_bar_top, titulo_1, nav_tabs_admin, nav_tabs_add, admin_cuestionario_pregunta %}
 	{{ nav_bar_top(link_active='Admin',params=params, current_user=current_user) }}
 	<div class="paper bg-white padding_3 py-3">
 		{{titulo_1(bg_color='bg-dark',titulo='Admin Settings')}}
