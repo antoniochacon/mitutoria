@@ -2,7 +2,7 @@
 	{% with %}
 	{% set invitado_preguntas_by_categoria_id_sql = invitado_preguntas_by_categoria_id(params['current_usuario_id'], categoria.id) %}
 	{% if invitado_preguntas_by_categoria_id_sql %}
-		<div class="bg-dark text-white pl-2 pt-2 pb-2 mb-2">
+		<div class="bg-dark text-white pl-2 py-1 mb-2">
 			{{categoria.enunciado}}
 		</div>
 		<div class="row">
