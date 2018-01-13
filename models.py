@@ -111,7 +111,7 @@ class Categoria (Base):
     enunciado = Column(String)
     color = Column(String, default='#343a40')
     orden = Column(Integer)
-    preguntas = relationship('Pregunta', backref='categoria', lazy='dynamic')
+    preguntas = relationship('Pregunta', backref='categoria', lazy='dynamic') #NOTE eliminado el cascade='delete' para evitar eliminar las preguntas que cuelgan de cada categoria cuando se borra dicha categoria
 
 
 class Association_Settings_Pregunta (Base):

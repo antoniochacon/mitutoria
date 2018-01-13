@@ -1,8 +1,7 @@
 {% with %}
 {% set asignaturas_alumno_by_alumno_id = asignaturas_alumno_by_alumno_id(alumno.id) %}
 <a data-toggle="collapse" href="#alumno_asignatura_{{hashids_encode(alumno.id)}}" class="collapse_header border_bottom" aria-expanded="false">
-	<i class="material-icons vertical-center">expand_more</i>Asignaturas de
-	{{alumno.nombre}}:
+	<i class="material-icons vertical-center">expand_more</i>Asignaturas
 	<span class="badge badge-info float-right">{{asignaturas_alumno_by_alumno_id | count}}
 		|
 		{{asignaturas_not_sorted() | count}}

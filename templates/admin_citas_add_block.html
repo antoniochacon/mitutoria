@@ -1,6 +1,8 @@
-{{titulo_1(url="admin_citas",indice=1, bg_color="bg-dark",titulo='Citas [' + citas|count|string + ']')}}
+<div class="d-flex flex-row-reverse">
+	{{nav_tabs_add(data_parent='parent_cita',href='cita_add',icon='playlist_add', title='cita', count=citas|count|string)}}
+</div>
 <div class="collapse {% if params['collapse_cita_add'] %} show {% endif %}" id="cita_add">
-	<div class="border border-gray border-top-0 rounded-bottom z-depth-1-1-less">
+	<div class="border border-gray rounded-bottom z-depth-1-1-less">
 		<div class="card-body p-2">
 			<form action="/admin_citas" method="POST">
 				<div class="row">

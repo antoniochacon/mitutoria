@@ -2,9 +2,11 @@
 {% set preguntas = preguntas() %}
 {% set preguntas_count = preguntas | count %}
 <a id="anchor_pre_add"></a>
-{{titulo_1(url="admin_preguntas",indice=1, bg_color="bg-dark",titulo='Preguntas [' + preguntas_count|string + ']')}}
+<div class="d-flex flex-row-reverse">
+	{{nav_tabs_add(data_parent='parent_pregunta',href='pregunta_add',icon='playlist_add', title='pregunta', count=preguntas_count)}}
+</div>
 <div class="collapse {% if params['collapse_pregunta_add'] %} show {% endif %}" id="pregunta_add">
-	<div class="border border-gray rounded-bottom border-top-0 z-depth-1-1-less">
+	<div class="border border-gray rounded-bottom z-depth-1-1-less">
 		<div class="card-body p-2">
 			<form action="/admin_cuestionario" method="POST">
 				<div class="row">

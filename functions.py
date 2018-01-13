@@ -1275,7 +1275,7 @@ def asignatura_delete(asignatura_delete_id):  # Delete asignatura
     session_sql.commit()
 
 
-def grupo_delete(grupo_delete_id):  # Delete grupo
+def grupo_delete(grupo_delete_id):  #NOTE No es un simple delete, ademas hace algunas otras tareas
     grupo_delete_sql = session_sql.query(Grupo).filter(Grupo.id == grupo_delete_id).first()
     if grupo_activo_check(grupo_delete_sql.id):
         g.settings_current_user = session_sql.query(Settings).filter(Settings.id == g.settings_current_user.id).first()

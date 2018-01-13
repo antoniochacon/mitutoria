@@ -1,3 +1,5 @@
+{% with %}
+{% set grupo_alumnos_count_sql = grupo_alumnos_count(grupo.id)%}
 <a id="anchor_gru_{{hashids_encode(grupo.id)}}"></a>
 <a data-toggle="collapse" class="collapse_header border_bottom" data-parent="#parent_grupo" href="#grupo_listado{{hashids_encode(grupo.id)}}" aria-expanded="true" title="{{grupo.nombre}}">
 	<div class="media">
@@ -6,10 +8,10 @@
 		<div class="media-body">
 			<div class="padding_l_2">
 				{{grupo.nombre}}
-				<span class="badge float-right {% if grupo_alumnos_count(grupo.id) %}{% if grupo_activo_check(grupo.id) %} badge-dark {% else %} badge-mutted {% endif %}{% else %}badge-warning{% endif %} text-white" title="{{grupo_alumnos_count(grupo.id)}} {{singular_plural('alumno','alumnos', grupo_alumnos_count(grupo.id))}}">
-					{% if grupo_alumnos_count(grupo.id) %}
-						{{grupo_alumnos_count(grupo.id)}}
-						{{singular_plural('alumno', 'alumnos', grupo_alumnos_count(grupo.id))}}
+				<span class="badge float-right {% if grupo_alumnos_count_sql %}{% if grupo_activo_check(grupo.id) %} badge-gray border border-dark {% else %} badge-mutted border border-dark {% endif %}{% else %}badge-warning text-white{% endif %}" title="{{grupo_alumnos_count_sql}} {{singular_plural('alumno','alumnos', grupo_alumnos_count_sql)}}">
+					{% if grupo_alumnos_count_sql %}
+						{{grupo_alumnos_count_sql}}
+						{{singular_plural('alumno', 'alumnos', grupo_alumnos_count_sql)}}
 					{% else %}
 						sin alumnos
 					{% endif %}
@@ -103,45 +105,27 @@
 				{% endif %}
 				<input type="hidden" name="current_grupo_id" value="{{hashids_encode(grupo.id)}}">
 			</div>
-			{% if equal_str(grupo.id, params['current_grupo_id'])and params['grupo_edit_link'] %}
-				{% if params['grupo_delete_link'] %}
-					<div class="btn-group" role="group">
-						<button role="button" type="submit" name="selector_button" value="selector_grupo_delete" class="btn btn-outline-warning btn-sm" title="Confirmar eliminar grupo">
-							<i class="material-icons vertical-center">delete</i>
-							confirmar eliminar</button>
-						<button role="button" type="submit" name="selector_button" value="selector_grupo_delete_close" class="btn btn-outline-dark btn-sm" title="Cancelar eliminar">
-							<i class="material-icons vertical-center">close</i>
-						</button>
-					</div>
-					<br>
-					<span class="text-warning small">
-						Una vez elminado no podra ser recuperado.</span>
-				{% else %}
+			{% if equal_str(grupo.id, params['current_grupo_id']) and params['grupo_edit_link'] %}
 					<div class="btn-group" role="group">
 						<button role="button" type="submit" name="selector_button" value="selector_grupo_edit" class="btn btn-outline-dark btn-sm" title="Guardar cambios">
 							<i class="material-icons vertical-center">save</i>
 							Guardar
 						</button>
-						<button role="button" type="submit" name="selector_button" value="selector_grupo_delete_link" class="btn btn-outline-dark btn-sm" title="Eliminar grupo">
+						<a data-toggle="collapse" href="#grupo_delete_confirmar_{{hashids_encode(grupo.id)}}" class="btn btn-outline-dark btn-sm link_without_pointer" aria-expanded="false" title="Eliminar grupo">
 							<i class="material-icons vertical-center">delete</i>
-						</button>
-						<button role="button" type="submit" name="selector_button" value="selector_grupo_edit_link_close" class="btn btn-outline-dark btn-sm" title="Cerrar edición">
+						</a>
+						{% include 'settings_grupos_delete_confirmar_block.html' %}
+						<button role="button" type="submit" name="selector_button" value="selector_grupo_edit_close" class="btn btn-outline-dark btn-sm" title="Cerrar edición">
 							<i class="material-icons vertical-center">close</i>
 						</button>
 					</div>
-				{% endif %}
 			{% else %}
 			<div class="d-flex flex-row-reverse">
-					<div class="btn-group" role="group">
+				<div class="btn-group" role="group">
 					<button role="button" type="submit" name="selector_button" class="btn btn-outline-dark btn-sm" value="selector_grupo_edit_link" title="Editar grupo">
 						<i class="material-icons vertical-center">edit</i>
 						Editar grupo
 					</button>
-					{% if equal_str(grupo.id,params['current_grupo_id']) and params['collapse_grupo_edit']%}
-						<button role="button" type="submit" name="selector_button" class="btn btn-outline-dark btn-sm" value="selector_grupo_edit_close" title="Cerrar ficha">
-							<i class="material-icons vertical-center">close</i>
-						</button>
-					{% endif %}
 				</div>
 			</div>
 			{% endif %}
@@ -149,3 +133,4 @@
 		</div>
 	</div>
 </div>
+{% endwith %}
