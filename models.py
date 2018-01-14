@@ -96,7 +96,8 @@ class Pregunta (Base):
     __tablename__ = 'pregunta'
     id = Column(Integer, primary_key=True)
     enunciado = Column(String)
-    enunciado_ticker = Column(String)  # evita enunciados largo en eje X de los graficos
+    enunciado_ticker = Column(String)  # NOTE evita enunciados largo en eje X de los graficos
+    info = Column(String)
     orden = Column(Integer)
     visible = Column(Boolean, default=False)  # Controla la visibilidad hacia los usuarios
     active_default = Column(Boolean, default=False)  # controla las preguntas activas por defecto estaran activas para un nuevo usuario. Al crear nuevo usuario, habra que insertar estas preguntas en su preguntas de settings
@@ -111,7 +112,7 @@ class Categoria (Base):
     enunciado = Column(String)
     color = Column(String, default='#343a40')
     orden = Column(Integer)
-    preguntas = relationship('Pregunta', backref='categoria', lazy='dynamic') #NOTE eliminado el cascade='delete' para evitar eliminar las preguntas que cuelgan de cada categoria cuando se borra dicha categoria
+    preguntas = relationship('Pregunta', backref='categoria', lazy='dynamic')  # NOTE eliminado el cascade='delete' para evitar eliminar las preguntas que cuelgan de cada categoria cuando se borra dicha categoria
 
 
 class Association_Settings_Pregunta (Base):

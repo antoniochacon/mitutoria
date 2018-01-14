@@ -81,6 +81,7 @@ def internal_server_error_html(critical):
 
 
 @app.route('/')
+@login_required
 def index_html():
     if g.settings_current_user.visit_number < 10:
         return redirect(url_for('wellcome_html'))

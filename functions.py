@@ -1284,13 +1284,6 @@ def grupo_delete(grupo_delete_id):  #NOTE No es un simple delete, ademas hace al
     session_sql.commit()
 
 
-def grupo_check():  # Comprueba si existe ya un grupo declarado como activo.
-    if current_user:
-        if g.settings_current_user.grupo_activo_id:
-            return True
-    return False
-
-
 def grupo_activo():  # (Grupo) activo de usuario
     try:
         return session_sql.query(Grupo).filter(Grupo.id == settings().grupo_activo_id).first()
