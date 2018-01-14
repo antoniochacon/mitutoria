@@ -9,7 +9,7 @@ class Config(object):
 
 class Server_Config(Config):
     # NOTE Local_Host
-    DEBUG = True
+    # DEBUG = True
     # engine_url = 'postgresql://antonio:bocata@localhost/mitutoria'
 
     # NOTE Heroku_Host
