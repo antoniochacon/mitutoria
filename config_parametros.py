@@ -83,4 +83,4 @@ tutoria_email_link = 'https://mitutoria.herokuapp.com/informe'
 email_validate_link = 'https://mitutoria.herokuapp.com/email_validate'
 index_link = 'https://mitutoria.herokuapp.com/'
 password_reset_link = 'https://mitutoria.herokuapp.com/password_reset/'
-email_time_sleep = 3
+email_time_sleep = 2
