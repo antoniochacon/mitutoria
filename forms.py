@@ -138,6 +138,7 @@ class Invitado_Informe (Form):
 class Pregunta_Add (Form):
     enunciado = StringField('enunciado', [validators.Required(message='enunciado es obligatorio')])
     enunciado_ticker = StringField('ticker', [validators.Required(message='ticker es obligatorio')])
+    descripcion = StringField('descripcion')
     categoria_id = IntegerField('categoria', [validators.Required(message='categoria es obligatoria')])
     orden = IntegerField('orden', [validators.Required(message='orden es obligatorio')])
     visible = BooleanField('visible')

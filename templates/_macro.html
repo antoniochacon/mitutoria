@@ -180,6 +180,20 @@
 							<span class="input-group-addon {% if request.method=='POST' and params['collpase_pregunta_edit'] %} {% if pregunta_edit.enunciado_ticker.errors %} form_addon-warning {% else %} form_addon-success {% endif %} {% endif %}">{{pregunta_edit.enunciado_ticker.label.text}}</span>
 						</div>
 					</div>
+					<div class="form-group col-md-12">
+						<div class="input-group">
+							<input
+								type="text"
+								{% if not equal_str(pregunta.id, params['current_pregunta_id']) or not params['pregunta_edit_link'] %}
+								readonly
+								{% endif %}
+								class="form-control {% if request.method=='POST' and params['collpase_pregunta_edit'] %} {% if pregunta_edit.descripcion.errors %} is-invalid {% else %} is-valid {% endif %}{% endif %}"
+								name="{{pregunta_edit.descripcion.name}}"
+								value="{% if equal_str(pregunta.id,params['current_pregunta_id']) and request.method=='POST' and params['collpase_pregunta_edit'] %}{{pregunta_edit.descripcion.data}}{% else %}{% if pregunta.descripcion %}{{pregunta.descripcion}}{% endif %}{% endif %}"
+								placeholder="{{pregunta_edit.descripcion.label.text}}">
+							<span class="input-group-addon {% if request.method=='POST' and params['collpase_pregunta_edit'] %} {% if pregunta_edit.descripcion.errors %} form_addon-warning {% else %} form_addon-success {% endif %} {% endif %}">{{pregunta_edit.descripcion.label.text}}</span>
+						</div>
+					</div>
 					<div class="media col-sm-12 col-md-8 mb-2">
 						<div class="input-group align-self-center">
 							<select name="{{pregunta_add.categoria_id.name}}" class="form-control" required {% if not equal_str(pregunta.id, params['current_pregunta_id']) or not params['pregunta_edit_link'] %} readonly {% endif %}>
@@ -280,7 +294,7 @@
 					</div>
 					<input type="hidden" name="current_pregunta_id" value="{{hashids_encode(pregunta.id)}}">
 				</div>
-				{% if equal_str(pregunta.id, params['current_pregunta_id'])and params['pregunta_edit_link'] %}
+				{% if equal_str(pregunta.id, params['current_pregunta_id']) and params['pregunta_edit_link'] %}
 					<div class="btn-group" role="group">
 						<button role="button" type="submit" name="selector_button" value="selector_pregunta_edit" class="btn btn-outline-dark btn-sm" title="Guardar cambios">
 							<i class="material-icons vertical-center">save</i>
@@ -301,14 +315,8 @@
 								<i class="material-icons vertical-center">edit</i>
 								Editar pregunta
 							</button>
-							{% if equal_str(pregunta.id,params['current_pregunta_id']) and params['collapse_pregunta_edit']%}
-								<button role="button" type="submit" name="selector_button" class="btn btn-outline-dark btn-sm" value="selector_pregunta_edit_close" title="Cerrar ficha">
-									<i class="material-icons vertical-center">close</i>
-								</button>
-							{% endif %}
 						</div>
 					</div>
-
 				{% endif %}
 			</form>
 			</div>

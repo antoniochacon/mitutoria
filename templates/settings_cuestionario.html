@@ -25,7 +25,7 @@
 								<label class="custom-control custom-checkbox check_box_1 {% if loop.first %} mt-1 {% else %} mt-0 {% endif %} {% if loop.last %}mb-1{% else %} mb-0{% endif %}">
 									<input type="checkbox" class="custom-control-input" name="pregunta" value="{{hashids_encode(pregunta.id)}}" {% if association_settings_pregunta_check %} checked="checked" {% endif %}>
 									<span class="custom-control-indicator"></span>
-									<span class="custom-control-description {% if not association_settings_pregunta_check %} text-muted {% endif %}" {% if association_settings_pregunta_check %} style="color:{{categoria.color}};" {% endif %}>{{pregunta.enunciado}}</span>
+									<span class="custom-control-description {% if not association_settings_pregunta_check %} text-muted {% endif %}" {% if association_settings_pregunta_check %} style="color:{{categoria.color}};" {% endif %}>{{pregunta.enunciado}}{% if pregunta.descripcion %}<br><span class="small text-gray">{{pregunta.descripcion}}</span>{% endif %}</span>
 								</label>
 								{% endwith %}
 							{% endfor %}

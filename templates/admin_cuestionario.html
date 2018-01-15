@@ -8,14 +8,14 @@
 		<ul class="nav nav-tabs my-2" role="tablist">
 			<li class="nav-item">
 
-				<a class="nav-link px-2 py-0 {% if not params['collapse_pregunta_edit'] %}active{% endif %}" data-toggle="tab" href="#categorias" role="tab" title="Categorías">Categorías</a>
+				<a class="nav-link px-2 py-0 {% if not params['preguntas_tab']%}active{% endif %}" data-toggle="tab" href="#categorias" role="tab" title="Categorías">Categorías</a>
 			</li>
 			<li class="nav-item">
-				<a class="nav-link px-2 py-0 {% if params['collapse_pregunta_edit'] %}active{% endif %}" data-toggle="tab" href="#preguntas" role="tab" title="Preguntas">Preguntas</a>
+				<a class="nav-link px-2 py-0 {% if params['preguntas_tab'] %}active{% endif %}" data-toggle="tab" href="#preguntas" role="tab" title="Preguntas">Preguntas</a>
 			</li>
 		</ul>
 		<div class="tab-content">
-			<div class="tab-pane fade {% if not params['collapse_pregunta_edit'] %}show active{% endif %}" id="categorias" role="tabpanel">
+			<div class="tab-pane fade {% if not params['preguntas_tab'] %}show active{% endif %}" id="categorias" role="tabpanel">
 				<div id="parent_categoria">
 					<div>
 						{% include 'admin_cuestionario_categoria_add_block.html' %}
@@ -25,7 +25,7 @@
 					</div>
 				</div>
 			</div>
-			<div class="tab-pane fade {% if params['collapse_pregunta_edit'] %}show active{% endif %}" id="preguntas" role="tabpanel">
+			<div class="tab-pane fade {% if params['preguntas_tab'] %}show active{% endif %}" id="preguntas" role="tabpanel">
 				<div id="parent_pregunta">
 					<div>
 						{% include 'admin_cuestionario_pregunta_add_block.html' %}

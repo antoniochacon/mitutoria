@@ -819,6 +819,7 @@ def admin_cuestionario_html(params={}):
     params['pregunta_delete_confirmar'] = params_old.get('pregunta_delete_confirmar', False)
     params['collapse_pregunta_add'] = params_old.get('collapse_pregunta_add', False)
     params['pregunta_edit_link'] = params_old.get('pregunta_edit_link', False)
+    params['preguntas_tab'] = params_old.get('preguntas_tab', False)
 
     if params['categoria_delete_confirmar']:
         params['categoria_delete_confirmar'] = False
@@ -844,7 +845,7 @@ def admin_cuestionario_html(params={}):
 
         # XXX categoria_add
         if request.form['selector_button'] == 'selector_categoria_add':
-            params['collapse_categoria_add'] = True
+            # params['collapse_categoria_add'] = True
             params['anchor'] = 'anchor_cat_add'
             categoria_add_form = Categoria_Add(request.form)
             if categoria_add_form.validate():
@@ -870,6 +871,7 @@ def admin_cuestionario_html(params={}):
                     return redirect(url_for('admin_cuestionario_html', params=dic_encode(params)))
             else:
                 params['collapse_categoria_add'] = True
+                params['preguntas_tab'] = True
                 flash_wtforms(categoria_add_form, flash_toast, 'warning')
             return render_template('admin_cuestionario.html',
                                    categoria_add=categoria_add_form, categoria_edit=Categoria_Add(),
@@ -960,11 +962,11 @@ def admin_cuestionario_html(params={}):
 
         # XXX pregunta_add
         if request.form['selector_button'] == 'selector_pregunta_add':
-            params['collapse_pregunta_add'] = True
+            # params['collapse_pregunta_add'] = True
             params['anchor'] = 'anchor_pre_add'
             pregunta_add_form = Pregunta_Add(request.form)
             if pregunta_add_form.validate():
-                pregunta_add = Pregunta(enunciado=pregunta_add_form.enunciado.data, enunciado_ticker=pregunta_add_form.enunciado_ticker.data,
+                pregunta_add = Pregunta(enunciado=pregunta_add_form.enunciado.data, enunciado_ticker=pregunta_add_form.enunciado_ticker.data, descripcion=pregunta_add_form.descripcion.data,
                                         categoria_id=pregunta_add_form.categoria_id.data, orden=pregunta_add_form.orden.data,
                                         visible=pregunta_add_form.visible.data, active_default=pregunta_add_form.active_default.data)
                 # NOTE checking unicidad de enunciado, ticker y orden
@@ -981,6 +983,8 @@ def admin_cuestionario_html(params={}):
                     if pregunta_orden_sql:
                         pregunta_add_form.orden.errors = ['']
                         flash_toast('Orden duplicado', 'warning')
+                    params['collapse_pregunta_add'] = True
+                    params['preguntas_tab'] = True
                     return render_template(
                         'admin_cuestionario.html',
                         pregunta_add=pregunta_add_form, pregunta_edit=Pregunta_Add(),
@@ -992,6 +996,7 @@ def admin_cuestionario_html(params={}):
                     return redirect(url_for('admin_cuestionario_html', params=dic_encode(params)))
             else:
                 params['collapse_pregunta_add'] = True
+                params['preguntas_tab'] = True
                 flash_wtforms(pregunta_add_form, flash_toast, 'warning')
             return render_template(
                 'admin_cuestionario.html',
@@ -1000,12 +1005,14 @@ def admin_cuestionario_html(params={}):
 
         # XXX selector_pregunta_add_close
         if request.form['selector_button'] == 'selector_pregunta_add_close':
-            return redirect(url_for('admin_cuestionario_html'))
+            params['preguntas_tab'] = True
+            return redirect(url_for('admin_cuestionario_html', params=dic_encode(params)))
 
         # XXX selector_pregunta_edit_link
         if request.form['selector_button'] == 'selector_pregunta_edit_link':
             params['pregunta_edit_link'] = True
             params['collapse_pregunta_edit'] = True
+            params['preguntas_tab'] = True
             params['anchor'] = 'anchor_pre_' + str(hashids_encode(current_pregunta_id))
             return redirect(url_for('admin_cuestionario_html', params=dic_encode(params)))
 
@@ -1014,6 +1021,7 @@ def admin_cuestionario_html(params={}):
             params['current_pregunta_id'] = current_pregunta_id
             params['collapse_pregunta_edit'] = True
             params['pregunta_edit_link'] = True
+            params['preguntas_tab'] = True
             params['anchor'] = 'anchor_pre_' + str(hashids_encode(current_pregunta_id))
             move_up = False
             move_down = False
@@ -1028,23 +1036,31 @@ def admin_cuestionario_html(params={}):
                 active_default = False
 
             if pregunta_edit_form.validate():
-                pregunta_edit = Pregunta(enunciado=pregunta_edit_form.enunciado.data, enunciado_ticker=pregunta_edit_form.enunciado_ticker.data,
+                pregunta_edit = Pregunta(enunciado=pregunta_edit_form.enunciado.data, enunciado_ticker=pregunta_edit_form.enunciado_ticker.data, descripcion=pregunta_edit_form.descripcion.data,
                                          categoria_id=pregunta_edit_form.categoria_id.data, orden=pregunta_edit_form.orden.data, visible=visible, active_default=active_default)
                 pregunta = session_sql.query(Pregunta).filter(Pregunta.id == current_pregunta_id).first()
-                if pregunta.enunciado.lower() != pregunta_edit.enunciado.lower() or pregunta.enunciado_ticker.lower() != pregunta_edit.enunciado_ticker.lower() or pregunta.categoria_id != pregunta_edit.categoria_id or pregunta.orden != pregunta_edit.orden or str(pregunta.visible) != str(visible) or str(pregunta.active_default) != str(active_default):
-                    if pregunta.enunciado.lower() != pregunta_edit.enunciado.lower():
-                        pregunta.enunciado = pregunta_edit.enunciado
-                    if pregunta.enunciado_ticker.lower() != pregunta_edit.enunciado_ticker.lower():
-                        pregunta.enunciado_ticker = pregunta_edit.enunciado_ticker
-                    if pregunta.categoria_id != pregunta_edit.categoria_id:
-                        pregunta.categoria_id = pregunta_edit.categoria_id
-                    if pregunta.orden != pregunta_edit.orden:
-                        pregunta.orden = pregunta_edit.orden
-                    if pregunta.visible != visible:
-                        pregunta.visible = visible
-                    if pregunta.active_default != active_default:
-                        pregunta.active_default = active_default
-                    flash_toast('Pregunta actualizada', 'success')
+                # if pregunta.enunciado.lower() != pregunta_edit.enunciado.lower() or pregunta.enunciado_ticker.lower() != pregunta_edit.enunciado_ticker.lower() or pregunta.categoria_id != pregunta_edit.categoria_id or pregunta.orden != pregunta_edit.orden or str(pregunta.visible) != str(visible) or str(pregunta.active_default) != str(active_default):
+                #     if pregunta.enunciado.lower() != pregunta_edit.enunciado.lower():
+                #         pregunta.enunciado = pregunta_edit.enunciado
+                #     if pregunta.enunciado_ticker.lower() != pregunta_edit.enunciado_ticker.lower():
+                #         pregunta.enunciado_ticker = pregunta_edit.enunciado_ticker
+                #     if pregunta.categoria_id != pregunta_edit.categoria_id:
+                #         pregunta.categoria_id = pregunta_edit.categoria_id
+                #     if pregunta.orden != pregunta_edit.orden:
+                #         pregunta.orden = pregunta_edit.orden
+                #     if pregunta.visible != visible:
+                #         pregunta.visible = visible
+                #     if pregunta.active_default != active_default:
+                #         pregunta.active_default = active_default
+                # flash_toast('Pregunta actualizada', 'success')
+
+                pregunta.enunciado = pregunta_edit.enunciado
+                pregunta.enunciado_ticker = pregunta_edit.enunciado_ticker
+                pregunta.descripcion = pregunta_edit.descripcion
+                pregunta.categoria_id = pregunta_edit.categoria_id
+                pregunta.orden = pregunta_edit.orden
+                pregunta.visible = visible
+                pregunta.active_default = active_default
 
                 if request.form['selector_button'] == 'selector_move_down_pregunta':
                     for k in range(1, 500):
@@ -1065,8 +1081,9 @@ def admin_cuestionario_html(params={}):
                             pregunta_down.orden = pregunta.orden + k
                             flash_toast('Pregunta subida', 'success')
                             break
-
-                session_sql.commit()
+                if session_sql.is_modified(pregunta):
+                    flash_toast('Pregunta actualizada', 'success')
+                    session_sql.commit()
                 return redirect(url_for('admin_cuestionario_html', params=dic_encode(params)))
             else:
                 flash_wtforms(pregunta_edit_form, flash_toast, 'warning')
@@ -1079,16 +1096,17 @@ def admin_cuestionario_html(params={}):
 
         # XXX selector_pregunta_edit_close
         if request.form['selector_button'] == 'selector_pregunta_edit_close':
-            params['collapse_pregunta_edit'] = True
+            # params['collapse_pregunta_edit'] = True
+            params['preguntas_tab'] = True
             return redirect(url_for('admin_cuestionario_html', params=dic_encode(params)))
 
         # XXX pregunta_delete_close
-        if request.form['selector_button'] == 'selector_pregunta_delete_close':
-            current_pregunta_id = current_id_request('current_pregunta_id')
-            params['current_pregunta_id'] = current_pregunta_id
-            params['collapse_pregunta_edit'] = True
-            params['anchor'] = 'anchor_pre_' + str(hashids_encode(current_pregunta_id))
-            return redirect(url_for('admin_cuestionario_html', params=dic_encode(params)))
+        # if request.form['selector_button'] == 'selector_pregunta_delete_close':
+        #     current_pregunta_id = current_id_request('current_pregunta_id')
+        #     params['current_pregunta_id'] = current_pregunta_id
+        #     params['collapse_pregunta_edit'] = True
+        #     params['anchor'] = 'anchor_pre_' + str(hashids_encode(current_pregunta_id))
+        #     return redirect(url_for('admin_cuestionario_html', params=dic_encode(params)))
 
     return render_template(
         'admin_cuestionario.html',
@@ -1598,20 +1616,20 @@ def settings_grupos_html(params={}):
 
     if request.method == 'POST':
         # NOTE recoge current_grupo_id para el resto de situaciones
-        current_grupo_id=current_id_request('current_grupo_id')
-        params['current_grupo_id']=current_grupo_id
+        current_grupo_id = current_id_request('current_grupo_id')
+        params['current_grupo_id'] = current_grupo_id
         # XXX grupo_add
         if request.form['selector_button'] == 'selector_grupo_add':
-            params['collapse_grupo_add']=True
-            grupo_add_form=Grupo_Add(request.form)
-            grupo_add_grupo_activo=request.form.get('grupo_add_grupo_activo')
+            params['collapse_grupo_add'] = True
+            grupo_add_form = Grupo_Add(request.form)
+            grupo_add_grupo_activo = request.form.get('grupo_add_grupo_activo')
             if grupo_add_form.validate():
-                grupo_add=Grupo(settings_id=g.settings_current_user.id, nombre=grupo_add_form.nombre.data, tutor_nombre=grupo_add_form.tutor_nombre.data.title(), tutor_apellidos=grupo_add_form.tutor_apellidos.data.title(),
+                grupo_add = Grupo(settings_id=g.settings_current_user.id, nombre=grupo_add_form.nombre.data, tutor_nombre=grupo_add_form.tutor_nombre.data.title(), tutor_apellidos=grupo_add_form.tutor_apellidos.data.title(),
                                   centro=grupo_add_form.centro.data, curso_academico=grupo_add_form.curso_academico.data)
                 # NOTE checking unicidad de nombre, centro, fecha y usuario
-                unicidad_de_grupo_sql=session_sql.query(Settings).filter(Settings.id == g.settings_current_user.id).join(Grupo).filter(Grupo.nombre == grupo_add_form.nombre.data, Grupo.curso_academico == grupo_add_form.curso_academico.data, Grupo.centro == grupo_add_form.centro.data).first()
+                unicidad_de_grupo_sql = session_sql.query(Settings).filter(Settings.id == g.settings_current_user.id).join(Grupo).filter(Grupo.nombre == grupo_add_form.nombre.data, Grupo.curso_academico == grupo_add_form.curso_academico.data, Grupo.centro == grupo_add_form.centro.data).first()
                 if unicidad_de_grupo_sql:
-                    grupo_add_form.nombre.errors=['']
+                    grupo_add_form.nombre.errors = ['']
                     flash_toast(Markup('<strong>') + grupo_add.nombre + Markup('</strong> ya existe en ') + str(grupo_add.curso_academico) + Markup(' | ') + str(int(grupo_add.curso_academico) + 1) + Markup('<br> Cambie el nombre'), 'warning')
                     return render_template(
                         'settings_grupos.html', grupo_add=grupo_add_form, grupo_edit=Grupo_Add(), grupos=grupos(), params=params)
@@ -1620,17 +1638,17 @@ def settings_grupos_html(params={}):
                     session_sql.add(grupo_add)
                     session_sql.flush()
                     if grupo_add_grupo_activo:
-                        g.settings_current_user.grupo_activo_id=grupo_add.id
+                        g.settings_current_user.grupo_activo_id = grupo_add.id
                         flash_toast(Markup('Grupo <strong>') + grupo_add_form.nombre.data + Markup('</strong>') + ' agregado' + Markup('<br>Ahora este tu grupo activo'), 'success')
                     else:
                         if g.settings_current_user.grupo_activo_id:
                             flash_toast(Markup('Grupo <strong>') + grupo_add_form.nombre.data + Markup('</strong>') + ' agregado' + Markup('<br>Si deseas usar este grupo debes activarlo'), 'success')
                         else:
-                            g.settings_current_user.grupo_activo_id=grupo_add.id
+                            g.settings_current_user.grupo_activo_id = grupo_add.id
 
                     if session_sql.is_modified(g.settings_current_user):
                         session_sql.commit()
-                    params['collapse_grupo_add']=False
+                    params['collapse_grupo_add'] = False
                     if params['login']:
                         return redirect(url_for('alumnos_html', params=dic_encode(params)))
                     else:
@@ -1643,36 +1661,36 @@ def settings_grupos_html(params={}):
 
         # XXX selector_grupo_edit_link
         if request.form['selector_button'] == 'selector_grupo_edit_link':
-            params['collapse_grupo_edit']=True
-            params['grupo_edit_link']=True
-            params['anchor']='anchor_gru_' + str(hashids_encode(current_grupo_id))
+            params['collapse_grupo_edit'] = True
+            params['grupo_edit_link'] = True
+            params['anchor'] = 'anchor_gru_' + str(hashids_encode(current_grupo_id))
             return redirect(url_for('settings_grupos_html', params=dic_encode(params)))
 
         # XXX selector_grupo_edit
         if request.form['selector_button'] == 'selector_grupo_edit':
-            grupo_edit_form=Grupo_Add(request.form)
-            params['collapse_grupo_edit']=True
-            params['grupo_edit_link']=True
-            params['anchor']='anchor_gru_' + str(hashids_encode(current_grupo_id))
-            grupo_edit_grupo_activo_switch=request.form.get('grupo_edit_grupo_activo_switch')
+            grupo_edit_form = Grupo_Add(request.form)
+            params['collapse_grupo_edit'] = True
+            params['grupo_edit_link'] = True
+            params['anchor'] = 'anchor_gru_' + str(hashids_encode(current_grupo_id))
+            grupo_edit_grupo_activo_switch = request.form.get('grupo_edit_grupo_activo_switch')
             if not grupo_edit_grupo_activo_switch:
-                grupo_edit_grupo_activo_switch=False
+                grupo_edit_grupo_activo_switch = False
             if grupo_edit_form.validate():
-                grupo_edit=Grupo(nombre=grupo_edit_form.nombre.data, tutor_nombre=grupo_edit_form.tutor_nombre.data.title(), tutor_apellidos=grupo_edit_form.tutor_apellidos.data.title(), centro=grupo_edit_form.centro.data)
-                grupo_sql=session_sql.query(Grupo).filter(Grupo.id == current_grupo_id).first()
+                grupo_edit = Grupo(nombre=grupo_edit_form.nombre.data, tutor_nombre=grupo_edit_form.tutor_nombre.data.title(), tutor_apellidos=grupo_edit_form.tutor_apellidos.data.title(), centro=grupo_edit_form.centro.data)
+                grupo_sql = session_sql.query(Grupo).filter(Grupo.id == current_grupo_id).first()
                 if grupo_sql.nombre.lower() != grupo_edit.nombre.lower() or grupo_sql.tutor_nombre.lower() != grupo_edit.tutor_nombre.lower() or grupo_sql.tutor_apellidos.lower() != grupo_edit.tutor_apellidos.lower() or grupo_sql.centro.lower() != grupo_edit.centro.lower() or str(g.settings_current_user.grupo_activo_id) != str(grupo_edit_grupo_activo_switch):
                     if grupo_sql.nombre.lower() != grupo_edit.nombre.lower():
-                        grupo_sql.nombre=grupo_edit.nombre
+                        grupo_sql.nombre = grupo_edit.nombre
                     if grupo_sql.tutor_nombre.lower() != grupo_edit.tutor_nombre.lower():
-                        grupo_sql.tutor_nombre=grupo_edit.tutor_nombre
+                        grupo_sql.tutor_nombre = grupo_edit.tutor_nombre
                     if grupo_sql.tutor_apellidos.lower() != grupo_edit.tutor_apellidos.lower():
-                        grupo_sql.tutor_apellidos=grupo_edit.tutor_apellidos
+                        grupo_sql.tutor_apellidos = grupo_edit.tutor_apellidos
                     if grupo_sql.centro.lower() != grupo_edit.centro.lower():
-                        grupo_sql.centro=grupo_edit.centro
+                        grupo_sql.centro = grupo_edit.centro
                     if grupo_edit_grupo_activo_switch:
-                        g.settings_current_user.grupo_activo_id=current_grupo_id
+                        g.settings_current_user.grupo_activo_id = current_grupo_id
                     else:
-                        g.settings_current_user.grupo_activo_id=None
+                        g.settings_current_user.grupo_activo_id = None
                     if session_sql.is_modified(g.settings_current_user) or session_sql.is_modified(grupo_sql):
                         flash_toast(Markup('Grupo <strong>') + grupo_edit.nombre + Markup('</strong>') + ' actualizado', 'success')
                         session_sql.commit()
@@ -1688,9 +1706,9 @@ def settings_grupos_html(params={}):
 
         # XXX selector_grupo_delete_close
         if request.form['selector_button'] == 'selector_grupo_delete_close':
-            params['collapse_grupo_edit']=True
-            params['grupo_edit_link']=True
-            params['anchor']='anchor_gru_' + str(hashids_encode(current_grupo_id))
+            params['collapse_grupo_edit'] = True
+            params['grupo_edit_link'] = True
+            params['anchor'] = 'anchor_gru_' + str(hashids_encode(current_grupo_id))
             return redirect(url_for('settings_grupos_html', params=dic_encode(params)))
     return render_template(
         'settings_grupos.html', grupo_add=Grupo_Add(), grupo_edit=Grupo_Add(), grupos=grupos(), params=params)
@@ -1702,34 +1720,34 @@ def settings_grupos_html(params={}):
 @login_required
 def admin_citas_html(params={}):
     try:
-        params_old=dic_decode(params)  # NOTE matiene siempre una copia de entrada original por si se necesita mas adelante
+        params_old = dic_decode(params)  # NOTE matiene siempre una copia de entrada original por si se necesita mas adelante
     except:
-        params_old={}
+        params_old = {}
         abort(404)
 
-    params={}
-    citas=session_sql.query(Cita).order_by(desc('created_at')).all()
-    params['anchor']=params_old.get('anchor', 'anchor_top')
-    params['current_cita_id']=params_old.get('current_cita_id', 0)
-    params['collapse_cita_edit']=params_old.get('collapse_cita_edit', False)
-    params['cita_delete_link']=params_old.get('cita_delete_link', False)
-    params['collapse_cita_add']=params_old.get('collapse_cita_add', False)
-    params['cita_edit_link']=params_old.get('cita_edit_link', False)
+    params = {}
+    citas = session_sql.query(Cita).order_by(desc('created_at')).all()
+    params['anchor'] = params_old.get('anchor', 'anchor_top')
+    params['current_cita_id'] = params_old.get('current_cita_id', 0)
+    params['collapse_cita_edit'] = params_old.get('collapse_cita_edit', False)
+    params['cita_delete_link'] = params_old.get('cita_delete_link', False)
+    params['collapse_cita_add'] = params_old.get('collapse_cita_add', False)
+    params['cita_edit_link'] = params_old.get('cita_edit_link', False)
 
     if request.method == 'POST':
-        current_cita_id=current_id_request('current_cita_id')
-        params['current_cita_id']=current_cita_id
+        current_cita_id = current_id_request('current_cita_id')
+        params['current_cita_id'] = current_cita_id
         # XXX cita_add
         if request.form['selector_button'] == 'selector_cita_add':
-            params['collapse_cita_add']=True
-            cita_add_form=Cita_Add(request.form)
+            params['collapse_cita_add'] = True
+            cita_add_form = Cita_Add(request.form)
             if cita_add_form.validate():
-                cita_add_visible=request.form.get('cita_add_visible')
-                cita_add=Cita(frase=cita_add_form.frase.data, autor=cita_add_form.autor.data,  visible=cita_add_visible)
+                cita_add_visible = request.form.get('cita_add_visible')
+                cita_add = Cita(frase=cita_add_form.frase.data, autor=cita_add_form.autor.data,  visible=cita_add_visible)
                 # NOTE checking unicidad de frase
-                cita_frase_sql=session_sql.query(Cita).filter(Cita.frase == cita_add_form.frase.data).first()
+                cita_frase_sql = session_sql.query(Cita).filter(Cita.frase == cita_add_form.frase.data).first()
                 if cita_frase_sql:
-                    cita_add_form.frase.errors=['']
+                    cita_add_form.frase.errors = ['']
                     flash_toast(Markup('<strong>') + 'Cita duplicada' + Markup('</strong>'), 'warning')
                     return render_template(
                         'admin_citas.html', cita_add=cita_add_form, cita_edit=Cita_Add(), citas=citas,
@@ -1750,26 +1768,26 @@ def admin_citas_html(params={}):
 
         # XXX selector_cita_edit_link
         if request.form['selector_button'] == 'selector_cita_edit_link':
-            params['cita_edit_link']=True
-            params['collapse_cita_edit']=True
-            params['anchor']='anchor_cit_' + str(hashids_encode(current_cita_id))
+            params['cita_edit_link'] = True
+            params['collapse_cita_edit'] = True
+            params['anchor'] = 'anchor_cit_' + str(hashids_encode(current_cita_id))
             return redirect(url_for('admin_citas_html', params=dic_encode(params)))
 
         # XXX cita_edit
         if request.form['selector_button'] == 'selector_cita_edit':
-            params['cita_edit_link']=True
-            params['collapse_cita_edit']=True
-            params['anchor']='anchor_cit_' + str(hashids_encode(current_cita_id))
-            cita_edit_form=Cita_Add(request.form)
-            cita_edit_visible=request.form.get('cita_edit_visible')
+            params['cita_edit_link'] = True
+            params['collapse_cita_edit'] = True
+            params['anchor'] = 'anchor_cit_' + str(hashids_encode(current_cita_id))
+            cita_edit_form = Cita_Add(request.form)
+            cita_edit_visible = request.form.get('cita_edit_visible')
             if not cita_edit_visible:
-                cita_edit_visible=False
+                cita_edit_visible = False
             if cita_edit_form.validate():
-                cita_edit=Cita(frase=cita_edit_form.frase.data, autor=cita_edit_form.autor.data, visible=cita_edit_visible)
-                cita=session_sql.query(Cita).filter(Cita.id == current_cita_id).first()
-                cita.frase=cita_edit.frase
-                cita.autor=cita_edit.autor
-                cita.visible=cita_edit_visible
+                cita_edit = Cita(frase=cita_edit_form.frase.data, autor=cita_edit_form.autor.data, visible=cita_edit_visible)
+                cita = session_sql.query(Cita).filter(Cita.id == current_cita_id).first()
+                cita.frase = cita_edit.frase
+                cita.autor = cita_edit.autor
+                cita.visible = cita_edit_visible
                 if session_sql.is_modified(cita):
                     flash_toast('Cita actualizada', 'success')
                     session_sql.commit()
@@ -1785,24 +1803,24 @@ def admin_citas_html(params={}):
 
         # XXX cita_edit_rollback
         if request.form['selector_button'] == 'selector_cita_edit_rollback':
-            params['collapse_cita_edit']=True
-            params['anchor']='anchor_cit_' + str(hashids_encode(current_cita_id))
+            params['collapse_cita_edit'] = True
+            params['anchor'] = 'anchor_cit_' + str(hashids_encode(current_cita_id))
             session_sql.rollback()
             return redirect(url_for('admin_citas_html', params=dic_encode(params)))
 
         # XXX cita_delete_link
         if request.form['selector_button'] == 'selector_cita_delete_link':
-            params['collapse_cita_edit']=True
-            params['cita_edit_link']=True
-            params['anchor']='anchor_cit_' + str(hashids_encode(current_cita_id))
-            params['cita_delete_link']=True
+            params['collapse_cita_edit'] = True
+            params['cita_edit_link'] = True
+            params['anchor'] = 'anchor_cit_' + str(hashids_encode(current_cita_id))
+            params['cita_delete_link'] = True
             flash_toast('Debe confirmar la aliminacion', 'warning')
             return redirect(url_for('admin_citas_html', params=dic_encode(params)))
 
         # XXX cita_delete
         if request.form['selector_button'] == 'selector_cita_delete':
-            cita_delete_form=Cita_Add(request.form)
-            cita_sql=session_sql.query(Cita).filter(Cita.id == current_cita_id).first()
+            cita_delete_form = Cita_Add(request.form)
+            cita_sql = session_sql.query(Cita).filter(Cita.id == current_cita_id).first()
             session_sql.delete(cita_sql)
             flash_toast('Cita elminada', 'success')
             session_sql.commit()
@@ -1810,9 +1828,9 @@ def admin_citas_html(params={}):
 
         # XXX cita_delete_close
         if request.form['selector_button'] == 'selector_cita_delete_close':
-            params['collapse_cita_edit']=True
-            params['cita_edit_link']=True
-            params['anchor']='anchor_cit_' + str(hashids_encode(current_cita_id))
+            params['collapse_cita_edit'] = True
+            params['cita_edit_link'] = True
+            params['anchor'] = 'anchor_cit_' + str(hashids_encode(current_cita_id))
             return redirect(url_for('admin_citas_html', params=dic_encode(params)))
 
     return render_template(
@@ -1832,53 +1850,53 @@ def informe_no_disponible_html():
 @app.route('/informe/<asignatura_id>/<tutoria_id>/<params>', methods=['GET', 'POST'])
 def informe_html(asignatura_id, tutoria_id, params={}):
     try:
-        tutoria_id=hashids_decode(tutoria_id)
-        asignatura_id=hashids_decode(asignatura_id)
-        tutoria_asignatura_check=session_sql.query(Association_Tutoria_Asignatura).filter(Association_Tutoria_Asignatura.tutoria_id == tutoria_id, Association_Tutoria_Asignatura.asignatura_id == asignatura_id).first()
+        tutoria_id = hashids_decode(tutoria_id)
+        asignatura_id = hashids_decode(asignatura_id)
+        tutoria_asignatura_check = session_sql.query(Association_Tutoria_Asignatura).filter(Association_Tutoria_Asignatura.tutoria_id == tutoria_id, Association_Tutoria_Asignatura.asignatura_id == asignatura_id).first()
         if not tutoria_asignatura_check:
             return redirect(url_for('informe_no_disponible_html'))
     except:
         return redirect(url_for('informe_no_disponible_html'))
     try:
-        params_old=dic_decode(params)
+        params_old = dic_decode(params)
     except:
-        params_old={}
+        params_old = {}
         abort(404)
 
-    params={}
-    params['anchor']=params_old.get('anchor', 'anchor_top')
-    params['pregunta_sin_respuesta']=params_old.get('pregunta_sin_respuesta', False)
-    params['selector_guardar_cuestionario']=params_old.get('selector_guardar_cuestionario', False)
+    params = {}
+    params['anchor'] = params_old.get('anchor', 'anchor_top')
+    params['pregunta_sin_respuesta'] = params_old.get('pregunta_sin_respuesta', False)
+    params['selector_guardar_cuestionario'] = params_old.get('selector_guardar_cuestionario', False)
 
-    tutoria=tutoria_by_id(tutoria_id)
-    asignatura=asignatura_by_id(asignatura_id)
-    grupo=grupo_by_tutoria_id(tutoria_id)
-    alumno=alumno_by_id(tutoria.alumno_id)
-    settings=settings_by_tutoria_id(tutoria_id)
-    informe_sql=invitado_informe(tutoria_id, asignatura_id)
-    preguntas_para_check=session_sql.query(Pregunta).join(Association_Settings_Pregunta).filter(Association_Settings_Pregunta.settings_id == settings.id).join(Categoria).order_by(desc(Categoria.orden), desc(Pregunta.orden)).all()
+    tutoria = tutoria_by_id(tutoria_id)
+    asignatura = asignatura_by_id(asignatura_id)
+    grupo = grupo_by_tutoria_id(tutoria_id)
+    alumno = alumno_by_id(tutoria.alumno_id)
+    settings = settings_by_tutoria_id(tutoria_id)
+    informe_sql = invitado_informe(tutoria_id, asignatura_id)
+    preguntas_para_check = session_sql.query(Pregunta).join(Association_Settings_Pregunta).filter(Association_Settings_Pregunta.settings_id == settings.id).join(Categoria).order_by(desc(Categoria.orden), desc(Pregunta.orden)).all()
     for pregunta in preguntas_para_check:
-        params['pregunta_' + str(pregunta.id)]=params_old.get('pregunta_' + str(pregunta.id), -2)
-    params['comentario']=params_old.get('comentario', '')
+        params['pregunta_' + str(pregunta.id)] = params_old.get('pregunta_' + str(pregunta.id), -2)
+    params['comentario'] = params_old.get('comentario', '')
 
-    params['cuestionario_tab']=params_old.get('cuestionario_tab', True)
-    params['notas_tab']=params_old.get('notas_tab', False)
-    params['observaciones_tab']=params_old.get('observaciones_tab', False)
+    params['cuestionario_tab'] = params_old.get('cuestionario_tab', True)
+    params['notas_tab'] = params_old.get('notas_tab', False)
+    params['observaciones_tab'] = params_old.get('observaciones_tab', False)
 
-    params['current_prueba_evaluable_id']=params_old.get('current_prueba_evaluable_id', 0)
-    current_prueba_evaluable_id=params['current_prueba_evaluable_id']
-    prueba_evaluable_dic={}
+    params['current_prueba_evaluable_id'] = params_old.get('current_prueba_evaluable_id', 0)
+    current_prueba_evaluable_id = params['current_prueba_evaluable_id']
+    prueba_evaluable_dic = {}
 
     if request.method == 'POST':
-        params['cuestionario_tab']=False  # es mas comodo ponerlo aqui que estar repitiendolo
+        params['cuestionario_tab'] = False  # es mas comodo ponerlo aqui que estar repitiendolo
         # NOTE captura de datos antes de crear el informe
         # ****************************************************************
         # NOTE chekea si la pregunta tiene respuesta
         for pregunta in preguntas_para_check:
-            params['pregunta_' + str(pregunta.id)]=request.form.get('pregunta_' + str(hashids_encode(pregunta.id)))
+            params['pregunta_' + str(pregunta.id)] = request.form.get('pregunta_' + str(hashids_encode(pregunta.id)))
             if int(params['pregunta_' + str(pregunta.id)]) == -2:
-                params['anchor']='anchor_pregunta_' + str(hashids_encode(pregunta.id))
-                params['pregunta_sin_respuesta']=True
+                params['anchor'] = 'anchor_pregunta_' + str(hashids_encode(pregunta.id))
+                params['pregunta_sin_respuesta'] = True
         # ------------------------------------------------------------
         # NOTE FIN captura de datos antes de crear el informe
 
@@ -1887,46 +1905,46 @@ def informe_html(asignatura_id, tutoria_id, params={}):
         if informe_sql:
             for pregunta in preguntas_para_check:
                 if invitado_respuesta(informe_sql.id, pregunta.id):
-                    invitado_respuesta(informe_sql.id, pregunta.id).resultado=params['pregunta_' + str(pregunta.id)]
+                    invitado_respuesta(informe_sql.id, pregunta.id).resultado = params['pregunta_' + str(pregunta.id)]
                 else:
-                    repuesta_add=Respuesta(informe_id=informe_sql.id, pregunta_id=pregunta.id, resultado=params['pregunta_' + str(pregunta.id)])
+                    repuesta_add = Respuesta(informe_id=informe_sql.id, pregunta_id=pregunta.id, resultado=params['pregunta_' + str(pregunta.id)])
                     session_sql.add(repuesta_add)
             session_sql.commit()  # NOTE necesario para guardar las nuevas preguntas en caso de modificar las preguntas por parte del usuario
 
-            params['comentario']=request.form.get('comentario')
-            informe_sql.comentario=params['comentario']
+            params['comentario'] = request.form.get('comentario')
+            informe_sql.comentario = params['comentario']
 
             for prueba_evaluable in invitado_pruebas_evaluables(informe_sql.id):
-                prueba_evaluable.nombre=request.form.get('prueba_evaluable_nombre_' + str(hashids_encode(prueba_evaluable.id)))
-                prueba_evaluable.nota=request.form.get('prueba_evaluable_nota_' + str(hashids_encode(prueba_evaluable.id)))
-                prueba_evaluable_dic['selector_prueba_evaluable_delete_' + str(prueba_evaluable.id)]=int(prueba_evaluable.id)
+                prueba_evaluable.nombre = request.form.get('prueba_evaluable_nombre_' + str(hashids_encode(prueba_evaluable.id)))
+                prueba_evaluable.nota = request.form.get('prueba_evaluable_nota_' + str(hashids_encode(prueba_evaluable.id)))
+                prueba_evaluable_dic['selector_prueba_evaluable_delete_' + str(prueba_evaluable.id)] = int(prueba_evaluable.id)
         # ------------------------------------------------------------
         # NOTE FIN captura de notas una vez creado el informe
 
         if request.form['selector_button'] in prueba_evaluable_dic.keys():
-            prueba_evaluable_delete_id=prueba_evaluable_dic[request.form['selector_button']]
-            prueba_evaluable_delete_sql=session_sql.query(Prueba_Evaluable).filter(Prueba_Evaluable.id == prueba_evaluable_delete_id).first()
+            prueba_evaluable_delete_id = prueba_evaluable_dic[request.form['selector_button']]
+            prueba_evaluable_delete_sql = session_sql.query(Prueba_Evaluable).filter(Prueba_Evaluable.id == prueba_evaluable_delete_id).first()
             session_sql.delete(prueba_evaluable_delete_sql)
-            params['notas_tab']=True
+            params['notas_tab'] = True
             return redirect(url_for('informe_html', tutoria_id=hashids_encode(tutoria_id), asignatura_id=hashids_encode(asignatura_id), params=dic_encode(params)))
 
         # NOTE primero hay que agregar el informe para poder continuar agregando elementos usando informe.id
         if request.form['selector_button'] == 'selector_guardar_cuestionario' or params['selector_guardar_cuestionario']:
             if params['pregunta_sin_respuesta']:
                 flash_toast('Preguntas sin evaluar', 'warning')
-                params['cuestionario_tab']=True
+                params['cuestionario_tab'] = True
                 return redirect(url_for(
                     'informe_html',
                     asignatura_id=hashids_encode(asignatura_id), tutoria_id=hashids_encode(tutoria_id),
                     params=dic_encode(params)))
             else:
-                informe_add=Informe(tutoria_id=tutoria_id, asignatura_id=asignatura_id, comentario=params['comentario'])
+                informe_add = Informe(tutoria_id=tutoria_id, asignatura_id=asignatura_id, comentario=params['comentario'])
                 session_sql.add(informe_add)
                 session_sql.flush()  # NOTE necesario para obtener informe_add.id antes del commit
                 for pregunta in preguntas_para_check:
-                    respuesta_add=Respuesta(informe_id=informe_add.id, pregunta_id=pregunta.id, resultado=params['pregunta_' + str(pregunta.id)])
+                    respuesta_add = Respuesta(informe_id=informe_add.id, pregunta_id=pregunta.id, resultado=params['pregunta_' + str(pregunta.id)])
                     session_sql.add(respuesta_add)
-                    params['notas_tab']=True
+                    params['notas_tab'] = True
 
                     # NOTE necesario si se quiere guardar el cuestionario sin rellenar notas y comentario
                     # session_sql.commit()
@@ -1937,22 +1955,22 @@ def informe_html(asignatura_id, tutoria_id, params={}):
                 params=dic_encode(params)))
 
         if request.form['selector_button'] == 'selector_prueba_evaluable_add':
-            params['collapse_prueba_evaluable_add']=True
-            prueba_evaluable_nombre=''
-            prueba_evaluable_nota=0
-            prueba_evaluable_add=Prueba_Evaluable(informe_id=informe_sql.id, nombre=prueba_evaluable_nombre, nota=prueba_evaluable_nota)
+            params['collapse_prueba_evaluable_add'] = True
+            prueba_evaluable_nombre = ''
+            prueba_evaluable_nota = 0
+            prueba_evaluable_add = Prueba_Evaluable(informe_id=informe_sql.id, nombre=prueba_evaluable_nombre, nota=prueba_evaluable_nota)
             session_sql.add(prueba_evaluable_add)
             session_sql.flush()  # necesario para disponer luego de prueba_evaluable_add.id
-            params['anchor']='anchor_pru_eva_' + str(hashids_encode(prueba_evaluable_add.id))
+            params['anchor'] = 'anchor_pru_eva_' + str(hashids_encode(prueba_evaluable_add.id))
             # flash_toast('Prueba evaluable agregada', 'success')
-            params['notas_tab']=True
+            params['notas_tab'] = True
             return redirect(url_for('informe_html', tutoria_id=hashids_encode(tutoria_id), asignatura_id=hashids_encode(asignatura_id), params=dic_encode(params)))
 
         if request.form['selector_button'] == 'selector_enviar_informe':
             if params['pregunta_sin_respuesta']:
-                params['pregunta_sin_respuesta']=False
+                params['pregunta_sin_respuesta'] = False
                 flash_toast('Preguntas sin evaluar', 'warning')
-                params['cuestionario_tab']=True
+                params['cuestionario_tab'] = True
                 return redirect(url_for(
                     'informe_html',
                     asignatura_id=hashids_encode(asignatura_id), tutoria_id=hashids_encode(tutoria_id),
@@ -1977,22 +1995,22 @@ def informe_html(asignatura_id, tutoria_id, params={}):
 @app.route('/informe_success/<asignatura_id>/<tutoria_id>/<params>', methods=['GET', 'POST'])
 def informe_success_html(asignatura_id, tutoria_id, params={}):
     try:
-        tutoria_id=hashids_decode(tutoria_id)
-        asignatura_id=hashids_decode(asignatura_id)
-        tutoria_asignatura_check=session_sql.query(Association_Tutoria_Asignatura).filter(Association_Tutoria_Asignatura.tutoria_id == tutoria_id, Association_Tutoria_Asignatura.asignatura_id == asignatura_id).first()
+        tutoria_id = hashids_decode(tutoria_id)
+        asignatura_id = hashids_decode(asignatura_id)
+        tutoria_asignatura_check = session_sql.query(Association_Tutoria_Asignatura).filter(Association_Tutoria_Asignatura.tutoria_id == tutoria_id, Association_Tutoria_Asignatura.asignatura_id == asignatura_id).first()
         if not tutoria_asignatura_check:
             return redirect(url_for('informe_no_disponible_html'))
     except:
         return redirect(url_for('informe_no_disponible_html'))
 
-    params={}
-    asignatura=asignatura_by_id(asignatura_id)
-    tutoria=tutoria_by_id(tutoria_id)
-    alumno=alumno_by_tutoria_id(tutoria_id)
-    grupo=grupo_by_tutoria_id(tutoria_id)
-    params['participacion_porcentaje_recent']=cociente_porcentual(asignatura_informes_respondidos_recent_count(asignatura.id), asignatura_informes_solicitados_recent_count(asignatura.id))
-    params['tutorias_sin_respuesta_by_asignatura_id']=tutorias_sin_respuesta_by_asignatura_id(asignatura.id)
-    params['settings_global_periodo_participacion_recent']=g.settings_global.periodo_participacion_recent
+    params = {}
+    asignatura = asignatura_by_id(asignatura_id)
+    tutoria = tutoria_by_id(tutoria_id)
+    alumno = alumno_by_tutoria_id(tutoria_id)
+    grupo = grupo_by_tutoria_id(tutoria_id)
+    params['participacion_porcentaje_recent'] = cociente_porcentual(asignatura_informes_respondidos_recent_count(asignatura.id), asignatura_informes_solicitados_recent_count(asignatura.id))
+    params['tutorias_sin_respuesta_by_asignatura_id'] = tutorias_sin_respuesta_by_asignatura_id(asignatura.id)
+    params['settings_global_periodo_participacion_recent'] = g.settings_global.periodo_participacion_recent
     return render_template(
         'informe_success.html',
         asignatura=asignatura, tutoria=tutoria, alumno=alumno, grupo=grupo, params=params)
@@ -2001,18 +2019,18 @@ def informe_success_html(asignatura_id, tutoria_id, params={}):
 @app.route('/informes_pendientes/<asignatura_id>', methods=['GET', 'POST'])
 def informes_pendientes_html(asignatura_id):
     try:
-        asignatura_id=hashids_decode(asignatura_id)
+        asignatura_id = hashids_decode(asignatura_id)
     except:
         return redirect(url_for('informe_no_disponible_html'))
 
-    params={}
-    asignatura=asignatura_by_id(asignatura_id)
-    grupo=grupo_by_asignatura_id(asignatura_id)
-    tutorias_id_lista=tutorias_sin_respuesta_by_asignatura_id(asignatura.id)['tutorias_id_lista']
-    tutorias_pendites=[]
+    params = {}
+    asignatura = asignatura_by_id(asignatura_id)
+    grupo = grupo_by_asignatura_id(asignatura_id)
+    tutorias_id_lista = tutorias_sin_respuesta_by_asignatura_id(asignatura.id)['tutorias_id_lista']
+    tutorias_pendites = []
     for tutoria_id in tutorias_id_lista:
         tutorias_pendites.append(tutoria_by_id(tutoria_id))
-    params['tutorias_pendites']=tutorias_pendites
+    params['tutorias_pendites'] = tutorias_pendites
     return render_template('informes_pendientes.html', asignatura=asignatura, grupo=grupo, params=params)
 
 
@@ -2027,51 +2045,51 @@ def tutoria_email_html():
 @login_required
 def asignaturas_html(params={}):
     try:
-        params_old=dic_decode(params)  # NOTE matiene siempre una copia de entrada original por si se necesita mas adelante
+        params_old = dic_decode(params)  # NOTE matiene siempre una copia de entrada original por si se necesita mas adelante
     except:
-        params_old={}
+        params_old = {}
         abort(404)
-    params={}
-    params['anchor']=params_old.get('anchor', 'anchor_top')
-    params['collapse_asignatura_add']=params_old.get('collapse_asignatura_add', False)
-    params['collapse_asignatura_edit']=params_old.get('collapse_asignatura_edit', False)
-    params['current_asignatura_id']=params_old.get('current_asignatura_id', 0)
-    params['asignatura_edit_link']=params_old.get('asignatura_edit_link', False)
+    params = {}
+    params['anchor'] = params_old.get('anchor', 'anchor_top')
+    params['collapse_asignatura_add'] = params_old.get('collapse_asignatura_add', False)
+    params['collapse_asignatura_edit'] = params_old.get('collapse_asignatura_edit', False)
+    params['current_asignatura_id'] = params_old.get('current_asignatura_id', 0)
+    params['asignatura_edit_link'] = params_old.get('asignatura_edit_link', False)
 
-    params['asignatura_delete_confirmar']=params_old.get('asignatura_delete_confirmar', False)
-    params['current_asignatura_id']=params_old.get('current_asignatura_id', 0)
-    current_asignatura_id=params['current_asignatura_id']
+    params['asignatura_delete_confirmar'] = params_old.get('asignatura_delete_confirmar', False)
+    params['current_asignatura_id'] = params_old.get('current_asignatura_id', 0)
+    current_asignatura_id = params['current_asignatura_id']
 
     if params['asignatura_delete_confirmar']:
-        params['asignatura_delete_confirmar']=False
-        asignatura_delete_sql=asignatura_by_id(current_asignatura_id)
+        params['asignatura_delete_confirmar'] = False
+        asignatura_delete_sql = asignatura_by_id(current_asignatura_id)
         session_sql.delete(asignatura_delete_sql)
         session_sql.commit()
         flash_toast(Markup('<strong>') + asignatura_delete_sql.nombre + Markup('</strong>') + ' elminado', 'success')
         return redirect(url_for('asignaturas_html', params=dic_encode(params)))
 
-    stats={}
-    stats['evolucion_tutorias_exito_grupo']=evolucion_tutorias_exito_grupo(g.settings_current_user.grupo_activo_id)[0]
-    stats['evolucion_tutorias_exito_grupo_media']=evolucion_tutorias_exito_grupo(g.settings_current_user.grupo_activo_id)[1]
+    stats = {}
+    stats['evolucion_tutorias_exito_grupo'] = evolucion_tutorias_exito_grupo(g.settings_current_user.grupo_activo_id)[0]
+    stats['evolucion_tutorias_exito_grupo_media'] = evolucion_tutorias_exito_grupo(g.settings_current_user.grupo_activo_id)[1]
 
     if not g.settings_current_user.grupo_activo_id:
-        params['collapse_grupo_add']=True
+        params['collapse_grupo_add'] = True
         return redirect(url_for('settings_grupos_html', params=dic_encode(params)))
 
     if request.method == 'POST':
         # NOTE almacena current_asignatura_id para el resto de situacones
-        current_asignatura_id=current_id_request('current_asignatura_id')
-        params['current_asignatura_id']=current_asignatura_id
+        current_asignatura_id = current_id_request('current_asignatura_id')
+        params['current_asignatura_id'] = current_asignatura_id
 
         # XXX selector_asignaturas_orden_switch
         if request.form['selector_button'] == 'asignaturas_orden_switch':
-            current_asignaturas_orden=request.form.get('asignaturas_orden')
+            current_asignaturas_orden = request.form.get('asignaturas_orden')
 
             if eval(current_asignaturas_orden):
-                current_asignaturas_orden=False
+                current_asignaturas_orden = False
             else:
-                current_asignaturas_orden=True
-            g.settings_current_user.asignaturas_orden=current_asignaturas_orden
+                current_asignaturas_orden = True
+            g.settings_current_user.asignaturas_orden = current_asignaturas_orden
 
             if session_sql.is_modified(g.settings_current_user):
                 flash_toast('Asignaturas ordenadas por ' + asignaturas_orden_switch(current_asignaturas_orden), 'success')
@@ -2080,13 +2098,13 @@ def asignaturas_html(params={}):
 
         # XXX selector_asignatura_add
         if request.form['selector_button'] == 'selector_asignatura_add':
-            params['anchor']='anchor_asi_add'
-            params['collapse_asignatura_add']=True
-            asignatura_add_form=Asignatura_Add(request.form)
+            params['anchor'] = 'anchor_asi_add'
+            params['collapse_asignatura_add'] = True
+            asignatura_add_form = Asignatura_Add(request.form)
             if asignatura_add_form.validate():
-                asignatura_asignatura=session_sql.query(Asignatura).filter(Asignatura.grupo_id == g.settings_current_user.grupo_activo_id, unaccent(func.lower(Asignatura.asignatura)) == unaccent(func.lower(asignatura_add_form.asignatura.data))).first()
-                asignatura_email=session_sql.query(Asignatura).filter(Asignatura.grupo_id == g.settings_current_user.grupo_activo_id, func.lower(Asignatura.email) == func.lower(asignatura_add_form.email.data)).first()
-                asignatura_add=Asignatura(grupo_id=g.settings_current_user.grupo_activo_id, nombre=asignatura_add_form.nombre.data.title(), apellidos=asignatura_add_form.apellidos.data.title(), asignatura=asignatura_add_form.asignatura.data.title(), email=asignatura_add_form.email.data.lower())
+                asignatura_asignatura = session_sql.query(Asignatura).filter(Asignatura.grupo_id == g.settings_current_user.grupo_activo_id, unaccent(func.lower(Asignatura.asignatura)) == unaccent(func.lower(asignatura_add_form.asignatura.data))).first()
+                asignatura_email = session_sql.query(Asignatura).filter(Asignatura.grupo_id == g.settings_current_user.grupo_activo_id, func.lower(Asignatura.email) == func.lower(asignatura_add_form.email.data)).first()
+                asignatura_add = Asignatura(grupo_id=g.settings_current_user.grupo_activo_id, nombre=asignatura_add_form.nombre.data.title(), apellidos=asignatura_add_form.apellidos.data.title(), asignatura=asignatura_add_form.asignatura.data.title(), email=asignatura_add_form.email.data.lower())
                 session_sql.add(asignatura_add)
                 session_sql.commit()
                 flash_toast('Asignatura agregada', 'success')
@@ -2103,15 +2121,15 @@ def asignaturas_html(params={}):
 
         # XXX selector_asignatura_edit_link
         if request.form['selector_button'] == 'selector_asignatura_edit_link':
-            params['collapse_asignatura_edit']=True
-            params['asignatura_edit_link']=True
-            params['anchor']='anchor_asi_' + str(hashids_encode(current_asignatura_id))
+            params['collapse_asignatura_edit'] = True
+            params['asignatura_edit_link'] = True
+            params['anchor'] = 'anchor_asi_' + str(hashids_encode(current_asignatura_id))
             return redirect(url_for('asignaturas_html', params=dic_encode(params)))
 
         # XXX selector_asignatura_edit_link_close
         if request.form['selector_button'] == 'selector_asignatura_edit_link_close':
-            params['collapse_asignatura_edit']=True
-            params['anchor']='anchor_asi_' + str(hashids_encode(current_asignatura_id))
+            params['collapse_asignatura_edit'] = True
+            params['anchor'] = 'anchor_asi_' + str(hashids_encode(current_asignatura_id))
             return redirect(url_for('asignaturas_html', params=dic_encode(params)))
 
         # XXX selector_asignatura_edit_close
@@ -2120,52 +2138,52 @@ def asignaturas_html(params={}):
 
         # XXX selector_asignatura_edit
         if request.form['selector_button'] == 'selector_asignatura_edit':
-            params['collapse_asignatura_edit']=True
-            params['asignatura_edit_link']=True
-            asignatura_edit_form=Asignatura_Add(request.form)
+            params['collapse_asignatura_edit'] = True
+            params['asignatura_edit_link'] = True
+            asignatura_edit_form = Asignatura_Add(request.form)
 
             # XXX asignar alumnos
             # ****************************************
-            alumnos_id_lista_encoded=request.form.getlist('alumno')
-            alumnos_id_lista=[]
+            alumnos_id_lista_encoded = request.form.getlist('alumno')
+            alumnos_id_lista = []
             for alumno_id_encoded in alumnos_id_lista_encoded:
                 alumnos_id_lista.append(hashids_decode(alumno_id_encoded))
-            collapse_asignatura_edit_alumnos_contador=0
+            collapse_asignatura_edit_alumnos_contador = 0
             for alumno in alumnos_not_sorted():
                 if alumno.id in alumnos_id_lista:
                     if not association_alumno_asignatura_check(alumno.id, current_asignatura_id):
-                        alumno_asignatura_add=Association_Alumno_Asignatura(alumno_id=alumno.id, asignatura_id=current_asignatura_id)
+                        alumno_asignatura_add = Association_Alumno_Asignatura(alumno_id=alumno.id, asignatura_id=current_asignatura_id)
                         session_sql.add(alumno_asignatura_add)
                         collapse_asignatura_edit_alumnos_contador += 1
                 else:
                     if association_alumno_asignatura_check(alumno.id, current_asignatura_id):
-                        alumno_asignatura_delete=session_sql.query(Association_Alumno_Asignatura).filter_by(alumno_id=alumno.id, asignatura_id=current_asignatura_id).first()
+                        alumno_asignatura_delete = session_sql.query(Association_Alumno_Asignatura).filter_by(alumno_id=alumno.id, asignatura_id=current_asignatura_id).first()
                         session_sql.delete(alumno_asignatura_delete)
                         collapse_asignatura_edit_alumnos_contador += 1
 
             if not asignatura_alumnos(current_asignatura_id):
-                params['collapse_asignatura_edit']=True
-                params['collapse_asignaturas_edit_alumnos']=True
+                params['collapse_asignatura_edit'] = True
+                params['collapse_asignaturas_edit_alumnos'] = True
                 flash_toast('Debería asignar alumnos a ' + Markup('<strong>') + asignatura_edit_form.asignatura.data + Markup('</strong>'), 'warning')
             else:
                 if collapse_asignatura_edit_alumnos_contador != 0:
-                    params['collapse_asignatura_edit']=True
-                    params['collapse_asignaturas_edit_alumnos']=True
+                    params['collapse_asignatura_edit'] = True
+                    params['collapse_asignaturas_edit_alumnos'] = True
                     flash_toast('Alumnos asignados', 'success')
-                    collapse_asignatura_edit_alumnos_contador=0
+                    collapse_asignatura_edit_alumnos_contador = 0
             session_sql.commit()  # NOTE agregado en caso de no modificar datos del alumno y solo asignacion de asignaturas
             # ****************************************
 
             if asignatura_edit_form.validate():
-                params['collapse_asignatura_edit']=True
-                params['anchor']='anchor_asi_' + str(hashids_encode(current_asignatura_id))
-                asignatura_edit=Asignatura(grupo_id=g.settings_current_user.grupo_activo_id, nombre=asignatura_edit_form.nombre.data.title(), apellidos=asignatura_edit_form.apellidos.data.title(), asignatura=asignatura_edit_form.asignatura.data.title(), email=asignatura_edit_form.email.data)
-                asignatura_sql=session_sql.query(Asignatura).filter(Asignatura.id == current_asignatura_id).first()
-                params['collapse_asignatura_edit']=False
-                asignatura_sql.asignatura=asignatura_edit_form.asignatura.data.title()
-                asignatura_sql.nombre=asignatura_edit_form.nombre.data.title()
-                asignatura_sql.apellidos=asignatura_edit_form.apellidos.data.title()
-                asignatura_sql.email=asignatura_edit_form.email.data
+                params['collapse_asignatura_edit'] = True
+                params['anchor'] = 'anchor_asi_' + str(hashids_encode(current_asignatura_id))
+                asignatura_edit = Asignatura(grupo_id=g.settings_current_user.grupo_activo_id, nombre=asignatura_edit_form.nombre.data.title(), apellidos=asignatura_edit_form.apellidos.data.title(), asignatura=asignatura_edit_form.asignatura.data.title(), email=asignatura_edit_form.email.data)
+                asignatura_sql = session_sql.query(Asignatura).filter(Asignatura.id == current_asignatura_id).first()
+                params['collapse_asignatura_edit'] = False
+                asignatura_sql.asignatura = asignatura_edit_form.asignatura.data.title()
+                asignatura_sql.nombre = asignatura_edit_form.nombre.data.title()
+                asignatura_sql.apellidos = asignatura_edit_form.apellidos.data.title()
+                asignatura_sql.email = asignatura_edit_form.email.data
                 if session_sql.is_modified(asignatura_sql):
                     flash_toast('Asignatura actualizada', 'success')
                     session_sql.commit()
@@ -2178,8 +2196,8 @@ def asignaturas_html(params={}):
 
         # XXX asignatura_delete_close
         if request.form['selector_button'] == 'selector_asignatura_delete_close':
-            params['asignatura_edit_link']=True
-            params['anchor']='anchor_asi_' + str(hashids_encode(current_asignatura_id))
+            params['asignatura_edit_link'] = True
+            params['anchor'] = 'anchor_asi_' + str(hashids_encode(current_asignatura_id))
             return redirect(url_for('asignaturas_html', params=dic_encode(params)))
 
     return render_template(
@@ -2189,32 +2207,32 @@ def asignaturas_html(params={}):
 
 @app.route('/user_add', methods=['GET', 'POST'])
 def user_add_html():
-    params={}
-    user_add_form=User_Add(request.form)
+    params = {}
+    user_add_form = User_Add(request.form)
     if request.method == 'POST':
         if user_add_form.validate():
-            user_username=session_sql.query(User).filter(func.lower(User.username) == func.lower(user_add_form.username.data)).first()
-            user_email=session_sql.query(User).filter(func.lower(User.email) == func.lower(user_add_form.email.data)).first()
+            user_username = session_sql.query(User).filter(func.lower(User.username) == func.lower(user_add_form.username.data)).first()
+            user_email = session_sql.query(User).filter(func.lower(User.email) == func.lower(user_add_form.email.data)).first()
             if user_username:
                 flash_toast(Markup('<strong>') + user_add_form.username.data + Markup('</strong>') + ' ya esta registrado', 'warning')
             elif user_email:
                 flash_toast(Markup('<strong>') + user_add_form.email.data + Markup('</strong>') + ' ya esta registrado', 'warning')
             else:
-                hashed_password=generate_password_hash(user_add_form.password.data, method='sha256')
-                user_add=User(username=user_add_form.username.data, password=hashed_password, email=user_add_form.email.data)
+                hashed_password = generate_password_hash(user_add_form.password.data, method='sha256')
+                user_add = User(username=user_add_form.username.data, password=hashed_password, email=user_add_form.email.data)
                 session_sql.add(user_add)
                 session_sql.flush()
                 session_sql.refresh(user_add)
                 # crea el registro en Settings.
-                settings_add=Settings(user_id=user_add.id)
+                settings_add = Settings(user_id=user_add.id)
                 session_sql.add(settings_add)
                 preguntas_active_default(user_add.id)  # inserta las preguntas activas by default
-                settings_add.diferencial_default=g.settings_global.diferencial_default
-                params['current_user_id']=user_add.id
+                settings_add.diferencial_default = g.settings_global.diferencial_default
+                params['current_user_id'] = user_add.id
 
                 if user_add.email == 'antonioelmatematico@gmail.com':
-                    settings_add.role='admin'
-                    settings_add.email_validated=True
+                    settings_add.role = 'admin'
+                    settings_add.email_validated = True
                 session_sql.commit()
                 send_email_validate_asincrono(user_add)
                 return redirect(url_for('login_validacion_email_html', params=dic_encode(params)))
@@ -2228,66 +2246,68 @@ def user_add_html():
 @app.route('/login_validacion_email', methods=['GET', 'POST'])
 def login_validacion_email_html(params={}):
     try:
-        params_old=dic_decode(params)
+        params_old = dic_decode(params)
     except:
-        params_old={}
+        params_old = {}
         abort(404)
-    params={}
-    params['anchor']=params_old.get('anchor', 'anchor_top')
-    params['email_validated_intentos']=params_old.get('email_validated_intentos', 5)
-    params['current_user_id']=params_old.get('current_user_id', 0)
-    current_user_id=params['current_user_id']
+    params = {}
+    params['anchor'] = params_old.get('anchor', 'anchor_top')
+    params['email_validated_intentos'] = params_old.get('email_validated_intentos', 5)
+    params['current_user_id'] = params_old.get('current_user_id', 0)
+    current_user_id = params['current_user_id']
 
     if request.method == 'POST':
-        params['current_user_id']=current_id_request('current_user_id')
-        current_user_id=params['current_user_id']
-        user=user_by_id(current_user_id)
-        email_validated_intentos_add=settings_by_id(current_user_id).email_validated_intentos + 1
-        settings_edit=settings_by_id(current_user_id)
-        settings_edit.email_validated_intentos=email_validated_intentos_add
+        params['current_user_id'] = current_id_request('current_user_id')
+        current_user_id = params['current_user_id']
+        user = user_by_id(current_user_id)
+        email_validated_intentos_add = settings_by_id(current_user_id).email_validated_intentos + 1
+        settings_edit = settings_by_id(current_user_id)
+        settings_edit.email_validated_intentos = email_validated_intentos_add
         if session_sql.is_modified(settings_edit):
             session_sql.commit()
-        params['email_validated_intentos']=email_validated_intentos_add
+        params['email_validated_intentos'] = email_validated_intentos_add
         send_email_validate_asincrono(user)
         return redirect(url_for('login_validacion_email_html', params=dic_encode(params)))
     try:
-        params['email_validated_intentos']=settings_by_id(current_user_id).email_validated_intentos
+        params['email_validated_intentos'] = settings_by_id(current_user_id).email_validated_intentos
     except:
         abort(404)
     return render_template('login_validacion_email.html', params=params)
 
 # XXX wellcome
+
+
 @app.route('/wellcome')
 @login_required
 def wellcome_html():
-    params={}
-    params['anchor']='anchor_top'
+    params = {}
+    params['anchor'] = 'anchor_top'
     return render_template('wellcome.html', params=params)
 
 
 @app.route('/email_validate/<params>')
 def email_validate_html(params={}):
     try:
-        params_old=dic_decode(params)
+        params_old = dic_decode(params)
     except:
-        params_old={}
+        params_old = {}
         abort(404)
-    params={}
-    params['current_user_id']=params_old.get('current_user_id', False)
-    current_user_id=params['current_user_id']
-    params['email_robinson']=params_old.get('email_robinson', False)
-    user_sql=session_sql.query(User).filter(User.id == current_user_id).first()
+    params = {}
+    params['current_user_id'] = params_old.get('current_user_id', False)
+    current_user_id = params['current_user_id']
+    params['email_robinson'] = params_old.get('email_robinson', False)
+    user_sql = session_sql.query(User).filter(User.id == current_user_id).first()
     if user_sql:
-        settings_edit=settings_by_id(user_sql.id)
+        settings_edit = settings_by_id(user_sql.id)
         if params['email_robinson']:
-            settings_edit.email_robinson=True
+            settings_edit.email_robinson = True
             # if session_sql.is_modified(settings_edit):
             session_sql.commit()
             return redirect(url_for('lista_robinson_html'))
         else:
-            settings_edit.email_validated=True
-            settings_edit.email_robinson=False
-            settings_edit.email_validated_intentos=1
+            settings_edit.email_validated = True
+            settings_edit.email_robinson = False
+            settings_edit.email_validated_intentos = 1
             # if session_sql.is_modified(settings_edit):
             session_sql.commit()
             login_user(user_sql, remember=True)
@@ -2300,7 +2320,7 @@ def email_validate_html(params={}):
 
 @app.route('/lista_robinson')
 def lista_robinson_html():
-    params={}
+    params = {}
     return render_template('lista_robinson.html', params=params)
 
 
@@ -2308,25 +2328,25 @@ def lista_robinson_html():
 @app.route('/password_reset_request/<params>', methods=['GET', 'POST'])
 def password_reset_request_html(params={}):
     try:
-        params_old=dic_decode(params)
+        params_old = dic_decode(params)
     except:
-        params_old={}
+        params_old = {}
         abort(404)
-    params={}
-    params['anchor']=params_old.get('anchor', 'anchor_top')
-    params['user_check']=params_old.get('user_check', False)
-    params['email_robinson']=params_old.get('email_robinson', False)
+    params = {}
+    params['anchor'] = params_old.get('anchor', 'anchor_top')
+    params['user_check'] = params_old.get('user_check', False)
+    params['email_robinson'] = params_old.get('email_robinson', False)
     if request.method == 'POST':
-        password_reset_request_form=Password_Reset_Request(request.form)
+        password_reset_request_form = Password_Reset_Request(request.form)
         if password_reset_request_form.validate():
-            user_sql=session_sql.query(User).filter_by(username=password_reset_request_form.username.data, email=password_reset_request_form.email.data).first()
+            user_sql = session_sql.query(User).filter_by(username=password_reset_request_form.username.data, email=password_reset_request_form.email.data).first()
             if user_sql:
                 if settings_by_id(user_sql.id).email_robinson:
-                    params['email_robinson']=True
+                    params['email_robinson'] = True
                     flash_toast('Usuario en lista Robinson.', 'warning')
                     return redirect(url_for('password_reset_request_html', params=dic_encode(params)))
                 send_email_password_reset_request_asincrono(user_sql.id)
-                params['user_check']=True
+                params['user_check'] = True
                 return redirect(url_for('password_reset_request_html', params=dic_encode(params)))
             else:
                 flash_toast('Usurio no registrado con este email.', 'warning')
@@ -2340,24 +2360,24 @@ def password_reset_request_html(params={}):
 @app.route('/password_reset/<params>', methods=['GET', 'POST'])
 def password_reset_html(params={}):
     try:
-        params_old=dic_decode(params)
+        params_old = dic_decode(params)
     except:
-        params_old={}
+        params_old = {}
         abort(404)
-    params={}
-    params['anchor']=params_old.get('anchor', 'anchor_top')
-    params['current_user_id']=params_old.get('current_user_id', 0)
+    params = {}
+    params['anchor'] = params_old.get('anchor', 'anchor_top')
+    params['current_user_id'] = params_old.get('current_user_id', 0)
     if request.method == 'POST':
-        password_reset_form=Password_Reset(request.form)
+        password_reset_form = Password_Reset(request.form)
         if password_reset_form.validate():
-            current_user_id=current_id_request('current_user_id')
-            params['current_user_id']=current_user_id
-            user_sql=user_by_id(current_user_id)
+            current_user_id = current_id_request('current_user_id')
+            params['current_user_id'] = current_user_id
+            user_sql = user_by_id(current_user_id)
             if user_sql:
-                hashed_password=generate_password_hash(password_reset_form.password.data, method='sha256')
-                user_sql.password=hashed_password
-                settings_by_id(current_user_id).email_robinson=False
-                params['password_reset']=True
+                hashed_password = generate_password_hash(password_reset_form.password.data, method='sha256')
+                user_sql.password = hashed_password
+                settings_by_id(current_user_id).email_robinson = False
+                params['password_reset'] = True
                 session_sql.commit
                 return redirect(url_for('login_html', params=dic_encode(params)))
             else:
@@ -2373,47 +2393,47 @@ def password_reset_html(params={}):
 @app.route('/login/<params>', methods=['GET', 'POST'])
 def login_html(params={}):
     try:
-        params_old=dic_decode(params)
+        params_old = dic_decode(params)
     except:
-        params_old={}
+        params_old = {}
         abort(404)
-    params={}
-    params['anchor']=params_old.get('anchor', 'anchor_top')
-    params['ban']=params_old.get('ban', False)
-    params['email_validated']=params_old.get('email_validated', False)
-    params['login_fail']=params_old.get('login_fail', False)
-    params['password_reset']=params_old.get('password_reset', False)
-    params['email_robinson']=params_old.get('email_robinson', False)
+    params = {}
+    params['anchor'] = params_old.get('anchor', 'anchor_top')
+    params['ban'] = params_old.get('ban', False)
+    params['email_validated'] = params_old.get('email_validated', False)
+    params['login_fail'] = params_old.get('login_fail', False)
+    params['password_reset'] = params_old.get('password_reset', False)
+    params['email_robinson'] = params_old.get('email_robinson', False)
     session.clear()
-    login_form=User_Login(request.form)
+    login_form = User_Login(request.form)
     if request.method == 'POST':
         if login_form.validate():
-            user_sql=session_sql.query(User).filter_by(username=login_form.username.data).first()
+            user_sql = session_sql.query(User).filter_by(username=login_form.username.data).first()
             if params['ban']:
                 return render_template('login.html', user_login=login_form, params=params)
 
             if user_sql:
                 if check_password_hash(user_sql.password, login_form.password.data):
                     login_user(user_sql, remember=login_form.remember.data)
-                    settings=settings_by_id(user_sql.id)
-                    settings.visit_last=datetime.datetime.now()
-                    settings.visit_number=settings.visit_number + 1
+                    settings = settings_by_id(user_sql.id)
+                    settings.visit_last = datetime.datetime.now()
+                    settings.visit_number = settings.visit_number + 1
                     session_sql.commit()
                     if settings.ban:
-                        params['ban']=True
-                        params['login_fail']=False
+                        params['ban'] = True
+                        params['login_fail'] = False
                         logout_user()
                         return redirect(url_for('login_html', params=dic_encode(params)))
                     if settings.email_robinson:
-                        params['email_robinson']=True
-                        params['login_fail']=False
+                        params['email_robinson'] = True
+                        params['login_fail'] = False
                         logout_user()
                         return redirect(url_for('login_html', params=dic_encode(params)))
                     if not settings.email_validated:
-                        params['current_user_id']=user_sql.id
-                        params['login_fail']=False
-                        params['email_validated_intentos']=settings.email_validated_intentos
-                        settings.email_validated_intentos=settings.email_validated_intentos + 1
+                        params['current_user_id'] = user_sql.id
+                        params['login_fail'] = False
+                        params['email_validated_intentos'] = settings.email_validated_intentos
+                        settings.email_validated_intentos = settings.email_validated_intentos + 1
                         session_sql.commit()
                         logout_user()
                         return redirect(url_for('login_validacion_email_html', params=dic_encode(params)))
@@ -2421,29 +2441,29 @@ def login_html(params={}):
                         pass
                     flash_toast('Bienvenido ' + Markup('<strong>') + login_form.username.data + Markup('</strong>'), 'success')
                     if not settings.grupo_activo_id:
-                        params['login']=True  # NOTE Para activar como activo el primer grupo creado y redirect a alumnos (por facilidad para un nuevo usuario)
+                        params['login'] = True  # NOTE Para activar como activo el primer grupo creado y redirect a alumnos (por facilidad para un nuevo usuario)
                         return redirect(url_for('settings_grupos_html', params=dic_encode(params)))
                     return redirect(url_for('index_html'))
                 else:
-                    login_form.password.errors=['']
+                    login_form.password.errors = ['']
                     flash_toast('Contraseña incorrecta', 'warning')
-                    params['login_fail']=True
+                    params['login_fail'] = True
                     return render_template('login.html', user_login=login_form, params=params)
             else:
-                login_form.username.errors=['']
+                login_form.username.errors = ['']
                 flash_toast('Usuario no registrado', 'warning')
-                params['login_fail']=True
+                params['login_fail'] = True
                 return render_template('login.html', user_login=login_form, params=params)
         else:
             flash_wtforms(login_form, flash_toast, 'warning')
-            params['login_fail']=True
+            params['login_fail'] = True
             return render_template('login.html', user_login=login_form, params=params)
     return render_template('login.html', user_login=User_Login(), params=params)
 
 
 @app.route('/logout')
 def logout_html():
-    params={}
+    params = {}
     logout_user()
     flash_toast('Session cerrada', 'success')
     return render_template('logout.html', params=params)

@@ -19,7 +19,13 @@
 				<div class="col-sm-12 col-md-6 mb-2">
 					<a id="anchor_pregunta_{{hashids_encode_pregunta_id}}"></a>
 					<div class="card border-gray z-depth-1-1-less mb-2">
-						<div class="card-header p-2">{{pregunta.enunciado}}</div>
+						<div class="card-header p-2">
+							{{pregunta.enunciado}}
+							{% if pregunta.descripcion %}
+							<br><span class="small text-gray">{{pregunta.descripcion}}</span>
+							{% endif %}
+
+						</div>
 						<div>
 							<div class="range-slider_cualitativo">
 								<div id="range-slider-value_cualitativo" class="range-slider-value_cualitativo"></div>
