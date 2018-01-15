@@ -59,9 +59,11 @@
 {% with %}
 <div class="row">
 	<div class="col-sm-12">
-		<button role="button" type="submit" name="selector_button" value="selector_guardar_cuestionario" class="btn btn-outline-dark" title="Guardar cuestionario">
-			<i class="material-icons vertical-center pr-1">save</i>Guardar cuestionario [1/2]
-		</button>
+		{% if not informe %}
+			<button role="button" type="submit" name="selector_button" value="selector_guardar_cuestionario" class="btn btn-outline-dark" title="Guardar cuestionario">
+				<i class="material-icons vertical-center pr-1">save</i>Guardar cuestionario [1/2]
+			</button>
+		{% endif %}
 	</div>
 </div>
 {% endwith %}

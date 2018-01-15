@@ -901,14 +901,19 @@ def admin_cuestionario_html(params={}):
                 categoria_edit = Categoria(enunciado=categoria_edit_form.enunciado.data,
                                            orden=categoria_edit_form.orden.data, color=categoria_edit_form.color.data)
                 categoria = session_sql.query(Categoria).filter(Categoria.id == current_categoria_id).first()
-                if categoria.enunciado.lower() != categoria_edit.enunciado.lower() or categoria.orden != categoria_edit.orden or categoria.color != categoria_edit.color:
-                    if categoria.enunciado.lower() != categoria_edit.enunciado.lower():
-                        categoria.enunciado = categoria_edit.enunciado
-                    if categoria.orden != categoria_edit.orden:
-                        categoria.orden = categoria_edit.orden
-                    if categoria.color != categoria_edit.color:
-                        categoria.color = categoria_edit.color
-                    flash_toast('Categoria actualizada', 'success')
+                # if categoria.enunciado.lower() != categoria_edit.enunciado.lower() or categoria.orden != categoria_edit.orden or categoria.color != categoria_edit.color:
+                #     if categoria.enunciado.lower() != categoria_edit.enunciado.lower():
+                #         categoria.enunciado = categoria_edit.enunciado
+                #     if categoria.orden != categoria_edit.orden:
+                #         categoria.orden = categoria_edit.orden
+                #     if categoria.color != categoria_edit.color:
+                #         categoria.color = categoria_edit.color
+                #     flash_toast('Categoria actualizada', 'success')
+
+                categoria.enunciado = categoria_edit.enunciado
+                categoria.orden = categoria_edit.orden
+                categoria.color = categoria_edit.color
+
                 if request.form['selector_button'] == 'selector_move_down_categoria':
                     for k in range(1, 500):
                         categoria_down = session_sql.query(Categoria).filter(Categoria.orden == (categoria.orden + k)).first()
@@ -916,7 +921,7 @@ def admin_cuestionario_html(params={}):
                             move_down = int(str(categoria.orden + k))
                             categoria.orden = categoria.orden + k
                             categoria_down.orden = categoria.orden - k
-                            flash_toast('Categoria bajada', 'success')
+                            # flash_toast('Categoria bajada', 'success')
                             break
 
                 if request.form['selector_button'] == 'selector_move_up_categoria':
@@ -926,10 +931,12 @@ def admin_cuestionario_html(params={}):
                             move_up = int(str(categoria.orden - k))
                             categoria.orden = categoria.orden - k
                             categoria_down.orden = categoria.orden + k
-                            flash_toast('Categoria subida', 'success')
+                            # flash_toast('Categoria subida', 'success')
                             break
 
-                session_sql.commit()
+                if session_sql.is_modified(categoria):
+                    flash_toast('Categoria actualizada', 'success')
+                    session_sql.commit()
                 return redirect(url_for('admin_cuestionario_html', params=dic_encode(params)))
             else:
                 flash_wtforms(categoria_edit_form, flash_toast, 'warning')
@@ -1069,7 +1076,7 @@ def admin_cuestionario_html(params={}):
                             move_down = int(str(pregunta.orden + k))
                             pregunta.orden = pregunta.orden + k
                             pregunta_down.orden = pregunta.orden - k
-                            flash_toast('Pregunta bajada', 'success')
+                            # flash_toast('Pregunta bajada', 'success')
                             break
 
                 if request.form['selector_button'] == 'selector_move_up_pregunta':
@@ -1079,7 +1086,7 @@ def admin_cuestionario_html(params={}):
                             move_up = int(str(pregunta.orden - k))
                             pregunta.orden = pregunta.orden - k
                             pregunta_down.orden = pregunta.orden + k
-                            flash_toast('Pregunta subida', 'success')
+                            # flash_toast('Pregunta subida', 'success')
                             break
                 if session_sql.is_modified(pregunta):
                     flash_toast('Pregunta actualizada', 'success')
