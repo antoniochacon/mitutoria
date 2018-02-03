@@ -1,6 +1,6 @@
 <a id="anchor_hist"></a>
 {% with %}
-{% set tutorias_by_grupo_id_incoming = tutorias_by_grupo_id(g.settings_current_user.grupo_activo_id, activa = False, deleted = False)%}
+{% set tutorias_by_grupo_id_incoming = tutorias_by_grupo_id_descent(g.settings_current_user.grupo_activo_id, activa = False, deleted = False)%}
 {% set tutorias_by_grupo_id_incoming_count = tutorias_by_grupo_id_incoming | count %}
 <a data-toggle="collapse" class="collapse_header py-1 px-2 bg-gray text-white" role="tab" data-parent="#parent_tutorias_historial" href="#collapse_tutorias_historial" aria-expanded="false">
 	<i class="material-icons vertical-center">view_list</i>
