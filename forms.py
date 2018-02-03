@@ -1,9 +1,8 @@
 from wtforms import Form, StringField, TextField, PasswordField, BooleanField, validators, DateField, DateTimeField, IntegerField, ValidationError, HiddenField
 from wtforms.fields.html5 import EmailField
-from wtforms.ext.django.fields import QuerySetSelectField
-import datetime
-
-from flask import g
+from wtforms.ext.django.fields import QuerySetSelectField # FIXME creo que sobra
+import datetime # FIXME creo que sobra
+from flask import g # FIXME creo que sobra
 
 
 class User_Add (Form):
