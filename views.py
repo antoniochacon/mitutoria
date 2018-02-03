@@ -263,7 +263,7 @@ def tutorias_html(params={}):
 
     # FIXME mientras que haya un mantenimiento_nocturno hay que usar esto otro
     mantenimiento_papelera()
-    mantenimiento_papelera()
+    mantenimiento_historial()
 
     # XXX sincronizar con google calendar
     tutoria_calendar_sync()  # NOTE Anular para testear lambda_mantenimiento
