@@ -1,0 +1,278 @@
+{% extends '_layout.html' %}
+{% block body %}
+	<script type="text/javascript">
+		function closePrint() {
+			document.body.removeChild(this.__container__);
+		}
+		function setPrint() {
+			this.contentWindow.__container__ = this;
+			this.contentWindow.onbeforeunload = closePrint;
+			this.contentWindow.onafterprint = closePrint;
+			this.contentWindow.focus(); // Required for IE
+			this.contentWindow.print();
+		}
+		function printPage(sURL) {
+			var oHiddFrame = document.createElement("iframe");
+			oHiddFrame.onload = setPrint;
+			oHiddFrame.style.visibility = "hidden";
+			oHiddFrame.style.position = "fixed";
+			oHiddFrame.style.right = "0";
+			oHiddFrame.style.bottom = "0";
+			oHiddFrame.src = sURL;
+			document.body.appendChild(oHiddFrame);
+		}
+	</script>
+	{%from '_macro.html' import nav_bar_top, titulo_1%}
+	{%from '_macro_highcharts.html' import highcharts_asignatura, highcharts_cuestionario, highcharts_asignaturas, highcharts_evolucion%}
+	{{ nav_bar_top(link_active='',params=params, current_user=current_user) }}
+	<div class="paper bg-white padding_3 py-3">
+		{% if grupo and alumno and tutoria %}
+			{{titulo_1(bg_color='bg-dark', titulo='Análisis gráfico de la tutoría')}}
+			<form action="{{ url_for('tutoria_edit_html') }}" method="POST">
+				{% with %}
+				{% set tutoria_incoming = tutoria_incoming(tutoria.id) %}
+				<div class="row mb-2 mt-2">
+					<div class="col-sm-12 col-md-6 mb-2">
+						<div>
+							<span class="text-mutted">Alumno:
+							</span>
+							<span class="h6 {% if not tutoria.activa or tutoria.deleted %}text-mutted{% endif %}">
+								{{alumno.apellidos}},
+								{{alumno.nombre}}
+							</span>
+						</div>
+						<div>
+							<span class="small {% if tutoria.activa %}text-mutted{% else %}text-info{% endif %}">Fecha:
+							</span>
+							<span class="{% if not tutoria.activa or tutoria.deleted %}text-mutted{% endif %}">
+								{{translate_fecha(tutoria.fecha.strftime('%b')) | capitalize}}
+								{{translate_fecha(tutoria.fecha.strftime('%A') | capitalize)}}
+								{{tutoria.fecha.strftime('%d')}}
+								[{{tutoria.hora.strftime('%H:%M')}}
+								h]
+							</span>
+							<br>
+						</div>
+					</div>
+					<input type="hidden" name="current_tutoria_id" value="{{hashids_encode(tutoria.id)}}">
+					<div class="col-sm-12 col-md-6">
+						{% if tutoria.deleted %}
+						<div class="btn-group" role="group">
+								<button role="button" type="submit" name="selector_button" value="selector_tutoria_restaurar" class="btn btn-sm btn-outline-dark ml-1" title="Restaurar tutoría">
+									Restaurar
+								</button>
+								<a data-toggle="collapse" href="#tutoria_delete_confirmar_{{hashids_encode(tutoria.id)}}" class="btn btn-outline-dark btn-sm link_without_pointer rounded-right" aria-expanded="false" title="Eliminar tutoria definitivamente">
+									<i class="material-icons vertical-center">delete_forever</i>
+								</a>
+								{% include 'tutorias_delete_confirmar_block.html' %}
+						</div>
+
+
+						{% else %}
+							<div class="btn-group mb-1" role="group">
+								<a data-toggle="collapse" href="#tutoria_edit_{{hashids_encode(tutoria.id)}}" class="btn {% if tutoria.activa %} btn-outline-dark{% else %} btn-outline-mutted{% endif %} btn-sm link_without_pointer" aria-expanded="false" title="Cambiar fecha y hora">
+									<i class="material-icons vertical-center {% if tutoria.activa %} color-gray-darken-1 {% endif %}">edit</i>
+								</a>
+								<a data-toggle="collapse" href="#tutoria_reenviar_{{hashids_encode(tutoria.id)}}" class="btn {% if tutoria.activa %} btn-outline-dark{% else %} btn-outline-mutted{% endif %} btn-sm link_without_pointer" aria-expanded="false" title="Re-enviar tutoria">
+									<i class="material-icons vertical-center {% if tutoria.activa %} color-gray-darken-1 {% endif %}">email</i>
+								</a>
+								{% if tutoria.activa %}
+									<button role="button" type="submit" name="selector_button" value="selector_tutoria_archivar" class="btn btn-sm {% if tutoria.activa %} btn-outline-dark{% else %} btn-outline-mutted{% endif %}" title="Archivar tutoria">
+										<i class="material-icons vertical-center {% if tutoria.activa %} color-gray-darken-1 {% endif %}">file_download</i>
+									</button>
+								{% else %}
+									<button role="button" type="submit" name="selector_button" value="selector_tutoria_activar" class="btn btn-outline-dark btn-sm" title="Activar tutoria">
+										<i class="material-icons vertical-center">file_upload</i>
+									</button>
+								{% endif %}
+								<span
+									onclick="printPage('/analisis_paper/{{dic_encode_args({'current_tutoria_id': tutoria.id})}}');"
+									role="button"
+									class="link_without_pointer btn btn-sm {% if tutoria.activa %} btn-outline-dark{% else %} btn-outline-mutted{% endif %}"
+									title="Imprimir">
+									<i class="material-icons vertical-center {% if tutoria.activa %} color-gray-darken-1 {% endif %}">print</i>
+								</span>
+
+								<button class="btn btn-outline-dark btn-sm" type="submit" name="selector_button" value="selector_tutoria_enviar_papelera" title="Enviar a papelera">
+									<i class="material-icons vertical-center">delete_sweep</i>
+								</button>
+							</div>
+						{% endif %}
+						<span class="badge {% if tutoria.activa and not tutoria.deleted %}badge-secondary{% else %}badge-info text-white{% endif %} float-right" title="{{tutoria_incoming['porcentaje']}}% de los informes recibidos">
+							<span class="align-middle pr-1 {% if tutoria.activa and not tutoria.deleted %}color_secondary_lighten{% else %}badge-info text-mutted{% endif %}">{{stats['asignaturas_recibidas_lista'] | count}}
+								|
+								{{stats['asignaturas_solicitadas_horario_lista'] | count}}
+							</span>
+							<span class="h4 align-middle">{{tutoria_incoming['porcentaje']}}%</span>
+						</span>
+					</div>
+				</div>
+				<div class="progress rounded-0 mb-3">
+					<div
+						class="progress-bar {% if tutoria.activa and not tutoria.deleted %} bg-secondary progress-bar-striped progress-bar-animated {% else %} bg-mutted {% endif %}"
+						role="progressbar"
+						aria-valuemin="0"
+						aria-valuemax="100"
+						style="height:5px; width: {{tutoria_incoming['porcentaje']}}%;"></div>
+				</div>
+				{% include 'analisis_tutoria_edit_block.html' %}
+				{% include 'analisis_re_enviar_block.html' %}
+				<a id="anchor_cues"></a>
+				<a data-toggle="collapse" href="#analisis_cuestionario" class="collapse_header_padding border_bottom" aria-expanded="true" title="Analisis del cuestionario">
+					<i class="material-icons align-middle">expand_more</i>
+					Cuestionario
+					{% if g.settings_current_user.show_analisis_cuestionario_detallado %}
+						{% include 'analisis_badge_grafico_avanzado_block.html' %}
+					{% endif %}
+				</a>
+				<div class="collapse {% if tutoria.activa or (params['show_analisis_cuestionario_detallado'] and not params['comentario_edit']) %}show{% endif %}" id="analisis_cuestionario">
+					<div class="col-sm-12 my-2 text-justify small">
+						Comparativa de la media de cada pregunta del cuestionario.
+					</div>
+					<div class="col">
+						{{highcharts_cuestionario(char_id='cuestionario', color='#ffa000', grupo=grupo, tutoria_id=tutoria.id, stats=stats,grupo_stats=grupo_stats)}}
+					</div>
+					{% if g.settings_current_user.show_analisis_avanzado %}
+					<div class="d-flex flex-row-reverse mb-2">
+						<input type="hidden" name="settings_show_analisis_cuestionario_detallado" value="{{g.settings_current_user.show_analisis_cuestionario_detallado}}">
+						<button
+							role="button"
+							type="submit"
+							name="selector_button"
+							value="settings_show_analisis_cuestionario_detallado"
+							class="btn {% if g.settings_current_user.show_analisis_cuestionario_detallado %} btn-outline-dark {% else %} btn-outline-mutted {% endif %} btn-sm float-right"
+							title="{% if g.settings_current_user.show_analisis_cuestionario_detallado %} Desactivar {% else %} Activar {% endif %}gráfico avanzado">
+							<i class="material-icons vertical-center">insert_chart</i>
+						</button>
+					</div>
+					{% endif %}
+				</div>
+				<a id="anchor_comp"></a>
+				<a data-toggle="collapse" href="#analisis_comparativo_asignaturas" class="collapse_header_padding border_bottom" aria-expanded="false" title="Analisis comparativo de asignaturas">
+					<i class="material-icons vertical-center">expand_more</i>
+					Comparativa de asignaturas
+					{% if g.settings_current_user.show_analisis_comparativo_detallado %}
+						{% include 'analisis_badge_grafico_avanzado_block.html' %}
+					{% endif %}
+				</a>
+				<div class="collapse {% if params['show_analisis_comparativo_detallado'] and not params['comentario_edit'] %} show {% endif %}" id="analisis_comparativo_asignaturas">
+					<div class="col-sm-12 my-2 text-justify small">
+						Comparativa de la media de cada asignatura de {{alumno.nombre}}.
+					</div>
+					<div class="col">
+						{{highcharts_asignaturas(char_id='asignaturas', color_1='#ec407a',color_2='#f48fb1', grupo=grupo, tutoria_id=tutoria.id, stats=stats, grupo_stats=grupo_stats)}}
+					</div>
+					{% if g.settings_current_user.show_analisis_avanzado %}
+					<div class="d-flex flex-row-reverse mb-2">
+						<input type="hidden" name="settings_show_analisis_comparativo_detallado" value="{{g.settings_current_user.show_analisis_comparativo_detallado}}">
+						<button
+							role="button"
+							type="submit"
+							name="selector_button"
+							value="settings_show_analisis_comparativo_detallado"
+							class="btn {% if g.settings_current_user.show_analisis_comparativo_detallado %} btn-outline-dark {% else %} btn-outline-mutted {% endif %} btn-sm float-right"
+							title="{% if g.settings_current_user.show_analisis_comparativo_detallado %} Desactivar {% else %} Activar {% endif %}gráfico avanzado">
+							<i class="material-icons vertical-center">insert_chart</i>
+						</button>
+					</div>
+					{% endif %}
+				</div>
+
+				<a id="anchor_deta"></a>
+				<a data-toggle="collapse" href="#analisis_detallado_asignaturas" class="collapse_header_padding border_bottom" aria-expanded="false" title="Analisis detallado por asignaturas">
+					<i class="material-icons vertical-center">expand_more</i>
+					Asignaturas detalladas
+					{% if g.settings_current_user.show_analisis_asignaturas_detallado %}
+						{% include 'analisis_badge_grafico_avanzado_block.html' %}
+					{% endif %}
+				</a>
+
+				<div class="collapse mt-2 {% if params['show_analisis_asignaturas_detallado'] or params['comentario_edit'] %} show {% endif %}" id="analisis_detallado_asignaturas">
+					<div class="col-sm-12 my-2 text-justify small">
+						Comparativa detallada de cada asignatura representando media del grupo, media la asignatura y media de las notas de dicha asignatura de {{alumno.nombre}}
+					</div>
+					{% if not stats['asignaturas_recibidas_lista'] %}
+						<div class="small">No se han recibido informes para esta tutoría.</div>
+					{% else %}
+						{% if not comentarios_stats and not g.settings_current_user.show_analisis_asignaturas_detallado %}
+							<div class="small pl-3 mb-2">No se han recibido comentarios para esta tutoría.</div>
+						{% endif %}
+
+					{% endif %}
+					<div class="row mt-3">
+						{% for asignatura in stats['asignaturas_recibidas_lista'] %}
+							{% with %}
+							{% set informe_by_tutoria_id_by_asignatura_id_sql = informe_by_tutoria_id_by_asignatura_id(tutoria.id, asignatura.id) %}
+							<a id="anchor_comentario_edit_{{hashids_encode(informe_by_tutoria_id_by_asignatura_id_sql.id)}}"></a>
+							{% include 'analisis_asginatura_detallado_block.html' %}
+							{% endwith %}
+						{% endfor %}
+					</div>
+					<div class="d-flex flex-row-reverse mb-2">
+						<input type="hidden" name="settings_show_analisis_asignaturas_detallado" value="{{g.settings_current_user.show_analisis_asignaturas_detallado}}">
+						<input type="hidden" name="settings_informe_comentario_edit_mode" value="{{g.settings_current_user.informe_comentario_edit_mode}}">
+						<div class="btn-group" role="group">
+							<button
+								role="button"
+								type="submit"
+								name="selector_button"
+								value="settings_informe_comentario_edit_mode"
+								class="btn {% if g.settings_current_user.informe_comentario_edit_mode %} btn-outline-dark {% else %} btn-outline-mutted {% endif %} btn-sm float-right"
+								title="{% if g.settings_current_user.informe_comentario_edit_mode %}Desactivar {% else %} Activar {% endif %}edición de observaciones">
+								<i class="material-icons vertical-center">comment</i>
+							</button>
+							{% if g.settings_current_user.show_analisis_avanzado %}
+							<button
+								role="button"
+								type="submit"
+								name="selector_button"
+								value="settings_show_analisis_asignaturas_detallado"
+								class="btn {% if g.settings_current_user.show_analisis_asignaturas_detallado %} btn-outline-dark {% else %} btn-outline-mutted {% endif %} btn-sm float-right"
+								title="{% if g.settings_current_user.show_analisis_asignaturas_detallado %}Desactivar {% else %} Activar {% endif %}gráfico avanzado">
+								<i class="material-icons vertical-center">insert_chart</i>
+							</button>
+							{% endif %}
+						</div>
+					</div>
+				</div>
+				<a data-toggle="collapse" href="#analisis_evoluacion" class="collapse_header_padding border_bottom" aria-expanded="false" title="Analisis en el tiempo">
+					<i class="material-icons vertical-center">expand_more</i>
+					Evolución
+				</a>
+				<div class="collapse" id="analisis_evoluacion">
+					<div class="col-sm-12 my-2 text-justify small">
+						Comparativa de las tutorias de {{alumno.nombre}} con respecto al resto de tutorías de su grupo a lo largo del curso.
+					</div>
+					<div class="col">
+						{{highcharts_evolucion(char_id='evalucion', color_1='#ec407a',color_2='#f48fb1', grupo=grupo, alumno=alumno, evolucion_stats=evolucion_stats)}}
+					</div>
+				</div>
+
+				<a data-toggle="collapse" href="#analisis_acuerdo" class="collapse_header_padding border_bottom" aria-expanded="false" title="acuerdo">
+					<i class="material-icons vertical-center">expand_more</i>
+					Acuerdos
+				</a>
+				<div class="collapse {% if tutoria.acuerdo %}show{% endif %}" id="analisis_acuerdo">
+					<div class="form-group col pt-3 pb-2">
+						<textarea class="form-control" name="acuerdo" placeholder="Escriba aquí sus acuerdos">{% if tutoria.acuerdo %}{{-tutoria.acuerdo-}}{% endif %}</textarea>
+					</div>
+					<div class="col">
+						<button role="button" type="submit" name="selector_button" value="selector_acuerdo_save" class="btn btn-outline-dark btn-sm" title="Guardar acuerdo">
+							<i class="material-icons vertical-center mr-1">local_post_office</i>Guardar acuerdo
+						</button>
+					</div>
+				</div>
+				{% endwith %}
+			</form>
+		</div>
+	{% else %}
+		<div class="padding_3 text-warning text-center">
+			Esta tutoría ha sido descartada.
+			<br><br>
+			<div class="btn-group" role="group">
+				<a class="btn btn-outline-dark btn-sm" href="{{ url_for('index_html') }}" role="button">ir a inicio</a>
+			</div>
+		</div>
+	{% endif %}
+</div>
+{% endblock %}

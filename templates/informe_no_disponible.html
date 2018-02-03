@@ -1,0 +1,20 @@
+{% extends '_layout.html' %}
+{% block body %}
+	{%from '_macro.html' import nav_bar_top, titulo_1%}
+	{{nav_bar_top(current_user=current_user)}}
+	<div class="container">
+		<div class="paper bg-white padding_3 py-3">
+			{{titulo_1(bg_color='bg-dark', titulo='Informe de tutoría anulado')}}
+			<div class="text-center mt-3">
+				<span class="text-warning">
+				Esta tutoría ha sido anulada.
+				</span>
+				<br>
+				<span class="small">
+					Si tiene alguna duda pongase en contacto con el tutor.
+				</span>
+				<!-- <a href="mailto:joe@example.com?subject=feedback">email me</a> -->
+			</div>
+		</div>
+	</div>
+{% endblock %}

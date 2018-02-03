@@ -1,0 +1,22 @@
+{% with %}
+{% set grupo_activo = grupo_activo() %}
+{% set tutorias_by_grupo_id = tutorias_by_grupo_id(grupo_activo.id, deleted = False) %}
+<a data-toggle="collapse" class="collapse_header pl-1 pr-2 py-1 bg-gray text-white" href="#analisis_evolucion" aria-expanded="false">
+	<i class="material-icons vertical-center">expand_more</i>
+	Evolución equipo educativo
+</a>
+<div id="analisis_evolucion" class="collapse">
+	<div class="padding_2 mt-2">
+		<div class="text-justify small">
+			Describe la evolución de la participación de tu equipo educativo a lo largo del tiempo.
+		</div>
+		{% if tutorias_by_grupo_id%}
+			{{highcharts_admin_profesores_activos_evolucion(char_id='analisis_evolucion_participacion', y_axe_titulo='profesores', tooltip_text='participacion', color='#BA5FD3', df_data=stats['evolucion_tutorias_exito_grupo'], df_media=stats['evolucion_tutorias_exito_grupo_media'])}}
+		{% else %}
+			<div class="small text-warning">
+				Para generar el gráfico, primero tienes que haber creado alguna tutoría.
+			</div>
+		{% endif %}
+	</div>
+</div>
+{% endwith %}

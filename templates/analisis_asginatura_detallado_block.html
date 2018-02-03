@@ -1,0 +1,76 @@
+{% if g.settings_current_user.show_analisis_asignaturas_detallado or(not g.settings_current_user.show_analisis_asignaturas_detallado and (informe_by_tutoria_id_by_asignatura_id_sql.comentario or informe_by_tutoria_id_by_asignatura_id_sql.comentario_editado)) %}
+	<div class="col-sm-12 {% if g.settings_current_user.show_analisis_asignaturas_detallado %}col-md-6 col-lg-4{% else %}col-md-6 col-lg-6{% endif %} mb-2">
+		<div class="card border-gray z-depth-1-1-less mb-2">
+			<div class="card-header text-center strong bg-info text-dark py-1">
+				<div class="text-truncate">
+					{{asignatura.asignatura}}
+					<span class="small">
+						|
+						{{asignatura.nombre}}</span>
+				</div>
+			</div>
+			{% if g.settings_current_user.show_analisis_asignaturas_detallado %}
+				<div class="card-body">
+					{% if diferencial_check(g.settings_current_user.diferencial, respuestas_pregunta_alumno_lista(tutoria.id, asignatura.id, stats['asignaturas_recibidas_lista'], stats['preguntas_con_respuesta_lista'])['respuestas_pregunta_media'], notas_pruebas_evaluables_alumno(
+						tutoria.id,
+						asignatura.id
+					)['notas_alumno_media']) %}
+						<span class="badge text-white badge-secondary float-right">
+							resultados !
+						</span>
+					{% endif %}
+					{% if diferencial_check(g.settings_current_user.diferencial, respuestas_tutoria_media_stats, respuestas_pregunta_alumno_lista(tutoria.id, asignatura.id, stats['asignaturas_recibidas_lista'], stats['preguntas_con_respuesta_lista'])['respuestas_pregunta_media']) %}
+						<span class="badge badge-primary float-right mr-1">
+							actitud !
+						</span>
+					{% endif %}
+					{{highcharts_asignatura(char_id=asignatura.asignatura, asignatura=asignatura, alumno=alumno, grupo=grupo, tutoria_id=tutoria.id, stats=stats, grupo_stats=grupo_stats, notas_pruebas_evaluables_alumno=notas_pruebas_evaluables_alumno(tutoria.id, asignatura.id), notas_pruebas_evaluables_grupo=notas_pruebas_evaluables_grupo(tutoria.id, asignatura.id), respuestas_tutoria_media_stats=respuestas_tutoria_media_stats)}}
+				</div>
+			{% endif %}
+			{% if informe_by_tutoria_id_by_asignatura_id_sql.comentario or informe_by_tutoria_id_by_asignatura_id_sql.comentario_editado or g.settings_current_user.informe_comentario_edit_mode %}
+					<nav class="nav nav-tabs small mx-2 {% if not g.settings_current_user.show_analisis_asignaturas_detallado %} mt-2 {% endif %}">
+						<a
+						class="nav-link active px-2 py-1 {% if not g.settings_current_user.informe_comentario_edit_mode %} link_without_pointer {% endif %}"
+						data-toggle="tab"
+						role="tab"
+						title="Observaciones"
+						href="#observaciones_originales_{{hashids_encode(informe_by_tutoria_id_by_asignatura_id_sql.id)}}">
+						{% if informe_by_tutoria_id_by_asignatura_id_sql.comentario_editado %}
+							<i class="material-icons vertical-center">comment</i>
+						{% endif %}
+						Observaciones
+						</a>
+						{% if g.settings_current_user.informe_comentario_edit_mode %}
+						<a class="nav-link px-2 py-1"
+						data-toggle="tab"
+						role="tab"
+						title="Editar observaciones"
+						href="#observaciones_editar_{{hashids_encode(informe_by_tutoria_id_by_asignatura_id_sql.id)}}">
+						Editar
+						</a>
+						{% endif %}
+					</nav>
+					<div class="p-2">
+					<div class="tab-content px-2">
+						<div class="tab-pane fade show active" id="observaciones_originales_{{hashids_encode(informe_by_tutoria_id_by_asignatura_id_sql.id)}}" role="tabpanel">
+							{% if informe_by_tutoria_id_by_asignatura_id_sql.comentario_editado %}
+								<div class="line_break text-secondary text-justify">
+									{{-informe_by_tutoria_id_by_asignatura_id_sql.comentario_editado-}}
+								</div>
+							{% else %}
+								<div class="line_break text-justify">
+									{{-informe_by_tutoria_id_by_asignatura_id_sql.comentario-}}
+								</div>
+							{% endif %}
+						</div>
+						{% if g.settings_current_user.informe_comentario_edit_mode %}
+							<div class="tab-pane fade" id="observaciones_editar_{{hashids_encode(informe_by_tutoria_id_by_asignatura_id_sql.id)}}" role="tabpanel">
+								{% include 'analisis_informe_comentario_edit_block.html' %}
+							</div>
+						{% endif %}
+					</div>
+					</div>
+			{% endif %}
+		</div>
+	</div>
+{% endif %}

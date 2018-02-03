@@ -1,0 +1,23 @@
+{% extends "_layout.html" %}
+{% block body %}
+	{% with %}
+	{% set gupo_alumnos = alumnos("apellidos", "nombre")%}
+	{% from "_macro.html" import nav_bar_top,
+	titulo_1 %}
+	{{ nav_bar_top(link_active='Alumnos',params=params, current_user=current_user) }}
+	<div class="paper bg-white padding_3 py-3">
+		<a id="anchor_alu_add"></a>
+		{{titulo_1(url="alumnos",bg_color="bg-dark",titulo='Alumnos [' + gupo_alumnos|count|string + ']')}}
+		<div id="parent_alumno">
+			<div>
+				{% include 'alumnos_add_block.html' %}
+			</div>
+			<div class="mt-2">
+				{% for alumno in gupo_alumnos%}
+					{% include 'alumnos_block.html' %}
+				{% endfor %}
+			</div>
+		</div>
+	</div>
+	{% endwith %}
+{% endblock %}

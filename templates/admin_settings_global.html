@@ -1,0 +1,128 @@
+{% extends '_layout.html' %}
+{% block body %}
+	{%from '_macro.html' import nav_bar_top, titulo_1, nav_tabs_admin%}
+	{{ nav_bar_top(link_active='Admin',params=params, current_user=current_user) }}
+	<div class="paper bg-white padding_3 py-3">
+		{{titulo_1(bg_color='bg-dark',titulo='Admin Settings')}}
+		{{nav_tabs_admin(tab_active='Global Set')}}
+		<div class="padding_3">
+			<form action="{{ url_for('admin_settings_global_html') }}" method="POST">
+				<div class="row">
+					<div class="col-md-6 mt-3">
+						<div class="card border-gray z-depth-1-1-less">
+							<div class="card-header p-2 pl-3">Periodo CleanUp.
+								<span class="text-muted small">
+									Meses previos excluidos del CleanUp de tutorías.
+								</span>
+							</div>
+							<div class="form-group col-md-12 mb-0">
+								<div class="range-slider text-center">
+									<span class="range-slider-value">0</span>
+									meses
+									<input name="periodo_cleanup_tutorias" class="range-slider-range" type="range" step="1" value="{{g.settings_global.periodo_cleanup_tutorias}}" min="1" max="12">
+								</div>
+							</div>
+							<label class="custom-control custom-checkbox check_box_1 mt-0">
+								{# NOTE elminado el form-group para ajustar mejor #}
+								<input type="checkbox" class="custom-control-input" name="cleanup_tutorias_automatic" value="True" {% if g.settings_global.cleanup_tutorias_automatic %} checked="checked" {% endif %}>
+								<span class="custom-control-indicator"></span>
+								<span class="custom-control-description small {% if not g.settings_global.cleanup_tutorias_automatic %}text-mutted{% endif %}">CleanUP automatico</span>
+							</label>
+							<div class="btn-group mb-2 ml-2" role="group">
+								<a data-toggle="collapse" href="#cleanup_tutorias_confirmar" class="btn btn-outline-dark btn-sm link_without_pointer" aria-expanded="false" title="CleanUp">
+									<i class="material-icons vertical-center">update</i>
+									CleanUp
+									<span class="small">[{{tutorias_clenaup_count}}
+										{{singular_plural("tutoria", "tutorias",tutorias_clenaup_count)}}]
+									</a>
+									{% include 'admin_settings_global_cleanup_confirmar_block.html' %}
+									<button type="submit" name="selector_button" value="selector_cleanup_update" class="btn btn-outline-dark btn-sm" title="Actualizar tutorias cleanup">
+										<i class="material-icons vertical-center">cached</i>
+									</button>
+								</div>
+							</div>
+						</div>
+						<div class="col-md-6 mt-3">
+							<div class="card border-gray z-depth-1-1-less">
+								<div class="card-header p-2 pl-3">Gmail sender.
+									<span class="text-muted small">
+										Cuenta de Gmail usada para el envío de los emails al equipo educativo.
+									</span>
+								</div>
+								<div class="p-2">
+									<div class="form-group mt-3">
+										<div class="input-group">
+											<input
+												type="email"
+												class="form-control {% if request.method=='POST' %} {% if settings_global_edit.gmail_sender.errors %} is-invalid {% else %} is-valid {% endif %} {% endif %}"
+												name="gmail_sender"
+												value="{{g.settings_global.gmail_sender}}"
+												placeholder="gmail sender">
+											<div class="input-group-addon {% if request.method=='POST' %} {% if settings_global_edit.gmail_sender.errors %} form_addon-warning {% else %} form_addon-success {% endif %} {% endif %}">@</div>
+										</div>
+									</div>
+									<button type="submit" name="selector_button" value="selector_autorizar_credencial" class="btn btn-outline-dark btn-sm" title="Autorizar credencial">
+										<i class="material-icons vertical-center">fingerprint</i>
+										Autorizar credencial
+									</button>
+								</div>
+							</div>
+						</div>
+						<div class="col-md-6 mt-3">
+							<div class="card border-gray z-depth-1-1-less">
+								<div class="card-header p-2 pl-3">Periodo papelera.
+									<span class="text-muted small">
+										Días tras la cual son purgadas las tutorias de la papelera de tutorías.
+									</span>
+								</div>
+								<div class="form-group col-md-12">
+									<div class="range-slider text-center">
+										<span class="range-slider-value">0</span>
+										días
+										<input name="periodo_deleted_tutorias" class="range-slider-range" type="range" step="1" value="{{g.settings_global.periodo_deleted_tutorias}}" min="1" max="30">
+									</div>
+								</div>
+							</div>
+						</div>
+						<div class="col-md-6 mt-3">
+							<div class="card border-gray z-depth-1-1-less">
+								<div class="card-header p-2 pl-3">Periodo reciente.
+									<span class="text-muted small">
+										Días previos a la fecha acutal para para calcular participacion reciente del equipo educativo.
+									</span>
+								</div>
+								<div class="form-group col-md-12">
+									<div class="range-slider text-center">
+										<span class="range-slider-value">0</span>
+										días
+										<input name="periodo_participacion_recent" class="range-slider-range" type="range" step="15" value="{{g.settings_global.periodo_participacion_recent}}" min="15" max="90">
+									</div>
+								</div>
+							</div>
+						</div>
+						<div class="col-md-6 mt-3">
+							<div class="card border-gray z-depth-1-1-less">
+								<div class="card-header p-2 pl-3">Diferencial Default.
+									<span class="text-muted small">
+										Porcentaje de diferencias que activa las alertas del analisis individual de asignaturas. Recomendable 15-30.
+									</span>
+								</div>
+								<div class="form-group col-md-12">
+									<div class="range-slider text-center">
+										<span class="range-slider-value">0</span>
+										%
+										<input name="diferencial_default" class="range-slider-range" type="range" step="5" value="{{g.settings_global.diferencial_default}}" min="5" max="50">
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+					<div class="btn-group mt-3" role="group">
+						<button type="submit" name="selector_button" value="selector_global_set_edit" class="btn btn-outline-dark btn-sm" title="Guardar cambios">
+							<i class="material-icons vertical-center">save</i>
+							Guardar</button>
+					</div>
+				</form>
+			</div>
+		</div>
+	{% endblock %}

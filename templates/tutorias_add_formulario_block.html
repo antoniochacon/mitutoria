@@ -1,0 +1,63 @@
+<form action="{{ url_for('tutorias_html') }}" method="POST">
+	<div class="form-group">
+		<div class="input-group">
+			<input
+				class="form-control bs-autocomplete border-right-0"
+				value="{% if params['alumno_apellidos_nombre'] %}{{params['alumno_apellidos_nombre']}}{% endif %}"
+				placeholder="Busca y asigna un alumno..."
+				type="text"
+				data-hidden_field_id="alumno_id"
+				data-item_id="id"
+				data-item_label="alumno_nombre"
+				autocomplete="off">
+			<span class="input-group-addon">
+				<i class="material-icons vertical-center text-gray">person</i>
+			</span>
+		</div>
+	</div>
+	<input type="hidden" class="form-control" id="alumno_id" name="alumno_id" value="{% if params['current_alumno_id'] %}{{params['current_alumno_id']}}{% endif %}" readonly="readonly">
+	<div class="row">
+		<div class="form-group col-md-6">
+			<div class="input-group">
+				<input
+					type="text"
+					class="form-control datepicker mouse_pointer {% if request.method=='POST' %} {% if tutoria_add.fecha.errors %} is-invalid {% else %} is-valid {% endif %} {% endif %}"
+					name="{{tutoria_add.fecha.name}}"
+					readonly="true"
+					style="background-color: white"
+					value="{% if request.method=='POST' and tutoria_add.fecha.data %}{{tutoria_add.fecha.data}}{% else %}{{g.current_date.strftime('%d-%m-%Y')}}{% endif %}"
+					placeholder="{{tutoria_add.fecha.label.text}}">
+				<span class="input-group-addon {% if request.method=='POST' %} {% if tutoria_add.fecha.errors %} form_addon-warning {% else %} form_addon-success {% endif %} {% endif %}">
+					<i class="material-icons vertical-center text-gray">today</i>
+				</span>
+			</div>
+		</div>
+		<div class="form-group col-md-6">
+			<div class="input-group">
+				<input
+					type="text"
+					class="form-control clockpicker {% if request.method=='POST' %} {% if tutoria_add.hora.errors %} is-invalid {% else %} is-valid {% endif %} {% endif %}"
+					style="background-color: white"
+					readonly="true"
+					name="{{tutoria_add.hora.name}}"
+					value="{% if request.method=='POST' and tutoria_add.hora.data %}{{tutoria_add.hora.data}}{% else %}{{g.current_time.strftime('%H:%M')}}{% endif %}"
+					placeholder="{{tutoria_add.hora.label.text}}">
+				<span class="input-group-addon {% if request.method=='POST' %} {% if tutoria_add.hora.errors %} form_addon-warning {% else %} form_addon-success {% endif %} {% endif %}">
+					<i class="material-icons vertical-center text-gray">schedule</i>
+				</span>
+			</div>
+		</div>
+		<div class="col-sm-12">
+			<div class="btn-group" role="group">
+				<button role="button" type="submit" class="btn btn-outline-dark btn-sm" name="selector_button" value="selector_tutoria_add" title="Solicitar tutoría">
+					<i class="material-icons vertical-center">local_post_office</i>
+					Solicitar tutoría</button>
+				{% if params['tutoria_solicitar'] %}
+					<button role="button" type="submit" class="btn btn-outline-dark btn-sm" name="selector_button" value="selector_tutoria_add_close" title="Cerrar">
+						<i class="material-icons vertical-center">close</i>
+					</button>
+				{% endif %}
+			</div>
+		</div>
+	</div>
+</form>

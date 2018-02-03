@@ -1,0 +1,80 @@
+{% extends '_layout.html' %}
+{% block body %}
+	{%from '_macro.html' import nav_bar_top,titulo_1%}
+	{{nav_bar_top(link_active='Inciar sesión', current_user=current_user)}}
+	<div class="container">
+		<div class="paper bg-white padding_3 py-3">
+			{{titulo_1(bg_color='bg-dark', titulo='Iniciar sesion')}}
+			<form action="{{ url_for('login_html') }}" method="POST">
+				<div class="form-group mt-3">
+					<div class="input-group">
+						<input
+							type="text"
+							class="form-control {% if request.method=='POST' %} {% if user_login.username.errors %} is-invalid {% else %} is-valid {% endif %} {% endif %}"
+							name="{{user_login.username.name}}"
+							{% if request.method=='POST' %}
+							value="{{user_login.username.data}}"
+							{% endif %}
+							placeholder="{{user_login.username.label.text}}">
+						<span class="input-group-addon {% if request.method=='POST' %} {% if user_login.username.errors %} form_addon-warning {% else %} form_addon-success {% endif %} {% endif %}">usuario</span>
+					</div>
+				</div>
+				<div class="form-group">
+					<div class="input-group">
+						<input
+							type="password"
+							class="form-control {% if request.method=='POST' %} {% if user_login.password.errors %} is-invalid {% else %} is-valid {% endif %} {% endif %}"
+							name="{{user_login.password.name}}"
+							{% if request.method=='POST' %}
+							value="{{user_login.password.data}}"
+							{% endif %}
+							placeholder="{{user_login.password.label.text}}">
+						<div class="input-group-addon {% if request.method=='POST' %} {% if user_login.password.errors %} form_addon-warning {% else %} form_addon-success {% endif %} {% endif %}">password</div>
+					</div>
+				</div>
+				<div class="text-center">
+					<button type="submit" class="btn btn-outline-dark" title="Iniciar sesion">
+						<i class="material-icons vertical-center">account_circle</i>
+						Iniciar sesion
+					</button>
+				</div>
+			</form>
+			{% if cita_random() and not params['login_fail'] %}
+				{% include 'cita_block.html' %}
+			{% endif %}
+			{% if params['login_fail'] and not params['ban'] %}
+				<div class="divider bg-info my-3"></div>
+				<div class="text-center">
+					<div class="btn-group" role="group">
+						<a href="{{ url_for('user_add_html') }}" class="btn btn-outline-dark btn-sm" title="Crear nueva cuenta">
+							<i class="material-icons vertical-center">person_add</i>
+							No tengo cuenta
+						</a>
+						<a href="{{ url_for('password_reset_request_html') }}" class="btn btn-outline-mutted btn-sm" title="Cambiar password">
+							No recuerdo password
+						</a>
+					</div>
+				</div>
+				<br>
+			{% endif %}
+			{% if params['ban'] %}
+				<div class="divider bg-info my-3"></div>
+				<div class="text-center text-warning">
+					Su cuenta ha sido suspendida de servicio
+					<br>
+					Por favor pongase en contacto con nosotros
+				</div>
+				<br>
+			{% endif %}
+			{% if params['email_robinson'] %}
+			<div class="divider bg-info my-3"></div>
+				<div class="text-center text-warning">
+					Su cuenta se encuentra en nuestra lista Robinson
+					<br>
+					Por favor pongase en contacto con nosotros
+				</div>
+				<br>
+			{% endif %}
+		</div>
+	</div>
+{% endblock %}

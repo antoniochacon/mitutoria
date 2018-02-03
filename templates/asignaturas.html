@@ -1,0 +1,27 @@
+{% extends "_layout.html" %}
+{% block body %}
+	{% with %}
+	{% set asignaturas_sql = asignaturas_ordenadas(g.settings_current_user.asignaturas_orden) %}
+	{%from "_macro.html" import nav_bar_top, titulo_1%}
+	{%from "_macro_highcharts.html" import highcharts_admin_profesores_activos_evolucion%}
+	{{ nav_bar_top(link_active='Asignaturas', params=params, current_user=current_user) }}
+	<div class="paper bg-white padding_3 py-3">
+		<a id="anchor_asi_add"></a>
+		{{titulo_1(url='asignaturas',bg_color='bg-dark',titulo='Asignaturas ['+ asignaturas_sql|count|string + ']')}}
+		<div id="parent_asignatura">
+			<div>
+				{% include 'asignaturas_add_block.html' %}
+			</div>
+			<div class="mt-2">
+				{% for asignatura in asignaturas_sql %}
+					{% include 'asignaturas_block.html' %}
+				{% endfor %}
+			</div>
+		</div>
+		<br>
+		{% if g.settings_current_user.show_asignaturas_analisis %}
+			{% include 'asignaturas_analisis_block.html' %}
+		{% endif %}
+	</div>
+	{% endwith %}
+{% endblock %}

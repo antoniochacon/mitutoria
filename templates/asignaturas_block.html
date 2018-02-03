@@ -1,0 +1,30 @@
+{% with %}
+{% set hashids_encode_asignatura_id = hashids_encode(asignatura.id) %}
+<a id="anchor_asi_{{hashids_encode_asignatura_id}}"></a>
+{% set informes_enviados = asignatura_informes_solicitados_count(asignatura.id) %}
+{% set profesor_porcentaje = cociente_porcentual(asignatura_informes_respondidos_count(asignatura.id), informes_enviados)%}
+<a data-toggle="collapse" data-parent="#parent_asignatura" href="#asignatura_{{hashids_encode_asignatura_id}}" class="collapse_header_padding border_bottom border border-0 pb-1" aria-expanded="false" title="{{asignatura.asignatura}}">
+	<div class="media">
+		<span class="capital {% if not asignatura_alumnos(asignatura.id) %} capital-warning {% else %} capital-mutted {% endif %}">{{asignatura.asignatura | first | upper}}</span>
+		<div class="media-body">
+			<div class="padding_l_2">
+				{{asignatura.asignatura}}
+				<span class="text-gray small">
+					|
+					{{asignatura.nombre}}
+				</span>
+				{# NOTE badge #}
+				{% if informes_enviados %}
+					<span class="badge badge-secondary float-right" title="{{profesor_porcentaje}}% de los informes enviados">
+						{{profesor_porcentaje}}%
+					</span>
+				{% endif %}
+			</div>
+		</div>
+	</div>
+	<div class="progress rounded-0 mt-1">
+		<div class="progress-bar bg-secondary" role="progressbar" aria-valuemin="0" aria-valuemax="100" style="height:3px; width: {{profesor_porcentaje}}%;"></div>
+	</div>
+</a>
+{% include 'asignaturas_formulario_block.html' %}
+{% endwith %}

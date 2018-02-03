@@ -1,0 +1,24 @@
+{% extends '_layout.html' %}
+{% block body %}
+	{%from '_macro.html' import nav_bar_top, titulo_1, nav_tabs%}
+	{{ nav_bar_top(link_active='Ayuda',params=params, current_user=current_user) }}
+	<div class="paper bg-white padding_3 py-3">
+		{{titulo_1(bg_color='bg-dark',titulo='Mantenimiento nocturno')}}
+		<div class="p-2">
+			Actualizado historial.{% if params['mantenimiento_historial_error'] %}
+				<span class="badge badge-warning text-white">ERROR</span>
+			{% else %}
+				<span class="badge badge-secondary">CORRECTO</span>{% endif %}
+			<br>
+			Actualizada papelera.{% if params['mantenimiento_papelera_error'] %}
+				<span class="badge badge-warning text-white">ERROR</span>
+			{% else %}
+				<span class="badge badge-secondary">CORRECTO</span>{% endif %}
+			<br>
+			Re-send tutorias last 24h.{% if params['mantenimiento_re_send_email_error'] %}
+				<span class="badge badge-warning text-white">ERROR</span>
+			{% else %}
+				<span class="badge badge-secondary">CORRECTO</span>{% endif %}
+		</div>
+	</div>
+{% endblock %}

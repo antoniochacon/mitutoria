@@ -1,0 +1,7 @@
+<a
+	id="asignatura_delete_confirmar_{{hashids_encode(asignatura.id)}}"
+	href="{{ url_for('asignaturas_html', params=dic_encode_args({'current_asignatura_id': asignatura.id, 'asignatura_delete_confirmar': True})) }}"
+	role="button"
+	class="collapse btn btn-outline-warning btn-sm link_without_pointer"
+	title="Confirmar eliminar">
+	<i class="material-icons vertical-center">delete</i>Confirmar</a>

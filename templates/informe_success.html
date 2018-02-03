@@ -1,0 +1,45 @@
+{% extends '_layout.html' %}
+{% block body %}
+	{%from '_macro.html' import nav_bar_top, titulo_1%}
+	{%from '_macro_highcharts.html' import highcharts_participacion_recent%}
+	{{nav_bar_top(current_user=current_user)}}
+	<div class="container">
+		<div class="paper bg-white padding_3 py-3">
+			{{titulo_1(bg_color='bg-dark', titulo='Informe de tutoría enviado')}}
+			{% include 'informe_datos_tutoria_block.html' %}
+			<div class="text-center mt-1 mb-1">
+				{{highcharts_participacion_recent(char_id='tutoria_stats', height='220', weight='220', tooltip_x='33', tooltip_y='45', color_1='#BA5FD3', color_2='#f5f5f5', participacion_recent=params['participacion_porcentaje_recent'])}}
+				<div id="delay_div">
+					<div class="{% if params['tutorias_sin_respuesta_by_asignatura_id']['tutorias_sin_respuesta_count'] %}circle_interior_pendiente {% else %} circle_interior {% endif %}">
+						<div class="h4 text-secondary mb-0">
+							{% if params['participacion_porcentaje_recent'] <= 50 %}
+								Ánimo
+							{% elif params['participacion_porcentaje_recent'] > 50 and params['participacion_porcentaje_recent'] <= 75 %}
+								Buen trabajo
+							{% elif params['participacion_porcentaje_recent'] > 75 and params['participacion_porcentaje_recent'] < 100 %}
+								Excelente
+							{% elif params['participacion_porcentaje_recent'] == 100 %}
+								Enhorabuena
+							{% endif %}
+						</div>
+						{% if params['tutorias_sin_respuesta_by_asignatura_id']['tutorias_sin_respuesta_count'] %}
+							<a class="btn btn-outline-warning btn-sm link_without_pointer mt-1 mb-1" href="{{ url_for('informes_pendientes_html', asignatura_id=hashids_encode(asignatura.id)) }}" role="button">Informes pendientes:
+								{{params['tutorias_sin_respuesta_by_asignatura_id']['tutorias_sin_respuesta_count']}}</a>
+						{% else %}
+							<span class="text-secondary small">Sin tutorias pendientes.</span>
+						{% endif %}
+						<div class="small text-secondary mb-2">Participación últimos
+							{{params['settings_global_periodo_participacion_recent']}}
+							días:</div>
+						<span class="contador_animado align-middle h3 pl-2 pr-2">
+							<span class="timer" data-to="{{params['participacion_porcentaje_recent']}}" data-speed="2000"></span>%
+						</span>
+					</div>
+				</div>
+				<a class="btn btn-outline-dark btn-sm link_without_pointer mb-2" href="{{ url_for('informe_html', asignatura_id=hashids_encode(asignatura.id), tutoria_id=hashids_encode(tutoria.id)) }}" role="button">
+					<i class="material-icons vertical-center pr-1">edit</i>Editar informe</a>
+				<div class="divider bg-mutted"></div>
+			</div>
+		</div>
+	</div>
+{% endblock %}

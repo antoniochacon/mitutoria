@@ -1,0 +1,22 @@
+{% with %}
+{% set tutoria_incoming_stats = tutoria_incoming(tutoria.id) %}
+<a href="{{ url_for('analisis_html', params=dic_encode_args({'current_tutoria_id': tutoria.id})) }}" class="collapse_header_padding pb-1" title="Ver informes">
+	{{translate_fecha(tutoria.fecha.strftime('%A') | capitalize)}}
+	{{tutoria.fecha.strftime('%d')}}
+	[{{tutoria.hora.strftime('%H:%M')}}]
+	<span class="text-gray small">
+		{{alumno_by_id(tutoria.alumno_id).nombre}}
+	</span>
+	<span class="badge {% if tutoria.deleted or not tutoria.activa %} badge-info {% else %} badge-secondary {% endif %} float-right" title="{{tutoria_incoming_stats['porcentaje']}}% de los informes recibidos">
+		{{tutoria_incoming_stats['porcentaje']}}%
+	</span>
+	<div class="progress rounded-0 mt-1">
+		<div
+			class="progress-bar {% if tutoria.deleted or not tutoria.activa %} bg-mutted {% else %} bg-secondary progress-bar-striped progress-bar-animated {% endif %}"
+			role="progressbar"
+			aria-valuemin="0"
+			aria-valuemax="100"
+			style="height:5px; width: {{tutoria_incoming_stats['porcentaje']}}%;"></div>
+	</div>
+</a>
+{% endwith %}

@@ -1,0 +1,22 @@
+{% for categoria in categorias() %}
+	{% with %}
+	{% set invitado_preguntas_by_categoria_id_sql = invitado_preguntas_by_categoria_id(params['current_usuario_id'], categoria.id) %}
+	{% if invitado_preguntas_by_categoria_id_sql %}
+		<div class="bg-gray text-white pl-2 my-2">
+			{{categoria.enunciado}}
+		</div>
+		<div class="row">
+			{% for pregunta in invitado_preguntas_by_categoria_id_sql %}
+				<div class="media col-md-6 col-lg-4 pb-2">
+					<span class="capital capital-mutted">{{pregunta.orden}}</span>
+					<div class="media-body">
+						<div class="padding_l_2">
+							{{pregunta.enunciado_ticker}}
+						</div>
+					</div>
+				</div>
+			{% endfor %}
+		</div>
+	{% endif %}
+	{% endwith %}
+{% endfor %}

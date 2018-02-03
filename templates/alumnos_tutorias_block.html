@@ -1,0 +1,18 @@
+{% with %}
+{% set tutorias_by_alumno_id = tutorias_by_alumno_id(alumno.id, deleted = False) %}
+<div class="card-body p-2">
+	{% if not tutorias_by_alumno_id %}
+		<div class="text-muted small">Sin tutorias</div>
+	{% else %}
+		{% for tutoria in tutorias_by_alumno_id %}
+			{% include 'tutoria_link_block.html' %}
+		{% endfor %}
+	{% endif %}
+	<div class="d-flex flex-row-reverse">
+		<a href="{{ url_for('tutorias_html', params=dic_encode_args({'current_alumno_id':alumno.id, 'alumnos_tutorias_solicitar':True})) }}" role="button" class="btn btn-outline-dark btn-sm link_without_pointer mt-3" title="Menu solicitar tutoría">
+			<i class="material-icons vertical-center">schedule</i>
+			Nueva tutoría
+		</a>
+	</div>
+</div>
+{% endwith %}

@@ -1,0 +1,34 @@
+{% for grupo in usuario_grupos(params['current_usuario_id']) %}
+	{% with %}
+	{% set grupo_alumnos_count = grupo_alumnos_count(grupo.id) %}
+	{% set tutorias_by_grupo_id_count = tutorias_by_grupo_id(grupo.id, deleted = False) | count %}
+	<div class="media pb-3">
+		<span class="curso_academico {% if grupo_activo_check(grupo.id) %} curso_academico-primary {% else %} curso_academico-mutted {% endif %}">{{grupo.curso_academico}}
+			|
+			{{grupo.curso_academico+1}}</span>
+		<div class="media-body">
+			<div class="padding_l_2">
+				{{grupo.centro}}
+				|
+				{{grupo.nombre}}
+				{# NOTE badge #}
+				<span
+					class="badge float-right {% if grupo_alumnos_count %}{% if grupo_activo_check(grupo.id) %} badge-dark {% else %} badge-mutted border border-dark {% endif %}{% else %}badge-warning text-white{% endif %}"
+					title="{{grupo_alumnos_count}} {{singular_plural('alumno','alumnos', grupo_alumnos_count)}}">
+					{% if grupo_alumnos_count %}
+						{{grupo_alumnos_count}}
+						{{singular_plural('alumno', 'alumnos', grupo_alumnos_count)}}
+					{% else %}
+						sin alumnos
+					{% endif %}
+				</span>
+				<span class="badge border border-dark bg-white text-dark float-right mr-2" title="Total de tutorias">
+					{{tutorias_by_grupo_id_count}}
+					{{singular_plural('tutoria', 'tutorias', tutorias_by_grupo_id_count)}}
+				</span>
+				<div class="divider bg-mutted padding_l_2"></div>
+			</div>
+		</div>
+	</div>
+	{% endwith %}
+{% endfor %}

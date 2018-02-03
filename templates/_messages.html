@@ -1,0 +1,22 @@
+{#TODO: invocados por flash_toast #}
+{% with messages = get_flashed_messages(category_filter = ['success', 'info', 'warning']) %}
+	{% if messages %}
+		{% for message in messages %}
+			{{message}}
+			{%endfor%}
+	{% endif %}
+{%endwith%}
+
+
+{#TODO: invocado por flash #}
+{% with messages = get_flashed_messages(category_filter = ['error']) %}
+	{% if messages %}
+		{% for message in messages %}
+			<div id="toast-container" class="toast-top-right">
+				<div class="toast-error alert fade in" data-dismiss="alert">
+					{{message}}
+				</div>
+			</div>
+		{%endfor%}
+	{% endif %}
+{%endwith%}

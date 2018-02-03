@@ -1,0 +1,57 @@
+{% extends '_layout.html' %}
+{% block body %}
+	{%from '_macro.html' import nav_bar_top, titulo_1%}
+	{{ nav_bar_top(link_active='Nueva cuenta', current_user=current_user) }}
+	<div class="container">
+		<div class="paper bg-white padding_3 py-3">
+			{{titulo_1(bg_color='bg-dark',titulo='Nueva cuenta')}}
+			<form action="{{ url_for('user_add_html') }}" method="POST">
+				<div class="form-group mt-3">
+					<div class="input-group">
+						<input
+							type="text"
+							class="form-control {% if request.method=='POST' %} {% if user_add.username.errors %} is-invalid {% else %} is-valid {% endif %} {% endif %}"
+							name="{{user_add.username.name}}"
+							{% if request.method=='POST' %}
+							value="{{user_add.username.data}}"
+							{% endif %}
+							placeholder="{{user_add.username.label.text}}">
+						<span class="input-group-addon {% if request.method=='POST' %} {% if user_add.username.errors %} form_addon-warning {% else %} form_addon-success {% endif %} {% endif %}">usuario</span>
+					</div>
+				</div>
+				<div class="form-group">
+					<div class="input-group">
+						<input
+							type="password"
+							class="form-control {% if request.method=='POST' %} {% if user_add.password.errors %} is-invalid {% else %} is-valid {% endif %} {% endif %}"
+							name="{{user_add.password.name}}"
+							{% if request.method=='POST' %}
+							value="{{user_add.password.data}}"
+							{% endif %}
+							placeholder="{{user_add.password.label.text}}">
+						<div class="input-group-addon {% if request.method=='POST' %} {% if user_add.password.errors %} form_addon-warning {% else %} form_addon-success {% endif %} {% endif %}">password</div>
+					</div>
+				</div>
+				<div class="form-group">
+					<div class="input-group">
+						<input
+							type="email"
+							class="form-control {% if request.method=='POST' %} {% if user_add.email.errors %} is-invalid {% else %} is-valid {% endif %} {% endif %}"
+							name="{{user_add.email.name}}"
+							{% if request.method=='POST' %}
+							value="{{user_add.email.data}}"
+							{% endif %}
+							placeholder="{{user_add.email.label.text}}">
+						<div class="input-group-addon {% if request.method=='POST' %} {% if user_add.email.errors %} form_addon-warning {% else %} form_addon-success {% endif %} {% endif %}">@</div>
+					</div>
+				</div>
+				<div class="text-center">
+					<button type="submit" class="btn btn-outline-dark" title="Crear nueva cuenta">
+						<i class="material-icons align-middle">person_add</i>
+						crear cuenta
+					</button>
+				</div>
+			</form>
+		</div>
+	</div>
+{% endblock %}

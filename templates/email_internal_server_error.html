@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="es">
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+		<title>mi tutoria</title>
+	</head>
+	<body>
+		<table border="0" cellpadding="0" cellspacing="0" height="100%" width="100%" id="bodyTable">
+			<tr>
+				<td align="center" valign="top">
+					<table border="0" cellpadding="0" cellspacing="0" width="100%" id="emailContainer">
+						<tr>
+							<td align="center" valign="top">
+								<table border="0" cellpadding="3" cellspacing="0" width="325" id="emailHeader" bgcolor="#BA5FD3">
+									<tr>
+										<td align="center" valign="top" style="color:white; font-family:Arial; font-size:14px">
+											INTERNAL SERVER ERROR.
+										</td>
+									</tr>
+								</table>
+							</td>
+						</tr>
+						<tr>
+							<td align="center" valign="top">
+								<table border="0" cellpadding="10" cellspacing="0" width="350" id="emailBody">
+									<tr>
+										<td align="center" valign="top">
+											Usuario: {{usuario.username}}
+											<br>
+											Fecha: {{params['fecha']}} [{{params['hora']}}h]
+											<br>
+											Email generado por errorhandler(500) de la webapp:
+											<br>
+											<a href="{{params['index_link']}}">https://mitutoria.herokuapp.com/</a>
+										</td>
+									</tr>
+								</table>
+							</td>
+						</tr>
+					</table>
+				</td>
+			</tr>
+		</table>
+	</body>
+</html>
