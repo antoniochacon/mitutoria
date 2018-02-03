@@ -261,8 +261,12 @@ def tutorias_html(params={}):
             return render_template(
                 'tutorias.html', alumnos_autocomplete=alumnos, tutoria_add=tutoria_add_form, params=params)
 
+    # FIXME mientras que haya un mantenimiento_nocturno hay que usar esto otro
+    mantenimiento_papelera()
+    mantenimiento_papelera()
+
     # XXX sincronizar con google calendar
-    tutoria_calendar_sync()  # NOTE Anulado para testear lambda_mantenimiento
+    tutoria_calendar_sync()  # NOTE Anular para testear lambda_mantenimiento
     return render_template('tutorias.html', alumnos_autocomplete=alumnos, tutoria_add=Tutoria_Add(), params=params)
 
 
