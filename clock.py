@@ -2,6 +2,10 @@ from app import app
 from functions import *
 import functions
 
+from apscheduler.schedulers.blocking import BlockingScheduler
+sched = BlockingScheduler()
+
+
 # ***************************************************************
 # oauth2_credentials (necesario para gmail y calendar api)
 # ***************************************************************
@@ -19,15 +23,16 @@ from apiclient import discovery
 # ----------------------------------------------------------------
 # oauth2_credentials [FIN]
 # ----------------------------------------------------------------
-from apscheduler.schedulers.blocking import BlockingScheduler
-sched = BlockingScheduler()
+import datetime
+import time
 
 
 @sched.scheduled_job('interval', minutes=1)
 def timed_job():
-    mantenimiento_historial_clock()
-    mantenimiento_papelera_clock()
-    mantenimiento_re_send_email_clock()
+    with app.app_context():
+        mantenimiento_historial_clock()
+        mantenimiento_papelera_clock()
+        mantenimiento_re_send_email_clock()
 
 
 @sched.scheduled_job('cron', day_of_week='mon-fri', hour=17)
