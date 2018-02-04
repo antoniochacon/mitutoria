@@ -6,8 +6,8 @@ from apscheduler.schedulers.blocking import BlockingScheduler
 sched = BlockingScheduler()
 
 
-@sched.scheduled_job('interval', minutes=1)
-def matenimiento_hour_1():
+@sched.scheduled_job('interval', minutes=90)
+def matenimiento_minutes_90():
     with app.app_context():
         tutoria_calendar_sync_clock()
 
