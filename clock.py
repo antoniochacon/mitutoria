@@ -1,14 +1,14 @@
 from apscheduler.schedulers.blocking import BlockingScheduler
+from app import app
+from functions import *
+import functions
 
 sched = BlockingScheduler()
 
 
 @sched.scheduled_job('interval', minutes=1)
 def timed_job():
-    tutorias = session_sql.query(Tutoria).filter(Tutoria.deleted == False, Tutoria.activa == True)
-    for tutoria in tutorias:
-        tutoria.activa = False
-    session_sql.commit()
+    mantenimiento_historial_clock()
     print('This job is run every three minutes.')
 
 
