@@ -15,9 +15,10 @@ logging.getLogger('googleapiclient.discovery_cache').setLevel(logging.ERROR)
 # Mantenimiento Clock
 # ***************************************************************
 def tutoria_calendar_sync_clock():
-    tutorias = session_sql.query(Tutoria).all()
-    for tutoria in tutorias:
-        settings_current_user = settings_by_tutoria_id(tutoria.id)
+    settings_global = session_sql.query(Settings_Global).first()
+    current_date = datetime.date.today()
+    settings_current_users = session_sql.query(Settings).all()
+    for settings_current_user in settings_current_users:
         if settings_current_user.calendar:
             try:
                 credentials = oauth2client.client.Credentials.new_from_json(settings_current_user.oauth2_credentials)
@@ -25,65 +26,62 @@ def tutoria_calendar_sync_clock():
                 http = credentials.authorize(http)
                 service = discovery.build('calendar', 'v3', http=http)
             except:
-                print('Error al crear credentials')
+                return redirect(url_for('oauth2callback_calendar'))
             if settings_current_user.calendar_sincronizado:
-                try:
-                    event = service.events().get(calendarId='primary', eventId=tutoria.calendar_event_id).execute()
-                    calendar_datetime_utc_start_arrow = str(arrow.get(tutoria.fecha).shift(hours=tutoria.hora.hour, minutes=tutoria.hora.minute).replace(tzinfo='Europe/Madrid'))
-                    if tutoria.deleted:
-                        service.events().delete(calendarId='primary', eventId=event['id']).execute()
-                    # NOTE checkea cambios a sincronizar
-                    if event['status'] == 'confirmed':  # NOTE Sincroniza fechas de eventos del calendario
-                        if event['start']['dateTime'] != calendar_datetime_utc_start_arrow:
-                            tutoria.fecha = arrow.get(event['start']['dateTime']).date()
-                            tutoria.hora = arrow.get(event['start']['dateTime']).time()
-                            alumno = alumno_by_tutoria_id(tutoria.id)
-                            if tutoria.fecha < current_date:
-                                if tutoria.activa:
-                                    tutoria.activa = False  # NOTE auto-archiva la tutoria
-
-                            if current_date <= arrow.get(event['start']['dateTime']).date():
-                                if not tutoria.activa:
-                                    tutoria.activa = True  # NOTE auto-activa la tutoria
-
-                    else:  # Elimina tutoria si ha sido eliminado desde la agenda
+                for tutoria in tutorias_by_grupo_id(settings_current_user.grupo_activo_id):
+                    try:
+                        event = service.events().get(calendarId='primary', eventId=tutoria.calendar_event_id).execute()
+                        calendar_datetime_utc_start_arrow = str(arrow.get(tutoria.fecha).shift(hours=tutoria.hora.hour, minutes=tutoria.hora.minute).replace(tzinfo='Europe/Madrid'))
+                        if tutoria.deleted:
+                            service.events().delete(calendarId='primary', eventId=event['id']).execute()
+                        # NOTE checkea cambios a sincronizar
+                        if event['status'] == 'confirmed':  # NOTE Sincroniza fechas de eventos del calendario
+                            if event['start']['dateTime'] != calendar_datetime_utc_start_arrow:
+                                tutoria.fecha = arrow.get(event['start']['dateTime']).date()
+                                tutoria.hora = arrow.get(event['start']['dateTime']).time()
+                                alumno = alumno_by_tutoria_id(tutoria.id)
+                                if tutoria.fecha < current_date:
+                                    if tutoria.activa:
+                                        tutoria.activa = False  # NOTE auto-archiva la tutoria
+                                if current_date <= arrow.get(event['start']['dateTime']).date():
+                                    if not tutoria.activa:
+                                        tutoria.activa = True  # NOTE auto-activa la tutoria
+                        else:  # Elimina tutoria si ha sido eliminado desde la agenda
+                            tutoria.deleted = True
+                            tutoria.deleted_at = current_date
+                    except:  # NOTE Elimina tutoria si no esta en el calendario
                         tutoria.deleted = True
-                        tutoria.deleted_at = current_time
-                except:  # NOTE Elimina tutoria si no esta en el calendario
-                    tutoria.deleted = True
-                    tutoria.deleted_at = current_time
-
-            # NOTE Purga eventos de las tutorias eliminadas por el cleanpup
-            if settings_current_user.cleanup_tutorias_status:
-                settings_current_user.cleanup_tutorias_status = False
+                        tutoria.deleted_at = current_date
+                # NOTE Purga eventos de las tutorias eliminadas por el cleanpup
+                if settings_current_user.cleanup_tutorias_status:
+                    settings_current_user.cleanup_tutorias_status = False
+                    page_token = None
+                    while True:
+                        events = service.events().list(calendarId='primary', pageToken=page_token, q='Evento creado por https://mitutoria.herokuapp.com/').execute()
+                        for event in events['items']:
+                            if not tutoria_by_calendar_event_id(event['id']):
+                                service.events().delete(calendarId='primary', eventId=event['id']).execute()
+                        page_token = events.get('nextPageToken')
+                        if not page_token:
+                            break
+            else:
+                # NOTE Purga eventos que contienen 'Evento creado por https://mitutoria.herokuapp.com/'
                 page_token = None
                 while True:
                     events = service.events().list(calendarId='primary', pageToken=page_token, q='Evento creado por https://mitutoria.herokuapp.com/').execute()
                     for event in events['items']:
-                        if not tutoria_by_calendar_event_id(event['id']):
-                            service.events().delete(calendarId='primary', eventId=event['id']).execute()
+                        service.events().delete(calendarId='primary', eventId=event['id']).execute()
                     page_token = events.get('nextPageToken')
                     if not page_token:
                         break
-        else:
-            # NOTE Purga eventos que contienen 'Evento creado por https://mitutoria.herokuapp.com/'
-            page_token = None
-            while True:
-                events = service.events().list(calendarId='primary', pageToken=page_token, q='Evento creado por https://mitutoria.herokuapp.com/').execute()
-                for event in events['items']:
-                    service.events().delete(calendarId='primary', eventId=event['id']).execute()
-                page_token = events.get('nextPageToken')
-                if not page_token:
-                    break
-            # NOTE Agrega todas las tutorias al calendario una vez purgado
-            for tutoria in tutorias_by_grupo_id(settings_current_user.grupo_activo_id, deleted=False):
-                alumno_nombre = alumno_by_tutoria_id(tutoria.id).nombre
-                calendar_datetime_utc_start_arrow = str(arrow.get(tutoria.fecha).shift(hours=tutoria.hora.hour, minutes=tutoria.hora.minute).replace(tzinfo='Europe/Madrid'))
-                calendar_datetime_utc_end_arrow = str(arrow.get(tutoria.fecha).shift(hours=tutoria.hora.hour, minutes=tutoria.hora.minute + settings_current_user.tutoria_duracion).replace(tzinfo='Europe/Madrid'))
-                tutoria_calendar_add(service, tutoria, calendar_datetime_utc_start_arrow, calendar_datetime_utc_end_arrow, alumno_nombre)
-            flash_toast('Sincronizacion inical de Google Calendar', 'success')
-            settings_current_user.calendar_sincronizado = True
-        session_sql.commit()
+                # NOTE Agrega todas las tutorias al calendario una vez purgado
+                for tutoria in tutorias_by_grupo_id(settings_current_user.grupo_activo_id, deleted=False):
+                    alumno_nombre = alumno_by_tutoria_id(tutoria.id).nombre
+                    calendar_datetime_utc_start_arrow = str(arrow.get(tutoria.fecha).shift(hours=tutoria.hora.hour, minutes=tutoria.hora.minute).replace(tzinfo='Europe/Madrid'))
+                    calendar_datetime_utc_end_arrow = str(arrow.get(tutoria.fecha).shift(hours=tutoria.hora.hour, minutes=tutoria.hora.minute + settings_current_user.tutoria_duracion).replace(tzinfo='Europe/Madrid'))
+                    tutoria_calendar_add(service, tutoria, calendar_datetime_utc_start_arrow, calendar_datetime_utc_end_arrow, alumno_nombre)
+                settings_current_user.calendar_sincronizado = True
+    session_sql.commit()
 
 
 def mantenimiento_historial_clock():
@@ -97,8 +95,8 @@ def mantenimiento_historial_clock():
 
 def mantenimiento_papelera_clock():
     # XXX purgar papelera tutorias
-    # current_date = datetime.date.today()
-    # settings_global = session_sql.query(Settings_Global).first()
+    current_date = datetime.date.today()
+    settings_global = session_sql.query(Settings_Global).first()
     tutorias = session_sql.query(Tutoria).filter(Tutoria.deleted == True, Tutoria.deleted_at < current_date - datetime.timedelta(days=settings_global.periodo_deleted_tutorias)).all()
     for tutoria in tutorias:
         session_sql.delete(tutoria)
@@ -107,8 +105,8 @@ def mantenimiento_papelera_clock():
 
 def mantenimiento_re_send_email_clock():
     # XXX re_send_email last 24h
-    # settings_global = session_sql.query(Settings_Global).first()
-    # current_date = datetime.date.today()
+    settings_global = session_sql.query(Settings_Global).first()
+    current_date = datetime.date.today()
     sender = settings_global.gmail_sender
 
     # XXX crea el servicio gmail
@@ -740,43 +738,31 @@ def informes_grupo_by_tutoria_id(tutoria_id):
 # ***********************************************************************
 
 def settings_by_tutoria_id(tutoria_id):  # (Settings) by tutoria_id
-    settings_by_tutoria_id = session_sql.query(Settings).join(Grupo).join(Alumno).join(Tutoria).filter(Tutoria.id == tutoria_id).first()
-    return settings_by_tutoria_id
+    return session_sql.query(Settings).join(Grupo).join(Alumno).join(Tutoria).filter(Tutoria.id == tutoria_id).first()
 
 
 def invitado_preguntas(settings_id):  # [Preguntas] by settings_id
-    invitado_preguntas = session_sql.query(Pregunta).join(Association_Settings_Pregunta).filter(Association_Settings_Pregunta.settings_id == settings_id).order_by('orden').all()
-    return invitado_preguntas
+    return session_sql.query(Pregunta).join(Association_Settings_Pregunta).filter(Association_Settings_Pregunta.settings_id == settings_id).order_by('orden').all()
 
 
 def invitado_preguntas_by_categoria_id(settings_id, categoria_id):  # [Preguntas] by settings_id
-    invitado_preguntas = session_sql.query(Pregunta).join(Association_Settings_Pregunta).filter(Association_Settings_Pregunta.settings_id == settings_id).join(Categoria).filter(Categoria.id == categoria_id).order_by(Pregunta.orden).all()
-    return invitado_preguntas
-
-
-# def settings_by_tutoria_id_by_id(settings_id):  # (Settings) by settings_id
-#     settings_by_tutoria_id_by_id = session_sql.query(Settings).filter(Settings.user_id == settings_id).first()
-#     return settings_by_tutoria_id_by_id
+    return session_sql.query(Pregunta).join(Association_Settings_Pregunta).filter(Association_Settings_Pregunta.settings_id == settings_id).join(Categoria).filter(Categoria.id == categoria_id).order_by(Pregunta.orden).all()
 
 
 def invitado_alumno(tutoria_id):  # (Alumno) by tutoria_id
-    invitado_alumno = session_sql.query(Alumno).join(Tutoria).filter(Tutoria.id == tutoria_id).first()
-    return invitado_alumno
+    return session_sql.query(Alumno).join(Tutoria).filter(Tutoria.id == tutoria_id).first()
 
 
 def invitado_informe(tutoria_id, asignatura_id):  # (informe) actual
-    invitado_informe = session_sql.query(Informe).filter(Informe.tutoria_id == tutoria_id, Informe.asignatura_id == asignatura_id).first()
-    return invitado_informe
+    return session_sql.query(Informe).filter(Informe.tutoria_id == tutoria_id, Informe.asignatura_id == asignatura_id).first()
 
 
 def invitado_respuesta(informe_id, pregunta_id):  # (Respuesta) by informe_id y pregunta_id
-    invitado_respuesta = session_sql.query(Respuesta).filter(Respuesta.informe_id == informe_id, Respuesta.pregunta_id == pregunta_id).first()
-    return invitado_respuesta
+    return session_sql.query(Respuesta).filter(Respuesta.informe_id == informe_id, Respuesta.pregunta_id == pregunta_id).first()
 
 
 def invitado_pruebas_evaluables(informe_id):  # [pruebas_evaluables] by informe_id
-    invitado_pruebas_evaluables = session_sql.query(Prueba_Evaluable).filter(Prueba_Evaluable.informe_id == informe_id).order_by('id').all()
-    return invitado_pruebas_evaluables
+    return session_sql.query(Prueba_Evaluable).filter(Prueba_Evaluable.informe_id == informe_id).order_by('id').all()
 
 
 # ********************************************************************************************
@@ -1158,11 +1144,10 @@ def tutoria_calendar_sync():
 
                         else:  # Elimina tutoria si ha sido eliminado desde la agenda
                             tutoria.deleted = True
-                            tutoria.deleted_at = g.current_time
+                            tutoria.deleted_at = g.current_date
                     except:  # NOTE Elimina tutoria si no esta en el calendario
                         tutoria.deleted = True
-                        tutoria.deleted_at = g.current_time
-
+                        tutoria.deleted_at = g.current_date
                 # NOTE Purga eventos de las tutorias eliminadas por el cleanpup
                 if g.settings_current_user.cleanup_tutorias_status:
                     g.settings_current_user.cleanup_tutorias_status = False

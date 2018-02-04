@@ -19,6 +19,11 @@
 				<span class="badge badge-warning text-white">ERROR</span>
 			{% else %}
 				<span class="badge badge-secondary">CORRECTO</span>{% endif %}
+			<br>
+			Calendar sync clock.{% if params['tutoria_calendar_sync_clock_error'] %}
+				<span class="badge badge-warning text-white">ERROR</span>
+			{% else %}
+				<span class="badge badge-secondary">CORRECTO</span>{% endif %}
 		</div>
 	</div>
 {% endblock %}

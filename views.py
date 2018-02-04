@@ -86,20 +86,24 @@ def index_html():
 # NOTE mitutoria-dev [comentarlo para mitutoria-production para evitar un acceso ajeno]
 
 
-@app.route('/mantenimiento_nocturno', methods=['GET', 'POST'])
-def mantenimiento_nocturno_html():
+
+
+@app.route('/mantenimiento', methods=['GET', 'POST'])
+def mantenimiento_html():
     params = {}
+    params['mantenimiento_historial_error'] = False
+    params['mantenimiento_papelera_error'] = False
+    params['mantenimiento_re_send_email_error'] = False
+    params['tutoria_calendar_sync_clock_error'] = False
     # # XXX mantenimiento_historial
     # try:
     #     mantenimiento_historial()
-    #     params['mantenimiento_historial_error'] = False
     # except:
     #     params['mantenimiento_historial_error'] = True
     #
     # # XXX mantenimiento_papelera
     # try:
     #     mantenimiento_papelera()
-    #     params['mantenimiento_papelera_error'] = False
     # except:
     #     params['mantenimiento_papelera_error'] = True
     #
@@ -107,18 +111,18 @@ def mantenimiento_nocturno_html():
     # try:
     #     mantenimiento_re_send_email() # NOTE Usar esto para pruebas
     #     # mantenimiento_re_send_email_asincrono()
-    #     params['mantenimiento_re_send_email_error'] = False
     # except:
     #     params['mantenimiento_re_send_email_error'] = True
+    tutoria_calendar_sync_clock()
     try:
-        mantenimiento_historial()
-        params['mantenimiento_historial_error'] = False
+        pass
+        # tutoria_calendar_sync_clock()
     except:
-        params['mantenimiento_historial_error'] = True
+        params['tutoria_calendar_sync_clock_error'] = True
     # NOTE LOCAL y Heroku
-    # return render_template('mantenimiento_nocturno.html', params=params)
+    return render_template('mantenimiento_local.html', params=params)
     # NOTE AMAZON
-    return 'Mantenimieto Realizado'
+    # return 'Mantenimieto Realizado'
 
 
 @app.route('/tutorias', methods=['GET', 'POST'])
@@ -1569,6 +1573,7 @@ def settings_opciones_html(params={}):
                 if g.settings_current_user.calendar_sincronizado:
                     g.settings_current_user.calendar_sincronizado = False
                 g.settings_current_user.oauth2_credentials = ''
+                # NOTE limi
 
             if settings_edit_tutoria_timeout:
                 settings_edit_tutoria_timeout = True
