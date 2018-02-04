@@ -1,6 +1,3 @@
-Free Heroku account (la pregunta es si /=o ó /=y)
-1 web dyno/1 worker dyno/1 one-off dyno maximum per app
-
 Detalles completo de Free Heroku account:
 Run apps for free using your monthly pool of free dyno hours
 Unverified accounts: receive a pool of 550 free dyno hours

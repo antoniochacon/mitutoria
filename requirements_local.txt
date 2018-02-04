@@ -1,0 +1,10 @@
+autopep8
+arrow
+cryptography
+Flask-Login
+google-api-python-client
+hashids
+oauth2client
+psycopg2
+SQLAlchemy
+WTForms
