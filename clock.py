@@ -13,7 +13,7 @@ sched = BlockingScheduler()
 #         mantenimiento_papelera_clock()
 #         mantenimiento_re_send_email_clock()
 
-@sched.scheduled_job('cron', hour=4, minute=5)
+@sched.scheduled_job('cron', hour=14, minute=5)
 def matenimiento_nocturno():
     with app.app_context():
         mantenimiento_historial_clock()
