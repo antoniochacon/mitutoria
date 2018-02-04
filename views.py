@@ -84,6 +84,8 @@ def index_html():
     return redirect(url_for('tutorias_html'))
 
 # NOTE mitutoria-dev [comentarlo para mitutoria-production para evitar un acceso ajeno]
+
+
 @app.route('/mantenimiento_nocturno', methods=['GET', 'POST'])
 def mantenimiento_nocturno_html():
     params = {}
@@ -277,7 +279,7 @@ def tutorias_html(params={}):
 
 @app.route('/oauth2callback_calendar')
 def oauth2callback_calendar():
-    flow = client.flow_from_clientsecrets('static/credentials/client_secret.json', scope='https://www.googleapis.com/auth/calendar', redirect_uri=index_link+'oauth2callback_calendar')
+    flow = client.flow_from_clientsecrets('static/credentials/client_secret.json', scope='https://www.googleapis.com/auth/calendar', redirect_uri=index_link + 'oauth2callback_calendar')
     flow.params['access_type'] = 'offline'
     flow.params['approval_prompt'] = 'force'
     if 'code' not in request.args:
