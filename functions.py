@@ -12,7 +12,7 @@ logging.getLogger('googleapiclient.discovery_cache').setLevel(logging.ERROR)
 
 
 # ***************************************************************
-# Mantenimiento nocturno
+# Mantenimiento Clock
 # ***************************************************************
 
 def mantenimiento_historial_clock():
@@ -103,7 +103,7 @@ def mantenimiento_re_send_email_asincrono_clock(): # NOTE al ir dentro de clock 
     mantenimiento_re_send_email_threading = threading.Thread(name='mantenimiento_re_send_email_thread', target=mantenimiento_re_send_email_process)
     mantenimiento_re_send_email_threading.start()
 # ----------------------------------------------------------------
-# Mantenimiento nocturno [FIN]
+# Mantenimiento Clock [FIN]
 # ----------------------------------------------------------------
 
 
