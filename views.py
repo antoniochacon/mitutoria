@@ -1590,7 +1590,7 @@ def settings_opciones_html(params={}):
             g.settings_current_user.diferencial = request.form.get('settings_diferencial')
             g.settings_current_user.tutorias_historial = request.form.get('settings_tutorias_historial')
             g.settings_current_user.tutorias_papelera = request.form.get('settings_tutorias_papelera')
-            g.settings_current_user.edited_at = datetime.datetime.now()
+            g.settings_current_user.edited_at = g.current_date
 
             if settings_edit_calendar_activado:
                 try:
@@ -2435,7 +2435,7 @@ def login_html(params={}):
                 if check_password_hash(user_sql.password, login_form.password.data):
                     login_user(user_sql, remember=login_form.remember.data)
                     settings = settings_by_id(user_sql.id)
-                    settings.visit_last = datetime.datetime.now()
+                    settings.visit_last = g.current_date
                     settings.visit_number = settings.visit_number + 1
                     session_sql.commit()
                     if settings.ban:

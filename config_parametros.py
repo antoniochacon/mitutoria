@@ -76,10 +76,3 @@ email_validate_link = 'https://mitutoria.herokuapp.com/email_validate'
 index_link = 'https://mitutoria.herokuapp.com/'
 password_reset_link = 'https://mitutoria.herokuapp.com/password_reset/'
 email_time_sleep = 1
-
-# XXX Zappa_Lambda_Host
-# tutoria_email_link = 'https://v4u3t4zool.execute-api.eu-west-2.amazonaws.com/production/informe'
-# email_validate_link = 'https://v4u3t4zool.execute-api.eu-west-2.amazonaws.com/production/email_validate'
-# index_link = 'https://v4u3t4zool.execute-api.eu-west-2.amazonaws.com/production/'
-# password_reset_link = 'https://v4u3t4zool.execute-api.eu-west-2.amazonaws.com/production/password_reset/'
-# email_time_sleep = 1
