@@ -192,10 +192,10 @@
 						Comparativa detallada de cada asignatura representando media del grupo, media la asignatura y media de las notas de dicha asignatura de {{alumno.nombre}}
 					</div>
 					{% if not stats['asignaturas_recibidas_lista'] %}
-						<div class="small">No se han recibido informes para esta tutoría.</div>
+						<div class="col-sm-12 small">No se han recibido informes para esta tutoría.</div>
 					{% else %}
 						{% if not comentarios_stats and not g.settings_current_user.show_analisis_asignaturas_detallado %}
-							<div class="small pl-3 mb-2">No se han recibido comentarios para esta tutoría.</div>
+							<div class="col-sm-12 small mb-2">No se han recibido comentarios para esta tutoría.</div>
 						{% endif %}
 
 					{% endif %}
