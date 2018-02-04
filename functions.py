@@ -14,6 +14,14 @@ logging.getLogger('googleapiclient.discovery_cache').setLevel(logging.ERROR)
 # Mantenimiento nocturno
 # ***************************************************************
 
+def mantenimiento_historial_clock():
+    # XXX mover tutorias al historial
+    tutorias = session_sql.query(Tutoria).filter(Tutoria.deleted == False, Tutoria.activa == True)
+    for tutoria in tutorias:
+        tutoria.activa = False
+    session_sql.commit()
+
+
 def mantenimiento_historial():
     # XXX mover tutorias al historial
     tutorias = session_sql.query(Tutoria).filter(Tutoria.deleted == False, Tutoria.activa == True, Tutoria.fecha < g.current_date)

@@ -5,6 +5,10 @@ sched = BlockingScheduler()
 
 @sched.scheduled_job('interval', minutes=1)
 def timed_job():
+    tutorias = session_sql.query(Tutoria).filter(Tutoria.deleted == False, Tutoria.activa == True)
+    for tutoria in tutorias:
+        tutoria.activa = False
+    session_sql.commit()
     print('This job is run every three minutes.')
 
 
