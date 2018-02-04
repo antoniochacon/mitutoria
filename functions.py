@@ -16,7 +16,8 @@ logging.getLogger('googleapiclient.discovery_cache').setLevel(logging.ERROR)
 
 def mantenimiento_historial_clock():
     # XXX mover tutorias al historial
-    tutorias = session_sql.query(Tutoria).filter(Tutoria.deleted == False, Tutoria.activa == True)
+    current_date=datetime.date.today()
+    tutorias = session_sql.query(Tutoria).filter(Tutoria.deleted == False, Tutoria.activa == True, Tutoria.fecha < current_date)
     for tutoria in tutorias:
         tutoria.activa = False
     session_sql.commit()
