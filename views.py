@@ -84,35 +84,35 @@ def index_html():
     return redirect(url_for('tutorias_html'))
 
 # NOTE mitutoria-dev [comentarlo para mitutoria-production para evitar un acceso ajeno]
-@app.route('/mantenimiento_nocturno', methods=['GET', 'POST'])
-def mantenimiento_nocturno_html():
-    params = {}
-    # XXX mantenimiento_historial
-    try:
-        mantenimiento_historial()
-        params['mantenimiento_historial_error'] = False
-    except:
-        params['mantenimiento_historial_error'] = True
-
-    # XXX mantenimiento_papelera
-    try:
-        mantenimiento_papelera()
-        params['mantenimiento_papelera_error'] = False
-    except:
-        params['mantenimiento_papelera_error'] = True
-
-    # XXX mantenimiento_re-send
-    try:
-        # mantenimiento_re_send_email() # NOTE Usar esto para pruebas
-        # mantenimiento_re_send_email_asincrono()
-        mantenimiento_re_send_email_clock() # NOTE test para clock
-        params['mantenimiento_re_send_email_error'] = False
-    except:
-        params['mantenimiento_re_send_email_error'] = True
-    # NOTE LOCAL y Heroku
-    # return render_template('mantenimiento_nocturno.html', params=params)
-    # NOTE AMAZON
-    return 'Mantenimieto Realizado'
+# @app.route('/mantenimiento_nocturno', methods=['GET', 'POST'])
+# def mantenimiento_nocturno_html():
+#     params = {}
+#     # XXX mantenimiento_historial
+#     try:
+#         mantenimiento_historial()
+#         params['mantenimiento_historial_error'] = False
+#     except:
+#         params['mantenimiento_historial_error'] = True
+#
+#     # XXX mantenimiento_papelera
+#     try:
+#         mantenimiento_papelera()
+#         params['mantenimiento_papelera_error'] = False
+#     except:
+#         params['mantenimiento_papelera_error'] = True
+#
+#     # XXX mantenimiento_re-send
+#     try:
+#         # mantenimiento_re_send_email() # NOTE Usar esto para pruebas
+#         # mantenimiento_re_send_email_asincrono()
+#         mantenimiento_re_send_email_clock() # NOTE test para clock
+#         params['mantenimiento_re_send_email_error'] = False
+#     except:
+#         params['mantenimiento_re_send_email_error'] = True
+#     # NOTE LOCAL y Heroku
+#     # return render_template('mantenimiento_nocturno.html', params=params)
+#     # NOTE AMAZON
+#     return 'Mantenimieto Realizado'
 
 
 @app.route('/tutorias', methods=['GET', 'POST'])

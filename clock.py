@@ -13,17 +13,12 @@ sched = BlockingScheduler()
 #         mantenimiento_papelera_clock()
 #         mantenimiento_re_send_email_clock()
 
-@sched.scheduled_job('cron', hour=13, minute=10)
+@sched.scheduled_job('cron', hour=3)
 def matenimiento_nocturno():
     with app.app_context():
         mantenimiento_historial_clock()
         mantenimiento_papelera_clock()
         mantenimiento_re_send_email_clock()
-
-
-# @sched.scheduled_job('cron', day_of_week='mon-fri', hour=17)
-# def scheduled_job():
-#     print('This job is run every weekday at 5pm.')
 
 
 sched.start()
