@@ -1,0 +1,20 @@
+.collpase-header-test {
+	display: block;
+	color: white;
+	padding: 0.5rem 1rem;
+	background: $gray-700;
+	border-top-right-radius: 4px;
+	border-top-left-radius: 4px;
+}
+
+.collpase-header-test:hover {
+	text-decoration: none;
+	background-color: darken($gray-700,10%);
+}
+
+.collpase-header-test:active,
+.collpase-header-test:link,
+.collpase-header-test:visited {
+	text-decoration: none;
+	color: white;
+}

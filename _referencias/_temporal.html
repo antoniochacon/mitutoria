@@ -1,0 +1,15 @@
+
+	<div class="form-group col-md-12">
+		<div class="input-group">
+			<input
+				type="text"
+				{% if not equal_str(pregunta.id, params['current_pregunta_id']) or not params['pregunta_edit_link'] %}
+				readonly
+				{% endif %}
+				class="form-control {% if request.method=='POST' and params['collpase_pregunta_edit'] %} {% if pregunta_edit.descripcion.errors %} is-invalid {% else %} is-valid {% endif %}{% endif %}"
+				name="{{pregunta_edit.descripcion.name}}"
+				value="{% if equal_str(pregunta.id,params['current_pregunta_id']) and request.method=='POST' and params['collpase_pregunta_edit'] %}{{pregunta_edit.descripcion.data}}{% else %}{{pregunta.descripcion}}{% endif %}"
+				placeholder="{{pregunta_edit.descripcion.label.text}}">
+			<span class="input-group-addon {% if request.method=='POST' and params['collpase_pregunta_edit'] %} {% if pregunta_edit.descripcion.errors %} form_addon-warning {% else %} form_addon-success {% endif %} {% endif %}">{{pregunta_edit.descripcion.label.text}}</span>
+		</div>
+	</div>
