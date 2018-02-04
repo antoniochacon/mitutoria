@@ -83,18 +83,14 @@ def index_html():
         return redirect(url_for('wellcome_html'))
     return redirect(url_for('tutorias_html'))
 
-# NOTE mitutoria-dev [comentarlo para mitutoria-production para evitar un acceso ajeno]
 
-
-
-
-@app.route('/mantenimiento', methods=['GET', 'POST'])
-def mantenimiento_html():
-    params = {}
-    params['mantenimiento_historial_error'] = False
-    params['mantenimiento_papelera_error'] = False
-    params['mantenimiento_re_send_email_error'] = False
-    params['tutoria_calendar_sync_clock_error'] = False
+# @app.route('/mantenimiento', methods=['GET', 'POST']) # NOTE comentarlo para mitutoria-production para evitar un acceso ajeno
+# def mantenimiento_html():
+#     params = {}
+#     params['mantenimiento_historial_error'] = False
+#     params['mantenimiento_papelera_error'] = False
+#     params['mantenimiento_re_send_email_error'] = False
+#     params['tutoria_calendar_sync_clock_error'] = False
     # # XXX mantenimiento_historial
     # try:
     #     mantenimiento_historial()
@@ -113,14 +109,12 @@ def mantenimiento_html():
     #     # mantenimiento_re_send_email_asincrono()
     # except:
     #     params['mantenimiento_re_send_email_error'] = True
-    tutoria_calendar_sync_clock()
-    try:
-        pass
-        # tutoria_calendar_sync_clock()
-    except:
-        params['tutoria_calendar_sync_clock_error'] = True
+    # try:
+    #     tutoria_calendar_sync_clock()
+    # except:
+    #     params['tutoria_calendar_sync_clock_error'] = True
     # NOTE LOCAL y Heroku
-    return render_template('mantenimiento_local.html', params=params)
+    # return render_template('mantenimiento_local.html', params=params)
     # NOTE AMAZON
     # return 'Mantenimieto Realizado'
 
