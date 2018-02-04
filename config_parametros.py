@@ -61,18 +61,18 @@ from email.mime.text import MIMEText
 from apiclient import discovery
 # ****************************************
 # XXX Local_Host
-tutoria_email_link = 'http://localhost:5000/informe'
-email_validate_link = 'http://localhost:5000/email_validate'
-index_link = 'http://localhost:5000/'
-password_reset_link = 'http://localhost:5000/password_reset/'
-email_time_sleep = 1
+# tutoria_email_link = 'http://localhost:5000/informe'
+# email_validate_link = 'http://localhost:5000/email_validate'
+# index_link = 'http://localhost:5000/'
+# password_reset_link = 'http://localhost:5000/password_reset/'
+# email_time_sleep = 1
 
 # XXX Heroku_Host
-# tutoria_email_link = 'https://mitutoria.herokuapp.com/informe'
-# email_validate_link = 'https://mitutoria.herokuapp.com/email_validate'
-# index_link = 'https://mitutoria.herokuapp.com/'
-# password_reset_link = 'https://mitutoria.herokuapp.com/password_reset/'
-# email_time_sleep = 1
+tutoria_email_link = 'https://mitutoria.herokuapp.com/informe'
+email_validate_link = 'https://mitutoria.herokuapp.com/email_validate'
+index_link = 'https://mitutoria.herokuapp.com/'
+password_reset_link = 'https://mitutoria.herokuapp.com/password_reset/'
+email_time_sleep = 1
 
 # XXX Zappa_Lambda_Host
 # tutoria_email_link = 'https://v4u3t4zool.execute-api.eu-west-2.amazonaws.com/production/informe'
