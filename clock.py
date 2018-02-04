@@ -5,9 +5,6 @@ import functions
 from apscheduler.schedulers.blocking import BlockingScheduler
 sched = BlockingScheduler()
 
-settings_global = session_sql.query(Settings_Global).first()
-current_date = datetime.date.today()
-
 
 @sched.scheduled_job('interval', minutes=1)
 def matenimiento_hour_1():
