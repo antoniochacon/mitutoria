@@ -277,7 +277,7 @@ def tutorias_html(params={}):
 
 @app.route('/oauth2callback_calendar')
 def oauth2callback_calendar():
-    flow = client.flow_from_clientsecrets('static/credentials/client_secret.json', scope='https://www.googleapis.com/auth/calendar', redirect_uri=index_link + 'oauth2callback_calendar')
+    flow = client.flow_from_clientsecrets('static/credentials/client_secret.json', scope='https://www.googleapis.com/auth/calendar', redirect_uri=index_link+'oauth2callback_calendar')
     flow.params['access_type'] = 'offline'
     flow.params['approval_prompt'] = 'force'
     if 'code' not in request.args:
