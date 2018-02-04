@@ -46,8 +46,9 @@ hashids = Hashids(salt=salt)
 # todos los id dentro de una funcion iran tal cual se cogen del diccionario. Ejemplo: alumno_asignaturas(alumno.id) || equal_str(alumno.id, params['current_alumno_id'])
 # redirect usar siempre params=dic_encode(params): Ejemplo: return redirect(url_for('alumnos_html', params=dic_encode(params)))
 # render_template usar siempre params=params: Ejemplo return render_template('alumnos.html', params=params)
-# ****************************************
+# ***************************************************************
 # oauth2_credentials (necesario para gmail y calendar api)
+# ***************************************************************
 import threading  # NOTE mail threading
 import httplib2
 import os
@@ -59,7 +60,9 @@ from email import encoders
 from email.message import Message
 from email.mime.text import MIMEText
 from apiclient import discovery
-# ****************************************
+# ----------------------------------------------------------------
+# oauth2_credentials [FIN]
+# ----------------------------------------------------------------
 # XXX Local_Host
 # tutoria_email_link = 'http://localhost:5000/informe'
 # email_validate_link = 'http://localhost:5000/email_validate'
