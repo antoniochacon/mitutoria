@@ -105,8 +105,8 @@ def mantenimiento_papelera_clock():
 
 def mantenimiento_re_send_email_clock():
     # XXX re_send_email last 24h
-    settings_global = session_sql.query(Settings_Global).first()
-    current_date = datetime.date.today()
+    # settings_global = session_sql.query(Settings_Global).first()
+    # current_date = datetime.date.today()
     sender = settings_global.gmail_sender
 
     # XXX crea el servicio gmail
