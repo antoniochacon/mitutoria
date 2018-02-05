@@ -77,6 +77,7 @@ class Settings_Global (Base):
     periodo_cleanup_tutorias = Column(Integer, default=3)  # meses
     periodo_deleted_tutorias = Column(Integer, default=15)  # dias
     cleanup_tutorias_automatic = Column(Boolean, default=False)
+    mantenimiento_nocturno_date = Column(Date) # fecha del ultimo matenimiento nocturno
 
 
 class Grupo (Base):

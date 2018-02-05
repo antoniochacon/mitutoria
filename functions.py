@@ -120,7 +120,6 @@ def mantenimiento_re_send_email_clock():
 
     # XXX re-send email 24 antes de la tutoria.fecha
     tutorias = session_sql.query(Tutoria).filter(Tutoria.deleted == False, Tutoria.activa == True, Tutoria.fecha == current_date + datetime.timedelta(days=1), Tutoria.created_at != current_date).all()
-
     for tutoria in tutorias:
         settings_current_user_sql = session_sql.query(Settings).join(Grupo).join(Alumno).join(Tutoria).filter(Tutoria.id == tutoria.id).first()
         emails_enviados = settings_current_user_sql.emails_enviados

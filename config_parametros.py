@@ -64,11 +64,11 @@ from apiclient import discovery
 # oauth2_credentials [FIN]
 # ----------------------------------------------------------------
 # XXX Local_Host
-tutoria_email_link = 'http://localhost:5000/informe'
-email_validate_link = 'http://localhost:5000/email_validate'
-index_link = 'http://localhost:5000/'
-password_reset_link = 'http://localhost:5000/password_reset/'
-email_time_sleep = 1
+# tutoria_email_link = 'http://localhost:5000/informe'
+# email_validate_link = 'http://localhost:5000/email_validate'
+# index_link = 'http://localhost:5000/'
+# password_reset_link = 'http://localhost:5000/password_reset/'
+# email_time_sleep = 1
 
 # XXX Heroku_Host
 tutoria_email_link = 'https://mitutoria.herokuapp.com/informe'
