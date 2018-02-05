@@ -95,8 +95,8 @@ def mantenimiento_historial_clock():
 
 def mantenimiento_papelera_clock():
     # XXX purgar papelera tutorias
-    current_date = datetime.date.today()
-    settings_global = session_sql.query(Settings_Global).first()
+    # settings_global = session_sql.query(Settings_Global).first()
+    # current_date = datetime.date.today()
     tutorias = session_sql.query(Tutoria).filter(Tutoria.deleted == True, Tutoria.deleted_at < current_date - datetime.timedelta(days=settings_global.periodo_deleted_tutorias)).all()
     for tutoria in tutorias:
         session_sql.delete(tutoria)
