@@ -30,7 +30,7 @@ def matenimiento_minutes_90():
         tutoria_calendar_sync_clock()
 
 
-@sched.scheduled_job('cron', hour='1,3,5,7,9,11')
+@sched.scheduled_job('cron', hour='1,3,5,7,9,11,13,15')
 def matenimiento_nocturno():
     with app.app_context():
         settings_global = session_sql.query(Settings_Global).first()

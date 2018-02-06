@@ -1,7 +1,8 @@
+
 {% if informe %}
 	{% set invitado_pruebas_evaluables_sql = invitado_pruebas_evaluables(informe.id) %}
 {% endif %}
-<div class="col-sm-12 bg-dark text-white pl-2 pt-2 pb-2 mb-3">
+<div class="bg-gray text-white px-1 mb-2">
 	Calificaciones
 </div>
 <div class="row px-4">
@@ -41,18 +42,24 @@
 		{% endwith %}
 	{% endfor %}
 		{% if not invitado_pruebas_evaluables_sql %}
-			<div class="small">Agregue calificaciones de cada una de sus pruebas evaluables.</div>
+			<div class="small mb-2">Agregue calificaciones de cada una de sus pruebas evaluables.</div>
 		{% endif %}
-		<div class="col-sm-12 my-3 pr-0">
+		<div class="col-sm-12 mb-2 pr-0">
 		<button class="btn btn-outline-dark btn-sm float-right pl-0" type="submit" name="selector_button" value="selector_prueba_evaluable_add" title="Agregar calificación">
 			<i class="material-icons vertical-center">add</i>
 			Agregar calificación
 		</button>
 		</div>
 	</div>
-<div class="col-sm-12 bg-dark text-white pl-2 pt-2 pb-2">
+<div class="bg-gray text-white px-1 mb-2">
 	Observaciones
 </div>
 <div class="col-sm-12 pt-3 pb-3 pl-1 pr-1">
 	<textarea class="form-control vresize" rows="5" name="comentario" id="comentario" placeholder="Escribe las observaciones">{% if informe %}{% if informe.comentario %}{{informe.comentario}}{% endif %}{% endif %}</textarea>
+</div>
+
+<div class="col-sm-12">
+	<button role="button" type="submit" name="selector_button" value="selector_guardar_calificaciones" class="btn btn-outline-dark" title="Enviar informe">
+		<i class="material-icons vertical-center pr-1">save</i>Guardar calificaciones [2/2]
+	</button>
 </div>

@@ -5,6 +5,7 @@
 		Póngase en observacioneso con el tutor de este alumno/a para resolver sus dudas.
 	</div>
 {% endif %}
+
 {% for categoria in categorias() %}
 	{% with %}
 	{% set invitado_preguntas_by_categoria_id_sql = invitado_preguntas_by_categoria_id(settings_by_tutoria_id_sql.id, categoria.id) %}
@@ -34,7 +35,7 @@
 									class="range-slider-range_cualitativo"
 									type="range"
 									step="2"
-									value="{% if informe %}{% if invitado_respuesta(informe.id,pregunta.id).resultado %}{{invitado_respuesta(informe.id,pregunta.id).resultado}}{% else %}{{params[['pregunta_',pregunta.id]|join('')]}}{% endif %}{% else %}{{params[['pregunta_',pregunta.id]|join('')]}}{% endif %}"
+									value="{% if informe %}{% if invitado_respuesta(informe.id,pregunta.id) %}{{invitado_respuesta(informe.id,pregunta.id).resultado}}{% else %}-2{% endif %}{% else %}-2{% endif %}"
 									min="0"
 									max="10"
 									oninput="this.form.pregunta_{{hashids_encode_pregunta_id}}.value=this.value">
@@ -44,8 +45,7 @@
 								name="pregunta_{{hashids_encode_pregunta_id}}"
 								min="-2"
 								max="10"
-								value="{% if informe %}{% if invitado_respuesta(informe.id,pregunta.id).resultado %}{{invitado_respuesta(informe.id,pregunta.id).resultado}}{% else %}{{params[['pregunta_',pregunta.id]|join('')]}}{% endif %}{% else %}{{params[['pregunta_',pregunta.id]|join('')]}}{% endif %}"
-								oninput="this.form.pregunta_input_{{hashids_encode_pregunta_id}}.value=this.value">
+								value="{% if informe %}{% if invitado_respuesta(informe.id,pregunta.id) %}{{invitado_respuesta(informe.id,pregunta.id).resultado}}{% else %}-2{% endif %}{% else %}-2{% endif %}">
 							<input type="hidden" name="pregunta_id" value="{{hashids_encode_pregunta_id}}">
 						</div>
 					</div>
@@ -56,12 +56,10 @@
 	{% endif %}
 	{% endwith %}
 {% endfor %}
-{% with %}
-<div class="row px-4">
-	{% if not informe %}
-		<button role="button" type="submit" name="selector_button" value="selector_guardar_cuestionario" class="btn btn-outline-dark" title="Guardar cuestionario">
-			<i class="material-icons vertical-center pr-1">save</i>Guardar cuestionario [1/2]
-		</button>
-	{% endif %}
+
+
+<div class="col-sm-12">
+	<button role="button" type="submit" name="selector_button" value="selector_guardar_cuestionario" class="btn btn-outline-dark" title="Guardar cuestionario">
+		<i class="material-icons vertical-center pr-1">save</i>Guardar cuestionario [1/2]
+	</button>
 </div>
-{% endwith %}

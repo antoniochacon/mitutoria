@@ -84,6 +84,132 @@ def index_html():
     return redirect(url_for('tutorias_html'))
 
 
+@app.route('/informe/<asignatura_id>/<tutoria_id>/', methods=['GET', 'POST'])
+@app.route('/informe/<asignatura_id>/<tutoria_id>/<params>', methods=['GET', 'POST'])
+def informe_html(asignatura_id, tutoria_id, params={}):
+    try:
+        tutoria_id = hashids_decode(tutoria_id)
+        asignatura_id = hashids_decode(asignatura_id)
+        tutoria_asignatura_check = session_sql.query(Association_Tutoria_Asignatura).filter(Association_Tutoria_Asignatura.tutoria_id == tutoria_id, Association_Tutoria_Asignatura.asignatura_id == asignatura_id).first()
+        if not tutoria_asignatura_check:
+            return redirect(url_for('informe_no_disponible_html'))
+    except:
+        return redirect(url_for('informe_no_disponible_html'))
+    try:
+        params_old = dic_decode(params)
+    except:
+        params_old = {}
+        abort(404)
+
+    params = {}
+    params['anchor'] = params_old.get('anchor', 'anchor_top')
+    params['pregunta_sin_respuesta'] = params_old.get('pregunta_sin_respuesta', False)
+    params['selector_guardar_cuestionario'] = params_old.get('selector_guardar_cuestionario', False)
+
+    tutoria = tutoria_by_id(tutoria_id)
+    asignatura = asignatura_by_id(asignatura_id)
+    grupo = grupo_by_tutoria_id(tutoria_id)
+    alumno = alumno_by_id(tutoria.alumno_id)
+    settings = settings_by_tutoria_id(tutoria_id)
+    informe_sql = invitado_informe(tutoria_id, asignatura_id)
+    preguntas_current_settings = session_sql.query(Pregunta).join(Association_Settings_Pregunta).filter(Association_Settings_Pregunta.settings_id == settings.id).join(Categoria).order_by(desc(Categoria.orden), desc(Pregunta.orden)).all()
+
+    # params['comentario'] = params_old.get('comentario', '')
+    params['cuestionario_tab'] = params_old.get('cuestionario_tab', True)
+    params['notas_tab'] = params_old.get('notas_tab', False)
+    params['observaciones_tab'] = params_old.get('observaciones_tab', False)
+    params['current_prueba_evaluable_id'] = params_old.get('current_prueba_evaluable_id', 0)
+    current_prueba_evaluable_id = params['current_prueba_evaluable_id']
+    prueba_evaluable_dic = {}
+
+    if request.method == 'POST':
+        # params['cuestionario_tab'] = False  # es mas comodo ponerlo aqui que estar repitiendolo
+
+        # NOTE primero hay que agregar el informe para poder continuar agregando elementos usando informe.id
+        if request.form['selector_button'] == 'selector_guardar_cuestionario':
+            if informe_sql:
+                for pregunta in preguntas_current_settings:
+                    resultado = request.form.get('pregunta_' + str(hashids_encode(pregunta.id)))
+                    respuesta_sql = invitado_respuesta(informe_sql.id, pregunta.id)
+                    if int(resultado) == -2:
+                        params['pregunta_sin_respuesta'] = True
+                    else:
+                        if respuesta_sql:
+                            respuesta_sql.resultado = resultado
+                        else:
+                            repuesta_add = Respuesta(informe_id=informe_sql.id, pregunta_id=pregunta.id, resultado=resultado)
+                            session_sql.add(repuesta_add)
+            else:
+                informe_add = Informe(tutoria_id=tutoria_id, asignatura_id=asignatura_id)
+                session_sql.add(informe_add)
+                session_sql.flush()  # NOTE necesario para obtener informe_add.id antes del commit
+                for pregunta in preguntas_current_settings:
+                    resultado = request.form.get('pregunta_' + str(hashids_encode(pregunta.id)))
+                    if int(resultado) == -2:
+                        params['pregunta_sin_respuesta'] = True
+                    else:
+                        respuesta_add = Respuesta(informe_id=informe_add.id, pregunta_id=pregunta.id, resultado=resultado)
+                        session_sql.add(respuesta_add)
+
+            if params['pregunta_sin_respuesta']:
+                # params['cuestionario_tab'] = True
+                params['anchor'] = 'anchor_pregunta_' + str(hashids_encode(pregunta.id))
+                flash_toast('Preguntas sin evaluar', 'warning')
+                return redirect(url_for(
+                    'informe_html',
+                    asignatura_id=hashids_encode(asignatura_id), tutoria_id=hashids_encode(tutoria_id),
+                    params=dic_encode(params)))
+            else:
+                params['cuestionario_tab'] = False
+                params['notas_tab'] = True
+                session_sql.commit()
+                return redirect(url_for(
+                    'informe_html',
+                    asignatura_id=hashids_encode(asignatura_id), tutoria_id=hashids_encode(tutoria_id),
+                    params=dic_encode(params)))
+
+        # NOTE captura de notas una vez creado el informe
+        # ****************************************************************
+        for prueba_evaluable in invitado_pruebas_evaluables(informe_sql.id):
+            prueba_evaluable.nombre = request.form.get('prueba_evaluable_nombre_' + str(hashids_encode(prueba_evaluable.id)))
+            prueba_evaluable.nota = request.form.get('prueba_evaluable_nota_' + str(hashids_encode(prueba_evaluable.id)))
+            prueba_evaluable_dic['selector_prueba_evaluable_delete_' + str(prueba_evaluable.id)] = int(prueba_evaluable.id)
+
+        if request.form['selector_button'] in prueba_evaluable_dic.keys():
+            prueba_evaluable_delete_id = prueba_evaluable_dic[request.form['selector_button']]
+            prueba_evaluable_delete_sql = session_sql.query(Prueba_Evaluable).filter(Prueba_Evaluable.id == prueba_evaluable_delete_id).first()
+            session_sql.delete(prueba_evaluable_delete_sql)
+            params['cuestionario_tab'] = False
+            params['notas_tab'] = True
+            return redirect(url_for('informe_html', tutoria_id=hashids_encode(tutoria_id), asignatura_id=hashids_encode(asignatura_id), params=dic_encode(params)))
+
+        if request.form['selector_button'] == 'selector_prueba_evaluable_add':
+            params['collapse_prueba_evaluable_add'] = True
+            prueba_evaluable_nombre = ''
+            prueba_evaluable_nota = 0
+            prueba_evaluable_add = Prueba_Evaluable(informe_id=informe_sql.id, nombre=prueba_evaluable_nombre, nota=prueba_evaluable_nota)
+            session_sql.add(prueba_evaluable_add)
+            session_sql.flush()  # necesario para disponer luego de prueba_evaluable_add.id
+            params['anchor'] = 'anchor_pru_eva_' + str(hashids_encode(prueba_evaluable_add.id))
+            # flash_toast('Prueba evaluable agregada', 'success')
+            params['cuestionario_tab'] = False
+            params['notas_tab'] = True
+            return redirect(url_for('informe_html', tutoria_id=hashids_encode(tutoria_id), asignatura_id=hashids_encode(asignatura_id), params=dic_encode(params)))
+
+        if request.form['selector_button'] == 'selector_guardar_calificaciones':
+            informe_sql.comentario = request.form.get('comentario')
+            flash_toast('Infome de ' + Markup('<strong>') + alumno.nombre + Markup('</strong>') + ' enviado', 'success')
+            session_sql.commit()
+            return redirect(url_for(
+                'informe_success_html',
+                asignatura_id=hashids_encode(asignatura_id), tutoria_id=hashids_encode(tutoria_id),
+                params=dic_encode(params)))
+
+    return render_template(
+        'informe.html', tutoria=tutoria, asignatura=asignatura,
+        alumno=alumno, grupo=grupo, informe=informe_sql, params=params)
+
+
 # @app.route('/mantenimiento', methods=['GET', 'POST']) # NOTE comentarlo para mitutoria-production para evitar un acceso ajeno
 # def mantenimiento_html():
 #     params = {}
@@ -1862,151 +1988,6 @@ def admin_citas_html(params={}):
 @app.route('/informe_no_disponible', methods=['GET', 'POST'])
 def informe_no_disponible_html():
     return render_template('informe_no_disponible.html')
-
-# XXX informe
-
-
-@app.route('/informe/<asignatura_id>/<tutoria_id>/', methods=['GET', 'POST'])
-@app.route('/informe/<asignatura_id>/<tutoria_id>/<params>', methods=['GET', 'POST'])
-def informe_html(asignatura_id, tutoria_id, params={}):
-    try:
-        tutoria_id = hashids_decode(tutoria_id)
-        asignatura_id = hashids_decode(asignatura_id)
-        tutoria_asignatura_check = session_sql.query(Association_Tutoria_Asignatura).filter(Association_Tutoria_Asignatura.tutoria_id == tutoria_id, Association_Tutoria_Asignatura.asignatura_id == asignatura_id).first()
-        if not tutoria_asignatura_check:
-            return redirect(url_for('informe_no_disponible_html'))
-    except:
-        return redirect(url_for('informe_no_disponible_html'))
-    try:
-        params_old = dic_decode(params)
-    except:
-        params_old = {}
-        abort(404)
-
-    params = {}
-    params['anchor'] = params_old.get('anchor', 'anchor_top')
-    params['pregunta_sin_respuesta'] = params_old.get('pregunta_sin_respuesta', False)
-    params['selector_guardar_cuestionario'] = params_old.get('selector_guardar_cuestionario', False)
-
-    tutoria = tutoria_by_id(tutoria_id)
-    asignatura = asignatura_by_id(asignatura_id)
-    grupo = grupo_by_tutoria_id(tutoria_id)
-    alumno = alumno_by_id(tutoria.alumno_id)
-    settings = settings_by_tutoria_id(tutoria_id)
-    informe_sql = invitado_informe(tutoria_id, asignatura_id)
-    preguntas_para_check = session_sql.query(Pregunta).join(Association_Settings_Pregunta).filter(Association_Settings_Pregunta.settings_id == settings.id).join(Categoria).order_by(desc(Categoria.orden), desc(Pregunta.orden)).all()
-    for pregunta in preguntas_para_check:
-        params['pregunta_' + str(pregunta.id)] = params_old.get('pregunta_' + str(pregunta.id), -2)
-    params['comentario'] = params_old.get('comentario', '')
-
-    params['cuestionario_tab'] = params_old.get('cuestionario_tab', True)
-    params['notas_tab'] = params_old.get('notas_tab', False)
-    params['observaciones_tab'] = params_old.get('observaciones_tab', False)
-
-    params['current_prueba_evaluable_id'] = params_old.get('current_prueba_evaluable_id', 0)
-    current_prueba_evaluable_id = params['current_prueba_evaluable_id']
-    prueba_evaluable_dic = {}
-
-    if request.method == 'POST':
-        params['cuestionario_tab'] = False  # es mas comodo ponerlo aqui que estar repitiendolo
-        # NOTE captura de datos antes de crear el informe
-        # ****************************************************************
-        # NOTE chekea si la pregunta tiene respuesta
-        for pregunta in preguntas_para_check:
-            params['pregunta_' + str(pregunta.id)] = request.form.get('pregunta_' + str(hashids_encode(pregunta.id)))
-            if int(params['pregunta_' + str(pregunta.id)]) == -2:
-                params['anchor'] = 'anchor_pregunta_' + str(hashids_encode(pregunta.id))
-                params['pregunta_sin_respuesta'] = True
-        # ------------------------------------------------------------
-        # NOTE FIN captura de datos antes de crear el informe
-
-        # NOTE captura de notas una vez creado el informe
-        # ****************************************************************
-        if informe_sql:
-            for pregunta in preguntas_para_check:
-                if invitado_respuesta(informe_sql.id, pregunta.id):
-                    invitado_respuesta(informe_sql.id, pregunta.id).resultado = params['pregunta_' + str(pregunta.id)]
-                else:
-                    # FIXME aqui puede estar el fallo de respuestas duplicadas
-                    repuesta_add = Respuesta(informe_id=informe_sql.id, pregunta_id=pregunta.id, resultado=params['pregunta_' + str(pregunta.id)])
-                    session_sql.add(repuesta_add)
-            session_sql.commit()  # NOTE necesario para guardar las nuevas preguntas en caso de modificar las preguntas por parte del usuario
-
-            params['comentario'] = request.form.get('comentario')
-            informe_sql.comentario = params['comentario']
-
-            for prueba_evaluable in invitado_pruebas_evaluables(informe_sql.id):
-                prueba_evaluable.nombre = request.form.get('prueba_evaluable_nombre_' + str(hashids_encode(prueba_evaluable.id)))
-                prueba_evaluable.nota = request.form.get('prueba_evaluable_nota_' + str(hashids_encode(prueba_evaluable.id)))
-                prueba_evaluable_dic['selector_prueba_evaluable_delete_' + str(prueba_evaluable.id)] = int(prueba_evaluable.id)
-        # ------------------------------------------------------------
-        # NOTE FIN captura de notas una vez creado el informe
-
-        if request.form['selector_button'] in prueba_evaluable_dic.keys():
-            prueba_evaluable_delete_id = prueba_evaluable_dic[request.form['selector_button']]
-            prueba_evaluable_delete_sql = session_sql.query(Prueba_Evaluable).filter(Prueba_Evaluable.id == prueba_evaluable_delete_id).first()
-            session_sql.delete(prueba_evaluable_delete_sql)
-            params['notas_tab'] = True
-            return redirect(url_for('informe_html', tutoria_id=hashids_encode(tutoria_id), asignatura_id=hashids_encode(asignatura_id), params=dic_encode(params)))
-
-        # NOTE primero hay que agregar el informe para poder continuar agregando elementos usando informe.id
-        if request.form['selector_button'] == 'selector_guardar_cuestionario' or params['selector_guardar_cuestionario']:
-            if params['pregunta_sin_respuesta']:
-                flash_toast('Preguntas sin evaluar', 'warning')
-                params['cuestionario_tab'] = True
-                return redirect(url_for(
-                    'informe_html',
-                    asignatura_id=hashids_encode(asignatura_id), tutoria_id=hashids_encode(tutoria_id),
-                    params=dic_encode(params)))
-            else:
-                informe_add = Informe(tutoria_id=tutoria_id, asignatura_id=asignatura_id, comentario=params['comentario'])
-                session_sql.add(informe_add)
-                session_sql.flush()  # NOTE necesario para obtener informe_add.id antes del commit
-                for pregunta in preguntas_para_check:
-                    respuesta_add = Respuesta(informe_id=informe_add.id, pregunta_id=pregunta.id, resultado=params['pregunta_' + str(pregunta.id)])
-                    session_sql.add(respuesta_add)
-                    params['notas_tab'] = True
-
-                    # NOTE necesario si se quiere guardar el cuestionario sin rellenar notas y comentario
-                    # session_sql.commit()
-
-            return redirect(url_for(
-                'informe_html',
-                asignatura_id=hashids_encode(asignatura_id), tutoria_id=hashids_encode(tutoria_id),
-                params=dic_encode(params)))
-
-        if request.form['selector_button'] == 'selector_prueba_evaluable_add':
-            params['collapse_prueba_evaluable_add'] = True
-            prueba_evaluable_nombre = ''
-            prueba_evaluable_nota = 0
-            prueba_evaluable_add = Prueba_Evaluable(informe_id=informe_sql.id, nombre=prueba_evaluable_nombre, nota=prueba_evaluable_nota)
-            session_sql.add(prueba_evaluable_add)
-            session_sql.flush()  # necesario para disponer luego de prueba_evaluable_add.id
-            params['anchor'] = 'anchor_pru_eva_' + str(hashids_encode(prueba_evaluable_add.id))
-            # flash_toast('Prueba evaluable agregada', 'success')
-            params['notas_tab'] = True
-            return redirect(url_for('informe_html', tutoria_id=hashids_encode(tutoria_id), asignatura_id=hashids_encode(asignatura_id), params=dic_encode(params)))
-
-        if request.form['selector_button'] == 'selector_enviar_informe':
-            if params['pregunta_sin_respuesta']:
-                params['pregunta_sin_respuesta'] = False
-                flash_toast('Preguntas sin evaluar', 'warning')
-                params['cuestionario_tab'] = True
-                return redirect(url_for(
-                    'informe_html',
-                    asignatura_id=hashids_encode(asignatura_id), tutoria_id=hashids_encode(tutoria_id),
-                    params=dic_encode(params)))
-
-            flash_toast('Infome de ' + Markup('<strong>') + alumno.nombre + Markup('</strong>') + ' enviado', 'success')
-            session_sql.commit()
-            return redirect(url_for(
-                'informe_success_html',
-                asignatura_id=hashids_encode(asignatura_id), tutoria_id=hashids_encode(tutoria_id),
-                params=dic_encode(params)))
-
-    return render_template(
-        'informe.html', tutoria=tutoria, asignatura=asignatura,
-        alumno=alumno, grupo=grupo, informe=informe_sql, params=params)
 
 
 # XXX informe_success

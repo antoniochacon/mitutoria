@@ -1,5 +1,4 @@
 APScheduler
-autopep8
 arrow
 cryptography
 Flask-Login
@@ -10,3 +9,4 @@ psycopg2
 SQLAlchemy
 urllib3
 WTForms
+autopep8
