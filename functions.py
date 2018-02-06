@@ -15,11 +15,8 @@ logging.getLogger('googleapiclient.discovery_cache').setLevel(logging.ERROR)
 # Mantenimiento Clock
 # ***************************************************************
 def tutoria_calendar_sync_clock():
-    # settings_global = session_sql.query(Settings_Global).first()
-    # current_date = datetime.date.today()
-    settings_global = g.settings_global
-    current_date = g.current_date
-
+    settings_global = session_sql.query(Settings_Global).first()
+    current_date = datetime.date.today()
     settings_current_users = session_sql.query(Settings).all()
     for settings_current_user in settings_current_users:
         if settings_current_user.calendar:

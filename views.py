@@ -1328,8 +1328,8 @@ def tutoria_edit_html(params={}):
             tutoria_sql.deleted_at = g.current_date
             if session_sql.is_modified(tutoria_sql):
                 session_sql.commit()
-            flash_toast('Tutoria enviada a la papelera', 'success')
-            return redirect(url_for('analisis_html', params=dic_encode(params)))
+            flash_toast('Tutoría enviada a la papelera', 'success')
+            return redirect(url_for('index_html'))
 
         # XXX selector_tutoria_eliminar
         if request.form['selector_button'] == 'selector_tutoria_eliminar':
