@@ -27,8 +27,8 @@ def matenimiento_nocturno():
 @sched.scheduled_job('interval', minutes=2)
 def test():
     with app.app_context():
-        settings_global = session_sql.query(Settings_Global).first()
-        current_date = datetime.date.today()
+        # settings_global = session_sql.query(Settings_Global).first()
+        # current_date = datetime.date.today()
         if settings_global.mantenimiento_nocturno_date != current_date: # NOTE asegura que solo lo ejecuta una vez al dia
             mantenimiento_historial_clock()
             mantenimiento_papelera_clock()

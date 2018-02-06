@@ -86,7 +86,7 @@ def tutoria_calendar_sync_clock():
 
 def mantenimiento_historial_clock():
     # XXX mover tutorias al historial
-    # current_date = datetime.date.today()
+    current_date = datetime.date.today()
     tutorias = session_sql.query(Tutoria).filter(Tutoria.deleted == False, Tutoria.activa == True, Tutoria.fecha < current_date)
     for tutoria in tutorias:
         tutoria.activa = False
@@ -95,8 +95,8 @@ def mantenimiento_historial_clock():
 
 def mantenimiento_papelera_clock():
     # XXX purgar papelera tutorias
-    # settings_global = session_sql.query(Settings_Global).first()
-    # current_date = datetime.date.today()
+    settings_global = session_sql.query(Settings_Global).first()
+    current_date = datetime.date.today()
     tutorias = session_sql.query(Tutoria).filter(Tutoria.deleted == True, Tutoria.deleted_at < current_date - datetime.timedelta(days=settings_global.periodo_deleted_tutorias)).all()
     for tutoria in tutorias:
         session_sql.delete(tutoria)
@@ -105,8 +105,8 @@ def mantenimiento_papelera_clock():
 
 def mantenimiento_re_send_email_clock():
     # XXX re_send_email last 24h
-    # settings_global = session_sql.query(Settings_Global).first()
-    # current_date = datetime.date.today()
+    settings_global = session_sql.query(Settings_Global).first()
+    current_date = datetime.date.today()
     sender = settings_global.gmail_sender
 
     # XXX crea el servicio gmail
