@@ -41,13 +41,14 @@
 		{% endwith %}
 	{% endfor %}
 	<div class="col-sm-12 mb-3">
+		{% if not invitado_pruebas_evaluables_sql %}
+			<div class="small">Agregue calificaciones de cada prueba evaluable.</div>
+		{% endif %}
 		<button class="btn btn-outline-dark btn-sm float-right pl-0 pr-1" type="submit" name="selector_button" value="selector_prueba_evaluable_add" title="Agregar calificación">
 			<i class="material-icons vertical-center">add</i>
 			Agregar calificación
 		</button>
-		{% if not invitado_pruebas_evaluables_sql %}
-			<span class="small">Agregue calificaciones de cada prueba evaluable.</span>
-		{% endif %}
+
 	</div>
 </div>
 <div class="col-sm-12 bg-dark text-white pl-2 pt-2 pb-2">
