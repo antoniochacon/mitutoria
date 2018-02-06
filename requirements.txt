@@ -8,3 +8,5 @@ oauth2client
 psycopg2
 SQLAlchemy
 WTForms
+urllib3
+hjson
