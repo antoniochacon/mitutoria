@@ -21,7 +21,7 @@ def matenimiento_minutes_90():
     url = 'https://mitutoria.herokuapp.com/'
     http = urllib3.PoolManager()
     response = http.request('GET', url)
-    return hjson.dumpsJSON(response.data)
+    # return hjson.dumpsJSON(response.data)
 
     with app.app_context():
         tutoria_calendar_sync_clock()
