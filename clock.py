@@ -12,7 +12,7 @@ from apscheduler.schedulers.blocking import BlockingScheduler
 sched = BlockingScheduler()
 
 
-@sched.scheduled_job('interval', minutes=10)
+@sched.scheduled_job('interval', minutes=15)
 def heroku_dont_sleep():
     # XXX LOCAL_HOST:
     # url = 'http://localhost:5000/
