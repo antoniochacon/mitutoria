@@ -12,16 +12,20 @@ from apscheduler.schedulers.blocking import BlockingScheduler
 sched = BlockingScheduler()
 
 
-# @sched.scheduled_job('interval', hours=1, minutes=30)
-@sched.scheduled_job('interval', minutes=1)
-def matenimiento_minutes_90():
+@sched.scheduled_job('interval', minutes=15)
+def dont_sleep():
     # XXX LOCAL_HOST:
-    # url = 'http://localhost:5000/mantenimiento_nocturno'
+    # url = 'http://localhost:5000/
     # XXX HEROKU:
     url = 'https://mitutoria.herokuapp.com/'
     http = urllib3.PoolManager()
     response = http.request('GET', url)
     # return hjson.dumpsJSON(response.data)
+
+
+
+@sched.scheduled_job('interval', hours=1, minutes=30)
+def matenimiento_minutes_90():
     with app.app_context():
         tutoria_calendar_sync_clock()
 
@@ -37,6 +41,5 @@ def matenimiento_nocturno():
             mantenimiento_re_send_email_clock()
             settings_global.mantenimiento_nocturno_date = current_date
             session_sql.commit()
-
 
 sched.start()
