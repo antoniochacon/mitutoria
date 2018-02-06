@@ -271,7 +271,7 @@ def tutorias_html(params={}):
     # mantenimiento_historial()
 
     # XXX sincronizar con google calendar
-    tutoria_calendar_sync()  # NOTE Anular para testear lambda_mantenimiento
+    # tutoria_calendar_sync()  # NOTE Anular para testear lambda_mantenimiento
     return render_template('tutorias.html', alumnos_autocomplete=alumnos, tutoria_add=Tutoria_Add(), params=params)
 
 
