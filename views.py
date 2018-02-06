@@ -1927,6 +1927,7 @@ def informe_html(asignatura_id, tutoria_id, params={}):
                 if invitado_respuesta(informe_sql.id, pregunta.id):
                     invitado_respuesta(informe_sql.id, pregunta.id).resultado = params['pregunta_' + str(pregunta.id)]
                 else:
+                    # FIXME aqui puede estar el fallo de respuestas duplicadas
                     repuesta_add = Respuesta(informe_id=informe_sql.id, pregunta_id=pregunta.id, resultado=params['pregunta_' + str(pregunta.id)])
                     session_sql.add(repuesta_add)
             session_sql.commit()  # NOTE necesario para guardar las nuevas preguntas en caso de modificar las preguntas por parte del usuario
