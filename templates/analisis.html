@@ -181,22 +181,30 @@
 				<a id="anchor_deta"></a>
 				<a data-toggle="collapse" href="#analisis_detallado_asignaturas" class="collapse_header_padding border_bottom" aria-expanded="false" title="Analisis detallado por asignaturas">
 					<i class="material-icons vertical-center">expand_more</i>
+					{% if g.settings_current_user.show_analisis_asignaturas_detallado %}
 					Asignaturas detalladas
+					{% else %}
+					Comentarios
+					{% endif %}
+
 					{% if g.settings_current_user.show_analisis_asignaturas_detallado %}
 						{% include 'analisis_badge_grafico_avanzado_block.html' %}
 					{% endif %}
 				</a>
-
 				<div class="collapse mt-2 {% if params['show_analisis_asignaturas_detallado'] or params['comentario_edit'] %} show {% endif %}" id="analisis_detallado_asignaturas">
 					<div class="col-sm-12 my-2 text-justify small">
-						Comparativa detallada de cada asignatura representando media del grupo, media la asignatura y media de las notas de dicha asignatura de {{alumno.nombre}}
+						{% if g.settings_current_user.show_analisis_asignaturas_detallado %}
+						Comparativa detallada de cada asignatura representando media del grupo, media la asignatura y media de las notas de dicha asignatura de {{alumno.nombre}}.
+						{% else %}
+						Comentarios de cada una de las asignaturas de {{alumno.nombre}}.
+						{% endif %}
 					</div>
 					{% if not stats['asignaturas_recibidas_lista'] %}
 						<div class="col-sm-12 small">No se han recibido informes para esta tutoría.</div>
 					{% else %}
 						{% if not comentarios_stats and not g.settings_current_user.show_analisis_asignaturas_detallado %}
 							<div class="col-sm-12 small mb-2">No se han recibido comentarios para esta tutoría.</div>
-						{% endif %}
+					{% endif %}
 
 					{% endif %}
 					<div class="row mt-3">
