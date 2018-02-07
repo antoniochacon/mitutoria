@@ -153,7 +153,9 @@ def mantenimiento_re_send_email_clock():
                     email_reenvio_number = email_reenvio_number + 1
                     association_tutoria_asignatura_sql.email_reenvio_number = email_reenvio_number
                     grupo_activo_sql = session_sql.query(Grupo).join('alumnos').filter(Alumno.id == alumno.id).first()
-                    subject = 'Tutoría | %s | %s |  %s %s [24h-%s]' % (grupo_activo_sql.nombre, alumno.nombre, tutoria_dia_semana, tutoria_dia_mes, email_reenvio_number)
+                    # NOTE activar la primera linea para hacer pruebas y forzar un titulo distinto
+                    # subject = 'Tutoría | %s | %s |  %s %s [24h-%s]' % (grupo_activo_sql.nombre, alumno.nombre, tutoria_dia_semana, tutoria_dia_mes, email_reenvio_number)
+                    subject = 'Tutoría | %s | %s |  %s %s [24h]' % (grupo_activo_sql.nombre, alumno.nombre, tutoria_dia_semana, tutoria_dia_mes)
                     message_text = render_template('email_tutoria.html', grupo=grupo_activo_sql, tutoria=tutoria, alumno=alumno, asignatura=asignatura, tutoria_email_link=tutoria_email_link, index_link=index_link)
                     create_message_and_send(service, sender, to, subject, message_text)
                 settings_current_user_sql.emails_enviados = emails_enviados
@@ -163,97 +165,6 @@ def mantenimiento_re_send_email_clock():
     # print('Mantenimiento Re-Send satisfactorio.')  # NOTE en aws lambda no funciona el print en su lugar usar return
 # ----------------------------------------------------------------
 # Mantenimiento Clock [FIN]
-# ----------------------------------------------------------------
-
-
-# ***************************************************************
-# Mantenimiento Lambda
-# ***************************************************************
-def mantenimiento_historial():
-    # XXX mover tutorias al historial
-    tutorias = session_sql.query(Tutoria).filter(Tutoria.deleted == False, Tutoria.activa == True, Tutoria.fecha < g.current_date)
-    for tutoria in tutorias:
-        tutoria.activa = False
-    session_sql.commit()
-
-
-def mantenimiento_papelera():
-    # XXX purgar papelera tutorias
-    tutorias = session_sql.query(Tutoria).filter(Tutoria.deleted == True, Tutoria.deleted_at < g.current_date - datetime.timedelta(days=g.settings_global.periodo_deleted_tutorias)).all()
-    for tutoria in tutorias:
-        session_sql.delete(tutoria)
-    session_sql.commit()
-
-
-def mantenimiento_re_send_email():
-    # XXX re_send_email last 24h
-    settings_global_sql = session_sql.query(Settings_Global).first()
-    sender = settings_global_sql.gmail_sender
-    current_date = datetime.date.today()
-
-    # XXX crea el servicio gmail
-    try:
-        oauth2_credentials = settings_global_sql.oauth2_credentials
-        credentials = oauth2client.client.Credentials.new_from_json(oauth2_credentials)
-        http = credentials.authorize(httplib2.Http())
-        service = discovery.build('gmail', 'v1', http=http)
-    except:
-        print('Error al generar servicio de Gmail')
-
-    # XXX re-send email 24 antes de la tutoria.fecha
-    tutorias = session_sql.query(Tutoria).filter(Tutoria.deleted == False, Tutoria.activa == True, Tutoria.fecha == current_date + datetime.timedelta(days=1), Tutoria.created_at != current_date).all()
-
-    for tutoria in tutorias:
-        settings_current_user_sql = session_sql.query(Settings).join(Grupo).join(Alumno).join(Tutoria).filter(Tutoria.id == tutoria.id).first()
-        emails_enviados = settings_current_user_sql.emails_enviados
-        asignaturas_id_lista = []
-        asignaturas_de_la_tutoria = session_sql.query(Asignatura).join(Association_Tutoria_Asignatura).filter(Association_Tutoria_Asignatura.tutoria_id == tutoria.id).all()
-        for asignatura in asignaturas_de_la_tutoria:
-            informe = session_sql.query(Informe).filter_by(tutoria_id=tutoria.id, asignatura_id=asignatura.id).all()
-            if not informe:
-                asignaturas_id_lista.append(asignatura.id)
-        if asignaturas_id_lista:
-            alumno = session_sql.query(Alumno).join(Tutoria).filter(Tutoria.id == tutoria.id).first()
-            try:
-                for asignatura_id in asignaturas_id_lista:
-                    asignatura = session_sql.query(Asignatura).filter(Asignatura.id == asignatura_id).first()
-                    association_tutoria_asignatura_sql = session_sql.query(Association_Tutoria_Asignatura).filter(Association_Tutoria_Asignatura.tutoria_id == tutoria.id, Association_Tutoria_Asignatura.asignatura_id == asignatura_id).first()
-                    if association_tutoria_asignatura_sql:
-                        association_tutoria_asignatura_sql.created_at = datetime.datetime.today()
-                        email_reenvio_number = association_tutoria_asignatura_sql.email_reenvio_number
-                    else:
-                        tutoria_asignatura_add = Association_Tutoria_Asignatura(tutoria_id=tutoria.id, asignatura_id=asignatura_id)
-                        session_sql.add(tutoria_asignatura_add)
-                        session_sql.flush()
-                        association_tutoria_asignatura_sql = tutoria_asignatura_add
-                        email_reenvio_number = association_tutoria_asignatura_sql.email_reenvio_number
-                    # XXX envio de mail
-                    # ****************************************
-                    to = asignatura.email
-                    tutoria_dia_semana = translate_fecha(tutoria.fecha.strftime('%A'))
-                    tutoria_dia_mes = tutoria.fecha.strftime('%d')
-                    emails_enviados = emails_enviados + 1
-                    email_reenvio_number = email_reenvio_number + 1
-                    association_tutoria_asignatura_sql.email_reenvio_number = email_reenvio_number
-                    grupo_activo_sql = session_sql.query(Grupo).join('alumnos').filter(Alumno.id == alumno.id).first()
-                    subject = 'Tutoría | %s | %s |  %s %s [24h-%s]' % (grupo_activo_sql.nombre, alumno.nombre, tutoria_dia_semana, tutoria_dia_mes, email_reenvio_number)
-                    message_text = render_template('email_tutoria.html', grupo=grupo_activo_sql, tutoria=tutoria, alumno=alumno, asignatura=asignatura, tutoria_email_link=tutoria_email_link, index_link=index_link)
-                    create_message_and_send(service, sender, to, subject, message_text)
-                settings_current_user_sql.emails_enviados = emails_enviados
-            except:
-                print('Error al enviar emails')
-    session_sql.commit()
-    # print('Mantenimiento Re-Send satisfactorio.')  # NOTE en aws lambda no funciona el print en su lugar usar return
-
-
-def mantenimiento_re_send_email_asincrono():
-    @copy_current_request_context
-    def mantenimiento_re_send_email_process():
-        mantenimiento_re_send_email()
-    mantenimiento_re_send_email_threading = threading.Thread(name='mantenimiento_re_send_email_thread', target=mantenimiento_re_send_email_process)
-    mantenimiento_re_send_email_threading.start()
-# ----------------------------------------------------------------
-# Mantenimiento nocturno [FIN]
 # ----------------------------------------------------------------
 
 
@@ -302,10 +213,10 @@ def replace_string_by_dic(texto, dic):
         texto = texto.replace(i, j)
     return texto
 
+
+# ***************************************************************
 # Calendar API
-# *****************************************************************
-
-
+# ***************************************************************
 def get_service_calendar():  # Ejemplo de codigo para crear el servicio calendar
     try:
         oauth2_credentials = g.settings_current_user.oauth2_credentials
@@ -315,13 +226,14 @@ def get_service_calendar():  # Ejemplo de codigo para crear el servicio calendar
     except:
         return redirect(url_for('oauth2callback_calendar'))
     return service
-# Fin Caldenar API
-# *****************************************************************
+# ---------------------------------------------------------------
+# Calendar API [FIN]
+# ---------------------------------------------------------------
 
 
+# ***************************************************************
 # Gmail API
-# *****************************************************************
-
+# ***************************************************************
 def get_service_gmail():  # Ejemplo de codigo para crear el servicio gmail
     try:
         settings_global_sql = session_sql.query(Settings_Global).first()
@@ -355,9 +267,9 @@ def send_message(service, user_id, body, message_text):
 def create_message_and_send(service, sender, to, subject, message_text):
     message = create_message(sender, to, subject, message_text)
     send_message(service, "me", message, message_text)
-
-# XXX Gmail API [FIN]
-# -----------------------------------------------------------------------------
+# --------------------------------------------------------------
+# Gmail API [FIN]
+# --------------------------------------------------------------
 
 
 def association_tutoria_asignatura_id(tutoria_id, asignatura_id):
