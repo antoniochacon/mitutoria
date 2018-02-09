@@ -6,7 +6,8 @@
 	<i class="material-icons vertical-center">view_list</i>
 	Historial
 	<span class="badge badge-light text-gray float-right mt-1" title="Historial de tutorías">
-		{{tutorias_by_grupo_id_incoming_count}}
+		{% if g.settings_current_user.show_tutorias_historial_all %}{{tutorias_by_grupo_id_incoming_count}}{% else %}{{g.settings_current_user.tutorias_historial}}{% endif %}
+
 		{{singular_plural("tutoria", "tutorias", tutorias_by_grupo_id_incoming_count)}}
 	</span>
 </a>
