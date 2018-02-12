@@ -93,6 +93,16 @@ def mantenimiento_historial_clock():
     session_sql.commit()
 
 
+def mantenimiento_calificaciones_nulas_clock():
+    # XXX elmina las calificaciones igual a cero y sin nombre
+    current_date = datetime.date.today()
+    calificaciones = session_sql.query(Calificacion).filter(Calificacion.created_at > current_date - datetime.timedelta(days=1), Calificacion.nota == 0, Calificacion.nombre == '').all()
+    for calificacion in calificaciones:
+        # print(calificacion.nota)
+        session_sql.delete(calificacion)
+    session_sql.commit()
+
+
 def mantenimiento_papelera_clock():
     # XXX purgar papelera tutorias
     settings_global = session_sql.query(Settings_Global).first()
@@ -471,7 +481,7 @@ def respuestas_grupo_stats(tutoria_id, preguntas_lista, asignaturas_lista):
     grupo = grupo_by_tutoria_id(tutoria_id)
     preguntas = preguntas_lista
     asignaturas = asignaturas_lista
-    pruebas_evaluables = session_sql.query(Prueba_Evaluable).join(Informe).join(Tutoria).filter(Tutoria.id == tutoria_id).all()
+    pruebas_evaluables = session_sql.query(Calificacion).join(Informe).join(Tutoria).filter(Tutoria.id == tutoria_id).all()
     stats = {}
 
     for pregunta in preguntas:
@@ -543,11 +553,11 @@ def notas_pruebas_evaluables_alumno(tutoria_id, asignatura_id):
     nota_pruebas_evaluables_asignatura_media = 'sin_notas'
     stats = {}
 
-    pruebas_evaluables = session_sql.query(Prueba_Evaluable).join(Informe).join(Tutoria).filter(Tutoria.id == tutoria_id, Informe.asignatura_id == asignatura_id).all()
-    for prueba_evaluable in pruebas_evaluables:
-        if prueba_evaluable:
-            nota_pruebas_evaluables_asignatura_lista.append(float(prueba_evaluable.nota))
-            pruebas_evaluables_nombre_asignatura_lista.append((prueba_evaluable.nombre, float(prueba_evaluable.nota)))
+    pruebas_evaluables = session_sql.query(Calificacion).join(Informe).join(Tutoria).filter(Tutoria.id == tutoria_id, Informe.asignatura_id == asignatura_id).all()
+    for calificacion in pruebas_evaluables:
+        if calificacion:
+            nota_pruebas_evaluables_asignatura_lista.append(float(calificacion.nota))
+            pruebas_evaluables_nombre_asignatura_lista.append((calificacion.nombre, float(calificacion.nota)))
     if nota_pruebas_evaluables_asignatura_lista:
         nota_pruebas_evaluables_asignatura_media = round(mean(nota_pruebas_evaluables_asignatura_lista), 1)
 
@@ -562,11 +572,11 @@ def notas_pruebas_evaluables_grupo(tutoria_id, asignatura_id):
     nota_pruebas_evaluables_media = 'sin_notas'
     grupo = grupo_by_tutoria_id(tutoria_id)
     alumno = alumno_by_tutoria_id(tutoria_id)
-    pruebas_evaluables = session_sql.query(Prueba_Evaluable).join(Informe).join(Tutoria).filter(Informe.asignatura_id == asignatura_id, Tutoria.alumno_id != alumno.id, Tutoria.deleted == False).all()
+    pruebas_evaluables = session_sql.query(Calificacion).join(Informe).join(Tutoria).filter(Informe.asignatura_id == asignatura_id, Tutoria.alumno_id != alumno.id, Tutoria.deleted == False).all()
 
-    for prueba_evaluable in pruebas_evaluables:
-        if prueba_evaluable:
-            notas_pruebas_evaluables_lista.append(float(prueba_evaluable.nota))
+    for calificacion in pruebas_evaluables:
+        if calificacion:
+            notas_pruebas_evaluables_lista.append(float(calificacion.nota))
     if notas_pruebas_evaluables_lista:
         nota_pruebas_evaluables_media = mean(notas_pruebas_evaluables_lista)
 
@@ -607,8 +617,8 @@ def evolucion_tutorias(alumno_id):
                     if int(respuesta.resultado) == 0:
                         resultado = 1
                     evolucion_alumno_lista.append(int(resultado))
-            for prueba_evaluable in informe.pruebas_evaluables:
-                evolucion_notas_serie.append(float(prueba_evaluable.nota))
+            for calificacion in informe.pruebas_evaluables:
+                evolucion_notas_serie.append(float(calificacion.nota))
 
         if evolucion_alumno_lista:
             evolucion_alumno_media_lista.append([arrow.get(tutoria.fecha).timestamp * 1000, round(mean(evolucion_alumno_lista), 1)])
@@ -673,7 +683,7 @@ def invitado_respuesta(informe_id, pregunta_id):  # (Respuesta) by informe_id y 
 
 
 def invitado_pruebas_evaluables(informe_id):  # [pruebas_evaluables] by informe_id
-    return session_sql.query(Prueba_Evaluable).filter(Prueba_Evaluable.informe_id == informe_id).order_by('id').all()
+    return session_sql.query(Calificacion).filter(Calificacion.informe_id == informe_id).order_by('id').all()
 
 
 # ********************************************************************************************
@@ -795,7 +805,7 @@ def informes_con_pruebas_evalubles_count():
         informes_count = 0
         informes = session_sql.query(Informe).order_by('created_at').all()
         for informe in informes:
-            informe_prueba_evaluble_check = session_sql.query(Prueba_Evaluable).filter(Prueba_Evaluable.informe_id == informe.id).first()
+            informe_prueba_evaluble_check = session_sql.query(Calificacion).filter(Calificacion.informe_id == informe.id).first()
             informes_count = informes_count + 1
             if informe_prueba_evaluble_check:
                 informes_con_pruebas_evalubles_count = informes_con_pruebas_evalubles_count + 1

@@ -118,9 +118,9 @@ def informe_html(asignatura_id, tutoria_id, params={}):
     params['cuestionario_tab'] = params_old.get('cuestionario_tab', True)
     params['notas_tab'] = params_old.get('notas_tab', False)
     params['observaciones_tab'] = params_old.get('observaciones_tab', False)
-    params['current_prueba_evaluable_id'] = params_old.get('current_prueba_evaluable_id', 0)
-    current_prueba_evaluable_id = params['current_prueba_evaluable_id']
-    prueba_evaluable_dic = {}
+    params['current_calificacion_id'] = params_old.get('current_calificacion_id', 0)
+    current_calificacion_id = params['current_calificacion_id']
+    calificacion_dic = {}
 
     if request.method == 'POST':
         # params['cuestionario_tab'] = False  # es mas comodo ponerlo aqui que estar repitiendolo
@@ -170,27 +170,27 @@ def informe_html(asignatura_id, tutoria_id, params={}):
 
         # NOTE captura de notas una vez creado el informe
         # ****************************************************************
-        for prueba_evaluable in invitado_pruebas_evaluables(informe_sql.id):
-            prueba_evaluable.nombre = request.form.get('prueba_evaluable_nombre_' + str(hashids_encode(prueba_evaluable.id)))
-            prueba_evaluable.nota = request.form.get('prueba_evaluable_nota_' + str(hashids_encode(prueba_evaluable.id)))
-            prueba_evaluable_dic['selector_prueba_evaluable_delete_' + str(prueba_evaluable.id)] = int(prueba_evaluable.id)
+        for calificacion in invitado_pruebas_evaluables(informe_sql.id):
+            calificacion.nombre = request.form.get('calificacion_nombre_' + str(hashids_encode(calificacion.id)))
+            calificacion.nota = request.form.get('calificacion_nota_' + str(hashids_encode(calificacion.id)))
+            calificacion_dic['selector_calificacion_delete_' + str(calificacion.id)] = int(calificacion.id)
 
-        if request.form['selector_button'] in prueba_evaluable_dic.keys():
-            prueba_evaluable_delete_id = prueba_evaluable_dic[request.form['selector_button']]
-            prueba_evaluable_delete_sql = session_sql.query(Prueba_Evaluable).filter(Prueba_Evaluable.id == prueba_evaluable_delete_id).first()
-            session_sql.delete(prueba_evaluable_delete_sql)
+        if request.form['selector_button'] in calificacion_dic.keys():
+            calificacion_delete_id = calificacion_dic[request.form['selector_button']]
+            calificacion_delete_sql = session_sql.query(Calificacion).filter(Calificacion.id == calificacion_delete_id).first()
+            session_sql.delete(calificacion_delete_sql)
             params['cuestionario_tab'] = False
             params['notas_tab'] = True
             return redirect(url_for('informe_html', tutoria_id=hashids_encode(tutoria_id), asignatura_id=hashids_encode(asignatura_id), params=dic_encode(params)))
 
-        if request.form['selector_button'] == 'selector_prueba_evaluable_add':
-            params['collapse_prueba_evaluable_add'] = True
-            prueba_evaluable_nombre = ''
-            prueba_evaluable_nota = 0
-            prueba_evaluable_add = Prueba_Evaluable(informe_id=informe_sql.id, nombre=prueba_evaluable_nombre, nota=prueba_evaluable_nota)
-            session_sql.add(prueba_evaluable_add)
-            session_sql.flush()  # necesario para disponer luego de prueba_evaluable_add.id
-            params['anchor'] = 'anchor_pru_eva_' + str(hashids_encode(prueba_evaluable_add.id))
+        if request.form['selector_button'] == 'selector_calificacion_add':
+            params['collapse_calificacion_add'] = True
+            calificacion_nombre = ''
+            calificacion_nota = 0
+            calificacion_add = Calificacion(informe_id=informe_sql.id, nombre=calificacion_nombre, nota=calificacion_nota)
+            session_sql.add(calificacion_add)
+            session_sql.flush()  # necesario para disponer luego de calificacion_add.id
+            params['anchor'] = 'anchor_pru_eva_' + str(hashids_encode(calificacion_add.id))
             # flash_toast('Prueba evaluable agregada', 'success')
             params['cuestionario_tab'] = False
             params['notas_tab'] = True
@@ -217,7 +217,7 @@ def informe_html(asignatura_id, tutoria_id, params={}):
 #     params['mantenimiento_papelera_error'] = False
 #     params['mantenimiento_re_send_email_error'] = False
 #     params['tutoria_calendar_sync_clock_error'] = False
-    # # XXX mantenimiento_historial
+    # XXX mantenimiento_historial
     # try:
     #     mantenimiento_historial()
     # except:
@@ -232,17 +232,15 @@ def informe_html(asignatura_id, tutoria_id, params={}):
     # # XXX mantenimiento_re-send
     # try:
     #     mantenimiento_re_send_email() # NOTE Usar esto para pruebas
-    #     # mantenimiento_re_send_email_asincrono()
     # except:
     #     params['mantenimiento_re_send_email_error'] = True
     # try:
     #     tutoria_calendar_sync_clock()
     # except:
     #     params['tutoria_calendar_sync_clock_error'] = True
-    # NOTE LOCAL y Heroku
+    # mantenimiento_calificaciones_nulas_clock()
     # return render_template('mantenimiento_local.html', params=params)
-    # NOTE AMAZON
-    # return 'Mantenimieto Realizado'
+
 
 
 @app.route('/tutorias', methods=['GET', 'POST'])

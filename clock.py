@@ -27,6 +27,7 @@ def heroku_dont_sleep():
 @sched.scheduled_job('interval', hours=1, minutes=30)
 def matenimiento_minutes_90():
     with app.app_context():
+        mantenimiento_calificaciones_nulas_clock()
         tutoria_calendar_sync_clock()
 
 

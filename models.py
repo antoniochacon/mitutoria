@@ -136,8 +136,8 @@ class Respuesta (Base):
     created_at = Column(Date, default=datetime.date.today())
 
 
-class Prueba_Evaluable (Base):
-    __tablename__ = 'prueba_evaluable'
+class Calificacion (Base):
+    __tablename__ = 'calificacion'
     id = Column(Integer, primary_key=True)
     informe_id = Column(Integer, ForeignKey('informe.id'))
     nombre = Column(String(80))
@@ -151,7 +151,7 @@ class Informe (Base):
     tutoria_id = Column(Integer, ForeignKey('tutoria.id'))
     asignatura_id = Column(Integer, ForeignKey('asignatura.id'))
     respuestas = relationship('Respuesta', backref='informe', lazy='dynamic', cascade='delete')
-    pruebas_evaluables = relationship('Prueba_Evaluable', backref='informe', lazy='dynamic', cascade='delete')
+    pruebas_evaluables = relationship('Calificacion', backref='informe', lazy='dynamic', cascade='delete')
     comentario = Column(String)
     comentario_editado = Column(String)
     created_at = Column(Date, default=datetime.date.today())

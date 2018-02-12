@@ -42,7 +42,7 @@
 							</span>
 						</div>
 						<div>
-							<span class="small {% if tutoria.activa %}text-mutted{% else %}text-info{% endif %}">Fecha:
+							<span class="small text-mutted">Fecha:
 							</span>
 							<span class="{% if not tutoria.activa or tutoria.deleted %}text-mutted{% endif %}">
 								{{translate_fecha(tutoria.fecha.strftime('%b')) | capitalize}}
