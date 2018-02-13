@@ -686,6 +686,22 @@
 						to: 5
 					}
 				],
+				plotLines: [
+					{
+						value: {{evolucion_stats['evolucion_grupo_media'] | safe}},
+						width: 4,
+						color: "#26c6da",
+						dashStyle: "ShortDot",
+						zIndex: 100,
+						label: {
+							color: "#26c6da",
+							text: "<strong>media: {{evolucion_stats['evolucion_grupo_media'] | safe}}%</strong>",
+							align: "right",
+							y: -5,
+							x: -10
+						}
+					}
+				],
 				min: 0,
 				max: 10,
 				title: {
@@ -713,6 +729,7 @@
 					grouping: false
 				}
 			},
+
 			series: [
 				{
 					type: "column",
