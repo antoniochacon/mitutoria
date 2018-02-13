@@ -718,7 +718,7 @@
 					 dataGrouping: {
 						 forced: true,
 						 units: [
-							 ['week', [2]]
+							 ['week', [1]]
 						 ]
 					 }
 				 },
@@ -729,7 +729,6 @@
 					grouping: false
 				}
 			},
-
 			series: [
 				{
 					type: "column",
@@ -915,6 +914,19 @@
 			},
 			tooltip: {
 				shared: false
+			},
+			plotOptions: {
+				 series: {
+					 dataGrouping: {
+						 forced: true,
+						 units: [
+							 ['week', [1]]
+						 ]
+					 }
+				 },
+				series: {
+					pointIntervalUnit: "week"
+				}
 			},
 			xAxis: {
 				crosshair: {
