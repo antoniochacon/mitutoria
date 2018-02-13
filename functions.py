@@ -623,8 +623,10 @@ def evolucion_tutorias(alumno_id):
                         resultado = 1
                     evolucion_grupo_lista.append(int(resultado))
         if evolucion_grupo_lista:
+            # NOTE linea original
+            evolucion_grupo_media_lista.append([arrow.get(tutoria.fecha).timestamp * 1000, round(mean(evolucion_grupo_lista), 1)])
             # NOTE he agregado una media de grupo y la media puntual para suavizar el grafo y no ser tan discreto
-            evolucion_grupo_media_lista.append([arrow.get(tutoria.fecha).timestamp * 1000, round(mean([mean(evolucion_grupo_lista), evolucion_grupo_media]), 1)])
+            # evolucion_grupo_media_lista.append([arrow.get(tutoria.fecha).timestamp * 1000, round(mean([mean(evolucion_grupo_lista), evolucion_grupo_media]), 1)])
         evolucion_grupo_lista = []
 
     # NOTE le agrego 4 semanas a la ultima fecha actual
