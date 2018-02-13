@@ -593,7 +593,7 @@ def evolucion_tutorias(alumno_id):
     alumno = alumno_by_id(alumno_id)
     tutorias_alumno = session_sql.query(Tutoria).filter(Tutoria.alumno_id == alumno_id, Tutoria.deleted == False).order_by('fecha').all()
     tutorias_grupo = session_sql.query(Tutoria).join(Alumno).join(Grupo).filter(Grupo.id == alumno.grupo_id, Tutoria.alumno_id != alumno_id, Tutoria.deleted == False).order_by('fecha').all()
-    tutorias_grupo_primera = session_sql.query(Tutoria).join(Alumno).join(Grupo).filter(Grupo.id == alumno.grupo_id, Tutoria.alumno_id != alumno_id, Tutoria.deleted == False).order_by(desc('fecha')).first()
+    tutorias_grupo_primera = session_sql.query(Tutoria).join(Alumno).join(Grupo).filter(Grupo.id == alumno.grupo_id, Tutoria.alumno_id != alumno_id, Tutoria.deleted == False).order_by('fecha').first()
     stats = {}
 
     respuestas = session_sql.query(Respuesta).all()
@@ -607,7 +607,6 @@ def evolucion_tutorias(alumno_id):
         evolucion_grupo_media = round(mean(evolucion_grupo_lista), 1)
     else:
         evolucion_grupo_media = 5
-
     evolucion_grupo_lista = []
 
     # NOTE le agrego 4 semanas a la primera tutoria
@@ -624,8 +623,9 @@ def evolucion_tutorias(alumno_id):
                         resultado = 1
                     evolucion_grupo_lista.append(int(resultado))
         if evolucion_grupo_lista:
-            # NOTE he agregado una media de grupo y la media puntual para suavizar el grafo y no ser tan discreto
+            # NOTE linea original
             # evolucion_grupo_media_lista.append([arrow.get(tutoria.fecha).timestamp * 1000, round(mean(evolucion_grupo_lista), 1)])
+            # NOTE he agregado una media de grupo y la media puntual para suavizar el grafo y no ser tan discreto
             evolucion_grupo_media_lista.append([arrow.get(tutoria.fecha).timestamp * 1000, round(mean([mean(evolucion_grupo_lista), evolucion_grupo_media]), 1)])
         evolucion_grupo_lista = []
 
