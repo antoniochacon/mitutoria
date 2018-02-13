@@ -714,14 +714,6 @@
 				enabled: true
 			},
 			plotOptions: {
-				 series: {
-					 dataGrouping: {
-						 forced: true,
-						 units: [
-							 ['week', [1]]
-						 ]
-					 }
-				 },
 				series: {
 					pointIntervalUnit: "week"
 				},
@@ -772,6 +764,12 @@
 					}
 				}, {
 					type: "areaspline",
+					dataGrouping: {
+						forced: true,
+						units: [
+							['week', [1]]
+						]
+					},
 					name: "{{grupo.nombre}} | Cuestionario",
 					color: "#424242",
 					data: {{evolucion_stats['evolucion_grupo_media_lista'] | safe}},
@@ -915,19 +913,6 @@
 			tooltip: {
 				shared: false
 			},
-			plotOptions: {
-				 series: {
-					 dataGrouping: {
-						 forced: true,
-						 units: [
-							 ['week', [1]]
-						 ]
-					 }
-				 },
-				series: {
-					pointIntervalUnit: "week"
-				}
-			},
 			xAxis: {
 				crosshair: {
 					width: 2,
@@ -980,6 +965,12 @@
 			series: [
 				{
 					type: "spline",
+					dataGrouping: {
+						forced: true,
+						units: [
+							['week', [1]]
+						]
+					},
 					color: "{{color}}",
 					name: "tutorias",
 					tooltip: {
