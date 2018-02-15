@@ -57,10 +57,3 @@
 <div class="col-sm-12 pt-3 pb-3 pl-1 pr-1">
 	<textarea class="form-control vresize" rows="5" name="comentario" id="comentario" placeholder="Escribe las observaciones">{% if informe %}{% if informe.comentario %}{{informe.comentario}}{% endif %}{% endif %}</textarea>
 </div>
-{% if not informe or params['informe_fresh'] %}
-<div class="col-sm-12">
-	<button role="button" type="submit" name="selector_button" value="selector_guardar_calificaciones" class="btn btn-outline-dark" title="Enviar informe">
-		<i class="material-icons vertical-center pr-1">save</i>Guardar calificaciones [2/2]
-	</button>
-</div>
-{% endif %}

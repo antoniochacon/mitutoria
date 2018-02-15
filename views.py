@@ -119,7 +119,6 @@ def informe_html(asignatura_id, tutoria_id, params={}):
     params['notas_tab'] = params_old.get('notas_tab', False)
     params['observaciones_tab'] = params_old.get('observaciones_tab', False)
     params['current_calificacion_id'] = params_old.get('current_calificacion_id', 0)
-    params['informe_fresh']=params_old.get('informe_fresh', False)
     current_calificacion_id = params['current_calificacion_id']
     calificacion_dic = {}
 
@@ -193,13 +192,12 @@ def informe_html(asignatura_id, tutoria_id, params={}):
             return redirect(url_for('informe_html', tutoria_id=hashids_encode(tutoria_id), asignatura_id=hashids_encode(asignatura_id), params=dic_encode(params)))
 
         if request.form['selector_button'] == 'selector_guardar_cuestionario':
-            params['informe_fresh']=True
             return redirect(url_for(
                 'informe_html',
                 asignatura_id=hashids_encode(asignatura_id), tutoria_id=hashids_encode(tutoria_id),
                 params=dic_encode(params)))
 
-        if request.form['selector_button'] in ['selector_guardar_calificaciones', 'selector_enviar_informe']:
+        if request.form['selector_button'] == 'selector_enviar_informe':
             flash_toast('Infome de ' + Markup('<strong>') + alumno.nombre + Markup('</strong>') + ' enviado', 'success')
             session_sql.commit()
             return redirect(url_for(

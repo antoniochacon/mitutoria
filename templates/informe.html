@@ -14,9 +14,9 @@
 				</li>
 				<li class="nav-item">
 					<a
-						class="nav-link px-2 {% if informe %}{% if params['notas_tab'] %}active{% endif %}{% else %}disabled link_without_pointer{% endif %}"
+						class="nav-link px-2 {% if informe and not params['pregunta_sin_respuesta']%}{% if params['notas_tab'] %}active{% endif %}{% else %}disabled link_without_pointer{% endif %}"
 						data-toggle="tab"
-						href="{% if informe %}#calificaciones{% else %}#{% endif %}"
+						href="{% if informe and not params['pregunta_sin_respuesta'] %}#calificaciones{% else %}#{% endif %}"
 						role="tab"
 						title="{% if not informe %}Finalizar el cuestionario para desbloquear las calificaciones{% endif %}">Calificaciones</a>
 				</li>
@@ -29,7 +29,7 @@
 					{% include 'informe_calificaciones_block.html' %}
 				</div>
 			</div>
-			{% if informe %}
+			{% if informe and not params['pregunta_sin_respuesta'] %}
 			<button role="button" type="submit" name="selector_button" value="selector_enviar_informe" class="btn btn-primary" title="Enviar informe">
 				<i class="material-icons vertical-center pr-1">send</i>Enviar informe
 			</button>
