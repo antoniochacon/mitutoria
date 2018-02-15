@@ -1,4 +1,4 @@
-{% if g.settings_current_user.show_analisis_asignaturas_detallado or(not g.settings_current_user.show_analisis_asignaturas_detallado and (informe_by_tutoria_id_by_asignatura_id_sql.comentario or informe_by_tutoria_id_by_asignatura_id_sql.comentario_editado)) %}
+{% if g.settings_current_user.show_analisis_asignaturas_detallado or(not g.settings_current_user.show_analisis_asignaturas_detallado and (informe_by_tutoria_id_by_asignatura_id_sql.comentario or informe_by_tutoria_id_by_asignatura_id_sql.comentario_editado)) or diferencial_check(g.settings_current_user.diferencial, respuestas_pregunta_alumno_lista(tutoria.id, asignatura.id, stats['asignaturas_recibidas_lista'], stats['preguntas_con_respuesta_lista'])['respuestas_pregunta_media'], notas_pruebas_evaluables_alumno(tutoria.id,asignatura.id)['notas_alumno_media']) or diferencial_check(g.settings_current_user.diferencial, respuestas_tutoria_media_stats, respuestas_pregunta_alumno_lista(tutoria.id, asignatura.id, stats['asignaturas_recibidas_lista'], stats['preguntas_con_respuesta_lista'])['respuestas_pregunta_media']) %}
 	<div class="col-sm-12 {% if g.settings_current_user.show_analisis_asignaturas_detallado %}col-md-6 col-lg-4{% else %}col-md-6 col-lg-6{% endif %} mb-2">
 		<div class="card border-gray z-depth-1-1-less mb-2">
 			<div class="card-header text-center strong bg-info text-dark py-1">
@@ -7,14 +7,21 @@
 					<span class="small">
 						|
 						{{asignatura.nombre}}</span>
+							{% if not g.settings_current_user.show_analisis_asignaturas_detallado and diferencial_check(g.settings_current_user.diferencial, respuestas_pregunta_alumno_lista(tutoria.id, asignatura.id, stats['asignaturas_recibidas_lista'], stats['preguntas_con_respuesta_lista'])['respuestas_pregunta_media'], notas_pruebas_evaluables_alumno(tutoria.id,asignatura.id)['notas_alumno_media']) %}
+								<span class="badge badge-secondary text-white float-right">
+									resultados !
+								</span>
+							{% endif %}
+							{% if not g.settings_current_user.show_analisis_asignaturas_detallado and diferencial_check(g.settings_current_user.diferencial, respuestas_tutoria_media_stats, respuestas_pregunta_alumno_lista(tutoria.id, asignatura.id, stats['asignaturas_recibidas_lista'], stats['preguntas_con_respuesta_lista'])['respuestas_pregunta_media']) %}
+								<span class="badge badge-primary float-right mr-1">
+									actitud !
+								</span>
+							{% endif %}
 				</div>
 			</div>
 			{% if g.settings_current_user.show_analisis_asignaturas_detallado %}
 				<div class="card-body">
-					{% if diferencial_check(g.settings_current_user.diferencial, respuestas_pregunta_alumno_lista(tutoria.id, asignatura.id, stats['asignaturas_recibidas_lista'], stats['preguntas_con_respuesta_lista'])['respuestas_pregunta_media'], notas_pruebas_evaluables_alumno(
-						tutoria.id,
-						asignatura.id
-					)['notas_alumno_media']) %}
+					{% if diferencial_check(g.settings_current_user.diferencial, respuestas_pregunta_alumno_lista(tutoria.id, asignatura.id, stats['asignaturas_recibidas_lista'], stats['preguntas_con_respuesta_lista'])['respuestas_pregunta_media'], notas_pruebas_evaluables_alumno(tutoria.id,asignatura.id)['notas_alumno_media']) %}
 						<span class="badge text-white badge-secondary float-right">
 							resultados !
 						</span>
