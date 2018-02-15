@@ -114,59 +114,56 @@ def informe_html(asignatura_id, tutoria_id, params={}):
     informe_sql = invitado_informe(tutoria_id, asignatura_id)
     preguntas_current_settings = session_sql.query(Pregunta).join(Association_Settings_Pregunta).filter(Association_Settings_Pregunta.settings_id == settings.id).join(Categoria).order_by(desc(Categoria.orden), desc(Pregunta.orden)).all()
 
-    # params['comentario'] = params_old.get('comentario', '')
+    params['comentario'] = params_old.get('comentario', '')
     params['cuestionario_tab'] = params_old.get('cuestionario_tab', True)
     params['notas_tab'] = params_old.get('notas_tab', False)
     params['observaciones_tab'] = params_old.get('observaciones_tab', False)
     params['current_calificacion_id'] = params_old.get('current_calificacion_id', 0)
+    params['informe_fresh']=params_old.get('informe_fresh', False)
     current_calificacion_id = params['current_calificacion_id']
     calificacion_dic = {}
 
     if request.method == 'POST':
-        # params['cuestionario_tab'] = False  # es mas comodo ponerlo aqui que estar repitiendolo
-
         # NOTE primero hay que agregar el informe para poder continuar agregando elementos usando informe.id
-        if request.form['selector_button'] == 'selector_guardar_cuestionario':
-            if informe_sql:
-                for pregunta in preguntas_current_settings:
-                    resultado = request.form.get('pregunta_' + str(hashids_encode(pregunta.id)))
-                    respuesta_sql = invitado_respuesta(informe_sql.id, pregunta.id)
-                    if int(resultado) == -2:
-                        params['pregunta_sin_respuesta'] = True
-                    else:
-                        if respuesta_sql:
-                            respuesta_sql.resultado = resultado
-                        else:
-                            repuesta_add = Respuesta(informe_id=informe_sql.id, pregunta_id=pregunta.id, resultado=resultado)
-                            session_sql.add(repuesta_add)
-            else:
-                informe_add = Informe(tutoria_id=tutoria_id, asignatura_id=asignatura_id)
-                session_sql.add(informe_add)
-                session_sql.flush()  # NOTE necesario para obtener informe_add.id antes del commit
-                for pregunta in preguntas_current_settings:
-                    resultado = request.form.get('pregunta_' + str(hashids_encode(pregunta.id)))
-                    if int(resultado) == -2:
-                        params['pregunta_sin_respuesta'] = True
-                    else:
-                        respuesta_add = Respuesta(informe_id=informe_add.id, pregunta_id=pregunta.id, resultado=resultado)
-                        session_sql.add(respuesta_add)
+        if informe_sql:
+            # NOTE con esto me aseguro guardar el comentario cuando agrego calificaciones
+            params['comentario'] = request.form.get('comentario')
+            informe_sql.comentario = params['comentario']
 
-            if params['pregunta_sin_respuesta']:
-                # params['cuestionario_tab'] = True
-                params['anchor'] = 'anchor_pregunta_' + str(hashids_encode(pregunta.id))
-                flash_toast('Preguntas sin evaluar', 'warning')
-                return redirect(url_for(
-                    'informe_html',
-                    asignatura_id=hashids_encode(asignatura_id), tutoria_id=hashids_encode(tutoria_id),
-                    params=dic_encode(params)))
-            else:
-                params['cuestionario_tab'] = False
-                params['notas_tab'] = True
-                session_sql.commit()
-                return redirect(url_for(
-                    'informe_html',
-                    asignatura_id=hashids_encode(asignatura_id), tutoria_id=hashids_encode(tutoria_id),
-                    params=dic_encode(params)))
+            for pregunta in preguntas_current_settings:
+                resultado = request.form.get('pregunta_' + str(hashids_encode(pregunta.id)))
+                respuesta_sql = invitado_respuesta(informe_sql.id, pregunta.id)
+                if int(resultado) == -2:
+                    params['pregunta_sin_respuesta'] = True
+                else:
+                    if respuesta_sql:
+                        respuesta_sql.resultado = resultado
+                    else:
+                        repuesta_add = Respuesta(informe_id=informe_sql.id, pregunta_id=pregunta.id, resultado=resultado)
+                        session_sql.add(repuesta_add)
+        else:
+            informe_add = Informe(tutoria_id=tutoria_id, asignatura_id=asignatura_id)
+            session_sql.add(informe_add)
+            session_sql.flush()  # NOTE necesario para obtener informe_add.id antes del commit
+            for pregunta in preguntas_current_settings:
+                resultado = request.form.get('pregunta_' + str(hashids_encode(pregunta.id)))
+                if int(resultado) == -2:
+                    params['pregunta_sin_respuesta'] = True
+                else:
+                    respuesta_add = Respuesta(informe_id=informe_add.id, pregunta_id=pregunta.id, resultado=resultado)
+                    session_sql.add(respuesta_add)
+
+        if params['pregunta_sin_respuesta']:
+            params['anchor'] = 'anchor_pregunta_' + str(hashids_encode(pregunta.id))
+            flash_toast('Preguntas sin evaluar', 'warning')
+            return redirect(url_for(
+                'informe_html',
+                asignatura_id=hashids_encode(asignatura_id), tutoria_id=hashids_encode(tutoria_id),
+                params=dic_encode(params)))
+        else:
+            params['cuestionario_tab'] = False
+            params['notas_tab'] = True
+            session_sql.commit()
 
         # NOTE captura de notas una vez creado el informe
         # ****************************************************************
@@ -191,13 +188,18 @@ def informe_html(asignatura_id, tutoria_id, params={}):
             session_sql.add(calificacion_add)
             session_sql.flush()  # necesario para disponer luego de calificacion_add.id
             params['anchor'] = 'anchor_pru_eva_' + str(hashids_encode(calificacion_add.id))
-            # flash_toast('Prueba evaluable agregada', 'success')
             params['cuestionario_tab'] = False
             params['notas_tab'] = True
             return redirect(url_for('informe_html', tutoria_id=hashids_encode(tutoria_id), asignatura_id=hashids_encode(asignatura_id), params=dic_encode(params)))
 
-        if request.form['selector_button'] == 'selector_guardar_calificaciones':
-            informe_sql.comentario = request.form.get('comentario')
+        if request.form['selector_button'] == 'selector_guardar_cuestionario':
+            params['informe_fresh']=True
+            return redirect(url_for(
+                'informe_html',
+                asignatura_id=hashids_encode(asignatura_id), tutoria_id=hashids_encode(tutoria_id),
+                params=dic_encode(params)))
+
+        if request.form['selector_button'] in ['selector_guardar_calificaciones', 'selector_enviar_informe']:
             flash_toast('Infome de ' + Markup('<strong>') + alumno.nombre + Markup('</strong>') + ' enviado', 'success')
             session_sql.commit()
             return redirect(url_for(
@@ -240,7 +242,6 @@ def informe_html(asignatura_id, tutoria_id, params={}):
     #     params['tutoria_calendar_sync_clock_error'] = True
     # mantenimiento_calificaciones_nulas_clock()
     # return render_template('mantenimiento_local.html', params=params)
-
 
 
 @app.route('/tutorias', methods=['GET', 'POST'])

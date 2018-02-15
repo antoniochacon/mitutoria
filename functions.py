@@ -658,6 +658,10 @@ def evolucion_tutorias(alumno_id):
 
     return stats
 
+# --------------------------------------------------------------
+# tutoria stats (SIN PANDA) [FIN]
+# --------------------------------------------------------------
+
 
 def alumno_by_tutoria_id(tutoria_id):
     return session_sql.query(Alumno).join(Tutoria).filter(Tutoria.id == tutoria_id).first()
@@ -682,7 +686,6 @@ def informes_grupo_by_tutoria_id(tutoria_id):
 # ***********************************************************************
 # Funciones para usuario anonimos para rellenar el formulario.
 # ***********************************************************************
-
 def settings_by_tutoria_id(tutoria_id):  # (Settings) by tutoria_id
     return session_sql.query(Settings).join(Grupo).join(Alumno).join(Tutoria).filter(Tutoria.id == tutoria_id).first()
 
@@ -709,16 +712,14 @@ def invitado_respuesta(informe_id, pregunta_id):  # (Respuesta) by informe_id y 
 
 def invitado_pruebas_evaluables(informe_id):  # [pruebas_evaluables] by informe_id
     return session_sql.query(Calificacion).filter(Calificacion.informe_id == informe_id).order_by('id').all()
-
-
-# ********************************************************************************************
+# --------------------------------------------------------------
+# Funciones para usuario anonimos para rellenar el formulario. [FIN]
+# --------------------------------------------------------------
 
 
 # *****************************************************************
 # XXX admin stats (SIN PANDAS)
 # *****************************************************************
-
-
 def usuarios_all_count():
     return session_sql.query(User).count()
 
@@ -973,9 +974,10 @@ def profesores_actividad_count():
         return profesores_activos_count, profesores_activos_percent, profesores_activos_evolucion, profesores_activos_evolucion_frecuencia, profesores_activos_evolucion_frecuencia_absoluta, profesores_activos_evolucion_media
     except:
         return 1, 1, 1, 1, 1, 1
-# ----------------------------------------------------------------
-# admin stats [FIN]
-# ----------------------------------------------------------------
+
+# --------------------------------------------------------------
+# admin stats (SIN PANDAS) [FIN]
+# --------------------------------------------------------------
 
 
 def tutoria_calendar_undelete(event_id):

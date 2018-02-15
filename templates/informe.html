@@ -29,6 +29,11 @@
 					{% include 'informe_calificaciones_block.html' %}
 				</div>
 			</div>
+			{% if informe %}
+			<button role="button" type="submit" name="selector_button" value="selector_enviar_informe" class="btn btn-primary" title="Enviar informe">
+				<i class="material-icons vertical-center pr-1">send</i>Enviar informe
+			</button>
+			{% endif %}
 			{% endwith %}
 		</form>
 	</div>
