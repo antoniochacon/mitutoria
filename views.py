@@ -70,10 +70,10 @@ def page_not_found_html(warning):
     return render_template('page_not_found.html')
 
 
-# @app.errorhandler(500)
-# def internal_server_error_html(critical):
-#     abort_asincrono(500)
-#     return render_template('internal_server_error.html')
+@app.errorhandler(500)
+def internal_server_error_html(critical):
+    abort_asincrono(500)
+    return render_template('internal_server_error.html')
 
 
 @app.route('/')
