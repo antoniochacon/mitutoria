@@ -698,10 +698,6 @@ def invitado_preguntas_by_categoria_id(settings_id, categoria_id):  # [Preguntas
     return session_sql.query(Pregunta).join(Association_Settings_Pregunta).filter(Association_Settings_Pregunta.settings_id == settings_id).join(Categoria).filter(Categoria.id == categoria_id).order_by(Pregunta.orden).all()
 
 
-def invitado_alumno(tutoria_id):  # (Alumno) by tutoria_id
-    return session_sql.query(Alumno).join(Tutoria).filter(Tutoria.id == tutoria_id).first()
-
-
 def invitado_informe(tutoria_id, asignatura_id):  # (informe) actual
     return session_sql.query(Informe).filter(Informe.tutoria_id == tutoria_id, Informe.asignatura_id == asignatura_id).first()
 
@@ -1626,11 +1622,7 @@ def string_to_time(texto):
 
 
 def tutoria_by_id(tutoria_id):
-    if tutoria_id != None:
-        tutoria_by_id = session_sql.query(Tutoria).filter(Tutoria.id == tutoria_id).first()
-    else:
-        tutoria_by_id = None
-    return tutoria_by_id
+    return session_sql.query(Tutoria).filter(Tutoria.id == tutoria_id).first()
 
 
 def tutoria_by_calendar_event_id(calendar_event_id):
@@ -1640,19 +1632,11 @@ def tutoria_by_calendar_event_id(calendar_event_id):
 
 
 def alumno_by_id(alumno_id):
-    if alumno_id != None:
-        alumno_by_id = session_sql.query(Alumno).filter(Alumno.id == alumno_id).first()
-    else:
-        alumno_by_id = None
-    return alumno_by_id
+    return session_sql.query(Alumno).filter(Alumno.id == alumno_id).first()
 
 
 def asignatura_by_id(asignatura_id):
-    if asignatura_id != None:
-        asignatura_by_id = session_sql.query(Asignatura).filter(Asignatura.id == asignatura_id).first()
-    else:
-        asignatura_by_id = None
-    return asignatura_by_id
+    return session_sql.query(Asignatura).filter(Asignatura.id == asignatura_id).first()
 
 
 def association_tutoria_asignatura_check(tutoria_id, asignatura_id):  # {Boolean} comprueba si una tutoria y asignatura estan vinculados
