@@ -140,6 +140,11 @@ def informe_html(asignatura_id, tutoria_id, params={}):
                     else:
                         repuesta_add = Respuesta(informe_id=informe_sql.id, pregunta_id=pregunta.id, resultado=resultado)
                         session_sql.add(repuesta_add)
+
+            for calificacion in invitado_pruebas_evaluables(informe_sql.id):
+                calificacion.nombre = request.form.get('calificacion_nombre_' + str(hashids_encode(calificacion.id)))
+                calificacion.nota = request.form.get('calificacion_nota_' + str(hashids_encode(calificacion.id)))
+                calificacion_dic['selector_calificacion_delete_' + str(calificacion.id)] = int(calificacion.id)
         else:
             informe_add = Informe(tutoria_id=tutoria_id, asignatura_id=asignatura_id)
             session_sql.add(informe_add)
@@ -166,10 +171,11 @@ def informe_html(asignatura_id, tutoria_id, params={}):
 
         # NOTE captura de notas una vez creado el informe
         # ****************************************************************
-        for calificacion in invitado_pruebas_evaluables(informe_sql.id):
-            calificacion.nombre = request.form.get('calificacion_nombre_' + str(hashids_encode(calificacion.id)))
-            calificacion.nota = request.form.get('calificacion_nota_' + str(hashids_encode(calificacion.id)))
-            calificacion_dic['selector_calificacion_delete_' + str(calificacion.id)] = int(calificacion.id)
+        # if informe_sql:
+        #     for calificacion in invitado_pruebas_evaluables(informe_sql.id):
+        #         calificacion.nombre = request.form.get('calificacion_nombre_' + str(hashids_encode(calificacion.id)))
+        #         calificacion.nota = request.form.get('calificacion_nota_' + str(hashids_encode(calificacion.id)))
+        #         calificacion_dic['selector_calificacion_delete_' + str(calificacion.id)] = int(calificacion.id)
 
         if request.form['selector_button'] in calificacion_dic.keys():
             calificacion_delete_id = calificacion_dic[request.form['selector_button']]
