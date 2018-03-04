@@ -26,7 +26,8 @@ def tutoria_calendar_sync_clock():
                 http = credentials.authorize(http)
                 service = discovery.build('calendar', 'v3', http=http)
             except:
-                return redirect(url_for('oauth2callback_calendar'))
+                # return redirect(url_for('oauth2callback_calendar'))
+                pass
             if settings_current_user.calendar_sincronizado:
                 for tutoria in tutorias_by_grupo_id(settings_current_user.grupo_activo_id):
                     try:

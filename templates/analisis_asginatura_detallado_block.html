@@ -7,15 +7,17 @@
 					<span class="small">
 						|
 						{{asignatura.nombre}}</span>
-							{% if not g.settings_current_user.show_analisis_asignaturas_detallado and diferencial_check(g.settings_current_user.diferencial, respuestas_pregunta_alumno_lista(tutoria.id, asignatura.id, stats['asignaturas_recibidas_lista'], stats['preguntas_con_respuesta_lista'])['respuestas_pregunta_media'], notas_pruebas_evaluables_alumno(tutoria.id,asignatura.id)['notas_alumno_media']) %}
-								<span class="badge badge-secondary text-white float-right mt-1">
-									resultados !
-								</span>
-							{% endif %}
-							{% if not g.settings_current_user.show_analisis_asignaturas_detallado and diferencial_check(g.settings_current_user.diferencial, respuestas_tutoria_media_stats, respuestas_pregunta_alumno_lista(tutoria.id, asignatura.id, stats['asignaturas_recibidas_lista'], stats['preguntas_con_respuesta_lista'])['respuestas_pregunta_media']) %}
+							{% if not g.settings_current_user.show_analisis_asignaturas_detallado %}
+								{% if diferencial_check(g.settings_current_user.diferencial, respuestas_pregunta_alumno_lista(tutoria.id, asignatura.id, stats['asignaturas_recibidas_lista'], stats['preguntas_con_respuesta_lista'])['respuestas_pregunta_media'], notas_pruebas_evaluables_alumno(tutoria.id,asignatura.id)['notas_alumno_media']) %}
+									<span class="badge badge-secondary text-white float-right mt-1">
+										resultados !
+									</span>
+								{% endif %}
+								{% if diferencial_check(g.settings_current_user.diferencial, respuestas_tutoria_media_stats, respuestas_pregunta_alumno_lista(tutoria.id, asignatura.id, stats['asignaturas_recibidas_lista'], stats['preguntas_con_respuesta_lista'])['respuestas_pregunta_media']) %}
 								<span class="badge badge-primary float-right mr-1 mt-1">
 									actitud !
 								</span>
+								{% endif %}
 							{% endif %}
 				</div>
 			</div>
@@ -61,7 +63,7 @@
 					<div class="tab-content px-2">
 						<div class="tab-pane fade show active" id="observaciones_originales_{{hashids_encode(informe_by_tutoria_id_by_asignatura_id_sql.id)}}" role="tabpanel">
 							{% if informe_by_tutoria_id_by_asignatura_id_sql.comentario_editado %}
-								<div class="line_break text-secondary text-justify">
+								<div class="line_break text-justify">
 									{{-informe_by_tutoria_id_by_asignatura_id_sql.comentario_editado-}}
 								</div>
 							{% else %}
