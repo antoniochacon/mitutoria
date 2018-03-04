@@ -1,6 +1,8 @@
-settings_current_users = session_sql.query(Settings).all()
-for settings_current_user in settings_current_users:
-    if settings_current_user:
+def tutoria_calendar_sync_clock():
+    settings_global = session_sql.query(Settings_Global).first()
+    current_date = datetime.date.today()
+    settings_current_users = session_sql.query(Settings).all()
+    for settings_current_user in settings_current_users:
         if settings_current_user.calendar:
             try:
                 credentials = oauth2client.client.Credentials.new_from_json(settings_current_user.oauth2_credentials)
@@ -8,7 +10,7 @@ for settings_current_user in settings_current_users:
                 http = credentials.authorize(http)
                 service = discovery.build('calendar', 'v3', http=http)
             except:
-                return redirect(url_for('oauth2callback_calendar'))
+                pass  # He eliminado la peticion de permiso
             if settings_current_user.calendar_sincronizado:
                 for tutoria in tutorias_by_grupo_id(settings_current_user.grupo_activo_id):
                     try:
@@ -24,17 +26,16 @@ for settings_current_user in settings_current_users:
                                 alumno = alumno_by_tutoria_id(tutoria.id)
                                 if tutoria.fecha < current_date:
                                     if tutoria.activa:
-                                        tutoria.activa = False # NOTE auto-archiva la tutoria
-
+                                        tutoria.activa = False  # NOTE auto-archiva la tutoria
                                 if current_date <= arrow.get(event['start']['dateTime']).date():
                                     if not tutoria.activa:
-                                        tutoria.activa = True # NOTE auto-activa la tutoria
+                                        tutoria.activa = True  # NOTE auto-activa la tutoria
                         else:  # Elimina tutoria si ha sido eliminado desde la agenda
                             tutoria.deleted = True
-                            tutoria.deleted_at = current_time
+                            tutoria.deleted_at = current_date
                     except:  # NOTE Elimina tutoria si no esta en el calendario
                         tutoria.deleted = True
-                        tutoria.deleted_at = current_time
+                        tutoria.deleted_at = current_date
                 # NOTE Purga eventos de las tutorias eliminadas por el cleanpup
                 if settings_current_user.cleanup_tutorias_status:
                     settings_current_user.cleanup_tutorias_status = False
@@ -64,4 +65,4 @@ for settings_current_user in settings_current_users:
                     calendar_datetime_utc_end_arrow = str(arrow.get(tutoria.fecha).shift(hours=tutoria.hora.hour, minutes=tutoria.hora.minute + settings_current_user.tutoria_duracion).replace(tzinfo='Europe/Madrid'))
                     tutoria_calendar_add(service, tutoria, calendar_datetime_utc_start_arrow, calendar_datetime_utc_end_arrow, alumno_nombre)
                 settings_current_user.calendar_sincronizado = True
-session_sql.commit()
+    session_sql.commit()

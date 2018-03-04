@@ -24,7 +24,8 @@ def heroku_dont_sleep():
     # return hjson.dumpsJSON(response.data)
 
 
-@sched.scheduled_job('interval', hours=1, minutes=30)
+# @sched.scheduled_job('interval', hours=1, minutes=30)
+@sched.scheduled_job('interval', minutes=2)
 def matenimiento_minutes_90():
     with app.app_context():
         mantenimiento_calificaciones_nulas_clock()
