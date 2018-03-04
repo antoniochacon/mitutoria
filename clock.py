@@ -20,12 +20,12 @@ def heroku_dont_sleep():
     url = 'https://mitutoria.herokuapp.com/'
     http = urllib3.PoolManager()
     response = http.request('GET', url)
-    # print(hjson.dumpsJSON(response.data)) # NOTE si se usa hay pip install hjson y activar el import
+    # print(hjson.dumpsJSON(response.data)) # NOTE si se usa hay que usar pip install hjson y activar el import
     # return hjson.dumpsJSON(response.data)
 
 
-# @sched.scheduled_job('interval', hours=1, minutes=30)
-@sched.scheduled_job('interval', minutes=1)
+@sched.scheduled_job('interval', hours=1, minutes=30)
+# @sched.scheduled_job('interval', minutes=1)
 def matenimiento_minutes_90():
     with app.app_context():
         mantenimiento_calificaciones_nulas_clock()
