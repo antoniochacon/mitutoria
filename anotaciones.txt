@@ -8,6 +8,5 @@ Dyno hours can be shared across any of your free apps
 Free apps sleep automatically after 30 mins of inactivity to conserve your dyno hours
 Free apps wake automatically when a web request is received
 Access to the Heroku Dashboard and Heroku CLI for app management
-
 Custom domains for every free app (with verified account)
 Up to 5 free apps (unverified) or 100 (verified)

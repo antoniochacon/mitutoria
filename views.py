@@ -171,12 +171,6 @@ def informe_html(asignatura_id, tutoria_id, params={}):
 
         # NOTE captura de notas una vez creado el informe
         # ****************************************************************
-        # if informe_sql:
-        #     for calificacion in invitado_pruebas_evaluables(informe_sql.id):
-        #         calificacion.nombre = request.form.get('calificacion_nombre_' + str(hashids_encode(calificacion.id)))
-        #         calificacion.nota = request.form.get('calificacion_nota_' + str(hashids_encode(calificacion.id)))
-        #         calificacion_dic['selector_calificacion_delete_' + str(calificacion.id)] = int(calificacion.id)
-
         if request.form['selector_button'] in calificacion_dic.keys():
             calificacion_delete_id = calificacion_dic[request.form['selector_button']]
             calificacion_delete_sql = session_sql.query(Calificacion).filter(Calificacion.id == calificacion_delete_id).first()
@@ -216,13 +210,13 @@ def informe_html(asignatura_id, tutoria_id, params={}):
         alumno=alumno, grupo=grupo, informe=informe_sql, params=params)
 
 
-# @app.route('/mantenimiento', methods=['GET', 'POST']) # NOTE comentarlo para mitutoria-production para evitar un acceso ajeno
-# def mantenimiento_html():
-#     params = {}
-#     params['mantenimiento_historial_error'] = False
-#     params['mantenimiento_papelera_error'] = False
-#     params['mantenimiento_re_send_email_error'] = False
-#     params['tutoria_calendar_sync_clock_error'] = False
+@app.route('/mantenimiento', methods=['GET', 'POST']) # NOTE comentarlo para mitutoria-production para evitar un acceso ajeno
+def mantenimiento_html():
+    params = {}
+    params['mantenimiento_historial_error'] = False
+    params['mantenimiento_papelera_error'] = False
+    params['mantenimiento_re_send_email_error'] = False
+    params['tutoria_calendar_sync_clock_error'] = False
     # XXX mantenimiento_historial
     # try:
     #     mantenimiento_historial()
@@ -240,12 +234,12 @@ def informe_html(asignatura_id, tutoria_id, params={}):
     #     mantenimiento_re_send_email() # NOTE Usar esto para pruebas
     # except:
     #     params['mantenimiento_re_send_email_error'] = True
-    # try:
-    #     tutoria_calendar_sync_clock()
-    # except:
-    #     params['tutoria_calendar_sync_clock_error'] = True
+    try:
+        tutoria_calendar_sync_clock()
+    except:
+        params['tutoria_calendar_sync_clock_error'] = True
     # mantenimiento_calificaciones_nulas_clock()
-    # return render_template('mantenimiento_local.html', params=params)
+    return render_template('mantenimiento_local.html', params=params)
 
 
 @app.route('/tutorias', methods=['GET', 'POST'])
