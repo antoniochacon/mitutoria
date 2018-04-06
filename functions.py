@@ -98,10 +98,8 @@ def mantenimiento_calificaciones_nulas_clock():
     current_date = datetime.date.today()
     # NOTE calificaciones originales
     # calificaciones = session_sql.query(Calificacion).filter(Calificacion.created_at > current_date - datetime.timedelta(days=1), Calificacion.nota == 0, Calificacion.nombre == '').all()
-    calificaciones = session_sql.query(Calificacion).filter(Calificacion.created_at => current_date - datetime.timedelta(days=1),Calificacion.nota == 0, Calificacion.nombre == '').all()
-
+    calificaciones = session_sql.query(Calificacion).filter(Calificacion.created_at > current_date - datetime.timedelta(days=2),Calificacion.nota == 0, Calificacion.nombre == '').all()
     for calificacion in calificaciones:
-        # print(calificacion.nota)
         session_sql.delete(calificacion)
     session_sql.commit()
 
